@@ -1,7 +1,9 @@
 /**
- * Root layout — wraps every route. Add Clerk's <ClerkProvider>, the
- * shared <Navbar /> and <Footer />, and any global font declarations here.
- * Keep this file thin; per-route chrome belongs in nested layouts.
+ * Root layout — wraps every route.
+ *
+ * Add Clerk's <ClerkProvider>, the shared <Navbar /> and <Footer />, and
+ * any global font declarations here. Keep this file thin; per-route chrome
+ * belongs in nested layouts.
  */
 import type { Metadata } from "next";
 import "./globals.css";
