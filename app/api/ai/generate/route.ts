@@ -1,5 +1,5 @@
 /**
- * POST /api/ai/generate — the only route that talks to the Anthropic SDK.
+ * POST /api/ai/generate — the only route that talks to the Gemini API.
  *
  * Owner: Kabir
  *
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "prompt is required" }, { status: 400 });
   }
 
-  // TODO: call Anthropic SDK here.
+  // TODO (Kabir): call Gemini API here using @google/generative-ai.
   return NextResponse.json(
     { error: "Not implemented yet — see TODOs in this file." },
     { status: 501 }
