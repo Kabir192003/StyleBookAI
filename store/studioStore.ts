@@ -2,7 +2,9 @@
  * Zustand store for the Studio (manual builder). Holds the in-progress
  * project before it's saved via /api/projects.
  *
- * TODO: flesh out actions (addColor, assignRole, setFont, setTypeScale,
+ * Owner: Qi
+ *
+ * TODO (Qi): flesh out actions (addColor, assignRole, setFont, setTypeScale,
  * reset, loadFromProject) as the Studio UI needs them. Keep this store
  * framework-agnostic — components read/write it, they don't own this state.
  */

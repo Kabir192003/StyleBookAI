@@ -3,6 +3,8 @@
  * the user flips between the swatches/mockup/font-on-color tabs (§3 of
  * docs/PRODUCT_AND_UX.md). Separate from studioStore so the Lab can be
  * used standalone or embedded inside the Studio without state collisions.
+ *
+ * Owner: Qi
  */
 import { create } from "zustand";
 import { Color } from "@/types/color";

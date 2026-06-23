@@ -3,7 +3,9 @@
  * docs/PRODUCT_AND_UX.md §3. This is the single most important component
  * in the app; take the time to read the spec fully before building.
  *
- * TODO:
+ * Owner: Qi
+ *
+ * TODO (Qi):
  * - Tab switcher: Swatches / Mockup / Font-on-Color
  * - Swatches view: draggable row (@dnd-kit) + WCAG contrast badge per
  *   adjacent pair

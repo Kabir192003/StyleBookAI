@@ -1,6 +1,8 @@
 /**
  * /studio/ai — AI Generate
  *
+ * Owner: Qi
+ *
  * Spec: docs/PRODUCT_AND_UX.md §4 (AI Generate flow) and §6 (AIReasoning —
  * the reasoning text returned alongside every AI-generated palette/font
  * choice; this is the OTHER half of the app's core differentiator, distinct

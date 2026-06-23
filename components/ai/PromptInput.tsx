@@ -2,7 +2,9 @@
  * PromptInput — free-text box for describing the brand/vibe, plus a
  * Generate button. See docs/PRODUCT_AND_UX.md §4.
  *
- * TODO:
+ * Owner: Qi
+ *
+ * TODO (Qi):
  * - Textarea + a few quick-pick chips (e.g. "Minimal SaaS", "Warm
  *   editorial", "Playful kids brand") that prefill the textarea
  * - On submit: POST to /api/ai/generate, show a loading state

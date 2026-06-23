@@ -1,10 +1,12 @@
 /**
  * /studio — Manual project builder
  *
+ * Owner: Qi
+ *
  * Spec: docs/PRODUCT_AND_UX.md §2 (Studio) and §3 (Preview Lab is embedded
  * inside this flow).
  *
- * TODO:
+ * TODO (Qi):
  * - Pull selection state from store/studioStore.ts (stub already there)
  * - Let the user pick colors and assign roles (primary/secondary/accent/
  *   background/surface/text/textMuted)

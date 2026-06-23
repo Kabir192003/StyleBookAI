@@ -1,6 +1,8 @@
 /**
  * /studio/compare — Palette & Font Preview Lab
  *
+ * Owner: Qi
+ *
  * This is the centerpiece feature. Full interaction spec:
  * docs/PRODUCT_AND_UX.md §3 — read it before building.
  *

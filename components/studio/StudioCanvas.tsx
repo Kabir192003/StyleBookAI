@@ -4,7 +4,9 @@
  * viewer) — this is the *input* side: pick colors, assign roles, pick
  * fonts, set the type scale.
  *
- * TODO:
+ * Owner: Qi
+ *
+ * TODO (Qi):
  * - Color picker: search/filter over allColors (reuse ColorGrid in a
  *   compact "pick" mode) + role assignment dropdown per pick
  * - Font picker: search/filter over font data once data/fonts/seed.ts
