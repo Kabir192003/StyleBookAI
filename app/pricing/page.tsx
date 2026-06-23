@@ -1,6 +1,8 @@
 /**
  * /pricing — placeholder only
  *
+ * Owner: Amna
+ *
  * Billing/Stripe is explicitly deferred for v1 (the whole app ships free,
  * no plan gating anywhere in the code). This route exists so the nav link
  * doesn't 404, and so the folder survives in git. Do NOT build pricing

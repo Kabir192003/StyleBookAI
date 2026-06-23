@@ -1,11 +1,13 @@
 /**
  * /account — basic account settings
  *
+ * Owner: Amna
+ *
  * v1 has no billing (see docs/PRODUCT_AND_UX.md — Stripe is explicitly
  * deferred), so this page is just profile info via Clerk's <UserProfile />
  * plus an account-level preferences stub.
  *
- * TODO:
+ * TODO (Amna):
  * - Embed Clerk's <UserProfile />
  * - Any app-specific preference (e.g. default unit for type scale) goes
  *   below it

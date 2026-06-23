@@ -1,10 +1,12 @@
 /**
  * /dashboard — "My Projects"
  *
+ * Owner: Amna
+ *
  * Spec: docs/PRODUCT_AND_UX.md §2 (Dashboard). Lists every project the
  * signed-in user (Clerk) has saved, newest first.
  *
- * TODO:
+ * TODO (Amna):
  * - Fetch from GET /api/projects (requires Clerk auth — see middleware.ts)
  * - Empty state: "No projects yet" + CTA to /studio or /studio/ai
  * - Each card → /dashboard/[projectId]

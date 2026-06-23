@@ -1,10 +1,12 @@
 /**
  * /dashboard/[projectId] — Single saved project
  *
+ * Owner: Amna
+ *
  * Spec: docs/PRODUCT_AND_UX.md §2. Read-only view of a saved project with
  * edit/export/delete actions.
  *
- * TODO:
+ * TODO (Amna):
  * - Fetch from GET /api/projects/[id]
  * - Render with the same PreviewLab/mockup components used in Studio
  * - "Edit" → loads project into studioStore and routes to /studio

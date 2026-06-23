@@ -1,10 +1,12 @@
 /**
  * /sign-in — Clerk sign-in page
  *
- * Clerk does most of the work here; this file just hosts their prebuilt
- * component. Low-complexity file, good first task for getting a PR merged.
+ * Owner: Amna
  *
- * TODO:
+ * Clerk does most of the work here; this file just hosts their prebuilt
+ * component. Good first task for getting a PR merged.
+ *
+ * TODO (Amna):
  * - Confirm Clerk env vars are set (see .env.example)
  * - Style the wrapping page (centered card, logo, link to /sign-up)
  */

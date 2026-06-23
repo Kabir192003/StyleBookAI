@@ -1,7 +1,9 @@
 /**
  * Footer — simple, shared across all non-landing pages.
  *
- * TODO: links (Browse, Studio, Dashboard, Pricing), copyright line,
+ * Owner: Amna
+ *
+ * TODO (Amna): links (Browse, Studio, Dashboard, Pricing), copyright line,
  * maybe a "built with StyleBook AI" badge concept for exported assets.
  */
 export function Footer() {

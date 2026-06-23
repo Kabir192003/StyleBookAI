@@ -2,7 +2,9 @@
  * Navbar — top nav used on every page except the landing page (which has
  * its own minimal header, see HeroSection.tsx).
  *
- * TODO:
+ * Owner: Amna
+ *
+ * TODO (Amna):
  * - Logo → /
  * - Links: Browse (dropdown: Colors/Fonts/Themes), Studio, Dashboard
  * - Right side: Clerk <UserButton /> if signed in, else Sign in/Sign up

@@ -1,7 +1,9 @@
 /**
  * /sign-up — Clerk sign-up page. Mirrors sign-in/page.tsx.
  *
- * TODO: style the wrapping page (centered card, logo, link to /sign-in).
+ * Owner: Amna
+ *
+ * TODO (Amna): style the wrapping page (centered card, logo, link to /sign-in).
  */
 import { SignUp } from "@clerk/nextjs";
 

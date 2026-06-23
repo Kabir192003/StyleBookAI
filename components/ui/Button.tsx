@@ -2,7 +2,9 @@
  * Button — shared primitive used across the app instead of raw <button>
  * tags. Keep this dependency-free (no Radix needed for v1) but consistent.
  *
- * TODO: variants (primary/secondary/ghost/destructive), sizes (sm/md/lg),
+ * Owner: Amna
+ *
+ * TODO (Amna): variants (primary/secondary/ghost/destructive), sizes (sm/md/lg),
  * loading state with spinner, asChild-style polymorphism if needed later.
  */
 import { ButtonHTMLAttributes, forwardRef } from "react";
