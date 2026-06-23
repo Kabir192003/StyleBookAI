@@ -1,11 +1,13 @@
 /**
  * /browse/colors — Color Library
  *
+ * Owner: Dhanshri
+ *
  * Spec: docs/PRODUCT_AND_UX.md §2 (Browse libraries)
  * Data: `allColors` from @/data/colors (582 colors right now, ~800 after
  *       `npm run transform:colors` is run)
  *
- * TODO:
+ * TODO (Dhanshri):
  * - Render <ColorGrid colors={allColors} /> (build that component in
  *   components/colors/ColorGrid.tsx — stub already there)
  * - Filter bar: family / mood / style / collection, search by name or hex

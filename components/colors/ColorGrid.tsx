@@ -3,7 +3,9 @@
  * Used by: app/browse/colors/page.tsx, and reused inside the Preview Lab
  * and Studio wherever a color picker is needed.
  *
- * TODO:
+ * Owner: Dhanshri
+ *
+ * TODO (Dhanshri):
  * - Grid of swatch cards (color block + name + hex)
  * - "i" info button per card opening a popover with `color.note`
  * - Filter bar wired to family/mood/style/collection

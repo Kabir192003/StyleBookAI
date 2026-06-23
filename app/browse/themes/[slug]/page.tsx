@@ -1,10 +1,12 @@
 /**
  * /browse/themes/[slug] — Theme Detail
  *
+ * Owner: Dhanshri
+ *
  * Spec: docs/PRODUCT_AND_UX.md §2 — full mockup view: palette + fonts +
  * type scale shown together, plus a live card/button/heading/body preview.
  *
- * TODO:
+ * TODO (Dhanshri):
  * - Look up the theme by `params.slug` from @/data/themes
  * - Render colorRoles as labeled swatches
  * - Render primaryFont/secondaryFont with the type scale applied

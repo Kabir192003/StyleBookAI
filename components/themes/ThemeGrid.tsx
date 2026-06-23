@@ -2,6 +2,8 @@
  * ThemeGrid — grid of Theme cards, each showing a small live mockup
  * (card + heading + body + button) rendered in that theme's actual
  * colors/fonts so it's judged in context, not as a swatch list.
+ *
+ * Owner: Dhanshri
  */
 import { Theme } from "@/types/theme";
 

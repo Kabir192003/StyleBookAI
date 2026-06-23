@@ -2,7 +2,9 @@
  * FontGrid — renders a filterable grid of Font cards, each in its own
  * typeface. Used by: app/browse/fonts/page.tsx, and the Preview Lab.
  *
- * TODO:
+ * Owner: Dhanshri
+ *
+ * TODO (Dhanshri):
  * - Load the Google Font per card (next/font/google or a <link> tag using
  *   font.googleFontsId)
  * - Adjustable live preview text, shared across all visible cards
