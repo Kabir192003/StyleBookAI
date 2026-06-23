@@ -1,11 +1,13 @@
 /**
  * / — root landing page
  *
+ * Owner: Kabir
+ *
  * Marketing surface — build this last. The real hero lives in
  * components/landing/HeroSection.tsx; this file composes the scroll
  * sections from docs/PRODUCT_AND_UX.md §5.
  *
- * TODO:
+ * TODO (Kabir):
  * - Import <HeroSection /> + 3 horizontal-scroll sections (create
  *   components/landing/HorizontalScrollSection.tsx when starting)
  * - Remove the placeholder markup below once sections are in place

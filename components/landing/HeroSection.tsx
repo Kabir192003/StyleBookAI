@@ -2,7 +2,9 @@
  * HeroSection — the first normal-scroll section of the landing page.
  * Spec: docs/PRODUCT_AND_UX.md §5, item 1.
  *
- * TODO:
+ * Owner: Kabir
+ *
+ * TODO (Kabir):
  * - Headline + subhead + two CTAs ("Browse the library" → /browse/colors,
  *   "Try AI generation" → /studio/ai)
  * - Slow, looping gradient drift in the background (animate a CSS custom

@@ -1,9 +1,10 @@
 /**
  * POST /api/export — export a project as an image (html-to-image) and/or
- * a code snippet (CSS variables / Tailwind config). Owned by the tech
- * lead, but a good secondary task for whoever finishes their page first.
+ * a code snippet (CSS variables / Tailwind config).
  *
- * TODO:
+ * Owner: Kabir
+ *
+ * TODO (Kabir):
  * - Accept { projectId, format: "png" | "css" | "tailwind" }
  * - For "png": this likely needs to happen client-side (html-to-image
  *   renders a DOM node) rather than server-side — reconsider whether this

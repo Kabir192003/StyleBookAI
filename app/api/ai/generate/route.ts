@@ -1,12 +1,13 @@
 /**
  * POST /api/ai/generate — the only route that talks to the Anthropic SDK.
- * Owned by the tech lead (backend/integration surface area).
+ *
+ * Owner: Kabir
  *
  * Request body: { prompt: string }
  * Response: a draft Project — colors[], fonts (heading/body), and an
  * AIReasoning object explaining each choice (see types/project.ts).
  *
- * TODO:
+ * TODO (Kabir):
  * - Validate body with zod
  * - Build the system prompt: select from allColors/allFonts rather than
  *   inventing hex codes, return structured JSON (use tool-use/structured

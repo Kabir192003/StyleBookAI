@@ -1,8 +1,10 @@
 /**
  * /api/projects — list (GET) and create (POST) projects for the signed-in
- * Clerk user. Owned by the tech lead.
+ * Clerk user.
  *
- * TODO:
+ * Owner: Kabir
+ *
+ * TODO (Kabir):
  * - GET: query Supabase `projects` table filtered by clerk user id (RLS
  *   should also enforce this — see lib/db/schema.sql)
  * - POST: validate body with zod against types/project.ts, insert row
