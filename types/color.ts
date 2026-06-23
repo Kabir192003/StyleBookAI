@@ -1,3 +1,13 @@
+/**
+ * Color type and its vocabulary unions.
+ *
+ * `family` / `mood` / `style` power the filter bar in /browse/colors.
+ * `collection` groups colors by origin (e.g. "tailwind", "curated").
+ * `note` is a required one-sentence editorial blurb shown behind the "i"
+ * button — every color must have one; buildColor() in lib/colors enforces
+ * this at the type level so it can't be forgotten at data-entry time.
+ * `isPro` is reserved for a future billing phase; nothing branches on it yet.
+ */
 export type ColorFamily =
   | "red"
   | "orange"

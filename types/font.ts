@@ -1,3 +1,12 @@
+/**
+ * Font type and its vocabulary unions.
+ *
+ * `googleFontsId` is the exact string used in a Google Fonts URL — keep
+ * it accurate so next/font/google can load the face without a network
+ * lookup at build time. `pairsWith` holds ids of fonts that complement
+ * this one, used by the AI to suggest heading/body pairings. `note` works
+ * the same as on Color — one editorial sentence, required per font.
+ */
 export type FontCategory =
   | "sans-serif"
   | "serif"
