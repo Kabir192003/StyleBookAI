@@ -1,0 +1,52 @@
+import { Color } from "@/types";
+
+export function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const clean = hex.replace("#", "");
+  const bigint = parseInt(clean, 16);
+  return {
+    r: (bigint >> 16) & 255,
+    g: (bigint >> 8) & 255,
+    b: bigint & 255,
+  };
+}
+
+export function rgbToHsl(r: number, g: number, b: number) {
+  const rN = r / 255;
+  const gN = g / 255;
+  const bN = b / 255;
+  const max = Math.max(rN, gN, bN);
+  const min = Math.min(rN, gN, bN);
+  let h = 0;
+  let s = 0;
+  const l = (max + min) / 2;
+
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case rN:
+        h = (gN - bN) / d + (gN < bN ? 6 : 0);
+        break;
+      case gN:
+        h = (bN - rN) / d + 2;
+        break;
+      case bN:
+        h = (rN - gN) / d + 4;
+        break;
+    }
+    h /= 6;
+  }
+
+  return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+}
+
+// `note` is required on Color, so any caller of buildColor() is forced to
+// write the editorial note at the point of data entry — it can't be added
+// "later" by accident, since every shade ships with one from creation.
+export function buildColor(
+  partial: Omit<Color, "rgb" | "hsl">
+): Color {
+  const rgb = hexToRgb(partial.hex);
+  const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+  return { ...partial, rgb, hsl };
+}

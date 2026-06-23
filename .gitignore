@@ -1,0 +1,14 @@
+node_modules/
+.next/
+out/
+build/
+.env.local
+.env*.local
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+
+# Local AI-assistant context — kept on the lead's machine only, not pushed.
+CLAUDE.md
+.claude/
