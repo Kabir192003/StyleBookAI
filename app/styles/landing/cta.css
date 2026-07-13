@@ -1,0 +1,196 @@
+/* ═══════════════════════════════════════════
+   Final CTA + Footer
+   ═══════════════════════════════════════════ */
+
+.final-cta {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  padding: var(--space-4xl) var(--space-xl) 0;
+  text-align: center;
+}
+
+.final-cta__body {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Cinematic backdrop — the silver-ring orb loop, veiled into the silk page */
+.final-cta__media {
+  position: absolute;
+  inset: calc(-1 * var(--space-4xl)) calc(-1 * var(--space-xl)) 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.final-cta__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.final-cta__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 62% 52% at 50% 46%, rgba(242, 235, 224, 0.82), rgba(242, 235, 224, 0.3) 62%, rgba(242, 235, 224, 0) 78%),
+    linear-gradient(to bottom, var(--bg) 0%, rgba(242, 235, 224, 0) 22%, rgba(242, 235, 224, 0) 78%, var(--bg) 100%),
+    linear-gradient(to right, rgba(242, 235, 224, 0.55), rgba(242, 235, 224, 0) 25%, rgba(242, 235, 224, 0) 75%, rgba(242, 235, 224, 0.55));
+}
+
+.final-cta__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.final-cta__logo {
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 2.5vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--space-2xl);
+  opacity: 0;
+}
+
+.final-cta__headline {
+  font-size: var(--text-hero);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+  max-width: 800px;
+  opacity: 0;
+}
+
+.final-cta__subheadline {
+  font-size: var(--text-3xl);
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-3xl);
+  opacity: 0;
+}
+
+.final-cta__subheadline em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding-right: 0.04em;
+}
+
+.final-cta__buttons {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  justify-content: center;
+  opacity: 0;
+}
+
+/* ── Footer — liquid glass bar ────────────── */
+.final-cta__footer {
+  width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 -1px 0 rgba(24, 28, 45, 0.08);
+  background: rgba(253, 253, 251, 0.42);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  margin-top: var(--space-4xl);
+  opacity: 0;
+}
+
+.final-cta__footer-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-xl) clamp(4px, 2vw, 24px) var(--space-2xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.final-cta__footer-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  text-align: left;
+}
+
+.final-cta__footer-mark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-base);
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.final-cta__footer-tag {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.final-cta__footer-links {
+  display: flex;
+  gap: clamp(14px, 2.5vw, 28px);
+  flex-wrap: wrap;
+}
+
+.final-cta__footer-links a {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  padding-bottom: 3px;
+  background: linear-gradient(currentColor, currentColor) left bottom / 0% 1.5px no-repeat;
+  transition: color var(--duration-fast) ease,
+              background-size 0.4s var(--ease-out);
+}
+
+.final-cta__footer-links a:hover {
+  color: var(--text-primary);
+  background-size: 100% 1.5px;
+}
+
+.final-cta__footer-copy {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+@media (max-width: 768px) {
+  .final-cta__headline {
+    font-size: clamp(2rem, 8vw, 3rem);
+  }
+
+  .final-cta__subheadline {
+    font-size: var(--text-xl);
+  }
+
+  .final-cta__footer-inner {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .final-cta__footer-brand {
+    align-items: center;
+    text-align: center;
+  }
+}

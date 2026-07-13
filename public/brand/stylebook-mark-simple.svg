@@ -1,0 +1,68 @@
+<svg viewBox="80 200 352 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="StyleBook">
+  <!--
+    Alternate primary mark — book preserved (pages, gilt fore-edge, ribbon),
+    board slab removed. Colour is told through 5 dog-eared page cards —
+    a fanned hand of coloured pages, each with a folded corner, rooted at
+    the fore-edge — instead of abstract petals.
+  -->
+  <defs>
+    <linearGradient id="sGilt" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8C6A2F"/>
+      <stop offset="0.42" stop-color="#E9D4AC"/>
+      <stop offset="0.58" stop-color="#C9A96A"/>
+      <stop offset="1" stop-color="#8C6A2F"/>
+    </linearGradient>
+    <linearGradient id="sRibbon" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8A3B36"/>
+      <stop offset="1" stop-color="#521E1C"/>
+    </linearGradient>
+    <filter id="sPageLift" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#181C2D" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+
+  <!-- Dog-eared page cards, fanned like a hand of cards — each a flat page
+       body with a folded top corner (the universal "page" silhouette),
+       rooted behind the fore-edge so the fan reads as pages spreading
+       out of the book. -->
+  <g filter="url(#sPageLift)">
+    <!-- terracotta, short, far left -->
+    <g transform="translate(178 308) rotate(-30) scale(0.62)">
+      <path d="M-13 0 C-15 -30 -15 -60 -13 -86 L5 -86 L13 -78 C15 -50 15 -25 13 0 Z" fill="#8C4A2F"/>
+      <path d="M5 -86 L13 -78 L5 -78 Z" fill="#A8613F"/>
+    </g>
+    <!-- oxblood, long, left -->
+    <g transform="translate(206 302) rotate(-15) scale(0.98)">
+      <path d="M-13 0 C-15 -30 -15 -60 -13 -86 L5 -86 L13 -78 C15 -50 15 -25 13 0 Z" fill="#521E1C"/>
+      <path d="M5 -86 L13 -78 L5 -78 Z" fill="#7A3330"/>
+    </g>
+    <!-- champagne, tallest, centre -->
+    <g transform="translate(258 292) rotate(1) scale(1.12)">
+      <path d="M-13 0 C-15 -30 -15 -60 -13 -86 L5 -86 L13 -78 C15 -50 15 -25 13 0 Z" fill="#B08D57"/>
+      <path d="M5 -86 L13 -78 L5 -78 Z" fill="#C9A96A"/>
+    </g>
+    <!-- ocean, medium, right -->
+    <g transform="translate(310 302) rotate(16) scale(0.9)">
+      <path d="M-13 0 C-15 -30 -15 -60 -13 -86 L5 -86 L13 -78 C15 -50 15 -25 13 0 Z" fill="#24485F"/>
+      <path d="M5 -86 L13 -78 L5 -78 Z" fill="#3E729B"/>
+    </g>
+    <!-- sage, long, far right -->
+    <g transform="translate(338 308) rotate(31) scale(0.98)">
+      <path d="M-13 0 C-15 -30 -15 -60 -13 -86 L5 -86 L13 -78 C15 -50 15 -25 13 0 Z" fill="#55624A"/>
+      <path d="M5 -86 L13 -78 L5 -78 Z" fill="#7E8F6E"/>
+    </g>
+  </g>
+
+  <!-- The book: page block, gilt fore-edge, ribbon — board slab removed -->
+  <path d="M120 310 Q188 286 256 312 Q324 286 392 310 L392 344 Q324 322 256 350 Q188 322 120 344 Z"
+        fill="#FDFDFB"/>
+  <path d="M122 318 Q189 295 256 320 Q323 295 390 318" fill="none" stroke="#181C2D" stroke-opacity="0.1" stroke-width="1.4"/>
+  <path d="M122 325 Q189 303 256 328 Q323 303 390 325" fill="none" stroke="#181C2D" stroke-opacity="0.09" stroke-width="1.4"/>
+  <path d="M121 332 Q189 311 256 335 Q323 311 391 332" fill="none" stroke="#181C2D" stroke-opacity="0.08" stroke-width="1.4"/>
+  <path d="M120 310 Q188 286 256 312 Q324 286 392 310" fill="none" stroke="url(#sGilt)" stroke-width="3.4" stroke-linecap="round"/>
+  <path d="M256 314 L256 346" stroke="#181C2D" stroke-opacity="0.3" stroke-width="2.6" stroke-linecap="round"/>
+
+  <!-- Bookmark ribbon -->
+  <path d="M263 316 L263 372 L256 362 L249 372 L249 314 Q256 318 263 316 Z" fill="url(#sRibbon)"/>
+  <path d="M249 314 L249 372" stroke="#3D1614" stroke-opacity="0.4" stroke-width="0.8"/>
+</svg>

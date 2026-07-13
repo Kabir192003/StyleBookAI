@@ -1,0 +1,113 @@
+<svg viewBox="0 0 512 448" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="StyleBook — open book with colours and letterforms rising from it">
+  <defs>
+    <linearGradient id="cover" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#31406F"/>
+      <stop offset="1" stop-color="#161D33"/>
+    </linearGradient>
+    <linearGradient id="gilt" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8C6A2F"/>
+      <stop offset="0.42" stop-color="#E9D4AC"/>
+      <stop offset="0.58" stop-color="#C9A96A"/>
+      <stop offset="1" stop-color="#8C6A2F"/>
+    </linearGradient>
+    <linearGradient id="ribbon" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8A3B36"/>
+      <stop offset="1" stop-color="#521E1C"/>
+    </linearGradient>
+    <!-- Petal gradients: darker at the root, lit toward the tip -->
+    <linearGradient id="oxblood" x1="0" y1="0" x2="0" y2="-104" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#521E1C"/>
+      <stop offset="1" stop-color="#8A3B36"/>
+    </linearGradient>
+    <linearGradient id="ocean" x1="0" y1="0" x2="0" y2="-90" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#24485F"/>
+      <stop offset="1" stop-color="#3E729B"/>
+    </linearGradient>
+    <linearGradient id="champagne" x1="0" y1="0" x2="0" y2="-102" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#B08D57"/>
+      <stop offset="1" stop-color="#E9D4AC"/>
+    </linearGradient>
+    <linearGradient id="sage" x1="0" y1="0" x2="0" y2="-104" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#55624A"/>
+      <stop offset="1" stop-color="#7E8F6E"/>
+    </linearGradient>
+    <linearGradient id="terracotta" x1="0" y1="0" x2="0" y2="-66" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8C4A2F"/>
+      <stop offset="1" stop-color="#B85C3F"/>
+    </linearGradient>
+    <radialGradient id="ground" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#181C2D" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#181C2D" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="lift" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#181C2D" flood-opacity="0.24"/>
+    </filter>
+    <filter id="chipLift" x="-40%" y="-40%" width="180%" height="190%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#181C2D" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <!-- Ground shadow -->
+  <ellipse cx="256" cy="408" rx="196" ry="22" fill="url(#ground)"/>
+
+  <!-- The serif letter, rising out of the pages (book overlaps its feet) -->
+  <text x="252" y="324" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-weight="600"
+        font-size="150" fill="#222D52" transform="rotate(-5 252 324)">A</text>
+
+  <!-- Colour petals fanning out of the spread, roots hidden behind the pages -->
+  <g filter="url(#chipLift)">
+    <!-- far left, short — terracotta -->
+    <g transform="translate(172 302) rotate(-36)">
+      <path d="M0 0 C -8 -20, -9 -42, 1 -66 C 9 -44, 6 -22, 4 -2 Z" fill="url(#terracotta)"/>
+    </g>
+    <!-- left, long — oxblood -->
+    <g transform="translate(208 298) rotate(-22)">
+      <path d="M0 0 C -11 -30, -13 -66, 1 -104 C 13 -70, 9 -34, 5 -2 Z" fill="url(#oxblood)"/>
+    </g>
+    <!-- centre, slim and tall — champagne -->
+    <g transform="translate(286 246) rotate(5)">
+      <path d="M0 0 C 6 -30, 7 -68, -2 -102 C -8 -66, -5 -32, -3 -2 Z" fill="url(#champagne)"/>
+    </g>
+    <!-- right, medium — ocean -->
+    <g transform="translate(316 268) rotate(19)">
+      <path d="M0 0 C 10 -26, 11 -57, -1 -90 C -11 -60, -8 -29, -4 -2 Z" fill="url(#ocean)"/>
+    </g>
+    <!-- far right, long — sage -->
+    <g transform="translate(348 296) rotate(34)">
+      <path d="M0 0 C 11 -30, 13 -66, -1 -104 C -13 -70, -9 -34, -5 -2 Z" fill="url(#sage)"/>
+    </g>
+  </g>
+
+  <!-- The book — eye level, with real thickness -->
+  <g filter="url(#lift)">
+    <!-- Boards: open V with visible thickness -->
+    <path d="M256 348 Q178 338 96 360 L96 378 Q178 356 256 366 Q334 356 416 378 L416 360 Q334 338 256 348 Z"
+          fill="url(#cover)"/>
+    <!-- Champagne piping on the board edge -->
+    <path d="M96 360 Q178 338 256 348 Q334 338 416 360" fill="none"
+          stroke="#C9A96A" stroke-opacity="0.5" stroke-width="1.4"/>
+
+    <!-- Page block: tall front face, sealed against the boards -->
+    <path d="M120 310 Q188 286 256 312 Q324 286 392 310 L392 344 Q324 322 256 350 Q188 322 120 344 Z"
+          fill="#FDFDFB"/>
+    <!-- Stacked pages -->
+    <path d="M122 318 Q189 295 256 320 Q323 295 390 318" fill="none" stroke="#181C2D" stroke-opacity="0.1" stroke-width="1.4"/>
+    <path d="M122 325 Q189 303 256 328 Q323 303 390 325" fill="none" stroke="#181C2D" stroke-opacity="0.09" stroke-width="1.4"/>
+    <path d="M121 332 Q189 311 256 335 Q323 311 391 332" fill="none" stroke="#181C2D" stroke-opacity="0.08" stroke-width="1.4"/>
+    <!-- Gilt fore-edge -->
+    <path d="M120 310 Q188 286 256 312 Q324 286 392 310" fill="none"
+          stroke="url(#gilt)" stroke-width="3.4" stroke-linecap="round"/>
+    <!-- Gutter crease -->
+    <path d="M256 314 L256 346" stroke="#181C2D" stroke-opacity="0.3" stroke-width="2.6" stroke-linecap="round"/>
+
+    <!-- Oxblood bookmark ribbon over the fore-edge -->
+    <path d="M262 316 L262 370 L255.5 361 L249 370 L249 314 Q255 318 262 316 Z" fill="url(#ribbon)"/>
+    <path d="M249 314 L249 370" stroke="#3D1614" stroke-opacity="0.4" stroke-width="0.8"/>
+  </g>
+
+  <!-- Small companion letterform beside the right petal -->
+  <text x="368" y="212" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif" font-style="italic"
+        font-size="44" fill="#6E2A28" transform="rotate(10 368 212)">a</text>
+</svg>

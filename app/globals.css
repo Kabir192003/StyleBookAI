@@ -5,10 +5,26 @@
 :root {
   --background: #ffffff;
   --foreground: #111111;
+
+  /* Landing-page scene state — written directly by ScrollProgressProvider
+     on scroll (not React state) so background/atmosphere interpolation
+     stays off the render path. */
+  --scene-bg: #fbf6ec;
+  --scene-glow-1-color: #c9a9e8;
+  --scene-glow-1-x: 20%;
+  --scene-glow-1-y: 20%;
+  --scene-glow-2-color: #ffb086;
+  --scene-glow-2-x: 15%;
+  --scene-glow-2-y: 85%;
+  --scene-glow-3-color: #2a4ce0;
+  --scene-glow-3-x: 85%;
+  --scene-glow-3-y: 15%;
+  --scene-glow-opacity: 0.55;
+  --cursor-color: #150f1c;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(:has([data-landing])) {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
@@ -17,4 +33,53 @@
 body {
   color: var(--foreground);
   background: var(--background);
+}
+
+/* The landing page manages its own atmosphere via SceneBackground and
+   should never fall back to the OS dark-mode background/foreground. */
+body:has([data-landing]) {
+  background: #fbf6ec;
+  color: #150f1c;
+}
+
+/* Landing page only — everything below is scoped under [data-landing]. */
+[data-landing] {
+  cursor: none;
+}
+
+@media (max-width: 767px), (pointer: coarse) {
+  [data-landing] {
+    cursor: auto;
+  }
+}
+
+[data-landing] a,
+[data-landing] button {
+  cursor: none;
+}
+
+@media (max-width: 767px), (pointer: coarse) {
+  [data-landing] a,
+  [data-landing] button {
+    cursor: pointer;
+  }
+}
+
+.sb-grain {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 180px 180px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-landing] * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

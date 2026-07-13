@@ -1,0 +1,71 @@
+<svg viewBox="0 0 820 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="StyleBook">
+  <defs>
+    <linearGradient id="lCover" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#31406F"/>
+      <stop offset="1" stop-color="#182036"/>
+    </linearGradient>
+    <linearGradient id="lGilt" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8C6A2F"/>
+      <stop offset="0.42" stop-color="#E9D4AC"/>
+      <stop offset="0.58" stop-color="#C9A96A"/>
+      <stop offset="1" stop-color="#8C6A2F"/>
+    </linearGradient>
+    <linearGradient id="lOx" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#8A3B36"/>
+      <stop offset="1" stop-color="#521E1C"/>
+    </linearGradient>
+    <linearGradient id="lOc" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#3E729B"/>
+      <stop offset="1" stop-color="#24485F"/>
+    </linearGradient>
+    <linearGradient id="lCh" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#E3CBA0"/>
+      <stop offset="1" stop-color="#B08D57"/>
+    </linearGradient>
+    <linearGradient id="lSg" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#7E8F6E"/>
+      <stop offset="1" stop-color="#55624A"/>
+    </linearGradient>
+    <filter id="lChipLift" x="-40%" y="-40%" width="180%" height="190%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#181C2D" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- ── Mark (compact): book + three rising chips ── -->
+  <g transform="translate(18 8)">
+    <!-- Colour petals rising from the spread -->
+    <g filter="url(#lChipLift)">
+      <g transform="translate(72 148) rotate(-24)">
+        <path d="M0 0 C -7 -19, -8.5 -43, 0.5 -68 C 8.5 -45, 6 -22, 3 -1 Z" fill="url(#lOx)"/>
+      </g>
+      <g transform="translate(102 122) rotate(4)">
+        <path d="M0 0 C 4 -19, 4.5 -44, -1.5 -66 C -5 -43, -3.5 -21, -2 -1 Z" fill="url(#lCh)"/>
+      </g>
+      <g transform="translate(126 144) rotate(26)">
+        <path d="M0 0 C 7 -19, 8.5 -43, -0.5 -68 C -8.5 -45, -6 -22, -3 -1 Z" fill="url(#lSg)"/>
+      </g>
+    </g>
+    <!-- book: substantial page block sealed to boards -->
+    <path d="M98 157 Q64 152 28 161 L28 169 Q64 159 98 164 Q132 159 168 169 L168 161 Q132 152 98 157 Z"
+          fill="url(#lCover)"/>
+    <path d="M28 161 Q64 152 98 157 Q132 152 168 161" fill="none" stroke="#C9A96A" stroke-opacity="0.45" stroke-width="1"/>
+    <path d="M36 142 Q66 132 98 143 Q130 132 160 142 L160 157 Q130 148 98 160 Q66 148 36 157 Z"
+          fill="#FDFDFB"/>
+    <path d="M37 147 Q67 138 98 148 Q129 138 159 147" fill="none" stroke="#181C2D" stroke-opacity="0.1" stroke-width="1.2"/>
+    <path d="M36.5 152 Q67 143 98 153 Q129 143 159.5 152" fill="none" stroke="#181C2D" stroke-opacity="0.08" stroke-width="1.2"/>
+    <path d="M36 142 Q66 132 98 143 Q130 132 160 142" fill="none"
+          stroke="url(#lGilt)" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M98 144 L98 158" stroke="#181C2D" stroke-opacity="0.3" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- bookmark ribbon -->
+    <path d="M101.5 145 L101.5 172 L98 167 L94.5 172 L94.5 144 Q98 146 101.5 145 Z" fill="url(#lOx)"/>
+  </g>
+
+  <!-- ── Wordmark ── -->
+  <text x="238" y="132"
+        font-family="Sora, -apple-system, 'Helvetica Neue', Arial, sans-serif"
+        font-weight="700" font-size="86" letter-spacing="-2.5"
+        fill="#222D52">StyleBook</text>
+  <text x="242" y="172"
+        font-family="'IBM Plex Mono', 'Courier New', monospace"
+        font-size="15" letter-spacing="5" fill="#8C6A2F">COLOUR · TYPE · THEME — UNIFIED</text>
+</svg>
