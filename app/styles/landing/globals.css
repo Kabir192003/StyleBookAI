@@ -1,0 +1,571 @@
+/* ═══════════════════════════════════════════
+   StyleBook — Global Design Tokens & Reset
+   ═══════════════════════════════════════════ */
+
+/* ── CSS Custom Properties ────────────────── */
+/* Luxe editorial system — Silk, Marble, Pearl, Champagne, Velvet, Onyx.
+   Silk paper ground, pearl cards, velvet-navy statements, and champagne
+   gold used the way foil is used in print: rarely, and only where it earns
+   its shine. Colour belongs to the swatches; the chrome stays precious. */
+:root {
+  /* Backgrounds */
+  --bg: #F2EBE0;            /* silk */
+  --bg-white: #FDFDFB;      /* pearl */
+  --bg-dark: #0B0B0E;       /* onyx */
+  --bg-cream: #EEE5D9;
+  --bg-cool: #E8E4E0;       /* marble */
+
+  /* Brand anchors */
+  --velvet: #222D52;
+  --velvet-deep: #182036;
+  --champagne: #D2B68A;
+  --bronze: #8C6A2F;        /* text-safe gold */
+
+  /* Text — onyx-navy ink; muted stays ≥4.5:1 on silk */
+  --text-primary: #16192A;
+  --text-secondary: #494E60;
+  --text-muted: #666B7C;
+  --text-faint: #94A3B8;
+  --text-inverse: #F7F3EA;
+  --heading: #222D52;       /* velvet headlines — the luxe statement */
+
+  /* Accent — velvet for interaction, oxblood for the accent voice.
+     Gold is reserved for objects and dark surfaces; gold TEXT on silk
+     fails readability, oxblood carries the same luxury at 8:1. */
+  --oxblood: #6E2A28;
+  --oxblood-deep: #521E1C;
+  --accent-h: 227;
+  --accent-s: 41%;
+  --accent-l: 23%;
+  --accent: var(--velvet);
+  --accent-light: #EDE1CB;
+  --accent-dark: var(--velvet-deep);
+  --accent-ink: var(--oxblood);
+
+  /* Gradients — oxblood for text accents, gold foil for decor on dark */
+  --gradient-primary: linear-gradient(120deg, #521E1C 0%, #8C3B2A 55%, #6E2A28 100%);
+  --gradient-gold: linear-gradient(105deg, #8C6A2F 0%, #C9A96A 40%, #D2B68A 55%, #8C6A2F 100%);
+  --gradient-warm: linear-gradient(135deg, #9A4030 0%, #6E2A28 100%);
+  --gradient-cool: linear-gradient(135deg, #222D52, #4A5A8E);
+  --gradient-dark: linear-gradient(135deg, #16192A, #222D52);
+  --gradient-sunset: linear-gradient(135deg, #9A4030, #8C6A2F, #222D52);
+
+  /* Surfaces — pearl cards with navy-ink hairlines */
+  --glass-bg: rgba(253, 253, 251, 0.84);
+  --glass-bg-strong: rgba(253, 253, 251, 0.95);
+  --glass-border: rgba(24, 28, 45, 0.09);
+  --glass-shadow: rgba(24, 28, 45, 0.05);
+
+  /* Semantic */
+  --chaos-red: #B4432D;
+  --success-green: #22733F;
+  --warning-amber: #B45309;
+
+  /* Spacing */
+  --space-unit: 8px;
+  --space-xs: calc(var(--space-unit) * 0.5);
+  --space-sm: var(--space-unit);
+  --space-md: calc(var(--space-unit) * 2);
+  --space-lg: calc(var(--space-unit) * 3);
+  --space-xl: calc(var(--space-unit) * 4);
+  --space-2xl: calc(var(--space-unit) * 6);
+  --space-3xl: calc(var(--space-unit) * 8);
+  --space-4xl: calc(var(--space-unit) * 12);
+  --space-5xl: calc(var(--space-unit) * 16);
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+  --radius: var(--radius-lg);
+
+  /* Shadows — navy-ink tinted, layered */
+  --shadow-sm: 0 1px 3px rgba(24,28,45,0.05), 0 1px 2px rgba(24,28,45,0.06);
+  --shadow-md: 0 4px 14px rgba(24,28,45,0.07), 0 2px 4px rgba(24,28,45,0.04);
+  --shadow-lg: 0 12px 40px rgba(24,28,45,0.09), 0 4px 12px rgba(24,28,45,0.05);
+  --shadow-xl: 0 20px 60px rgba(24,28,45,0.11), 0 8px 20px rgba(24,28,45,0.06);
+  --shadow-2xl: 0 30px 80px rgba(24,28,45,0.16), 0 12px 30px rgba(24,28,45,0.08);
+  --shadow-glow: 0 0 40px rgba(210, 182, 138, 0.35), 0 0 80px rgba(210, 182, 138, 0.18);
+  --shadow-glow-warm: 0 0 40px rgba(180,98,45,0.16), 0 0 80px rgba(210,182,138,0.12);
+  --shadow-colored: 0 8px 30px -5px;
+
+  /* Typography — real loaded families from lib/landing/fonts.ts (next/font) */
+  --font-sans: var(--font-humanist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: var(--font-geometric-sans), var(--font-sans);
+  --font-serif: var(--font-editorial-serif), Georgia, serif;
+  --font-mono: var(--font-mono-plex), 'SF Mono', 'Consolas', monospace;
+  --font-heading: var(--font-display);
+
+  /* Type Scale */
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: clamp(2rem, 4.5vw, 3rem);
+  --text-4xl: clamp(2.5rem, 5.5vw, 4rem);
+  --text-hero: clamp(2.5rem, 5vw, 4.9rem);
+
+  /* Transitions */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 200ms;
+  --duration-base: 350ms;
+  --duration-slow: 600ms;
+
+  /* Z-index scale */
+  --z-base: 1;
+  --z-above: 10;
+  --z-overlay: 100;
+  --z-cursor: 9999;
+}
+
+/* ── Reset ────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Lenis smooth scroll requirements */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--text-primary);
+  background-color: var(--bg);
+  overflow-x: hidden;
+}
+
+/* The custom cursor only exists on the landing route (body.landing is set by
+   the page), so cursor hiding must never leak to other routes. */
+body.landing,
+body.landing button,
+body.landing a,
+body.landing input[type="range"] {
+  cursor: none;
+}
+
+@media (hover: none), (pointer: coarse) {
+  body.landing,
+  body.landing button,
+  body.landing a,
+  body.landing input[type="range"] {
+    cursor: auto;
+  }
+  body.landing button,
+  body.landing a {
+    cursor: pointer;
+  }
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  font-size: inherit;
+}
+
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* ── Focus (keyboard) ─────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ── Typography ───────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+  color: var(--heading);
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--text-hero); }
+h2 { font-size: var(--text-4xl); font-weight: 600; }
+h3 { font-size: var(--text-3xl); font-weight: 600; }
+
+p {
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* Font personality utilities (mirror tailwind.config, usable in plain CSS) */
+.font-geometric-sans { font-family: var(--font-geometric-sans), sans-serif; }
+.font-editorial-serif { font-family: var(--font-editorial-serif), Georgia, serif; }
+.font-grotesk { font-family: var(--font-grotesk), sans-serif; }
+.font-humanist-sans { font-family: var(--font-humanist-sans), sans-serif; }
+.font-expressive-display { font-family: var(--font-expressive-display), sans-serif; }
+
+/* Shared section eyebrow — the quiet mono voice above every scene headline */
+.scene-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: var(--accent-ink);
+}
+
+.scene-eyebrow::before {
+  content: '';
+  width: 20px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+/* Editorial accent — the serif-italic voice used for one emotional word
+   per scene. This is the page's typographic signature. */
+.serif-accent {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+/* ── Gradient Text ────────────────────────── */
+.gradient-text {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text--warm {
+  background: var(--gradient-warm);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text--cool {
+  background: var(--gradient-cool);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Scene Sections ───────────────────────── */
+.scene-section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.scene-pin {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ── Ambient Orb (reusable floating gradient blob) ── */
+.ambient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  will-change: transform;
+  opacity: 0.5;
+  animation: orb-drift 20s ease-in-out infinite alternate;
+}
+
+.ambient-orb--1 {
+  width: 640px;
+  height: 640px;
+  background: rgba(210, 182, 138, 0.34);
+  top: -12%;
+  right: -8%;
+  animation-duration: 25s;
+}
+
+.ambient-orb--2 {
+  width: 520px;
+  height: 520px;
+  background: rgba(232, 228, 224, 0.55);
+  bottom: -10%;
+  left: -10%;
+  animation-duration: 20s;
+  animation-delay: -5s;
+}
+
+.ambient-orb--3 {
+  width: 440px;
+  height: 440px;
+  background: rgba(34, 45, 82, 0.1);
+  top: 42%;
+  left: 52%;
+  animation-duration: 22s;
+  animation-delay: -10s;
+}
+
+@keyframes orb-drift {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-20px, 15px) scale(0.95); }
+  100% { transform: translate(10px, -10px) scale(1.02); }
+}
+
+/* Scene-reactive atmosphere: the ambient light re-tints as the story moves.
+   Driven by body[data-tint], set from the SceneRail's scroll triggers. */
+.ambient-orb {
+  transition: background-color 1.6s ease;
+}
+
+body[data-tint="gold"] .ambient-orb--1 { background-color: rgba(210, 182, 138, 0.46); }
+body[data-tint="gold"] .ambient-orb--3 { background-color: rgba(210, 182, 138, 0.16); }
+
+body[data-tint="sand"] .ambient-orb--1 { background-color: rgba(233, 212, 172, 0.5); }
+body[data-tint="sand"] .ambient-orb--2 { background-color: rgba(238, 229, 217, 0.6); }
+
+body[data-tint="cool"] .ambient-orb--1 { background-color: rgba(90, 106, 158, 0.18); }
+body[data-tint="cool"] .ambient-orb--3 { background-color: rgba(34, 45, 82, 0.14); }
+
+body[data-tint="ink"] .ambient-orb--1 { background-color: rgba(34, 45, 82, 0.12); }
+body[data-tint="ink"] .ambient-orb--2 { background-color: rgba(232, 228, 224, 0.62); }
+
+/* ── Glass Panel — richer ─────────────────── */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md),
+              inset 0 1px 0 rgba(255,255,255,0.6);
+}
+
+/* ── Magnetic Button — liquid glass ───────── */
+.magnetic-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: var(--space-md) var(--space-xl);
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: var(--text-md);
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  transition: transform var(--duration-base) var(--ease-spring),
+              box-shadow var(--duration-base) var(--ease-out),
+              background-color var(--duration-base) ease,
+              border-color var(--duration-base) ease;
+  will-change: transform;
+}
+
+/* Specular sheen that sweeps across the glass on hover */
+.magnetic-btn::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(115deg,
+    transparent 32%,
+    rgba(255, 255, 255, 0.45) 47%,
+    rgba(255, 255, 255, 0.12) 54%,
+    transparent 68%);
+  transform: translateX(-135%) skewX(-10deg);
+  transition: transform 0.85s var(--ease-out);
+}
+
+.magnetic-btn:hover::after {
+  transform: translateX(135%) skewX(-10deg);
+}
+
+.magnetic-btn:hover {
+  transform: translateY(-3px);
+}
+
+.magnetic-btn:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.magnetic-btn__arrow {
+  transition: transform var(--duration-base) var(--ease-spring);
+}
+
+.magnetic-btn:hover .magnetic-btn__arrow {
+  transform: translateX(3px);
+}
+
+/* Primary: smoked velvet glass — translucent, lit from above */
+.magnetic-btn--primary {
+  background: rgba(28, 38, 72, 0.82);
+  backdrop-filter: blur(18px) saturate(1.6);
+  -webkit-backdrop-filter: blur(18px) saturate(1.6);
+  color: #F7F3EA;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.38),
+              inset 0 -10px 18px -10px rgba(8, 12, 26, 0.55),
+              0 12px 32px -8px rgba(24, 32, 54, 0.5);
+}
+
+.magnetic-btn--primary:hover {
+  background: rgba(24, 32, 54, 0.9);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42),
+              inset 0 -10px 18px -10px rgba(8, 12, 26, 0.6),
+              0 18px 44px -10px rgba(24, 32, 54, 0.58);
+}
+
+/* Ghost: clear glass — the page shows through */
+.magnetic-btn--ghost {
+  background: rgba(253, 253, 251, 0.42);
+  backdrop-filter: blur(18px) saturate(1.5);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  color: var(--velvet);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85),
+              0 0 0 1px rgba(24, 28, 45, 0.07),
+              var(--shadow-sm);
+}
+
+.magnetic-btn--ghost:hover {
+  background: rgba(253, 253, 251, 0.62);
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95),
+              0 0 0 1px rgba(24, 28, 45, 0.1),
+              var(--shadow-md);
+}
+
+/* ── Section Divider (gradient fade) ──────── */
+.section-divider {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(to bottom, transparent, var(--bg));
+  pointer-events: none;
+}
+
+/* ── Noise / Grain Overlay ────────────────── */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  mix-blend-mode: multiply;
+  opacity: 0.025;
+}
+
+/* ── Premium Light Mode Grid ──────────────── */
+.premium-grid {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-size: 32px 32px;
+  background-image: radial-gradient(circle at 1px 1px, rgba(24,28,45,0.05) 1.5px, transparent 0);
+  mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 90%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 90%);
+}
+
+/* ── Scrollbar ────────────────────────────── */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+/* ── Selection ────────────────────────────── */
+::selection {
+  background: var(--accent-light);
+  color: var(--accent-dark);
+}
+
+/* ── Reduced Motion ───────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Skip link ────────────────────────────── */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 10000;
+  padding: 10px 18px;
+  background: var(--text-primary);
+  color: var(--text-inverse);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  transform: translateY(-200%);
+  transition: transform 0.2s var(--ease-out);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* ── Utility ──────────────────────────────── */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

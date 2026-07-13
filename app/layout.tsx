@@ -5,13 +5,25 @@
  * any global font declarations here. Keep this file thin; per-route chrome
  * belongs in nested layouts.
  */
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { landingFontVariables } from "@/lib/landing/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "StyleBook AI",
+  title: "StyleBook — Colours, fonts & themes in one place",
   description:
-    "Colours, fonts, and themes in one place — browse a curated library or describe your brand and let AI build it for you.",
+    "Browse a curated library of colours, fonts, and complete design themes — or describe your brand and let AI build a palette, font pairing, and type scale for you.",
+  openGraph: {
+    title: "StyleBook — Colours, fonts & themes in one place",
+    description:
+      "One creative workspace for every design decision: colours, typography, themes, accessibility, and AI generation.",
+    siteName: "StyleBook",
+    type: "website",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#F2EBE0",
 };
 
 export default function RootLayout({
@@ -20,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={landingFontVariables}>
       <body>{children}</body>
     </html>
   );

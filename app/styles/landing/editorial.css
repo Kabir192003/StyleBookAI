@@ -1,0 +1,79 @@
+/* ═══════════════════════════════════════════
+   Editorial Break — one cinematic photograph
+   ═══════════════════════════════════════════ */
+
+.editorial {
+  position: relative;
+  width: 100%;
+  padding: var(--space-2xl) clamp(12px, 3vw, 40px);
+  background: transparent;
+}
+
+.editorial__frame {
+  position: relative;
+  max-width: 1360px;
+  margin: 0 auto;
+  height: clamp(420px, 74vh, 700px);
+  border-radius: clamp(24px, 4vw, 44px);
+  overflow: hidden;
+  box-shadow: var(--shadow-2xl);
+}
+
+.editorial__img {
+  position: absolute;
+  left: 0;
+  top: -9%;
+  width: 100%;
+  height: 118%;
+  object-fit: cover;
+  will-change: transform;
+}
+
+.editorial__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+    rgba(14, 18, 36, 0.8) 0%,
+    rgba(14, 18, 36, 0.32) 45%,
+    rgba(14, 18, 36, 0.05) 72%);
+}
+
+.editorial__content {
+  position: absolute;
+  left: clamp(24px, 5vw, 72px);
+  right: clamp(24px, 5vw, 72px);
+  bottom: clamp(24px, 5vw, 64px);
+  opacity: 0;
+}
+
+.editorial__eyebrow {
+  color: var(--champagne);
+}
+
+.editorial__quote {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3.6vw, 3.4rem);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: #F7F3EA;
+  margin: var(--space-md) 0 var(--space-lg);
+  text-wrap: balance;
+}
+
+/* Gold works here — dark scrim behind it */
+.editorial__quote .serif-accent {
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding-right: 0.05em;
+}
+
+.editorial__caption {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(247, 243, 234, 0.68);
+}
