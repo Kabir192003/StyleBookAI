@@ -6,7 +6,9 @@
  * belongs in nested layouts.
  */
 import type { Metadata, Viewport } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
 import { landingFontVariables } from "@/lib/landing/fonts";
+import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -32,8 +34,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={landingFontVariables}>
-      <body>{children}</body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={landingFontVariables} suppressHydrationWarning>
+        <head>
+          {/* Runs before paint so the page never flashes the wrong theme —
+              see lib/theme.ts. Safe to inline: no user data, no network. */}
+          <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        </head>
+        <body>{children}</body>
+      </html>
+    </ClerkProvider>
   );
 }
