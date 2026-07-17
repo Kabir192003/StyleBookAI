@@ -6,6 +6,53 @@
   --background: #ffffff;
   --foreground: #111111;
 
+  /* ── App-shell brand tokens ───────────────────────────────────────
+     Same family the landing page uses (Silk / Pearl / Onyx / Velvet /
+     Champagne / Oxblood — see app/styles/landing/globals.css) but tuned
+     for the signed-in product per docs/PRODUCT_AND_UX.md §4: restrained
+     neutral chrome so the swatches/fonts users pick stay the thing that
+     pops, one accent color, used sparingly, for primary actions and
+     links. Both light and dark need to hold up — see the .dark block
+     below — since checking a palette against both is core to what this
+     product does. */
+  --silk: #f2ebe0;
+  --pearl: #fdfdfb;
+  --marble: #e8e4e0;
+  --onyx: #0b0b0e;
+  --champagne: #d2b68a;
+
+  --app-bg: var(--silk);
+  --app-surface: var(--pearl);
+  --app-surface-hover: #f7f4ee;
+  --app-border: rgba(24, 28, 45, 0.1);
+  --app-text: #16192a;
+  --app-text-secondary: #494e60;
+  --app-text-muted: #6b7080;
+  --app-heading: #222d52; /* velvet */
+  --app-accent: #6e2a28; /* oxblood — ≥8:1 on silk/pearl, unlike gold text */
+  --app-accent-hover: #521e1c;
+  --app-accent-soft: #f3e6e0;
+  --app-danger: #a83a2e;
+  --app-danger-soft: #f7e6e2;
+  --app-success: #22733f;
+}
+
+.dark {
+  --app-bg: #131419;
+  --app-surface: #1b1d25;
+  --app-surface-hover: #22242e;
+  --app-border: rgba(242, 235, 224, 0.12);
+  --app-text: #f2efe6;
+  --app-text-secondary: #c8c4b8;
+  --app-text-muted: #918d82;
+  --app-heading: #b7c1e8; /* lifted velvet — holds contrast on dark */
+  --app-accent: #e3958a; /* lifted oxblood — same hue, AA on dark surfaces */
+  --app-accent-hover: #edb2a8;
+  --app-accent-soft: rgba(227, 149, 138, 0.14);
+  --app-danger: #e58177;
+  --app-danger-soft: rgba(229, 129, 119, 0.14);
+  --app-success: #5cb885;
+
   /* Landing-page scene state — written directly by ScrollProgressProvider
      on scroll (not React state) so background/atmosphere interpolation
      stays off the render path. */
