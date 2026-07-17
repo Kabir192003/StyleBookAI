@@ -73,7 +73,7 @@ function Toggle({ on, onToggle, label }: { on: boolean; onToggle: () => void; la
       aria-label={label}
       onClick={onToggle}
       className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
-        on ? "bg-app-accent" : "bg-app-border"
+        on ? "bg-app-success" : "bg-app-border-strong"
       }`}
     >
       <motion.span
@@ -167,11 +167,20 @@ export default function AccountPage() {
         </AnimatePresence>
       </div>
 
-      <section className="mb-10">
+      <section className="relative mb-10">
+        <div
+          className="absolute -top-3 right-0 z-10 flex h-14 w-14 -rotate-6 items-center justify-center rounded-full border-2 border-app-success text-center font-mono text-[8px] font-bold uppercase leading-tight text-app-success"
+          aria-hidden="true"
+        >
+          Member
+          <br />
+          since &apos;26
+        </div>
         <UserProfile appearance={clerkAppearance} routing="hash" />
       </section>
 
-      <section className="rounded-xl border border-app-border bg-app-surface px-6">
+      <section className="relative overflow-hidden rounded-lg border border-app-border-strong bg-app-surface px-6">
+        <div className="absolute inset-x-0 top-0 h-[3px] bg-gold-foil" aria-hidden="true" />
         <h2 className="border-b border-app-border py-4 text-xs font-semibold uppercase tracking-wider text-app-text-muted">
           Preferences
         </h2>
@@ -230,6 +239,21 @@ export default function AccountPage() {
             />
           </PreferenceRow>
         </div>
+      </section>
+
+      <section className="mt-6 flex items-center justify-between gap-6 rounded-lg border border-app-danger/30 bg-app-danger-soft px-6 py-5">
+        <div>
+          <h2 className="text-sm font-semibold text-app-danger">Delete account</h2>
+          <p className="mt-0.5 text-xs text-app-danger/80">
+            Permanently removes your account and all saved projects.
+          </p>
+        </div>
+        <button
+          type="button"
+          className="shrink-0 rounded-lg bg-app-danger px-4 py-2 text-sm font-semibold text-pearl transition-colors hover:bg-app-accent-hover"
+        >
+          Delete
+        </button>
       </section>
     </main>
   );

@@ -1,7 +1,9 @@
 /**
- * Footer — simple, shared across all non-landing pages. Mirrors the link
- * taxonomy the landing page's own footer uses (see FOOTER_LINKS in
- * components/landing/FinalCTA.tsx) plus the two in-app-only routes.
+ * Footer — simple, shared across all non-landing pages. Same dark onyx
+ * chrome as Navbar, so the "cover" reads as one continuous frame around
+ * the cream page content. Mirrors the landing page's own footer link
+ * taxonomy (see FOOTER_LINKS in components/landing/FinalCTA.tsx) plus the
+ * two in-app-only routes.
  *
  * Owner: Amna
  */
@@ -18,13 +20,13 @@ const LINKS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-app-border bg-app-bg">
+    <footer className="bg-app-cover-bg">
       <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-10 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col gap-1">
-          <Link href="/" className="font-editorial-serif text-base font-semibold text-app-heading">
+          <Link href="/" className="font-editorial-serif text-base font-semibold text-app-cover-text">
             StyleBook
           </Link>
-          <span className="text-xs text-app-text-muted">Design decisions, unified.</span>
+          <span className="text-xs text-app-cover-text-muted">Design decisions, unified.</span>
         </div>
 
         <nav className="flex flex-wrap gap-x-6 gap-y-2" aria-label="Footer">
@@ -32,25 +34,17 @@ export function Footer() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-xs font-medium text-app-text-secondary transition-colors hover:text-app-text"
+              className="text-xs font-medium text-app-cover-text-muted transition-colors hover:text-app-cover-text"
             >
               {link.label}
             </Link>
           ))}
         </nav>
 
-        <span className="text-xs text-app-text-muted">
+        <span className="text-xs text-app-cover-text-muted">
           © {new Date().getFullYear()} StyleBook AI
         </span>
       </div>
-
-      {/*
-        "Built with StyleBook AI" badge concept (per this file's TODO): once
-        /api/export can stamp a small credit line onto exported PDFs/images,
-        the same <BuiltWithBadge /> markup can live here for the marketing
-        site and on the export artifact itself. Not built yet — v1 export
-        is plain, uncredited output; revisit post-v1.
-      */}
     </footer>
   );
 }

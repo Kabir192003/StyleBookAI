@@ -43,29 +43,30 @@ function SkeletonCard() {
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-app-border py-20 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-app-accent-soft font-editorial-serif text-2xl text-app-accent">
+    <div className="flex flex-col items-center gap-4 rounded-lg border border-dashed border-app-border-strong py-20 text-center">
+      <div className="flex h-14 w-14 items-center justify-center rounded-lg border-2 border-dashed border-app-text font-editorial-serif text-2xl text-app-text">
         Aa
       </div>
       <div>
+        <p className="mb-1 font-mono text-[11px] uppercase tracking-widest text-app-text-muted">Plate 00 · Empty</p>
         <h2 className="font-editorial-serif text-xl font-semibold text-app-heading">
           No projects yet
         </h2>
         <p className="mx-auto mt-1 max-w-sm text-sm text-app-text-secondary">
           Build a color and type system by hand, or describe your brand and
-          let AI draft one for you.
+          let AI draft the first plate for you.
         </p>
       </div>
       <div className="flex gap-3">
         <Link
           href="/studio"
-          className="rounded-lg bg-app-accent px-4 py-2 text-sm font-semibold text-pearl transition-colors hover:bg-app-accent-hover"
+          className="rounded-lg bg-gold-foil px-4 py-2 text-sm font-semibold text-onyx transition-all hover:brightness-105"
         >
           Open Studio
         </Link>
         <Link
           href="/studio/ai"
-          className="rounded-lg border border-app-border bg-app-surface px-4 py-2 text-sm font-semibold text-app-text transition-colors hover:bg-app-surface-hover"
+          className="rounded-lg border border-app-border-strong bg-app-surface px-4 py-2 text-sm font-semibold text-app-text transition-colors hover:bg-app-surface-hover"
         >
           Try AI Generate
         </Link>
@@ -112,6 +113,7 @@ export default function DashboardPage() {
     <main className="mx-auto max-w-6xl px-6 py-12">
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
+          <p className="mb-1 font-mono text-[11px] uppercase tracking-widest text-app-text-muted">Dashboard · Vol. 01</p>
           <h1 className="font-editorial-serif text-3xl font-semibold text-app-heading">
             My Projects
           </h1>
@@ -123,7 +125,7 @@ export default function DashboardPage() {
         </div>
         <Link
           href="/studio"
-          className="flex shrink-0 items-center gap-1.5 rounded-lg bg-app-accent px-4 py-2 text-sm font-semibold text-pearl transition-colors hover:bg-app-accent-hover"
+          className="flex shrink-0 items-center gap-1.5 rounded-lg bg-gold-foil px-4 py-2 text-sm font-semibold text-onyx transition-all hover:brightness-105"
         >
           <Plus className="h-4 w-4" aria-hidden="true" />
           New project
@@ -139,7 +141,7 @@ export default function DashboardPage() {
               className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
                 filter === f
                   ? "bg-app-text text-app-bg"
-                  : "border border-app-border bg-app-surface text-app-text-secondary hover:bg-app-surface-hover"
+                  : "border border-app-border-strong bg-app-surface text-app-text-secondary hover:bg-app-surface-hover"
               }`}
             >
               {f === "all" ? "All projects" : f === "ai" ? "AI-generated" : "Manual"}
@@ -176,8 +178,8 @@ export default function DashboardPage() {
           layout
           className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
         >
-          {filtered.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+          {filtered.map((project, i) => (
+            <ProjectCard key={project.id} project={project} index={i} />
           ))}
         </motion.div>
       )}

@@ -16,51 +16,59 @@ function roleColor(project: Project, role: string, fallbackIndex: number) {
   return byRole?.hex ?? project.colors[fallbackIndex]?.hex ?? "#E8E4E0";
 }
 
-export function ProjectCard({ project }: { project: Project }) {
+export function ProjectCard({ project, index = 0 }: { project: Project; index?: number }) {
   const bg = roleColor(project, "background", 0);
   const text = roleColor(project, "text", project.colors.length - 1);
+  const primary = roleColor(project, "primary", 0);
   const swatches = project.colors.slice(0, 4);
   const editedAt = new Date(project.updatedAt);
+  const plateNo = String(index + 1).padStart(2, "0");
 
   return (
     <Link href={`/dashboard/${project.id}`} className="block">
       <motion.article
         whileHover={{ y: -3 }}
         transition={{ duration: 0.15 }}
-        className="overflow-hidden rounded-2xl border border-app-border bg-app-surface shadow-sm transition-shadow hover:shadow-md"
+        className="relative overflow-visible rounded-lg border border-app-border-strong bg-app-surface shadow-sm transition-shadow hover:shadow-md"
       >
-        <div
-          className="flex min-h-[110px] flex-col justify-center gap-3 p-5"
-          style={{ background: bg }}
-        >
-          <div
-            className="text-2xl font-semibold"
-            style={{ color: text, fontFamily: project.fonts.primary?.family }}
-          >
-            Aa
-          </div>
-          <div className="flex h-10 overflow-hidden rounded-md">
-            {swatches.map((c, i) => (
-              <div key={i} className="flex-1" style={{ background: c.hex }} />
-            ))}
-          </div>
+        <div className="absolute -right-px -top-3 z-10 rounded bg-app-text px-2 py-1 font-mono text-[9px] font-bold text-app-bg">
+          NO. {plateNo}
         </div>
 
-        <div className="flex flex-col gap-1 p-4">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="truncate text-[15px] font-semibold text-app-text">{project.name}</h3>
-            {project.aiGenerated && (
-              <span className="shrink-0 rounded-full bg-app-accent-soft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-app-accent">
-                AI
-              </span>
-            )}
+        <div className="overflow-hidden rounded-lg">
+          <div
+            className="flex min-h-[110px] flex-col justify-center gap-3 p-5"
+            style={{ background: bg }}
+          >
+            <div
+              className="text-2xl font-semibold"
+              style={{ color: text, fontFamily: project.fonts.primary?.family }}
+            >
+              Aa
+            </div>
+            <div className="flex h-10 overflow-hidden rounded-md">
+              {swatches.map((c, i) => (
+                <div key={i} className="flex-1" style={{ background: c.hex }} />
+              ))}
+            </div>
           </div>
-          <p className="text-xs text-app-text-muted">
-            {project.fonts.primary?.family} / {project.fonts.secondary?.family}
-          </p>
-          <p className="text-[11px] text-app-text-muted">
-            Edited {editedAt.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
-          </p>
+
+          <div className="flex flex-col gap-1 p-4">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="truncate text-[15px] font-semibold text-app-text">{project.name}</h3>
+              {project.aiGenerated && (
+                <span className="shrink-0 rounded-full bg-app-accent-soft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-app-accent">
+                  AI
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-app-text-muted">
+              {project.fonts.primary?.family} / {project.fonts.secondary?.family}
+            </p>
+            <p className="text-[11px] text-app-text-muted">
+              Edited {editedAt.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+            </p>
+          </div>
         </div>
       </motion.article>
     </Link>

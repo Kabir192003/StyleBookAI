@@ -7,9 +7,11 @@
  *
  * Variants follow the app-shell tokens in app/globals.css (--app-accent
  * etc.) so this component tracks light/dark automatically — see
- * docs/PRODUCT_AND_UX.md §4. `accent` (oxblood) is the one sparing accent
- * color; reach for `secondary`/`ghost` first, `accent` only for the single
- * primary action on a screen.
+ * docs/PRODUCT_AND_UX.md §4. `foil` (Kabir's own --gradient-gold, reused
+ * verbatim) is the main primary-action style — gold as an *object*, per
+ * his own rule in landing globals.css ("gold TEXT on silk fails
+ * readability"); text on top of it stays dark ink, never gold. `accent`
+ * (oxblood) is for secondary emphasis — links, focus rings, quieter CTAs.
  */
 import { ButtonHTMLAttributes, forwardRef } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -17,7 +19,7 @@ import { Loader2 } from "lucide-react";
 import { clsx } from "clsx";
 
 const button = cva(
-  "inline-flex items-center justify-center gap-2 rounded-lg font-medium " +
+  "inline-flex items-center justify-center gap-2 rounded-lg font-semibold " +
     "transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50 " +
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-accent focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg",
   {
@@ -25,10 +27,12 @@ const button = cva(
       variant: {
         primary:
           "bg-app-text text-app-bg hover:opacity-90",
+        foil:
+          "bg-gold-foil text-onyx border border-black/10 shadow-sm hover:brightness-105",
         accent:
           "bg-app-accent text-pearl hover:bg-app-accent-hover",
         secondary:
-          "border border-app-border bg-app-surface text-app-text hover:bg-app-surface-hover",
+          "border border-app-border-strong bg-app-surface text-app-text hover:bg-app-surface-hover",
         ghost: "text-app-text-secondary hover:bg-app-surface-hover hover:text-app-text",
         destructive:
           "bg-app-danger-soft text-app-danger border border-app-danger/30 hover:bg-app-danger hover:text-pearl",
@@ -40,7 +44,7 @@ const button = cva(
       },
     },
     defaultVariants: {
-      variant: "primary",
+      variant: "foil",
       size: "md",
     },
   }

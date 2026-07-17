@@ -20,11 +20,13 @@
   --marble: #e8e4e0;
   --onyx: #0b0b0e;
   --champagne: #d2b68a;
+  --bronze: #8c6a2f; /* Kabir's exact "text-safe gold" — see app/styles/landing/globals.css */
 
   --app-bg: var(--silk);
   --app-surface: var(--pearl);
   --app-surface-hover: #f7f4ee;
   --app-border: rgba(24, 28, 45, 0.1);
+  --app-border-strong: rgba(24, 28, 45, 0.18);
   --app-text: #16192a;
   --app-text-secondary: #494e60;
   --app-text-muted: #6b7080;
@@ -35,6 +37,20 @@
   --app-danger: #a83a2e;
   --app-danger-soft: #f7e6e2;
   --app-success: #22733f;
+
+  /* Foil gold — Kabir's exact --gradient-gold, reused verbatim. His own
+     rule (see landing globals.css): gold is for OBJECTS and dark surfaces,
+     never gold TEXT on silk. So: gold-filled buttons/rules, dark text on
+     top — never gold text on a light background. */
+  --app-gold-gradient: linear-gradient(105deg, #8c6a2f 0%, #c9a96a 40%, #d2b68a 55%, #8c6a2f 100%);
+
+  /* Dark "cover" panel — used sparingly (auth screen, pricing hero) where
+     the app deliberately borrows the landing page's onyx-dark register
+     instead of staying on silk. Same onyx as Hero's own background. */
+  --app-cover-bg: var(--onyx);
+  --app-cover-text: #f7f3ea; /* Kabir's --text-inverse */
+  --app-cover-text-muted: rgba(247, 243, 234, 0.6);
+  --app-cover-border: rgba(247, 243, 234, 0.12);
 }
 
 .dark {
@@ -42,6 +58,7 @@
   --app-surface: #1b1d25;
   --app-surface-hover: #22242e;
   --app-border: rgba(242, 235, 224, 0.12);
+  --app-border-strong: rgba(242, 235, 224, 0.22);
   --app-text: #f2efe6;
   --app-text-secondary: #c8c4b8;
   --app-text-muted: #918d82;
@@ -52,6 +69,8 @@
   --app-danger: #e58177;
   --app-danger-soft: rgba(229, 129, 119, 0.14);
   --app-success: #5cb885;
+  --app-cover-bg: #08080a;
+  --app-cover-border: rgba(247, 243, 234, 0.16);
 
   /* Landing-page scene state — written directly by ScrollProgressProvider
      on scroll (not React state) so background/atmosphere interpolation

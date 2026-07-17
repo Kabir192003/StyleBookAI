@@ -98,7 +98,10 @@ function LiveMockup({ project }: { project: Project }) {
   const body = project.fonts.secondary?.family;
 
   return (
-    <div className="rounded-2xl border border-app-border p-6" style={{ background: bg }}>
+    <div className="relative overflow-hidden rounded-lg border border-app-border-strong p-6" style={{ background: bg }}>
+      <span className="absolute right-4 top-4 rounded bg-onyx px-2 py-1 font-mono text-[9px] font-bold text-pearl">
+        LIVE
+      </span>
       <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider" style={{ color: text, opacity: 0.6 }}>
         Live mockup
       </h3>
@@ -247,6 +250,7 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
 
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
+          <p className="mb-1 font-mono text-[11px] uppercase tracking-widest text-app-text-muted">Plate No. 01</p>
           <h1 className="font-editorial-serif text-3xl font-semibold text-app-heading">
             {project.name}
           </h1>
@@ -260,7 +264,7 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => handleEdit(project)}
-            className="rounded-lg bg-app-accent px-4 py-2 text-sm font-semibold text-pearl transition-colors hover:bg-app-accent-hover"
+            className="rounded-lg bg-gold-foil px-4 py-2 text-sm font-semibold text-onyx transition-all hover:brightness-105"
           >
             Edit in Studio
           </button>
@@ -269,7 +273,7 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
             <button
               onClick={() => setExportOpen((v) => !v)}
               disabled={exporting}
-              className="flex items-center gap-1.5 rounded-lg border border-app-border bg-app-surface px-4 py-2 text-sm font-semibold text-app-text transition-colors hover:bg-app-surface-hover disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-lg border border-app-border-strong bg-app-surface px-4 py-2 text-sm font-semibold text-app-text transition-colors hover:bg-app-surface-hover disabled:opacity-50"
             >
               {exporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
               Export
@@ -282,13 +286,13 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full z-20 mt-2 w-48 rounded-xl border border-app-border bg-app-surface p-1.5 shadow-lg"
+                  className="absolute right-0 top-full z-20 mt-2 w-48 rounded-lg border border-app-border-strong bg-app-surface p-1.5 shadow-lg"
                 >
                   {EXPORT_FORMATS.map((f) => (
                     <button
                       key={f.value}
                       onClick={() => handleExport(f.value)}
-                      className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app-text hover:bg-app-surface-hover"
+                      className="block w-full rounded-md px-3 py-2 text-left text-sm text-app-text hover:bg-app-surface-hover"
                     >
                       {f.label}
                     </button>
@@ -335,7 +339,8 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
       )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.3fr_1fr]">
-        <div className="flex flex-col gap-6 rounded-2xl border border-app-border bg-app-surface p-6">
+        <div className="relative flex flex-col gap-6 overflow-hidden rounded-lg border border-app-border-strong bg-app-surface p-6">
+          <div className="absolute inset-x-0 top-0 h-[3px] bg-gold-foil" aria-hidden="true" />
           <div>
             <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-app-text-muted">
               Palette
@@ -344,7 +349,7 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
               {project.colors.map((c) => (
                 <div key={c.id + (c.role ?? "")} className="flex flex-col gap-1.5">
                   <div
-                    className="h-14 w-20 rounded-lg border border-app-border"
+                    className="h-14 w-20 rounded-lg border border-app-border-strong"
                     style={{ background: c.hex }}
                   />
                   <div className="flex items-center gap-1">
