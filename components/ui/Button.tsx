@@ -1,33 +1,72 @@
 /**
  * Button — shared primitive used across the app instead of raw <button>
- * tags. Keep this dependency-free (no Radix needed for v1) but consistent.
+ * tags. Dependency-free (class-variance-authority is already installed
+ * for this exact use, no Radix needed for v1).
  *
  * Owner: Amna
  *
- * TODO (Amna): variants (primary/secondary/ghost/destructive), sizes (sm/md/lg),
- * loading state with spinner, asChild-style polymorphism if needed later.
+ * Variants follow the app-shell tokens in app/globals.css (--app-accent
+ * etc.) so this component tracks light/dark automatically — see
+ * docs/PRODUCT_AND_UX.md §4. `accent` (oxblood) is the one sparing accent
+ * color; reach for `secondary`/`ghost` first, `accent` only for the single
+ * primary action on a screen.
  */
 import { ButtonHTMLAttributes, forwardRef } from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Loader2 } from "lucide-react";
 import { clsx } from "clsx";
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "secondary" | "ghost";
-};
+const button = cva(
+  "inline-flex items-center justify-center gap-2 rounded-lg font-medium " +
+    "transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50 " +
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-accent focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg",
+  {
+    variants: {
+      variant: {
+        primary:
+          "bg-app-text text-app-bg hover:opacity-90",
+        accent:
+          "bg-app-accent text-pearl hover:bg-app-accent-hover",
+        secondary:
+          "border border-app-border bg-app-surface text-app-text hover:bg-app-surface-hover",
+        ghost: "text-app-text-secondary hover:bg-app-surface-hover hover:text-app-text",
+        destructive:
+          "bg-app-danger-soft text-app-danger border border-app-danger/30 hover:bg-app-danger hover:text-pearl",
+      },
+      size: {
+        sm: "h-8 px-3 text-xs",
+        md: "h-10 px-4 text-sm",
+        lg: "h-12 px-6 text-[15px]",
+      },
+    },
+    defaultVariants: {
+      variant: "primary",
+      size: "md",
+    },
+  }
+);
+
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
+  VariantProps<typeof button> & {
+    loading?: boolean;
+  };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "primary", ...props }, ref) => {
+  (
+    { className, variant, size, loading = false, disabled, children, ...props },
+    ref
+  ) => {
     return (
       <button
         ref={ref}
-        className={clsx(
-          "rounded-md px-4 py-2 text-sm transition-colors disabled:opacity-40",
-          variant === "primary" && "bg-black text-white hover:bg-neutral-800",
-          variant === "secondary" && "border hover:bg-neutral-50",
-          variant === "ghost" && "hover:bg-neutral-100",
-          className
-        )}
+        disabled={disabled || loading}
+        aria-busy={loading || undefined}
+        className={clsx(button({ variant, size }), className)}
         {...props}
-      />
+      >
+        {loading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
+        {children}
+      </button>
     );
   }
 );
