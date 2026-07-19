@@ -5,7 +5,9 @@
  * any global font declarations here. Keep this file thin; per-route chrome
  * belongs in nested layouts.
  */
-import type { Metadata } from "next";
+
+import type { Metadata, Viewport } from "next";
+import { landingFontVariables } from "@/lib/landing/fonts"; 
 import "./globals.css";
 
 export const metadata: Metadata = {

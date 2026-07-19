@@ -68,6 +68,7 @@ function buildTailwindColors(): Color[] {
           name: `${titleCase(familyKey)} ${shade}`,
           hex,
           family,
+          note: "Neutral and airy, useful as a soft foundation for larger surfaces.", //Add the minimum compatibility note for the design
           mood: shadeNum >= 600 ? ["moody"] : shadeNum <= 200 ? ["calm"] : ["energetic"],
           style: shadeNum <= 200 ? ["pastel"] : shadeNum >= 700 ? ["bold"] : ["modern"],
           collection: "tailwind",
