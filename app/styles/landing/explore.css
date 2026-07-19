@@ -1,0 +1,126 @@
+/* ═══════════════════════════════════════════
+   Scroll 7: Explore — The Colour Wall
+   Inset dark panel: the pastel atmosphere continues around it, so the
+   dark moment reads as intentional gallery lighting, not a theme break.
+   ═══════════════════════════════════════════ */
+
+.explore {
+  position: relative;
+  width: 100%;
+  padding: var(--space-2xl) clamp(12px, 3vw, 40px);
+  background: transparent;
+}
+
+.explore__container {
+  position: relative;
+  max-width: 1360px;
+  margin: 0 auto;
+  background:
+    radial-gradient(900px 420px at 85% -10%, rgba(210, 182, 138, 0.18), transparent 65%),
+    radial-gradient(700px 380px at 8% 110%, rgba(90, 106, 158, 0.18), transparent 60%),
+    #141A30;
+  border: 1px solid rgba(247, 243, 234, 0.08);
+  border-radius: clamp(24px, 4vw, 44px);
+  padding: clamp(56px, 9vw, 110px) clamp(24px, 5vw, 88px);
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(247, 243, 234, 0.07), var(--shadow-2xl);
+}
+
+.explore__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-2xl);
+}
+
+.explore__eyebrow {
+  color: var(--champagne);
+}
+
+.explore__header h2 {
+  color: #F7F3EA;
+  font-size: var(--text-4xl);
+}
+
+/* Gold is welcome here — dark ground */
+.explore__accent {
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding-right: 0.04em;
+}
+
+/* The editorial voice, speaking on velvet */
+.explore__sub {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--text-lg);
+  letter-spacing: 0.002em;
+  color: rgba(247, 243, 234, 0.78);
+  max-width: 520px;
+}
+
+.explore__status {
+  margin-top: var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(247, 243, 234, 0.62);
+  padding: 6px 12px;
+  border: 1px solid rgba(247, 243, 234, 0.18);
+  border-radius: var(--radius-full);
+}
+
+/* The wall */
+.explore__wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: 8px;
+}
+
+.explore__swatch-btn {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  border: none;
+  padding: 0;
+  box-shadow: inset 0 0 0 1px rgba(253, 253, 251, 0.07);
+  will-change: transform;
+}
+
+.explore__swatch-btn:focus-visible {
+  outline: 2px solid var(--champagne);
+  outline-offset: 2px;
+}
+
+.explore__copied {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: rgba(10, 10, 12, 0.72);
+  border-radius: inherit;
+  backdrop-filter: blur(2px);
+  animation: copied-pop 0.18s var(--ease-out);
+}
+
+@keyframes copied-pop {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+  .explore__wall {
+    grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+    gap: 6px;
+  }
+}

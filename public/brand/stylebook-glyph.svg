@@ -1,0 +1,43 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="StyleBook">
+  <defs>
+    <linearGradient id="gCover" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#31406F"/>
+      <stop offset="1" stop-color="#161D33"/>
+    </linearGradient>
+    <linearGradient id="gGilt" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8C6A2F"/>
+      <stop offset="0.45" stop-color="#E9D4AC"/>
+      <stop offset="1" stop-color="#8C6A2F"/>
+    </linearGradient>
+    <linearGradient id="gChip" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#E3CBA0"/>
+      <stop offset="1" stop-color="#B08D57"/>
+    </linearGradient>
+    <linearGradient id="gChip2" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#8A3B36"/>
+      <stop offset="1" stop-color="#521E1C"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Colour petals rising from the spread -->
+  <g transform="translate(24.5 39) rotate(-24)">
+    <path d="M0 0 C -4 -8, -4.5 -17, 0.5 -26 C 4.5 -17.5, 3 -9, 1.5 -0.5 Z" fill="url(#gChip2)"/>
+  </g>
+  <g transform="translate(39 37.5) rotate(16)">
+    <path d="M0 0 C 3.5 -8, 4 -18, -0.5 -27 C -4 -18, -3 -9, -1.5 -0.5 Z" fill="url(#gChip)"/>
+  </g>
+
+  <!-- Book: substantial page block sealed to boards -->
+  <!-- Boards -->
+  <path d="M32 46.5 Q22 45 8 48.5 L8 54 Q22 50.5 32 52 Q42 50.5 56 54 L56 48.5 Q42 45 32 46.5 Z"
+        fill="url(#gCover)"/>
+  <!-- Pages -->
+  <path d="M12 37 Q21.5 33 32 37.5 Q42.5 33 52 37 L52 44.5 Q42.5 40.5 32 45.5 Q21.5 40.5 12 44.5 Z"
+        fill="#FDFDFB"/>
+  <path d="M12.5 40.5 Q22 36.8 32 41 Q42 36.8 51.5 40.5" fill="none" stroke="#181C2D" stroke-opacity="0.1" stroke-width="1.1"/>
+  <!-- Gilt fore-edge -->
+  <path d="M12 37 Q21.5 33 32 37.5 Q42.5 33 52 37" fill="none"
+        stroke="url(#gGilt)" stroke-width="2.2" stroke-linecap="round"/>
+  <!-- Gutter crease -->
+  <path d="M32 38.5 L32 44.5" stroke="#181C2D" stroke-opacity="0.35" stroke-width="1.6" stroke-linecap="round"/>
+</svg>

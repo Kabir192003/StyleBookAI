@@ -1,0 +1,188 @@
+/* ═══════════════════════════════════════════
+   Scroll 10: Export
+   ═══════════════════════════════════════════ */
+
+.export {
+  position: relative;
+  width: 100%;
+  height: 250vh;
+  background: transparent;
+}
+
+.export__pin {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: var(--space-xl);
+}
+
+.export__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xl);
+  width: 100%;
+  max-width: 1000px;
+}
+
+/* The product shot — cards fan out over its lower edge */
+.export__render {
+  width: min(880px, 92%);
+  /* Reserve the image's real aspect ratio so the container doesn't grow
+     (and shift every pinned section below it) once the JPEG finishes
+     loading — layout shift here was throwing off ScrollTrigger's cached
+     pin start/end for export + final-cta. */
+  aspect-ratio: 2000 / 1333;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  border: 1px solid rgba(24, 28, 45, 0.1);
+  box-shadow: var(--shadow-2xl);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.export__render img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.export__header {
+  text-align: center;
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.export__header h2 {
+  font-size: var(--text-4xl);
+  margin-bottom: var(--space-sm);
+}
+
+.export__header p {
+  font-size: var(--text-lg);
+  color: var(--text-muted);
+}
+
+/* Token compression dot */
+.export__token-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: var(--shadow-glow);
+  opacity: 0;
+}
+
+/* Export cards */
+.export__cards {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-md);
+  max-width: 860px;
+  margin-top: -72px;
+}
+
+.export-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  will-change: transform, opacity;
+  min-width: 220px;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) ease;
+}
+
+.export-card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(140, 106, 47, 0.4);
+}
+
+.export-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+  transition: left 0.6s ease;
+}
+
+.export-card.shimmer::after {
+  left: 100%;
+}
+
+.export-card__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  transition: transform 0.45s var(--ease-spring);
+}
+
+.export-card:hover .export-card__icon {
+  transform: rotate(-8deg) scale(1.1);
+}
+
+.export-card__icon--css { background: linear-gradient(135deg, #38477C, #222D52); color: #F7F3EA; }
+.export-card__icon--json { background: linear-gradient(135deg, #C9A96A, #8C6A2F); color: #FFFDF6; }
+.export-card__icon--tailwind { background: linear-gradient(135deg, #4A5A8E, #38477C); color: #F7F3EA; }
+.export-card__icon--figma { background: linear-gradient(135deg, #2A2D38, #16192A); color: #F7F3EA; }
+.export-card__icon--react { background: linear-gradient(135deg, #B4622D, #8C4A2F); color: #FFF8EE; }
+.export-card__icon--flutter { background: linear-gradient(135deg, #38477C, #222D52); color: #F7F3EA; }
+.export-card__icon--swift { background: linear-gradient(135deg, #C9A96A, #8C6A2F); color: #FFFDF6; }
+
+.export-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.export-card__name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.export-card__desc {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  .export__cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .export-card {
+    min-width: 200px;
+    width: 100%;
+    max-width: 300px;
+  }
+}

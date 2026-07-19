@@ -1,0 +1,28 @@
+<svg viewBox="80 200 352 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="StyleBook">
+  <!--
+    Single-colour variant of the alternate mark (dog-eared page fan) — for
+    embossing, engraving, one-ink print, watermarks. Swap #222D52 for pearl
+    (#F7F3EA) on dark grounds.
+  -->
+  <g fill="#222D52">
+    <g transform="translate(178 308) rotate(-30) scale(0.62)">
+      <path d="M-13 0 C-15 -30 -15 -60 -13 -86 L5 -86 L13 -78 C15 -50 15 -25 13 0 Z"/>
+    </g>
+    <g transform="translate(206 302) rotate(-15) scale(0.98)">
+      <path d="M-13 0 C-15 -30 -15 -60 -13 -86 L5 -86 L13 -78 C15 -50 15 -25 13 0 Z"/>
+    </g>
+    <g transform="translate(258 292) rotate(1) scale(1.12)">
+      <path d="M-13 0 C-15 -30 -15 -60 -13 -86 L5 -86 L13 -78 C15 -50 15 -25 13 0 Z"/>
+    </g>
+    <g transform="translate(310 302) rotate(16) scale(0.9)">
+      <path d="M-13 0 C-15 -30 -15 -60 -13 -86 L5 -86 L13 -78 C15 -50 15 -25 13 0 Z"/>
+    </g>
+    <g transform="translate(338 308) rotate(31) scale(0.98)">
+      <path d="M-13 0 C-15 -30 -15 -60 -13 -86 L5 -86 L13 -78 C15 -50 15 -25 13 0 Z"/>
+    </g>
+  </g>
+  <path d="M120 310 Q188 286 256 312 Q324 286 392 310 L392 344 Q324 322 256 350 Q188 322 120 344 Z" fill="#FDFDFB"/>
+  <path d="M120 310 Q188 286 256 312 Q324 286 392 310" fill="none" stroke="#222D52" stroke-width="3.4" stroke-linecap="round"/>
+  <path d="M256 314 L256 346" stroke="#222D52" stroke-opacity="0.6" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M263 316 L263 372 L256 362 L249 372 L249 314 Q256 318 263 316 Z" fill="#222D52"/>
+</svg>
