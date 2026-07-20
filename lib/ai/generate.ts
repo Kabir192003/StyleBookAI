@@ -10,11 +10,14 @@ import { GeminiPaletteResponseSchema, GeminiPaletteResponse } from "./schema";
 import { generateTypeScale } from "@/lib/typeScale/generateTypeScale";
 import { allColors } from "@/data/colors";
 import { allFonts } from "@/data/fonts";
+import { fontsSeed } from "@/data/fonts/seed";
 import { AIGenerateRequest } from "@/types/ai";
 import { AIReasoning, Project } from "@/types/project";
 import { Color } from "@/types/color";
+import { Font } from "@/types/font";
 
 const MAX_CANDIDATE_COLORS = 120;
+const MAX_CANDIDATE_FONTS = 80;
 
 export class AIGenerationError extends Error {}
 
@@ -51,6 +54,40 @@ function selectCandidateColors(request: AIGenerateRequest): Color[] {
   return pool.slice(0, MAX_CANDIDATE_COLORS);
 }
 
+// allFonts is ~2000 entries now that the full Google Fonts catalog is in
+// (data/fonts/google.ts) — cap what's sent to Gemini the same way colors
+// are capped, but always keep the 36 hand-curated seed fonts (real
+// pairing data, bespoke notes) since they're the highest-quality picks.
+function selectCandidateFonts(request: AIGenerateRequest): Font[] {
+  const seen = new Set<string>();
+  const candidates: Font[] = [];
+
+  for (const font of fontsSeed) {
+    if (!seen.has(font.id)) {
+      seen.add(font.id);
+      candidates.push(font);
+    }
+  }
+
+  let rest = allFonts.filter((f) => !seen.has(f.id));
+
+  if (request.style?.length) {
+    const requestedStyles: string[] = request.style;
+    const styleMatched = rest.filter((f) => f.style.some((s) => requestedStyles.includes(s)));
+    if (styleMatched.length > 0) rest = styleMatched;
+  }
+
+  for (const font of rest) {
+    if (candidates.length >= MAX_CANDIDATE_FONTS) break;
+    if (!seen.has(font.id)) {
+      seen.add(font.id);
+      candidates.push(font);
+    }
+  }
+
+  return candidates;
+}
+
 async function callGemini(prompt: string): Promise<GeminiPaletteResponse> {
   const model = getGeminiJsonModel();
   const result = await model.generateContent(prompt);
@@ -74,7 +111,8 @@ export async function generateProjectFromPrompt(
   request: AIGenerateRequest
 ): Promise<Omit<Project, "id" | "userId" | "createdAt" | "updatedAt">> {
   const candidateColors = selectCandidateColors(request);
-  const prompt = buildGeneratePrompt(request, candidateColors, allFonts);
+  const candidateFonts = selectCandidateFonts(request);
+  const prompt = buildGeneratePrompt(request, candidateColors, candidateFonts);
 
   let raw: GeminiPaletteResponse;
   try {
@@ -94,7 +132,7 @@ export async function generateProjectFromPrompt(
     return { ...color, role };
   });
 
-  const fontById = new Map(allFonts.map((f) => [f.id, f]));
+  const fontById = new Map(candidateFonts.map((f) => [f.id, f]));
   const primaryFont = fontById.get(raw.primaryFontId);
   const secondaryFont = fontById.get(raw.secondaryFontId);
   const accentFont = raw.accentFontId ? fontById.get(raw.accentFontId) : undefined;
