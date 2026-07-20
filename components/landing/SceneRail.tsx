@@ -35,10 +35,10 @@ export default function SceneRail() {
   const [active, setActive] = useState('hero');
 
   useEffect(() => {
-    const triggers = [];
+    const triggers: ScrollTrigger[] = [];
 
     document.querySelectorAll('main section[id]').forEach((el) => {
-      const tint = TINTS[el.id];
+      const tint = TINTS[el.id as keyof typeof TINTS];
       const isStop = STOPS.some((s) => s.id === el.id);
 
       triggers.push(ScrollTrigger.create({
@@ -61,10 +61,10 @@ export default function SceneRail() {
     };
   }, []);
 
-  const jump = (id) => {
+  const jump = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
-    const lenis = window.__lenis;
+    const lenis = (window as unknown as { __lenis?: { scrollTo: (target: HTMLElement, opts?: { duration?: number }) => void } }).__lenis;
     if (lenis && !prefersReducedMotion()) {
       lenis.scrollTo(el, { duration: 1.6 });
     } else {

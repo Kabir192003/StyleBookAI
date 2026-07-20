@@ -26,8 +26,8 @@ const TOKENS = [
  * way into the colour wall.
  */
 export default function SwatchTicker() {
-  const rootRef = useRef(null);
-  const trackRef = useRef(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -45,7 +45,7 @@ export default function SwatchTicker() {
 
     const skewTo = gsap.quickTo(track, 'skewX', { duration: 0.4, ease: 'power2.out' });
 
-    const tick = (_t, deltaMS) => {
+    const tick = (_t: number, deltaMS: number) => {
       const dt = deltaMS / 1000;
       const scrollDelta = window.scrollY - lastY;
       lastY = window.scrollY;

@@ -21,16 +21,17 @@ const FRAGMENTS = [
 ];
 
 export default function ScrollTypography() {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
+    if (!section) return;
     const pin = section.querySelector('.typography__pin');
     const headline = section.querySelector('.typography__headline');
     const fragments = section.querySelectorAll('.typography__fragment');
     const labels = section.querySelectorAll('.typography__label span');
 
-    const applyPersonality = (p) => {
+    const applyPersonality = (p: (typeof PERSONALITIES)[number]) => {
       gsap.set(headline, {
         fontFamily: p.family,
         fontStyle: p.style,
