@@ -1,9 +1,10 @@
 /**
- * /browse layout — content container only. Navigation is the shared
- * <SiteHeader /> in the root layout (app/layout.tsx); this used to have
- * its own duplicate tab bar, removed in favor of one consistent header
- * everywhere.
+ * /browse layout — no container of its own. Navigation is the shared
+ * <SiteHeader /> in the root layout (app/layout.tsx). Individual browse
+ * pages own their container width — /browse/colors goes full-bleed to
+ * match its editorial design, while fonts/themes keep the standard
+ * centered `max-w-7xl` container inside their own grid components.
  */
 export default function BrowseLayout({ children }: { children: React.ReactNode }) {
-  return <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">{children}</main>;
+  return <main>{children}</main>;
 }
