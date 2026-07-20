@@ -170,13 +170,22 @@ export function PromptInput() {
                 </p>
                 <div className="mt-3 grid grid-cols-3 gap-2">
                   {result.moodboard.map((image) => (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      key={image.id}
-                      src={image.src}
-                      alt={image.alt}
-                      className="h-20 w-full rounded-lg object-cover"
-                    />
+                    <div key={image.id}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={image.src} alt={image.alt} className="h-20 w-full rounded-lg object-cover" />
+                      {image.credit && (
+                        <p className="mt-1 truncate text-[10px] text-neutral-400">
+                          Photo:{" "}
+                          <a href={image.credit.photographerUrl} target="_blank" rel="noopener noreferrer" className="underline">
+                            {image.credit.photographerName}
+                          </a>{" "}
+                          /{" "}
+                          <a href={image.credit.unsplashUrl} target="_blank" rel="noopener noreferrer" className="underline">
+                            Unsplash
+                          </a>
+                        </p>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>

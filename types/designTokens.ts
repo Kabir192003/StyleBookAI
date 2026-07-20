@@ -27,4 +27,12 @@ export type MoodboardImage = {
   src: string;
   alt: string;
   mood: string[];
+  // Unsplash's API terms require crediting the photographer + Unsplash
+  // wherever a photo is shown — present whenever the image is real
+  // Unsplash content (absent for the handful of self-hosted starter photos).
+  credit?: {
+    photographerName: string;
+    photographerUrl: string;
+    unsplashUrl: string;
+  };
 };
