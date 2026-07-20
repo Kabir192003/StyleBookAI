@@ -15,13 +15,22 @@
  * - Embed the Preview Lab view from components/studio/PreviewLab.tsx
  * - "Save project" action → POST /api/projects (built by the lead)
  */
+import { StudioCanvas } from "@/components/studio/StudioCanvas";
+
 export default function StudioPage() {
   return (
-    <main className="p-8">
-      <h1 className="text-3xl font-bold tracking-tight">Studio</h1>
-      <p className="mt-1 text-sm text-neutral-500">
-        Manual project builder — see the TODO at the top of this file.
-      </p>
+    <main className="min-h-screen bg-neutral-50 p-8">
+      <div className="mx-auto max-w-6xl">
+        <div className="max-w-3xl">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-neutral-500">Studio</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-neutral-900">Manual project builder</h1>
+          <p className="mt-3 text-sm leading-7 text-neutral-600">
+            Pick colors, assign roles, choose fonts, and set a type scale to shape a project before saving it.
+          </p>
+        </div>
+        <StudioCanvas />
+      </div>
     </main>
   );
 }
+
