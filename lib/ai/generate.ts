@@ -19,12 +19,14 @@ import { AIGenerateRequest } from "@/types/ai";
 import { AIReasoning, Project } from "@/types/project";
 import { Color } from "@/types/color";
 import { Font } from "@/types/font";
+import { MoodboardImage } from "@/types/designTokens";
 
 // Kept small — a larger candidate list means a bigger prompt, which means
 // a slower Gemini round-trip, which risks the serverless function timeout
 // (see maxDuration in app/api/ai/generate/route.ts).
 const MAX_CANDIDATE_COLORS = 60;
 const MAX_CANDIDATE_FONTS = 40;
+const MAX_CANDIDATE_MOODBOARD_IMAGES = 60;
 
 export class AIGenerationError extends Error {}
 
@@ -95,6 +97,45 @@ function selectCandidateFonts(request: AIGenerateRequest): Font[] {
   return candidates;
 }
 
+// moodboardImages is grouped sequentially by category (see
+// scripts/transformMoodboards.ts), so a plain slice would silently drop
+// whole categories once the pool exceeds the cap — round-robin across
+// categories (by id prefix) instead so every mood stays represented.
+function selectCandidateMoodboardImages(request: AIGenerateRequest): MoodboardImage[] {
+  let pool = moodboardImages;
+
+  if (request.style?.length) {
+    const requestedStyles: string[] = request.style;
+    const matched = pool.filter((m) => m.mood.some((mood) => requestedStyles.includes(mood)));
+    if (matched.length > 0) pool = matched;
+  }
+
+  if (pool.length <= MAX_CANDIDATE_MOODBOARD_IMAGES) return pool;
+
+  const groups = new Map<string, MoodboardImage[]>();
+  for (const image of pool) {
+    const prefix = image.id.replace(/-\d+$/, "");
+    const group = groups.get(prefix) ?? [];
+    group.push(image);
+    groups.set(prefix, group);
+  }
+
+  const groupArrays = Array.from(groups.values());
+  const result: MoodboardImage[] = [];
+  for (let i = 0; result.length < MAX_CANDIDATE_MOODBOARD_IMAGES; i++) {
+    const before = result.length;
+    for (const group of groupArrays) {
+      if (i < group.length) {
+        result.push(group[i]);
+        if (result.length >= MAX_CANDIDATE_MOODBOARD_IMAGES) break;
+      }
+    }
+    if (result.length === before) break; // every group exhausted
+  }
+
+  return result;
+}
+
 async function callGemini(prompt: string): Promise<GeminiPaletteResponse> {
   const model = getGeminiJsonModel();
   const result = await model.generateContent(prompt);
@@ -119,7 +160,8 @@ export async function generateProjectFromPrompt(
 ): Promise<Omit<Project, "id" | "userId" | "createdAt" | "updatedAt">> {
   const candidateColors = selectCandidateColors(request);
   const candidateFonts = selectCandidateFonts(request);
-  const prompt = buildGeneratePrompt(request, candidateColors, candidateFonts, moodboardImages);
+  const candidateMoodboardImages = selectCandidateMoodboardImages(request);
+  const prompt = buildGeneratePrompt(request, candidateColors, candidateFonts, candidateMoodboardImages);
 
   let raw: GeminiPaletteResponse;
   try {
@@ -153,10 +195,10 @@ export async function generateProjectFromPrompt(
   const shadows = buildShadowScale(raw.shadowLevel ?? "subtle");
   const cornerRadius = buildRadiusScale(raw.cornerRadius ?? 8);
 
-  const moodboardById = new Map(moodboardImages.map((m) => [m.id, m]));
+  const moodboardById = new Map(candidateMoodboardImages.map((m) => [m.id, m]));
   const moodboard = (raw.moodboardImageIds ?? [])
     .map((id) => moodboardById.get(id))
-    .filter((image): image is (typeof moodboardImages)[number] => Boolean(image));
+    .filter((image): image is MoodboardImage => Boolean(image));
 
   const reasoning: AIReasoning = raw.reasoning;
 

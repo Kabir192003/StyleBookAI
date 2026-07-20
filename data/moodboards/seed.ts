@@ -1,16 +1,13 @@
 /**
- * Curated moodboard image library for AI Generate.
- *
- * A small starter set using real photography already licensed and shipped
- * with this repo (public/landing/*.jpg — free-license Unsplash photos used
- * elsewhere on the site). Gemini picks 2-3 matching a brand description
- * rather than generating new images, which keeps this free and instant —
- * see docs/CONTEXT.md for why. Expand this list with more real photos
- * (tagged by mood) any time; nothing else needs to change.
+ * Hand-curated moodboard starter set — real photography already licensed
+ * and shipped with this repo (public/landing/*.jpg, free-license Unsplash
+ * photos also used elsewhere on the site). Combined with the much larger
+ * auto-generated set in unsplash.ts (see data/moodboards/index.ts) —
+ * mirrors the seed+generated pattern used for colors and fonts.
  */
 import { MoodboardImage } from "@/types/designTokens";
 
-export const moodboardImages: MoodboardImage[] = [
+export const moodboardSeed: MoodboardImage[] = [
   {
     id: "mb-blush",
     src: "/landing/mood-blush.jpg",
