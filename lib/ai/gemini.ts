@@ -7,7 +7,11 @@
  */
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const MODEL_NAME = process.env.GEMINI_MODEL ?? "gemini-flash-latest";
+// gemini-flash-latest has been intermittently overloaded (503s, some
+// requests taking 20-30s+ before failing) — gemini-flash-lite-latest is
+// currently far more responsive and is plenty capable for structured
+// palette/font JSON generation.
+const MODEL_NAME = process.env.GEMINI_MODEL ?? "gemini-flash-lite-latest";
 
 let client: GoogleGenerativeAI | null = null;
 

@@ -12,6 +12,11 @@ import { auth } from "@clerk/nextjs/server";
 import { AIGenerateRequestSchema } from "@/lib/ai/schema";
 import { AIGenerationError, generateProjectFromPrompt } from "@/lib/ai/generate";
 
+// Building the candidate-color/font prompt plus a real Gemini round-trip
+// (and possibly a retry) routinely exceeds Vercel's default serverless
+// function timeout — raise it explicitly rather than let requests die mid-generation.
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   const { userId } = auth();
   if (!userId) {

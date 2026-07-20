@@ -16,8 +16,11 @@ import { AIReasoning, Project } from "@/types/project";
 import { Color } from "@/types/color";
 import { Font } from "@/types/font";
 
-const MAX_CANDIDATE_COLORS = 120;
-const MAX_CANDIDATE_FONTS = 80;
+// Kept small — a larger candidate list means a bigger prompt, which means
+// a slower Gemini round-trip, which risks the serverless function timeout
+// (see maxDuration in app/api/ai/generate/route.ts).
+const MAX_CANDIDATE_COLORS = 60;
+const MAX_CANDIDATE_FONTS = 40;
 
 export class AIGenerationError extends Error {}
 
