@@ -1,105 +1,169 @@
 /**
- * FontGrid — filterable grid of Font cards, each rendered in its own real
- * typeface via GoogleFontsLoader. Used by app/browse/fonts/page.tsx.
+ * FontGrid — the "specimen room": a full-bleed, editorial proof sheet for
+ * every typeface in the library. Used by app/browse/fonts/page.tsx.
  *
- * Ported from Dhanshri's Lovable design ("Design Browse Hub") — see
- * docs/CONTEXT.md for the porting note.
+ * Styled to match the Fonts.dc.html design pulled from claude.ai/design
+ * (project "Website redesign request"), same treatment as
+ * components/colors/ColorGrid.tsx — cream/ink/navy editorial palette,
+ * Fraunces + IBM Plex Mono, category tabs instead of dropdowns, plus a
+ * live proof-text input so every face previews the visitor's own line.
  */
 "use client";
 
 import { useMemo, useState } from "react";
-import { BrowseHeader } from "@/components/browse/BrowseHeader";
-import { SearchBar } from "@/components/browse/SearchBar";
-import { FilterDropdown } from "@/components/browse/FilterDropdown";
-import { SortDropdown } from "@/components/browse/SortDropdown";
 import { EmptyState } from "@/components/browse/EmptyState";
-import { FontCard } from "./FontCard";
 import { GoogleFontsLoader } from "./GoogleFontsLoader";
 import { Font, FontCategory } from "@/types/font";
 
-const CATEGORIES: FontCategory[] = ["sans-serif", "serif", "display", "monospace", "handwriting", "variable"];
 const PAGE_SIZE = 48;
+const DEFAULT_PROOF_TEXT = "Style changes everything.";
+
+const CATEGORIES: Array<FontCategory | "all"> = [
+  "all",
+  "serif",
+  "sans-serif",
+  "display",
+  "monospace",
+  "handwriting",
+];
+
+function TabButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`whitespace-nowrap border-b-2 py-4 font-mono-plex text-[11px] uppercase tracking-[0.16em] transition-colors ${
+        active ? "border-[#211E18] text-[#211E18]" : "border-transparent text-[#8A8477] hover:text-[#211E18]"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function FontRow({ font, index, proofText }: { font: Font; index: number; proofText: string }) {
+  const stack = `'${font.family}', ${
+    font.category === "monospace" ? "monospace" : font.category === "serif" ? "serif" : "sans-serif"
+  }`;
+  return (
+    <div className="border-t border-black/[0.14] px-6 py-9 transition-colors hover:bg-[#EBE2D2] sm:px-12">
+      <div className="flex flex-wrap items-baseline justify-between gap-5">
+        <div className="flex items-baseline gap-5">
+          <span className="font-mono-plex text-[10px] tracking-[0.2em] text-[#8A8477]">
+            {String(index).padStart(2, "0")}
+          </span>
+          <span className="font-editorial-serif text-lg tracking-tight text-[#211E18]">{font.family}</span>
+          <span className="font-mono-plex text-[10px] uppercase tracking-[0.16em] text-[#8A8477]">
+            {font.category}
+          </span>
+        </div>
+        <span className="font-mono-plex text-[10px] tracking-[0.14em] text-[#8A8477]">
+          {font.variants.join(" · ")}
+        </span>
+      </div>
+      <div
+        className="mt-5 overflow-hidden text-ellipsis whitespace-nowrap text-[clamp(2rem,5vw,4rem)] leading-[1.12] tracking-tight text-[#211E18]"
+        style={{ fontFamily: stack }}
+      >
+        {proofText || DEFAULT_PROOF_TEXT}
+      </div>
+      <div className="mt-4 flex flex-wrap items-baseline justify-between gap-6">
+        <p className="max-w-[460px] text-[13px] leading-relaxed text-[#6E675C]">{font.note}</p>
+        <span className="whitespace-nowrap text-[15px] text-[#8A8477]" style={{ fontFamily: stack }}>
+          AaBbCcDdEeFf 0123456789
+        </span>
+      </div>
+    </div>
+  );
+}
 
 export function FontGrid({ fonts }: { fonts: Font[] }) {
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<string>("__all__");
-  const [sort, setSort] = useState<string>("name-asc");
+  const [category, setCategory] = useState<FontCategory | "all">("all");
+  const [proofText, setProofText] = useState(DEFAULT_PROOF_TEXT);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
-  const items = useMemo(() => {
-    let list = fonts.filter((f) => {
-      const q = query.trim().toLowerCase();
-      if (q && !`${f.family} ${f.category}`.toLowerCase().includes(q)) return false;
-      if (category !== "__all__" && f.category !== category) return false;
-      return true;
-    });
-    list = [...list].sort((a, b) =>
-      sort === "name-desc" ? b.family.localeCompare(a.family) : a.family.localeCompare(b.family)
-    );
-    return list;
-  }, [fonts, query, category, sort]);
+  const items = useMemo(
+    () => (category === "all" ? fonts : fonts.filter((f) => f.category === category)),
+    [fonts, category]
+  );
 
-  // Re-page from the top whenever the filtered set changes, rather than
-  // rendering (and font-loading) every match at once — with ~2000 fonts
-  // in the library that would blow past the browser's URL length limit
-  // for the Google Fonts stylesheet link.
+  // ~2000 fonts at full specimen size is a page hundreds of thousands of
+  // pixels tall — page like ColorGrid does for the colour wall.
   const visibleItems = useMemo(() => items.slice(0, visibleCount), [items, visibleCount]);
 
-  function updateQuery(value: string) {
-    setQuery(value);
-    setVisibleCount(PAGE_SIZE);
-  }
-
-  function updateCategory(value: string) {
-    setCategory(value);
-    setVisibleCount(PAGE_SIZE);
-  }
-
-  function updateSort(value: string) {
-    setSort(value);
+  function selectCategory(c: FontCategory | "all") {
+    setCategory(c);
     setVisibleCount(PAGE_SIZE);
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8 px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
+    <div className="min-h-screen bg-[#F2EBE0] font-grotesk text-[#211E18]">
       <GoogleFontsLoader fonts={visibleItems} />
-      <BrowseHeader
-        eyebrow="Typography"
-        title="Fonts"
-        description="Preview real Google Fonts with real weights. Find the voice for your product."
-        count={items.length}
-      />
 
-      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
-        <SearchBar value={query} onChange={updateQuery} placeholder="Search fonts..." />
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <FilterDropdown value={category} onChange={updateCategory} options={CATEGORIES} allLabel="All categories" />
-          <SortDropdown
-            value={sort}
-            onChange={updateSort}
-            options={[
-              { value: "name-asc", label: "Name A–Z" },
-              { value: "name-desc", label: "Name Z–A" },
-            ]}
-          />
+      <section className="border-b border-black/[0.18] px-6 pb-11 pt-10 sm:px-12 sm:pt-14">
+        <div className="flex items-center justify-between gap-4 font-mono-plex text-[11px] uppercase tracking-[0.22em] text-[#6E675C]">
+          <span>Typography — {fonts.length} faces</span>
+          <span>02 / Fonts</span>
         </div>
+        <h1 className="mt-7 font-editorial-serif text-[clamp(2.75rem,9.5vw,8rem)] font-normal leading-[0.98] tracking-tight">
+          The <em className="text-[#222D52] not-italic">specimen</em> room.
+        </h1>
+        <div className="mt-9 flex flex-wrap items-end justify-between gap-6">
+          <p className="max-w-md text-[15px] leading-relaxed text-[#555046]">
+            Real Google Fonts, proofed at full size. Type your own line below and read it in every voice before
+            you commit.
+          </p>
+          <span className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#8A8477]">
+            {String(items.length).padStart(2, "0")} faces proofed
+          </span>
+        </div>
+      </section>
+
+      <div className="flex items-baseline gap-7 border-b border-black/[0.18] px-6 py-6 sm:px-12">
+        <span className="whitespace-nowrap font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#8A8477]">
+          Proof text
+        </span>
+        <input
+          value={proofText}
+          onChange={(e) => setProofText(e.target.value)}
+          placeholder="Type a line to proof…"
+          className="min-w-[200px] flex-1 border-b border-black/[0.35] bg-transparent font-editorial-serif text-xl italic text-[#211E18] outline-none placeholder:text-[#8A8477]"
+        />
+      </div>
+
+      <div className="sticky top-14 z-40 flex gap-6 overflow-x-auto border-b border-black/[0.18] bg-[#F2EBE0] px-6 sm:px-12">
+        {CATEGORIES.map((c) => (
+          <TabButton key={c} active={c === category} onClick={() => selectCategory(c)}>
+            {c === "all" ? "All categories" : c}
+          </TabButton>
+        ))}
       </div>
 
       {items.length === 0 ? (
-        <EmptyState />
+        <div className="px-6 py-16 sm:px-12">
+          <EmptyState />
+        </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {visibleItems.map((f) => (
-              <FontCard key={f.id} font={f} />
+          <div>
+            {visibleItems.map((f, i) => (
+              <FontRow key={f.id} font={f} index={i + 1} proofText={proofText} />
             ))}
           </div>
           {visibleCount < items.length && (
-            <div className="flex justify-center pt-2">
+            <div className="flex justify-center border-t border-black/[0.18] py-9">
               <button
                 type="button"
                 onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-                className="rounded-lg border border-neutral-200 px-6 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50"
+                className="rounded-full border border-black/[0.18] px-6 py-2.5 font-mono-plex text-[11px] uppercase tracking-[0.16em] text-[#494434] transition-colors hover:border-[#211E18] hover:text-[#211E18]"
               >
                 Load more ({items.length - visibleCount} remaining)
               </button>
@@ -107,6 +171,11 @@ export function FontGrid({ fonts }: { fonts: Font[] }) {
           )}
         </>
       )}
+
+      <footer className="flex flex-wrap items-center justify-between gap-3 px-6 py-9 font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477] sm:px-12">
+        <span>© {new Date().getFullYear()} StyleBook</span>
+        <span>Colour · Type · Theme — unified</span>
+      </footer>
     </div>
   );
 }
