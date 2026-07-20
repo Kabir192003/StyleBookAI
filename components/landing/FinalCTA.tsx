@@ -16,11 +16,12 @@ const FOOTER_LINKS = [
 ];
 
 export default function FinalCTA() {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
-    const video = section.querySelector('.final-cta__video');
+    if (!section) return;
+    const video = section.querySelector<HTMLVideoElement>('.final-cta__video');
     const logo = section.querySelector('.final-cta__logo');
     const headline = section.querySelector('.final-cta__headline');
     const subheadline = section.querySelector('.final-cta__subheadline');

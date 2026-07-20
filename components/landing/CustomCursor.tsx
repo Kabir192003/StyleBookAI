@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState } from 'react';
 
 export default function CustomCursor() {
-  const cursorRef = useRef(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
   const pos = useRef({ x: 0, y: 0 });
   const target = useRef({ x: 0, y: 0 });
   const [label, setLabel] = useState('');
   const [color, setColor] = useState('');
-  const rafId = useRef(null);
+  const rafId = useRef<number | null>(null);
 
   useEffect(() => {
     // Detect touch device
@@ -16,8 +16,9 @@ export default function CustomCursor() {
     if (isTouch) return;
 
     const cursor = cursorRef.current;
+    if (!cursor) return;
 
-    const onMouseMove = (e) => {
+    const onMouseMove = (e: MouseEvent) => {
       target.current = { x: e.clientX, y: e.clientY };
       if (!cursor.classList.contains('visible')) {
         cursor.classList.add('visible');
@@ -30,14 +31,15 @@ export default function CustomCursor() {
     const onMouseLeave = () => cursor.classList.remove('visible');
 
     // Hover detection for interactive elements
-    const onMouseOver = (e) => {
-      const interactive = e.target.closest('[data-cursor-interactive="true"], button, a, input, .control-color, .control-font, .control-shadow, .magnetic-btn, .explore__swatch');
+    const onMouseOver = (e: MouseEvent) => {
+      const eventTarget = e.target as HTMLElement;
+      const interactive = eventTarget.closest('[data-cursor-interactive="true"], button, a, input, .control-color, .control-font, .control-shadow, .magnetic-btn, .explore__swatch');
       if (interactive) {
         cursor.classList.add('hovering');
-        
+
         const customColor = interactive.getAttribute('data-cursor-color');
         if (customColor) setColor(customColor);
-        
+
         const customLabel = interactive.getAttribute('data-cursor-label');
         if (customLabel) {
           setLabel(customLabel);
@@ -49,8 +51,9 @@ export default function CustomCursor() {
       }
     };
 
-    const onMouseOut = (e) => {
-      const interactive = e.target.closest('[data-cursor-interactive="true"], button, a, input, .control-color, .control-font, .control-shadow, .magnetic-btn, .explore__swatch');
+    const onMouseOut = (e: MouseEvent) => {
+      const eventTarget = e.target as HTMLElement;
+      const interactive = eventTarget.closest('[data-cursor-interactive="true"], button, a, input, .control-color, .control-font, .control-shadow, .magnetic-btn, .explore__swatch');
       if (interactive) {
         cursor.classList.remove('hovering');
         cursor.classList.remove('has-label');
@@ -83,7 +86,7 @@ export default function CustomCursor() {
       document.removeEventListener('mouseleave', onMouseLeave);
       document.removeEventListener('mouseover', onMouseOver);
       document.removeEventListener('mouseout', onMouseOut);
-      cancelAnimationFrame(rafId.current);
+      if (rafId.current !== null) cancelAnimationFrame(rafId.current);
     };
   }, []);
 

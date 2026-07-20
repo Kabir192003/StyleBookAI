@@ -125,16 +125,17 @@ const MOCKUP_MAP = {
 };
 
 export default function ScrollStudio() {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
+    if (!section) return;
     const pin = section.querySelector('.studio__pin');
     const header = section.querySelector('.studio__header');
     const canvas = section.querySelector('.studio__canvas');
     const artboards = section.querySelectorAll('.studio__artboard');
     const tokenSource = section.querySelector('.studio__token-source');
-    const lines = section.querySelectorAll('.studio__connections line');
+    const lines = section.querySelectorAll<SVGLineElement>('.studio__connections line');
 
     if (prefersReducedMotion()) {
       section.style.height = 'auto';
@@ -226,7 +227,7 @@ export default function ScrollStudio() {
 
           {/* Artboards */}
           {ARTBOARDS.map((board) => {
-            const Mockup = MOCKUP_MAP[board.type];
+            const Mockup = MOCKUP_MAP[board.type as keyof typeof MOCKUP_MAP];
             return (
               <div
                 key={board.id}

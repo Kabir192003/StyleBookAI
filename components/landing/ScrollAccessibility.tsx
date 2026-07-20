@@ -14,10 +14,11 @@ const VISION_MODES = [
 ];
 
 export default function ScrollAccessibility() {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
+    if (!section) return;
     const pin = section.querySelector('.accessibility__pin');
     const header = section.querySelector('.accessibility__header');
     const demo = section.querySelector('.a11y-demo');
@@ -116,7 +117,7 @@ export default function ScrollAccessibility() {
           <div className="accessibility__header" style={{ transform: 'translateY(20px)' }}>
             <p className="scene-eyebrow">Inclusive by default</p>
             <h2>Accessibility, built in.</h2>
-            <p>Don't just check compliance — see it.</p>
+            <p>Don&apos;t just check compliance — see it.</p>
           </div>
 
           <div className="a11y-demo" style={{ transform: 'translateY(20px)' }}>
