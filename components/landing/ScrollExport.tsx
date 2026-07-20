@@ -25,16 +25,17 @@ const EXPORT_ICONS = {
   swift: Bird,
 };
 
-function ExportIcon({ type }) {
+function ExportIcon({ type }: { type: keyof typeof EXPORT_ICONS }) {
   const Icon = EXPORT_ICONS[type] || Braces;
   return <Icon size={18} strokeWidth={2} aria-hidden="true" />;
 }
 
 export default function ScrollExport() {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
+    if (!section) return;
     const pin = section.querySelector('.export__pin');
     const header = section.querySelector('.export__header');
     const tokenDot = section.querySelector('.export__token-dot');
@@ -126,7 +127,7 @@ export default function ScrollExport() {
             {EXPORT_FORMATS.map((format) => (
               <div key={format.id} className="export-card">
                 <div className={`export-card__icon export-card__icon--${format.iconType}`}>
-                  <ExportIcon type={format.iconType} />
+                  <ExportIcon type={format.iconType as keyof typeof EXPORT_ICONS} />
                 </div>
                 <div className="export-card__info">
                   <div className="export-card__name">{format.name}</div>

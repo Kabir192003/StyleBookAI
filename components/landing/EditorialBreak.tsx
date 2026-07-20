@@ -11,10 +11,11 @@ import { prefersReducedMotion } from '@/lib/landing/motion';
  * Photo: Unsplash (free license), served locally from /public/landing.
  */
 export default function EditorialBreak() {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
+    if (!section) return;
     const img = section.querySelector('.editorial__img');
     const content = section.querySelector('.editorial__content');
 
@@ -86,9 +87,9 @@ export default function EditorialBreak() {
           <p className="scene-eyebrow editorial__eyebrow">The feeling</p>
           <blockquote>
             <p className="editorial__quote">
-              Taste isn't a mood.
+              Taste isn&apos;t a mood.
               <br />
-              It's a <em className="serif-accent">system</em>.
+              It&apos;s a <em className="serif-accent">system</em>.
             </p>
           </blockquote>
           <figcaption className="editorial__caption">

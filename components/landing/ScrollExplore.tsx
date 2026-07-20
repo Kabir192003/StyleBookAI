@@ -9,11 +9,11 @@ import { prefersReducedMotion, seededRandom } from '@/lib/landing/motion';
 
 // The full spectrum — the wall is the one place the library shows its whole
 // range, floating loose on the silk page until scroll calls it to order.
-function generateColors(count) {
+function generateColors(count: number) {
   const rand = seededRandom(93);
   // Unique values only: swatch identity doubles as the React key so the
   // hue-sort can FLIP-animate each tile to its new position.
-  const colors = new Set();
+  const colors = new Set<string>();
   while (colors.size < count) {
     const hue = Math.floor(rand() * 360);
     const sat = 48 + Math.floor(rand() * 42);
@@ -24,7 +24,7 @@ function generateColors(count) {
 }
 
 // Scattered "paint chips on the desk" offsets for the unsorted state
-function generateScatter(count) {
+function generateScatter(count: number) {
   const rand = seededRandom(29);
   return Array.from({ length: count }, () => ({
     x: (rand() - 0.5) * 96,
@@ -34,10 +34,10 @@ function generateScatter(count) {
 }
 
 export default function ScrollExplore() {
-  const sectionRef = useRef(null);
-  const [colors, setColors] = useState([]);
+  const sectionRef = useRef<HTMLElement>(null);
+  const [colors, setColors] = useState<string[]>([]);
   const [isSorted, setIsSorted] = useState(false);
-  const [copied, setCopied] = useState(null);
+  const [copied, setCopied] = useState<{ index: number; hex: string } | null>(null);
 
   useEffect(() => {
     const compact = window.matchMedia('(max-width: 768px)').matches;
@@ -46,13 +46,14 @@ export default function ScrollExplore() {
 
   const sortedColors = useMemo(() => {
     return [...colors].sort((a, b) => {
-      const getHue = (hsl) => parseInt(hsl.match(/\d+/)[0], 10);
+      const getHue = (hsl: string) => parseInt(hsl.match(/\d+/)?.[0] ?? '0', 10);
       return getHue(a) - getHue(b);
     });
   }, [colors]);
 
   useEffect(() => {
     const section = sectionRef.current;
+    if (!section) return;
 
     if (prefersReducedMotion()) {
       setIsSorted(true);
@@ -86,7 +87,7 @@ export default function ScrollExplore() {
     return () => ctx.revert();
   }, []);
 
-  const copyColor = (color, i) => {
+  const copyColor = (color: string, i: number) => {
     const hex = chroma(color).hex().toUpperCase();
     navigator.clipboard?.writeText(hex).catch(() => {});
     setCopied({ index: i, hex });

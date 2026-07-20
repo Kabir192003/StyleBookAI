@@ -3,31 +3,43 @@
  *
  * Owner: Kabir
  *
- * Request body: { prompt: string }
- * Response: a draft Project — colors[], fonts (heading/body), and an
- * AIReasoning object explaining each choice (see types/project.ts).
- *
- * TODO (Kabir):
- * - Validate body with zod
- * - Build the system prompt: select from allColors/allFonts rather than
- *   inventing hex codes, return structured JSON (use tool-use/structured
- *   output, not freeform text parsing)
- * - Map the model's color/font picks back to real entries in
- *   data/colors and data/fonts so hex values and notes stay accurate
- * - Rate limit per Clerk user
+ * Request body: AIGenerateRequest (see types/ai.ts).
+ * Response: a draft Project — colors[], fonts (primary/secondary/accent),
+ * typeScale, and an AIReasoning object explaining each choice.
  */
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
+import { AIGenerateRequestSchema } from "@/lib/ai/schema";
+import { AIGenerationError, generateProjectFromPrompt } from "@/lib/ai/generate";
+
+// Building the candidate-color/font prompt plus a real Gemini round-trip
+// (and possibly a retry) routinely exceeds Vercel's default serverless
+// function timeout — raise it explicitly rather than let requests die mid-generation.
+export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
-  const { prompt } = await req.json();
-
-  if (!prompt || typeof prompt !== "string") {
-    return NextResponse.json({ error: "prompt is required" }, { status: 400 });
+  const { userId } = auth();
+  if (!userId) {
+    return NextResponse.json({ error: "Sign in required" }, { status: 401 });
   }
 
-  // TODO (Kabir): call Gemini API here using @google/generative-ai.
-  return NextResponse.json(
-    { error: "Not implemented yet — see TODOs in this file." },
-    { status: 501 }
-  );
+  const body = await req.json();
+  const parsed = AIGenerateRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "Invalid request", details: parsed.error.flatten() },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const project = await generateProjectFromPrompt(parsed.data);
+    return NextResponse.json({ project });
+  } catch (error) {
+    if (error instanceof AIGenerationError) {
+      return NextResponse.json({ error: error.message }, { status: 502 });
+    }
+    console.error("AI generate failed:", error);
+    return NextResponse.json({ error: "Generation failed, try again" }, { status: 500 });
+  }
 }

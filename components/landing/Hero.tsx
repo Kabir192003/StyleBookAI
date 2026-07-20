@@ -10,7 +10,7 @@ import { prefersReducedMotion } from '@/lib/landing/motion';
 import { MagneticButton } from '@/components/motion/MagneticButton';
 import { INTRO_DONE_EVENT } from '@/components/landing/IntroCurtain';
 
-function BrowserChrome({ url }) {
+function BrowserChrome({ url }: { url: string }) {
   return (
     <div className="browser-window__chrome glass-panel" style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0, borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
       <span className="browser-window__dot browser-window__dot--red" />
@@ -113,7 +113,7 @@ function BrandGuideMockup() {
   );
 }
 
-const MOCKUP_MAP = {
+const MOCKUP_MAP: Record<string, () => JSX.Element> = {
   'google-fonts': GoogleFontsMockup,
   'coolors': CoolorsMockup,
   'type-scale': TypeScaleMockup,
@@ -178,25 +178,26 @@ function MorphingText() {
 }
 
 export default function Hero() {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
-    const windows = section.querySelectorAll('.browser-window');
+    if (!section) return;
+    const windows = section.querySelectorAll<HTMLElement>('.browser-window');
     const eyebrow = section.querySelector('.hero__eyebrow');
     const headline = section.querySelector('.hero__headline');
     const subtext = section.querySelector('.hero__subtext');
     const ctas = section.querySelector('.hero__ctas');
     const cue = section.querySelector('.hero__scroll-cue');
     const content = section.querySelector('.hero__content');
-    const objects = section.querySelectorAll('.obj-3d');
+    const objects = section.querySelectorAll<HTMLElement>('.obj-3d');
 
     if (prefersReducedMotion()) {
       gsap.set([eyebrow, headline, subtext, ctas, cue, ...windows], { opacity: 1 });
       return;
     }
 
-    let startEntrance;
+    let startEntrance: (() => void) | undefined;
     const ctx = gsap.context(() => {
       // Entrance — waits for the intro curtain on first visit
       const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
@@ -269,7 +270,7 @@ export default function Hero() {
     // Pointer parallax — quickTo reuses one tween per property instead of
     // allocating a new tween on every mousemove. The floating windows also
     // tilt in 3D against the pointer for set depth.
-    let removeMove;
+    let removeMove: (() => void) | undefined;
     if (!window.matchMedia('(hover: none)').matches) {
       const setters = Array.from(objects).map((obj) => ({
         x: gsap.quickTo(obj, 'x', { duration: 0.9, ease: 'power3.out' }),
@@ -283,7 +284,7 @@ export default function Hero() {
         ry: gsap.quickTo(win, 'rotationY', { duration: 1.1, ease: 'power3.out' }),
       }));
 
-      const onMouseMove = (e) => {
+      const onMouseMove = (e: MouseEvent) => {
         const nx = (e.clientX / window.innerWidth - 0.5) * 2;
         const ny = (e.clientY / window.innerHeight - 0.5) * 2;
         setters.forEach((s) => {
@@ -319,9 +320,9 @@ export default function Hero() {
 
       <div className="hero__windows">
         <Premium3DObjects />
-        {HERO_WINDOWS.map((win) => {
+        {HERO_WINDOWS.map((win: any) => {
           const Mockup = MOCKUP_MAP[win.id];
-          const posStyle = {};
+          const posStyle: React.CSSProperties = {};
           if (win.style.top) posStyle.top = win.style.top;
           if (win.style.bottom) posStyle.bottom = win.style.bottom;
           if (win.style.left) posStyle.left = win.style.left;

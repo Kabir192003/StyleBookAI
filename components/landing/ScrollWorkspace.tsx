@@ -26,7 +26,7 @@ const MODULE_ICONS = {
 };
 
 export default function ScrollWorkspace() {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   // Module positions on the 800×800 stage
   const containerSize = 800;
@@ -35,10 +35,11 @@ export default function ScrollWorkspace() {
 
   useEffect(() => {
     const section = sectionRef.current;
+    if (!section) return;
     const pin = section.querySelector('.workspace__pin');
     const center = section.querySelector('.workspace__center');
-    const modules = section.querySelectorAll('.workspace__module');
-    const lines = section.querySelectorAll('.workspace__lines line');
+    const modules = section.querySelectorAll<HTMLElement>('.workspace__module');
+    const lines = section.querySelectorAll<SVGLineElement>('.workspace__lines line');
     const header = section.querySelector('.workspace__header');
 
     if (prefersReducedMotion()) {
@@ -71,8 +72,8 @@ export default function ScrollWorkspace() {
 
       // Phase 2: Modules genuinely expand outward from the core
       modules.forEach((mod, i) => {
-        const tx = parseFloat(mod.dataset.tx);
-        const ty = parseFloat(mod.dataset.ty);
+        const tx = parseFloat(mod.dataset.tx ?? '');
+        const ty = parseFloat(mod.dataset.ty ?? '');
         tl.fromTo(mod,
           { x: centerX - tx, y: centerY - ty, scale: 0.2, opacity: 0 },
           {
@@ -147,7 +148,7 @@ export default function ScrollWorkspace() {
               const rad = (mod.angle * Math.PI) / 180;
               const tx = centerX + Math.cos(rad) * mod.distance;
               const ty = centerY + Math.sin(rad) * mod.distance;
-              const Icon = MODULE_ICONS[mod.id];
+              const Icon = MODULE_ICONS[mod.id as keyof typeof MODULE_ICONS];
 
               return (
                 <div

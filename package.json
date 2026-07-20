@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "transform:colors": "tsx scripts/transformColors.ts"
+    "transform:colors": "tsx scripts/transformColors.ts",
+    "transform:fonts": "tsx scripts/transformFonts.ts",
+    "generate:theme-thumbnails": "tsx scripts/generateThemeThumbnails.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^5.2.0",

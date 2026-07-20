@@ -7,10 +7,11 @@ import { AI_REASONING, AI_COLORS } from '@/lib/landing/constants';
 import { prefersReducedMotion } from '@/lib/landing/motion';
 
 export default function ScrollAI() {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
+    if (!section) return;
     const pin = section.querySelector('.ai-thinking__pin');
     const prompt = section.querySelector('.ai-thinking__prompt');
     const btn = section.querySelector('.ai-thinking__generate-btn');

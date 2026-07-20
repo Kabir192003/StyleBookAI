@@ -7,7 +7,8 @@
  */
 
 import type { Metadata, Viewport } from "next";
-import { landingFontVariables } from "@/lib/landing/fonts"; 
+import { ClerkProvider } from "@clerk/nextjs";
+import { landingFontVariables } from "@/lib/landing/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -33,8 +34,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={landingFontVariables}>
-      <body>{children}</body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={landingFontVariables}>
+        <body>{children}</body>
+      </html>
+    </ClerkProvider>
   );
 }

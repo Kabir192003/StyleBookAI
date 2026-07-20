@@ -8,7 +8,7 @@ import { prefersReducedMotion, seededRandom } from '@/lib/landing/motion';
 
 // Seeded so server and client render the exact same "random" scatter —
 // Math.random() here caused hydration mismatches.
-function generateChaosWindows(count) {
+function generateChaosWindows(count: number) {
   const tools = ['Google Fonts', 'Coolors', 'Type Scale', 'WCAG Check', 'Brand PDF', 'Figma', 'Dribbble', 'Pen & Paper', 'Notion', 'Color Hunt', 'Adobe XD', 'Sketch'];
   const urls = ['fonts.google.com', 'coolors.co', 'typescale.com', 'webaim.org', 'brand.pdf', 'figma.com', 'dribbble.com', 'notes.app', 'notion.so', 'colorhunt.co', 'adobe.com', 'sketch.com'];
   const rand = seededRandom(7);
@@ -42,12 +42,14 @@ function CursorSVG() {
 }
 
 export default function ScrollChaos() {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
-    const pin = section.querySelector('.chaos__pin');
-    const windows = section.querySelectorAll('.chaos__window');
+    if (!section) return;
+    const pin = section.querySelector<HTMLElement>('.chaos__pin');
+    if (!pin) return;
+    const windows = section.querySelectorAll<HTMLElement>('.chaos__window');
     const cursor = section.querySelector('.chaos__cursor');
     const toasts = section.querySelectorAll('.chaos__toast');
     const message = section.querySelector('.chaos__message h2');
@@ -58,8 +60,8 @@ export default function ScrollChaos() {
       windows.forEach((win) => {
         gsap.set(win, {
           opacity: 0.12,
-          scale: parseFloat(win.dataset.scale) || 0.8,
-          rotation: parseFloat(win.dataset.rot) || 0,
+          scale: parseFloat(win.dataset.scale ?? '') || 0.8,
+          rotation: parseFloat(win.dataset.rot ?? '') || 0,
         });
       });
       gsap.set(message, { opacity: 1 });
@@ -82,7 +84,7 @@ export default function ScrollChaos() {
         const delay = i * 0.02;
         tl.fromTo(win,
           { opacity: 0, scale: 0.5, rotation: (Math.random() - 0.5) * 20 },
-          { opacity: 1, scale: parseFloat(win.dataset.scale) || 0.8, rotation: parseFloat(win.dataset.rot) || 0, duration: 0.15 },
+          { opacity: 1, scale: parseFloat(win.dataset.scale ?? '') || 0.8, rotation: parseFloat(win.dataset.rot ?? '') || 0, duration: 0.15 },
           delay
         );
       });

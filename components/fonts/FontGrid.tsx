@@ -18,11 +18,13 @@ import { GoogleFontsLoader } from "./GoogleFontsLoader";
 import { Font, FontCategory } from "@/types/font";
 
 const CATEGORIES: FontCategory[] = ["sans-serif", "serif", "display", "monospace", "handwriting", "variable"];
+const PAGE_SIZE = 48;
 
 export function FontGrid({ fonts }: { fonts: Font[] }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>("__all__");
   const [sort, setSort] = useState<string>("name-asc");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   const items = useMemo(() => {
     let list = fonts.filter((f) => {
@@ -37,9 +39,30 @@ export function FontGrid({ fonts }: { fonts: Font[] }) {
     return list;
   }, [fonts, query, category, sort]);
 
+  // Re-page from the top whenever the filtered set changes, rather than
+  // rendering (and font-loading) every match at once — with ~2000 fonts
+  // in the library that would blow past the browser's URL length limit
+  // for the Google Fonts stylesheet link.
+  const visibleItems = useMemo(() => items.slice(0, visibleCount), [items, visibleCount]);
+
+  function updateQuery(value: string) {
+    setQuery(value);
+    setVisibleCount(PAGE_SIZE);
+  }
+
+  function updateCategory(value: string) {
+    setCategory(value);
+    setVisibleCount(PAGE_SIZE);
+  }
+
+  function updateSort(value: string) {
+    setSort(value);
+    setVisibleCount(PAGE_SIZE);
+  }
+
   return (
     <div className="space-y-8">
-      <GoogleFontsLoader fonts={items} />
+      <GoogleFontsLoader fonts={visibleItems} />
       <BrowseHeader
         eyebrow="Typography"
         title="Fonts"
@@ -48,12 +71,12 @@ export function FontGrid({ fonts }: { fonts: Font[] }) {
       />
 
       <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
-        <SearchBar value={query} onChange={setQuery} placeholder="Search fonts..." />
+        <SearchBar value={query} onChange={updateQuery} placeholder="Search fonts..." />
         <div className="flex flex-col gap-3 sm:flex-row">
-          <FilterDropdown value={category} onChange={setCategory} options={CATEGORIES} allLabel="All categories" />
+          <FilterDropdown value={category} onChange={updateCategory} options={CATEGORIES} allLabel="All categories" />
           <SortDropdown
             value={sort}
-            onChange={setSort}
+            onChange={updateSort}
             options={[
               { value: "name-asc", label: "Name A–Z" },
               { value: "name-desc", label: "Name Z–A" },
@@ -65,11 +88,24 @@ export function FontGrid({ fonts }: { fonts: Font[] }) {
       {items.length === 0 ? (
         <EmptyState />
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {items.map((f) => (
-            <FontCard key={f.id} font={f} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {visibleItems.map((f) => (
+              <FontCard key={f.id} font={f} />
+            ))}
+          </div>
+          {visibleCount < items.length && (
+            <div className="flex justify-center pt-2">
+              <button
+                type="button"
+                onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                className="rounded-lg border border-neutral-200 px-6 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50"
+              >
+                Load more ({items.length - visibleCount} remaining)
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

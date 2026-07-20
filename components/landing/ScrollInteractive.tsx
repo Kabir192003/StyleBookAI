@@ -8,7 +8,7 @@ import { INTERACTIVE_PALETTES, INTERACTIVE_FONTS } from '@/lib/landing/constants
 import { prefersReducedMotion } from '@/lib/landing/motion';
 
 export default function ScrollInteractive() {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const [activePalette, setActivePalette] = useState(0);
   const [activeFont, setActiveFont] = useState(0);
   const [spacing, setSpacing] = useState(10);
@@ -34,7 +34,7 @@ export default function ScrollInteractive() {
     '--preview-spacing': `${spacing}px`,
     '--preview-radius': `${radius}px`,
     '--preview-shadow': shadowValues[shadow],
-  };
+  } as React.CSSProperties;
 
   const handleInteraction = useCallback(() => {
     if (!hasInteracted) setHasInteracted(true);
@@ -42,6 +42,7 @@ export default function ScrollInteractive() {
 
   useEffect(() => {
     const section = sectionRef.current;
+    if (!section) return;
     const headline = section.querySelector('.interactive__headline');
     const layout = section.querySelector('.interactive__layout');
 

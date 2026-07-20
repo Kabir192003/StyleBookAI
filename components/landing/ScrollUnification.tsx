@@ -6,10 +6,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { prefersReducedMotion, seededRandom } from '@/lib/landing/motion';
 
 export default function ScrollUnification() {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
+    if (!section) return;
     const pin = section.querySelector('.unification__pin');
     const windows = section.querySelectorAll('.unification__window');
     const sphere = section.querySelector('.unification__sphere');

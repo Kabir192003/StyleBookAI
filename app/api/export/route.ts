@@ -1,23 +1,83 @@
 /**
- * POST /api/export — export a project as an image (html-to-image) and/or
- * a code snippet (CSS variables / Tailwind config).
+ * POST /api/export — generates a text code snippet (CSS vars / SCSS /
+ * Tailwind config / JSON) for a project. Accepts either a saved
+ * `projectId` (auth required, ownership enforced) or an inline `project`
+ * payload for unsaved Studio drafts. PNG/PDF export is client-side via
+ * html-to-image, not handled here.
  *
  * Owner: Kabir
- *
- * TODO (Kabir):
- * - Accept { projectId, format: "png" | "css" | "tailwind" }
- * - For "png": this likely needs to happen client-side (html-to-image
- *   renders a DOM node) rather than server-side — reconsider whether this
- *   route is even needed for that case vs. a client-only export button
- * - For "css"/"tailwind": generate the snippet server-side and return as
- *   text
  */
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
+import { z } from "zod";
+import { getSupabaseAdmin } from "@/lib/db/supabase";
+import { getOrCreateUserId } from "@/lib/db/getOrCreateUser";
+import { ProjectInputSchema } from "@/lib/validation/project";
+import { ProjectRow } from "@/lib/db/projectMapper";
+import { generateExport, ExportFormat } from "@/lib/export/generators";
+
+const InlineProjectSchema = ProjectInputSchema.pick({
+  name: true,
+  colors: true,
+  fonts: true,
+  typeScale: true,
+});
+
+const ExportRequestSchema = z
+  .object({
+    format: z.enum(["css", "scss", "tailwind", "json"]),
+    projectId: z.string().optional(),
+    project: InlineProjectSchema.optional(),
+  })
+  .refine((data) => !!data.projectId || !!data.project, {
+    message: "Either projectId or project is required",
+  });
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  return NextResponse.json(
-    { error: "Not implemented yet — see TODOs in this file.", received: body },
-    { status: 501 }
+  const parsed = ExportRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "Invalid export request", details: parsed.error.flatten() },
+      { status: 400 }
+    );
+  }
+
+  const { format, projectId, project } = parsed.data;
+  const exportFormat = format as ExportFormat;
+
+  if (project) {
+    const content = generateExport(project, exportFormat);
+    return NextResponse.json({ content, format: exportFormat });
+  }
+
+  const { userId } = auth();
+  if (!userId) {
+    return NextResponse.json({ error: "Sign in required" }, { status: 401 });
+  }
+
+  const internalUserId = await getOrCreateUserId(userId);
+  const admin = getSupabaseAdmin();
+  const { data, error } = await admin
+    .from("projects")
+    .select("*")
+    .eq("id", projectId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Failed to load project for export:", error);
+    return NextResponse.json({ error: "Failed to load project" }, { status: 500 });
+  }
+
+  const row = data as ProjectRow | null;
+  if (!row || row.user_id !== internalUserId) {
+    return NextResponse.json({ error: "Project not found" }, { status: 404 });
+  }
+
+  const content = generateExport(
+    { name: row.name, colors: row.data.colors, fonts: row.data.fonts, typeScale: row.data.typeScale },
+    exportFormat
   );
+
+  return NextResponse.json({ content, format: exportFormat });
 }
