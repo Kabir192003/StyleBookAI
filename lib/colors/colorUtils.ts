@@ -50,6 +50,31 @@ export function rgbToHsl(r: number, g: number, b: number) {
   return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
 }
 
+// WCAG 2.x relative luminance + contrast ratio — used by Preview Lab and
+// the theme detail page to report real, computed contrast, not a guess.
+function relativeLuminance(hex: string): number {
+  const { r, g, b } = hexToRgb(hex);
+  const [rs, gs, bs] = [r, g, b].map((c) => {
+    const s = c / 255;
+    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+}
+
+export function getContrastRatio(hexA: string, hexB: string): number {
+  const lA = relativeLuminance(hexA);
+  const lB = relativeLuminance(hexB);
+  const lighter = Math.max(lA, lB);
+  const darker = Math.min(lA, lB);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+export function getWcagLevel(ratio: number): "AAA" | "AA" | "Fail" {
+  if (ratio >= 7) return "AAA";
+  if (ratio >= 4.5) return "AA";
+  return "Fail";
+}
+
 // `note` is required on Color, so any caller of buildColor() is forced to
 // write the editorial note at the point of data entry — it can't be added
 // "later" by accident, since every shade ships with one from creation.
