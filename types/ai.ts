@@ -7,6 +7,7 @@
  * schema in app/api/ai/generate/route.ts.
  */
 import { ColorStyle } from "./color";
+import { Project } from "./project";
 
 export type AIGenerateRequest = {
   prompt: string;
@@ -14,3 +15,7 @@ export type AIGenerateRequest = {
   colorPreferences?: string[];
   avoid?: string[];
 };
+
+// What POST /api/ai/generate actually returns — a draft Project, not yet
+// saved (no id/userId/timestamps until the user chooses to save it).
+export type AIGeneratedProject = Omit<Project, "id" | "userId" | "createdAt" | "updatedAt">;
