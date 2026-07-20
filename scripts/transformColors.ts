@@ -50,6 +50,20 @@ function titleCase(word: string) {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
+function generateNote(name: string, shadeNum: number, family: ColorFamily): string {
+  const weight =
+    shadeNum <= 200
+      ? "a light, airy"
+      : shadeNum <= 400
+      ? "a soft"
+      : shadeNum <= 600
+      ? "a balanced"
+      : shadeNum <= 800
+      ? "a deep"
+      : "a very dark";
+  return `${titleCase(weight)} ${family} tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.`;
+}
+
 function buildTailwindColors(): Color[] {
   const out: Color[] = [];
 
@@ -72,6 +86,7 @@ function buildTailwindColors(): Color[] {
           style: shadeNum <= 200 ? ["pastel"] : shadeNum >= 700 ? ["bold"] : ["modern"],
           collection: "tailwind",
           isPro: shadeNum % 200 === 0, // arbitrary placeholder gating, adjust later
+          note: generateNote(`${titleCase(familyKey)} ${shade}`, shadeNum, family),
         })
       );
     }
