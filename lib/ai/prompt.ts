@@ -8,6 +8,7 @@
  */
 import { Color } from "@/types/color";
 import { Font } from "@/types/font";
+import { MoodboardImage } from "@/types/designTokens";
 import { AIGenerateRequest } from "@/types/ai";
 import { TYPE_SCALE_RATIOS } from "@/lib/typeScale/generateTypeScale";
 
@@ -19,10 +20,15 @@ function describeFont(f: Font): string {
   return `${f.id} | ${f.family} | ${f.category} | mood:${f.mood.join(",")} | useCase:${f.useCase.join(",")}`;
 }
 
+function describeMoodboardImage(m: MoodboardImage): string {
+  return `${m.id} | mood:${m.mood.join(",")} | ${m.alt}`;
+}
+
 export function buildGeneratePrompt(
   request: AIGenerateRequest,
   candidateColors: Color[],
-  candidateFonts: Font[]
+  candidateFonts: Font[],
+  candidateMoodboardImages: MoodboardImage[]
 ): string {
   const ratioNames = Object.keys(TYPE_SCALE_RATIOS).join(", ");
 
@@ -42,7 +48,13 @@ ${candidateColors.map(describeColor).join("\n")}
 Candidate fonts (id | family | category | mood | useCase):
 ${candidateFonts.map(describeFont).join("\n")}
 
+Candidate moodboard images (id | mood | description):
+${candidateMoodboardImages.map(describeMoodboardImage).join("\n")}
+
 Valid type scale ratio names: ${ratioNames}
+Valid spacing bases: 4, 8
+Valid shadow levels: none, subtle, dramatic
+Valid corner radius values: 4, 8, 12, 20
 
 Respond with JSON ONLY, matching exactly this shape:
 {
@@ -53,6 +65,10 @@ Respond with JSON ONLY, matching exactly this shape:
   "accentFontId": string (optional, one of the candidate font ids),
   "typeScaleRatio": string (must be exactly one of the valid ratio names above),
   "baseSize": number (optional, 12-24, defaults to 16 if omitted),
+  "spacingBase": number (must be exactly 4 or 8 — pick 4 for a tighter/compact feel, 8 for a more spacious/airy feel),
+  "shadowLevel": string (must be exactly one of the valid shadow levels — "none" for flat/brutalist brands, "subtle" for minimal/professional, "dramatic" for bold/luxury),
+  "cornerRadius": number (must be exactly one of the valid corner radius values — lower for sharp/serious brands, higher for soft/friendly brands),
+  "moodboardImageIds": [ string, string ] (2 to 3 of the candidate moodboard image ids above whose mood best matches the brand),
   "reasoning": {
     "palette": string (plain language, why these colors together),
     "fonts": string (plain language, why this pairing),

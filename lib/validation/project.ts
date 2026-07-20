@@ -105,6 +105,28 @@ const AIReasoningSchema = z.object({
   overall: z.string(),
 });
 
+const SpacingScaleSchema = z.object({
+  base: z.number(),
+  steps: z.array(z.number()),
+});
+
+const ShadowScaleSchema = z.object({
+  levels: z.array(z.object({ name: z.enum(["none", "subtle", "dramatic"]), value: z.string() })),
+  recommended: z.enum(["none", "subtle", "dramatic"]),
+});
+
+const CornerRadiusScaleSchema = z.object({
+  options: z.array(z.number()),
+  recommended: z.number(),
+});
+
+const MoodboardImageSchema = z.object({
+  id: z.string(),
+  src: z.string(),
+  alt: z.string(),
+  mood: z.array(z.string()),
+});
+
 export const ProjectInputSchema = z.object({
   name: z.string().trim().min(1).max(100),
   description: z.string().max(500).optional(),
@@ -115,6 +137,10 @@ export const ProjectInputSchema = z.object({
     accent: FontSchema.optional(),
   }),
   typeScale: TypeScaleSchema,
+  spacing: SpacingScaleSchema.optional(),
+  shadows: ShadowScaleSchema.optional(),
+  cornerRadius: CornerRadiusScaleSchema.optional(),
+  moodboard: z.array(MoodboardImageSchema).optional(),
   theme: z
     .object({ id: z.string(), slug: z.string(), name: z.string() })
     .optional(),

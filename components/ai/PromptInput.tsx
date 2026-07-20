@@ -144,8 +144,8 @@ export function PromptInput() {
             </div>
           </div>
 
-          {/* Fonts + type scale */}
-          <div className="grid gap-4 sm:grid-cols-2">
+          {/* Fonts + moodboard + type scale */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-xl border border-neutral-200 p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.15em] text-neutral-500">
                 Heading font
@@ -162,6 +162,109 @@ export function PromptInput() {
                 {result.fonts.secondary.family}
               </p>
             </div>
+
+            {result.moodboard && result.moodboard.length > 0 && (
+              <div className="rounded-xl border border-neutral-200 p-4 sm:col-span-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-neutral-500">
+                  Moodboard
+                </p>
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  {result.moodboard.map((image) => (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      key={image.id}
+                      src={image.src}
+                      alt={image.alt}
+                      className="h-20 w-full rounded-lg object-cover"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {result.typeScale && (
+              <div className="rounded-xl border border-neutral-200 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-neutral-500">
+                  Type scale
+                </p>
+                <p className="mt-1 text-xs text-neutral-500">{result.typeScale.ratioName}</p>
+                <div className="mt-3 space-y-1.5">
+                  {(["xl", "lg", "base", "sm"] as const).map((key) => (
+                    <div key={key} className="flex items-baseline gap-2">
+                      <span
+                        className="font-semibold text-neutral-900"
+                        style={{ fontSize: Math.min(result.typeScale.sizes[key], 22) }}
+                      >
+                        Aa
+                      </span>
+                      <span className="text-xs text-neutral-400">{Math.round(result.typeScale.sizes[key])}px</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Spacing + shadows + corner radius */}
+          <div className="grid gap-4 sm:grid-cols-3">
+            {result.spacing && (
+              <div className="rounded-xl border border-neutral-200 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-neutral-500">Spacing</p>
+                <div className="mt-3 space-y-1.5">
+                  {result.spacing.steps.map((step) => (
+                    <div
+                      key={step}
+                      className="h-2 rounded-full bg-neutral-200"
+                      style={{ width: `${Math.min(step, 96)}px` }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {result.shadows && (
+              <div className="rounded-xl border border-neutral-200 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-neutral-500">Shadows</p>
+                <div className="mt-3 flex gap-3">
+                  {result.shadows.levels.map((level) => (
+                    <div key={level.name} className="flex flex-col items-center gap-1.5">
+                      <div
+                        className="h-12 w-12 rounded-lg bg-white"
+                        style={{
+                          boxShadow: level.value,
+                          outline: level.name === result.shadows?.recommended ? "2px solid #171717" : "1px solid #e5e5e5",
+                          outlineOffset: 2,
+                        }}
+                      />
+                      <span className="text-[11px] text-neutral-500">{level.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {result.cornerRadius && (
+              <div className="rounded-xl border border-neutral-200 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-neutral-500">
+                  Corner radius
+                </p>
+                <div className="mt-3 flex gap-2">
+                  {result.cornerRadius.options.map((option) => (
+                    <div
+                      key={option}
+                      className="grid h-10 w-10 place-items-center border text-xs text-neutral-600"
+                      style={{
+                        borderRadius: option,
+                        borderColor: option === result.cornerRadius?.recommended ? "#171717" : "#e5e5e5",
+                        borderWidth: option === result.cornerRadius?.recommended ? 2 : 1,
+                      }}
+                    >
+                      {option}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <button

@@ -67,6 +67,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     parsed.data.colors !== undefined ||
     parsed.data.fonts !== undefined ||
     parsed.data.typeScale !== undefined ||
+    parsed.data.spacing !== undefined ||
+    parsed.data.shadows !== undefined ||
+    parsed.data.cornerRadius !== undefined ||
+    parsed.data.moodboard !== undefined ||
     parsed.data.theme !== undefined ||
     parsed.data.aiReasoning !== undefined;
 
@@ -75,6 +79,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       colors: parsed.data.colors ?? existing.data.colors,
       fonts: parsed.data.fonts ?? existing.data.fonts,
       typeScale: parsed.data.typeScale ?? existing.data.typeScale,
+      spacing: parsed.data.spacing ?? existing.data.spacing,
+      shadows: parsed.data.shadows ?? existing.data.shadows,
+      cornerRadius: parsed.data.cornerRadius ?? existing.data.cornerRadius,
+      moodboard: parsed.data.moodboard ?? existing.data.moodboard,
       theme: parsed.data.theme ?? existing.data.theme,
       aiReasoning: parsed.data.aiReasoning ?? existing.data.aiReasoning,
     };

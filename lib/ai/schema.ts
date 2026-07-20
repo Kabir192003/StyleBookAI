@@ -41,6 +41,10 @@ export const GeminiPaletteResponseSchema = z.object({
   accentFontId: z.string().min(1).optional(),
   typeScaleRatio: z.string().min(1),
   baseSize: z.number().min(12).max(24).optional(),
+  spacingBase: z.union([z.literal(4), z.literal(8)]).optional(),
+  shadowLevel: z.enum(["none", "subtle", "dramatic"]).optional(),
+  cornerRadius: z.union([z.literal(4), z.literal(8), z.literal(12), z.literal(20)]).optional(),
+  moodboardImageIds: z.array(z.string().min(1)).min(2).max(3).optional(),
   reasoning: z.object({
     palette: z.string().min(1),
     fonts: z.string().min(1),

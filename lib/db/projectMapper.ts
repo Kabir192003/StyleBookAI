@@ -1,12 +1,16 @@
 /**
  * Maps between the `projects` table row shape and the `Project` type.
  * `data` JSONB holds everything not already a column (colors, fonts,
- * typeScale, theme, aiReasoning) — see lib/db/schema.sql.
+ * typeScale, spacing, shadows, cornerRadius, moodboard, theme, aiReasoning)
+ * — see lib/db/schema.sql.
  */
 import { Project } from "@/types/project";
 import { ProjectInput } from "@/lib/validation/project";
 
-type ProjectData = Pick<Project, "colors" | "fonts" | "typeScale" | "theme" | "aiReasoning">;
+type ProjectData = Pick<
+  Project,
+  "colors" | "fonts" | "typeScale" | "spacing" | "shadows" | "cornerRadius" | "moodboard" | "theme" | "aiReasoning"
+>;
 
 export type ProjectRow = {
   id: string;
@@ -29,6 +33,10 @@ export function rowToProject(row: ProjectRow, clerkUserId: string): Project {
     colors: row.data.colors,
     fonts: row.data.fonts,
     typeScale: row.data.typeScale,
+    spacing: row.data.spacing,
+    shadows: row.data.shadows,
+    cornerRadius: row.data.cornerRadius,
+    moodboard: row.data.moodboard,
     theme: row.data.theme,
     aiGenerated: row.ai_generated,
     aiPrompt: row.ai_prompt ?? undefined,
@@ -43,6 +51,10 @@ export function projectInputToRow(input: ProjectInput) {
     colors: input.colors,
     fonts: input.fonts,
     typeScale: input.typeScale,
+    spacing: input.spacing,
+    shadows: input.shadows,
+    cornerRadius: input.cornerRadius,
+    moodboard: input.moodboard,
     theme: input.theme,
     aiReasoning: input.aiReasoning,
   };
