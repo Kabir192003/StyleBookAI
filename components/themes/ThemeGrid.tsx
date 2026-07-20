@@ -49,7 +49,7 @@ export function ThemeGrid({ themes }: { themes: Theme[] }) {
   }, [themes, query, category, sort]);
 
   return (
-    <div className="space-y-8">
+    <div className="mx-auto max-w-7xl space-y-8 px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
       <BrowseHeader
         eyebrow="Themes"
         title="Themes"

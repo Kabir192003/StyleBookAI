@@ -33,6 +33,7 @@ const config: Config = {
         grotesk: ["var(--font-grotesk)"],
         "humanist-sans": ["var(--font-humanist-sans)"],
         "expressive-display": ["var(--font-expressive-display)"],
+        "mono-plex": ["var(--font-mono-plex)"],
       },
     },
   },

@@ -28,7 +28,7 @@ export default function ThemeDetailPage({ params }: { params: { slug: string } }
   const related = allThemes.filter((t) => t.slug !== theme.slug && t.category === theme.category).slice(0, 3);
 
   return (
-    <div className="space-y-12">
+    <div className="mx-auto max-w-7xl space-y-12 px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
       <Link href="/browse/themes" className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-900">
         <ArrowLeft className="h-3.5 w-3.5" /> All themes
       </Link>

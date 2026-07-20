@@ -61,7 +61,7 @@ export function FontGrid({ fonts }: { fonts: Font[] }) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="mx-auto max-w-7xl space-y-8 px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
       <GoogleFontsLoader fonts={visibleItems} />
       <BrowseHeader
         eyebrow="Typography"
