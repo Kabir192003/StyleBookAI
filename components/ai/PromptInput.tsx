@@ -1,20 +1,18 @@
 /**
  * PromptInput — free-text box for describing the brand/vibe, plus a
- * Generate button. See docs/PRODUCT_AND_UX.md §4.
- *
- * Owner: Qi
- *
- * TODO (Qi):
- * - Textarea + a few quick-pick chips (e.g. "Minimal SaaS", "Warm
- *   editorial", "Playful kids brand") that prefill the textarea
- * - On submit: POST to /api/ai/generate, show a loading state
- * - On success: hand the returned Project (colors/fonts/AIReasoning) up
- *   to the page so it can render the reasoning panel + PreviewLab
+ * Generate button. Renders the returned palette, fonts, type scale, and
+ * AI reasoning inline, and can hand the result to Studio.
+ * See docs/PRODUCT_AND_UX.md §4.
  */
 
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Check } from "lucide-react";
+import { ColorCard } from "@/components/colors/ColorCard";
+import { useStudioStore } from "@/store";
+import { AIGeneratedProject } from "@/types/ai";
 
 const starterPrompts = [
   "Minimal SaaS for a calm B2B brand",
@@ -23,17 +21,25 @@ const starterPrompts = [
 ];
 
 export function PromptInput() {
+  const router = useRouter();
+  const setColors = useStudioStore((s) => s.setColors);
+  const setPrimaryFont = useStudioStore((s) => s.setPrimaryFont);
+  const setSecondaryFont = useStudioStore((s) => s.setSecondaryFont);
+  const setTypeScale = useStudioStore((s) => s.setTypeScale);
+
   const [prompt, setPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<AIGeneratedProject | null>(null);
+  const [sentToStudio, setSentToStudio] = useState(false);
 
   async function handleGenerate() {
-    if (!prompt.trim()) {
-      return;
-    }
+    if (!prompt.trim()) return;
 
     setIsLoading(true);
-    setMessage(null);
+    setError(null);
+    setResult(null);
+    setSentToStudio(false);
 
     try {
       const response = await fetch("/api/ai/generate", {
@@ -42,21 +48,32 @@ export function PromptInput() {
         body: JSON.stringify({ prompt }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error(`Request failed with ${response.status}`);
+        throw new Error(data?.error ?? `Request failed with ${response.status}`);
       }
 
-      const data = await response.json();
-      setMessage(data?.error ? `AI route returned: ${data.error}` : "AI generation request sent.");
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to generate right now.");
+      setResult(data.project as AIGeneratedProject);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to generate right now.");
     } finally {
       setIsLoading(false);
     }
   }
 
+  function sendToStudio() {
+    if (!result) return;
+    setColors(result.colors);
+    setPrimaryFont(result.fonts.primary);
+    setSecondaryFont(result.fonts.secondary);
+    setTypeScale(result.typeScale);
+    setSentToStudio(true);
+    router.push("/studio");
+  }
+
   return (
-    <div className="mt-6 max-w-xl">
+    <div className="mt-6 max-w-3xl">
       <div className="flex flex-wrap gap-2">
         {starterPrompts.map((starterPrompt) => (
           <button
@@ -74,18 +91,89 @@ export function PromptInput() {
         value={prompt}
         onChange={(event) => setPrompt(event.target.value)}
         placeholder="Describe your brand, e.g. 'a calm, premium skincare brand for sensitive skin'"
-        className="mt-4 w-full rounded-2xl border border-neutral-200 p-3 text-sm"
+        className="mt-4 w-full max-w-xl rounded-2xl border border-neutral-200 p-3 text-sm"
         rows={5}
       />
-      <button
-        type="button"
-        onClick={handleGenerate}
-        disabled={!prompt.trim() || isLoading}
-        className="mt-3 rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        {isLoading ? "Generating..." : "Generate"}
-      </button>
-      {message && <p className="mt-3 text-sm text-neutral-600">{message}</p>}
+      <div>
+        <button
+          type="button"
+          onClick={handleGenerate}
+          disabled={!prompt.trim() || isLoading}
+          className="mt-3 rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {isLoading ? "Generating..." : "Generate"}
+        </button>
+      </div>
+      {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+
+      {result && (
+        <div className="mt-10 space-y-8">
+          {/* AI reasoning — the core differentiator, always visible, never collapsed */}
+          <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-6">
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-neutral-500">
+              AI reasoning
+            </p>
+            <h2 className="mt-1 text-xl font-semibold text-neutral-900">{result.name}</h2>
+            <dl className="mt-4 space-y-3 text-sm text-neutral-700">
+              <div>
+                <dt className="font-medium text-neutral-900">Palette</dt>
+                <dd>{result.aiReasoning?.palette}</dd>
+              </div>
+              <div>
+                <dt className="font-medium text-neutral-900">Fonts</dt>
+                <dd>{result.aiReasoning?.fonts}</dd>
+              </div>
+              <div>
+                <dt className="font-medium text-neutral-900">Type scale</dt>
+                <dd>{result.aiReasoning?.typeScale}</dd>
+              </div>
+              <div>
+                <dt className="font-medium text-neutral-900">Overall</dt>
+                <dd>{result.aiReasoning?.overall}</dd>
+              </div>
+            </dl>
+          </div>
+
+          {/* Colors */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-neutral-500">Colors</p>
+            <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              {result.colors.map((color) => (
+                <ColorCard key={color.id} color={color} />
+              ))}
+            </div>
+          </div>
+
+          {/* Fonts + type scale */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="rounded-xl border border-neutral-200 p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-neutral-500">
+                Heading font
+              </p>
+              <p className="mt-2 text-2xl text-neutral-900" style={{ fontFamily: `'${result.fonts.primary.family}'` }}>
+                {result.fonts.primary.family}
+              </p>
+            </div>
+            <div className="rounded-xl border border-neutral-200 p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-neutral-500">
+                Body font
+              </p>
+              <p className="mt-2 text-2xl text-neutral-900" style={{ fontFamily: `'${result.fonts.secondary.family}'` }}>
+                {result.fonts.secondary.family}
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={sendToStudio}
+            className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white"
+          >
+            {sentToStudio && <Check className="h-3.5 w-3.5" />}
+            Send to Studio
+          </button>
+        </div>
+      )}
     </div>
   );
 }
