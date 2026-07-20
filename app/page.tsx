@@ -7,7 +7,6 @@ import Lenis from 'lenis';
 
 import CustomCursor from '@/components/landing/CustomCursor';
 import IntroCurtain, { INTRO_DONE_EVENT } from '@/components/landing/IntroCurtain';
-import LandingNav from '@/components/landing/LandingNav';
 import SceneRail from '@/components/landing/SceneRail';
 import SwatchTicker from '@/components/landing/SwatchTicker';
 import Hero from '@/components/landing/Hero';
@@ -27,7 +26,6 @@ import { prefersReducedMotion } from '@/lib/landing/motion';
 
 import '@/app/styles/landing/globals.css';
 import '@/app/styles/landing/intro.css';
-import '@/app/styles/landing/nav.css';
 import '@/app/styles/landing/rail.css';
 import '@/app/styles/landing/ticker.css';
 import '@/app/styles/landing/cursor.css';
@@ -138,7 +136,6 @@ export default function Home() {
       <div className="premium-grid" aria-hidden="true" />
       <div className="noise-overlay" aria-hidden="true" />
       <CustomCursor />
-      <LandingNav />
       <SceneRail />
 
       {/* Global background atmosphere */}
