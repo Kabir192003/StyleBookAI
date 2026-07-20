@@ -8,9 +8,13 @@ import { getGeminiJsonModel } from "./gemini";
 import { buildGeneratePrompt } from "./prompt";
 import { GeminiPaletteResponseSchema, GeminiPaletteResponse } from "./schema";
 import { generateTypeScale } from "@/lib/typeScale/generateTypeScale";
+import { generateSpacingScale } from "@/lib/designTokens/spacing";
+import { buildShadowScale } from "@/lib/designTokens/shadows";
+import { buildRadiusScale } from "@/lib/designTokens/radius";
 import { allColors } from "@/data/colors";
 import { allFonts } from "@/data/fonts";
 import { fontsSeed } from "@/data/fonts/seed";
+import { moodboardImages } from "@/data/moodboards";
 import { AIGenerateRequest } from "@/types/ai";
 import { AIReasoning, Project } from "@/types/project";
 import { Color } from "@/types/color";
@@ -115,7 +119,7 @@ export async function generateProjectFromPrompt(
 ): Promise<Omit<Project, "id" | "userId" | "createdAt" | "updatedAt">> {
   const candidateColors = selectCandidateColors(request);
   const candidateFonts = selectCandidateFonts(request);
-  const prompt = buildGeneratePrompt(request, candidateColors, candidateFonts);
+  const prompt = buildGeneratePrompt(request, candidateColors, candidateFonts, moodboardImages);
 
   let raw: GeminiPaletteResponse;
   try {
@@ -145,6 +149,15 @@ export async function generateProjectFromPrompt(
   }
 
   const typeScale = generateTypeScale(raw.baseSize ?? 16, raw.typeScaleRatio);
+  const spacing = generateSpacingScale(raw.spacingBase ?? 4);
+  const shadows = buildShadowScale(raw.shadowLevel ?? "subtle");
+  const cornerRadius = buildRadiusScale(raw.cornerRadius ?? 8);
+
+  const moodboardById = new Map(moodboardImages.map((m) => [m.id, m]));
+  const moodboard = (raw.moodboardImageIds ?? [])
+    .map((id) => moodboardById.get(id))
+    .filter((image): image is (typeof moodboardImages)[number] => Boolean(image));
+
   const reasoning: AIReasoning = raw.reasoning;
 
   return {
@@ -152,6 +165,10 @@ export async function generateProjectFromPrompt(
     colors: resolvedColors,
     fonts: { primary: primaryFont, secondary: secondaryFont, accent: accentFont },
     typeScale,
+    spacing,
+    shadows,
+    cornerRadius,
+    moodboard: moodboard.length > 0 ? moodboard : undefined,
     aiGenerated: true,
     aiPrompt: request.prompt,
     aiReasoning: reasoning,

@@ -10,6 +10,7 @@
 import { Color } from "./color";
 import { Font } from "./font";
 import { Theme, TypeScale } from "./theme";
+import { SpacingScale, ShadowScale, CornerRadiusScale, MoodboardImage } from "./designTokens";
 
 export type AIReasoning = {
   palette: string;
@@ -26,6 +27,10 @@ export type Project = {
   colors: Array<Color & { role?: string }>;
   fonts: { primary: Font; secondary: Font; accent?: Font };
   typeScale: TypeScale;
+  spacing?: SpacingScale;
+  shadows?: ShadowScale;
+  cornerRadius?: CornerRadiusScale;
+  moodboard?: MoodboardImage[];
   theme?: Pick<Theme, "id" | "slug" | "name">;
   aiGenerated: boolean;
   aiPrompt?: string;
