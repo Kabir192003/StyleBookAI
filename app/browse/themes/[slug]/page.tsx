@@ -120,12 +120,23 @@ export default function ThemeDetailPage({ params }: { params: { slug: string } }
             {theme.description}
           </p>
           <div className="flex flex-wrap gap-3">
-            <span
+            <Link
+              href={`/studio?${new URLSearchParams({
+                name: theme.name,
+                mode: dark ? "Dark" : "Light",
+                accent: p.accent,
+                support: p.secondary,
+                surface: p.surface,
+                ink: p.text,
+                muted: p.textMuted,
+                head: theme.primaryFont.family,
+                body: theme.secondaryFont.family,
+              }).toString()}`}
               className="cursor-pointer rounded-[4px] px-[26px] py-[13px] text-sm"
               style={{ backgroundColor: p.accent, color: onC1 }}
             >
               Apply this edition
-            </span>
+            </Link>
             <CopyTokensButton theme={theme} ink={ink} />
           </div>
         </div>

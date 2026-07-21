@@ -65,6 +65,53 @@ body:has([data-landing]) {
   }
 }
 
+/* /studio token editor — native color-picker and range-slider styling
+   can only be reached via these pseudo-elements, not Tailwind utilities. */
+.studio-color-input {
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+.studio-color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.studio-color-input::-webkit-color-swatch {
+  border: none;
+  border-radius: 8px;
+}
+.studio-color-input::-moz-color-swatch {
+  border: none;
+  border-radius: 8px;
+}
+.studio-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(33, 30, 24, 0.2);
+}
+.studio-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #222d52;
+  cursor: pointer;
+  border: 2px solid #f2ebe0;
+}
+.studio-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #222d52;
+  cursor: pointer;
+  border: 2px solid #f2ebe0;
+}
+
 .sb-grain {
   pointer-events: none;
   position: absolute;
