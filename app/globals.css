@@ -65,6 +65,23 @@ body:has([data-landing]) {
   }
 }
 
+/* /studio/ai — the "thinking" indicator's pulse needs a scale change,
+   which Tailwind's built-in animate-pulse (opacity-only) can't do. */
+@keyframes ai-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}
+.ai-dot {
+  animation: ai-pulse 1.1s ease-in-out infinite;
+}
+
 /* /studio token editor — native color-picker and range-slider styling
    can only be reached via these pseudo-elements, not Tailwind utilities. */
 .studio-color-input {
