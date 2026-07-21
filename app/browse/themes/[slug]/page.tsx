@@ -1,283 +1,293 @@
 /**
- * /browse/themes/[slug] — Theme Detail
+ * /browse/themes/[slug] — Theme Detail: "the edition page"
  *
- * Spec: docs/PRODUCT_AND_UX.md §2 — full mockup view: palette + fonts +
- * type scale together, plus a live component preview styled with the
- * theme's actual values.
- *
- * Ported from Dhanshri's Lovable design ("Design Browse Hub") into real
- * data and this repo's conventions — see docs/CONTEXT.md.
+ * Styled to match the ThemeDetail.dc.html design pulled from
+ * claude.ai/design (project "Website redesign request"). Unlike the other
+ * browse pages, this design is a full theme takeover — background, ink,
+ * and headline type all switch to the theme's own tokens — so the page
+ * (below the persistent global SiteHeader) renders entirely in the
+ * theme's palette and font pairing instead of the site's fixed cream/ink
+ * editorial chrome.
  */
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Check, ShieldCheck, Sparkles } from "lucide-react";
 import { allThemes } from "@/data/themes";
-import { Card } from "@/components/browse/Card";
-import { ThemeCard } from "@/components/themes/ThemeCard";
-import { getContrastRatio, getWcagLevel } from "@/lib/colors/colorUtils";
+import { GoogleFontsLoader } from "@/components/fonts/GoogleFontsLoader";
+import { CopyTokensButton } from "@/components/themes/CopyTokensButton";
+import { getContrastRatio, hexToRgb, rgbToHsl } from "@/lib/colors/colorUtils";
+import { Theme } from "@/types/theme";
+
+function isDark(hex: string): boolean {
+  const rgb = hexToRgb(hex);
+  return rgbToHsl(rgb.r, rgb.g, rgb.b).l < 50;
+}
+
+// Text color for an arbitrary background swatch — same "pick whichever
+// candidate has higher contrast" approach as components/colors/ColorPlate.
+function onColor(hex: string, light: string, dark: string): string {
+  return getContrastRatio(hex, light) >= getContrastRatio(hex, dark) ? light : dark;
+}
+
+function splitName(name: string): { main: string; accent: string } {
+  const parts = name.split(" ");
+  if (parts.length === 1) return { main: "", accent: name };
+  return { main: parts.slice(0, -1).join(" "), accent: parts[parts.length - 1] };
+}
+
+function fontStack(family: string, category: string) {
+  return `'${family}', ${category === "monospace" ? "monospace" : category === "serif" ? "serif" : "sans-serif"}`;
+}
+
+const ROLES = ["Accent", "Support", "Neutral", "Muted", "Ink"] as const;
+const TOKENS = ["--accent", "--support", "--neutral", "--muted", "--ink"] as const;
+const PCTS = ["22%", "14%", "30%", "18%", "16%"] as const;
 
 export default function ThemeDetailPage({ params }: { params: { slug: string } }) {
   const theme = allThemes.find((t) => t.slug === params.slug);
   if (!theme) notFound();
 
+  const index = allThemes.indexOf(theme);
+  const prev = allThemes[(index - 1 + allThemes.length) % allThemes.length];
+  const next = allThemes[(index + 1) % allThemes.length];
+
   const p = theme.colorRoles;
-  const heading = theme.primaryFont;
-  const body = theme.secondaryFont;
-  const contrastRatio = getContrastRatio(p.text, p.background);
-  const wcag = getWcagLevel(contrastRatio);
-  const related = allThemes.filter((t) => t.slug !== theme.slug && t.category === theme.category).slice(0, 3);
+  const dark = isDark(p.background);
+  const head = fontStack(theme.primaryFont.family, theme.primaryFont.category);
+  const body = fontStack(theme.secondaryFont.family, theme.secondaryFont.category);
+  const { main, accent } = splitName(theme.name);
+
+  const ink = p.text;
+  const bg = p.background;
+  const rule = dark ? "rgba(255,255,255,0.16)" : "rgba(0,0,0,0.14)";
+  const dim = dark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.42)";
+  const soft = dark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.62)";
+  const onC1 = onColor(p.accent, "#FBF8F2", "#141110");
+
+  const swatches = [p.accent, p.secondary, p.surface, p.textMuted, p.text].map((hex, i) => ({
+    hex,
+    role: ROLES[i],
+    token: TOKENS[i],
+    pct: PCTS[i],
+    txt: onColor(hex, "#FBF8F2", "#141110"),
+    divider: isDark(hex) ? "rgba(255,255,255,0.14)" : "rgba(0,0,0,0.10)",
+  }));
+
+  const tags = [
+    { label: "Accent", bg: p.accent, fg: onColor(p.accent, "#FBF8F2", "#141110") },
+    { label: "Support", bg: p.secondary, fg: onColor(p.secondary, "#FBF8F2", "#141110") },
+    { label: "Neutral", bg: "transparent", fg: ink },
+    { label: theme.category, bg: "transparent", fg: ink },
+  ];
+
+  const sizes = theme.typeScale.sizes;
 
   return (
-    <div className="mx-auto max-w-7xl space-y-12 px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
-      <Link href="/browse/themes" className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-900">
-        <ArrowLeft className="h-3.5 w-3.5" /> All themes
+    <div style={{ fontFamily: body, background: bg, color: ink }} className="min-h-screen transition-colors">
+      <GoogleFontsLoader fonts={[theme.primaryFont, theme.secondaryFont]} />
+
+      <Link
+        href="/browse/themes"
+        className="ml-6 mt-6 inline-flex items-center gap-2.5 font-mono-plex text-[11px] uppercase tracking-[0.18em] sm:ml-12"
+        style={{ color: dim }}
+      >
+        ← Back to newsstand
       </Link>
 
-      <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-center">
-        <div className="space-y-5">
-          <span className="inline-block rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium capitalize text-neutral-600">
-            {theme.category}
+      <section className="relative overflow-hidden px-6 pb-16 pt-11 sm:px-12">
+        <div
+          className="pointer-events-none absolute -right-[3%] -top-[16%] select-none text-[min(46vw,640px)] font-bold leading-[0.7] opacity-[0.05]"
+          style={{ fontFamily: head, color: ink }}
+        >
+          {String(index + 1).padStart(2, "0")}
+        </div>
+        <div
+          className="relative flex justify-between gap-3.5 font-mono-plex text-[11px] uppercase tracking-[0.22em]"
+          style={{ color: dim }}
+        >
+          <span>
+            Edition {String(index + 1).padStart(2, "0")} — {theme.category}
           </span>
-          <h1
-            className="text-4xl font-semibold tracking-tight text-neutral-900 sm:text-5xl"
-            style={{ fontFamily: `'${heading.family}'` }}
-          >
-            {theme.name}
-          </h1>
-          <p className="max-w-lg text-base text-neutral-500">{theme.description}</p>
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            <span className="inline-flex items-center gap-1.5 rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white">
-              <Sparkles className="h-4 w-4" /> Use in Studio
+          <span>{dark ? "Dark" : "Light"} · 6 tokens</span>
+        </div>
+        <h1
+          className="relative mt-6 text-balance text-[clamp(4rem,11vw,10.5rem)] font-bold leading-[0.92] tracking-[-0.025em]"
+          style={{ fontFamily: head }}
+        >
+          {main} <span style={{ color: p.accent }}>{accent}</span>
+        </h1>
+        <div className="relative mt-8 flex flex-wrap items-end justify-between gap-7">
+          <p className="max-w-[520px] text-lg leading-relaxed" style={{ color: soft }}>
+            {theme.description}
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <span
+              className="cursor-pointer rounded-[4px] px-[26px] py-[13px] text-sm"
+              style={{ backgroundColor: p.accent, color: onC1 }}
+            >
+              Apply this edition
             </span>
-            <div className="flex items-center gap-2 text-sm text-neutral-500">
-              <ShieldCheck className="h-4 w-4 text-emerald-600" />
-              WCAG {wcag} · {contrastRatio.toFixed(1)}:1 contrast
-            </div>
+            <CopyTokensButton theme={theme} ink={ink} />
           </div>
         </div>
-        <ThemePreviewLarge theme={theme} />
       </section>
 
-      <Section title="Color palette" description="Semantic tokens that power the theme.">
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-          {(
-            [
-              ["Primary", p.primary],
-              ["Secondary", p.secondary],
-              ["Accent", p.accent],
-              ["Background", p.background],
-              ["Surface", p.surface],
-              ["Text", p.text],
-              ["Text muted", p.textMuted],
-            ] as const
-          ).map(([label, value]) => (
-            <PaletteSwatch key={label} label={label} value={value} />
+      <section className="border-t" style={{ borderColor: rule }}>
+        <div
+          className="flex justify-between gap-3.5 px-6 pt-5 font-mono-plex text-[11px] uppercase tracking-[0.22em] sm:px-12"
+          style={{ color: dim }}
+        >
+          <span>01 — Palette</span>
+          <span>Roles &amp; contrast</span>
+        </div>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
+          {swatches.map((s) => (
+            <div
+              key={s.token}
+              className="flex min-h-[280px] flex-col justify-between border-r border-t p-6"
+              style={{ backgroundColor: s.hex, color: s.txt, borderColor: s.divider }}
+            >
+              <div className="flex justify-between font-mono-plex text-[10px] uppercase tracking-[0.18em] opacity-75">
+                <span>{s.role}</span>
+                <span>{s.pct}</span>
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-[34px] leading-[0.9]" style={{ fontFamily: head }}>
+                  Aa
+                </span>
+                <span className="mt-2 font-mono-plex text-[13px] tracking-[0.04em]">{s.hex}</span>
+                <span className="font-mono-plex text-[10px] uppercase tracking-[0.14em] opacity-70">{s.token}</span>
+              </div>
+            </div>
           ))}
         </div>
-      </Section>
+      </section>
 
-      <Section title="Typography" description="Heading and body pairing with this theme's type scale.">
-        <Card className="p-8">
-          <div className="grid gap-8 md:grid-cols-2">
-            <div>
-              <p className="text-xs font-medium uppercase tracking-widest text-neutral-500">Heading</p>
-              <p className="mt-1 text-sm text-neutral-500">{heading.family}</p>
-              <div className="mt-4 space-y-3">
-                <div
-                  style={{ fontFamily: `'${heading.family}'`, fontWeight: 700, fontSize: theme.typeScale.sizes["4xl"] }}
-                  className="leading-tight text-neutral-900"
-                >
-                  Design with intent.
-                </div>
-                <div style={{ fontFamily: `'${heading.family}'`, fontWeight: 600, fontSize: theme.typeScale.sizes["2xl"] }} className="text-neutral-900">
-                  Section heading
-                </div>
-              </div>
-            </div>
-            <div>
-              <p className="text-xs font-medium uppercase tracking-widest text-neutral-500">Body</p>
-              <p className="mt-1 text-sm text-neutral-500">{body.family}</p>
-              <p
-                style={{ fontFamily: `'${body.family}'`, fontSize: theme.typeScale.sizes.base }}
-                className="mt-4 leading-relaxed text-neutral-900"
-              >
-                Great typography sets the pace of a product — this pairing balances a distinctive heading voice
-                with a highly readable body face.
-              </p>
-              <div className="mt-4 grid grid-cols-4 gap-2 text-center text-xs text-neutral-500">
-                {(["xs", "sm", "base", "lg"] as const).map((key) => (
-                  <div key={key} className="rounded-md border border-neutral-200 py-2">
-                    <div style={{ fontFamily: `'${body.family}'`, fontSize: theme.typeScale.sizes[key] }} className="text-neutral-900">
-                      Aa
-                    </div>
-                    <div className="mt-1">{Math.round(theme.typeScale.sizes[key])}px</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Card>
-      </Section>
-
-      <Section title="Components preview" description="How the theme feels applied to real UI.">
-        <ComponentsPreview theme={theme} />
-      </Section>
-
-      <Section title="Accessibility" description="Real, computed contrast for this theme's text-on-background pairing.">
-        <div className="grid gap-3 sm:grid-cols-3">
-          <StatCard label="Contrast" value={`${contrastRatio.toFixed(1)}:1`} hint="Text on background" />
-          <StatCard label="Standard" value={`WCAG ${wcag}`} hint={wcag === "AAA" ? "Enhanced" : wcag === "AA" ? "Minimum" : "Below minimum"} />
-          <StatCard label="Colors" value={String(theme.colors.length)} hint="In this theme's palette" />
-        </div>
-      </Section>
-
-      {related.length > 0 && (
-        <Section title="Related themes" description={`Other ${theme.category} themes.`}>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((t) => (
-              <ThemeCard key={t.id} theme={t} />
-            ))}
-          </div>
-        </Section>
-      )}
-    </div>
-  );
-}
-
-function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
-  return (
-    <section className="space-y-5">
-      <div>
-        <h2 className="text-xl font-semibold tracking-tight text-neutral-900">{title}</h2>
-        {description && <p className="mt-1 text-sm text-neutral-500">{description}</p>}
-      </div>
-      {children}
-    </section>
-  );
-}
-
-function PaletteSwatch({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white text-left">
-      <div className="h-20 w-full" style={{ backgroundColor: value }} />
-      <div className="p-3">
-        <div className="text-xs font-medium text-neutral-900">{label}</div>
-        <div className="mt-0.5 font-mono text-[11px] uppercase text-neutral-500">{value}</div>
-      </div>
-    </div>
-  );
-}
-
-function StatCard({ label, value, hint }: { label: string; value: string; hint: string }) {
-  return (
-    <Card className="p-5">
-      <p className="text-xs font-medium uppercase tracking-widest text-neutral-500">{label}</p>
-      <p className="mt-2 text-2xl font-semibold text-neutral-900">{value}</p>
-      <p className="mt-1 text-xs text-neutral-500">{hint}</p>
-    </Card>
-  );
-}
-
-function ThemePreviewLarge({ theme }: { theme: (typeof allThemes)[number] }) {
-  const p = theme.colorRoles;
-  const heading = theme.primaryFont;
-  const body = theme.secondaryFont;
-  return (
-    <div className="overflow-hidden rounded-2xl shadow-xl ring-1 ring-black/5" style={{ backgroundColor: p.background }}>
-      <div className="p-6" style={{ color: p.text }}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-md" style={{ backgroundColor: p.primary }} />
-            <span className="text-sm font-semibold" style={{ fontFamily: `'${heading.family}'` }}>
-              {theme.name}
+      <section className="grid grid-cols-[repeat(auto-fit,minmax(360px,1fr))] border-t" style={{ borderColor: rule }}>
+        <div className="border-r px-6 py-8 sm:px-12" style={{ borderColor: rule }}>
+          <div className="flex justify-between gap-3.5 font-mono-plex text-[11px] uppercase tracking-[0.22em]" style={{ color: dim }}>
+            <span>02 — Typography</span>
+            <span>
+              {theme.primaryFont.family} · {theme.secondaryFont.family}
             </span>
           </div>
-          <div className="flex gap-1">
-            {[p.primary, p.secondary, p.accent].map((c, i) => (
-              <span key={i} className="h-2 w-2 rounded-full" style={{ backgroundColor: c }} />
-            ))}
+          <div className="mt-8 border-b pb-3" style={{ borderColor: rule }}>
+            <div className="text-[88px] leading-[0.92] tracking-[-0.02em]" style={{ fontFamily: head }}>
+              Ag
+            </div>
+            <div className="mt-2 font-mono-plex text-[10px] uppercase tracking-[0.16em]" style={{ color: dim }}>
+              Display — {theme.primaryFont.family}
+            </div>
+          </div>
+          <div className="mt-6 text-[38px] leading-[1.05] tracking-[-0.015em]" style={{ fontFamily: head }}>
+            The quick brown fox jumps over the lazy dog
+          </div>
+          <p className="mt-5 text-base leading-[1.7] text-pretty" style={{ fontFamily: body, color: soft }}>
+            Body copy set in {theme.secondaryFont.family}. A design system is only as trustworthy as its dullest
+            paragraph — so the body face carries the weight of everything that isn&apos;t a headline, and this
+            edition keeps it comfortable at reading size.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-4 font-mono-plex text-[11px] tracking-[0.1em]" style={{ color: dim }}>
+            <span>H1 {Math.round(sizes["4xl"])}px</span>
+            <span>H2 {Math.round(sizes["2xl"])}px</span>
+            <span>Body {Math.round(sizes.base)}px</span>
+            <span>Caption {Math.round(sizes.xs)}px</span>
           </div>
         </div>
-        <div className="mt-5 rounded-xl p-5" style={{ backgroundColor: p.surface }}>
-          <div className="text-lg font-semibold" style={{ fontFamily: `'${heading.family}'` }}>
-            Ship your design system faster
+
+        <div className="px-6 py-8 sm:px-12">
+          <div className="font-mono-plex text-[11px] uppercase tracking-[0.22em]" style={{ color: dim }}>
+            03 — Components
           </div>
-          <p className="mt-1 text-sm" style={{ fontFamily: `'${body.family}'`, color: p.textMuted }}>
-            Preview real components with the {theme.name} theme applied end to end.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <span className="rounded-lg px-3 py-1.5 text-xs font-medium" style={{ backgroundColor: p.primary, color: p.surface }}>
-              Get started
+          <div className="mt-7 flex flex-wrap gap-3">
+            <span className="cursor-pointer rounded-[4px] px-6 py-3 text-sm" style={{ backgroundColor: p.accent, color: onC1 }}>
+              Primary
+            </span>
+            <span className="cursor-pointer rounded-[4px] border px-[22px] py-[11px] text-sm" style={{ borderColor: ink, color: ink }}>
+              Secondary
             </span>
             <span
-              className="rounded-lg px-3 py-1.5 text-xs font-medium"
-              style={{ backgroundColor: "transparent", color: p.text, border: `1px solid ${p.textMuted}` }}
+              className="cursor-pointer px-1 py-[11px] text-sm underline underline-offset-4"
+              style={{ color: p.accent }}
             >
-              Learn more
+              Text link →
             </span>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ComponentsPreview({ theme }: { theme: (typeof allThemes)[number] }) {
-  const p = theme.colorRoles;
-  const heading = theme.primaryFont;
-  const body = theme.secondaryFont;
-  return (
-    <div
-      className="rounded-2xl p-6 sm:p-8"
-      style={{ backgroundColor: p.background, color: p.text, fontFamily: `'${body.family}'`, border: `1px solid ${p.textMuted}33` }}
-    >
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="space-y-3">
-          <PreviewLabel>Buttons</PreviewLabel>
-          <div className="flex flex-wrap gap-2">
-            <button className="rounded-lg px-4 py-2 text-sm font-medium shadow-sm" style={{ backgroundColor: p.primary, color: p.surface }}>
-              Primary
-            </button>
-            <button className="rounded-lg px-4 py-2 text-sm font-medium" style={{ backgroundColor: p.surface, color: p.text, border: `1px solid ${p.textMuted}33` }}>
-              Secondary
-            </button>
-            <button className="rounded-lg px-4 py-2 text-sm font-medium" style={{ backgroundColor: p.accent, color: p.surface }}>
-              Accent
-            </button>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {tags.map((tg) => (
+              <span
+                key={tg.label}
+                className="rounded-full px-3.5 py-1.5 font-mono-plex text-[10px] uppercase tracking-[0.14em]"
+                style={{
+                  backgroundColor: tg.bg,
+                  color: tg.fg,
+                  border: tg.bg === "transparent" ? `1px solid ${rule}` : undefined,
+                }}
+              >
+                {tg.label}
+              </span>
+            ))}
           </div>
-        </div>
-
-        <div className="space-y-3">
-          <PreviewLabel>Card</PreviewLabel>
-          <div className="rounded-xl p-4" style={{ backgroundColor: p.surface, border: `1px solid ${p.textMuted}33` }}>
-            <div className="text-sm font-semibold" style={{ fontFamily: `'${heading.family}'` }}>
-              Weekly digest
-            </div>
-            <p className="mt-1 text-xs" style={{ color: p.textMuted }}>
-              12 new items across your subscriptions.
-            </p>
+          <div
+            className="mt-6 flex items-center justify-between rounded-lg border px-4 py-3.5"
+            style={{ borderColor: rule, backgroundColor: p.surface }}
+          >
+            <span className="text-sm" style={{ fontFamily: body, color: dim }}>
+              you@studio.com
+            </span>
+            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: p.secondary }} />
           </div>
-        </div>
-
-        <div className="space-y-3 lg:col-span-2">
-          <PreviewLabel>Alert</PreviewLabel>
-          <div className="flex items-start gap-3 rounded-xl p-4" style={{ backgroundColor: p.surface, border: `1px solid ${p.textMuted}33` }}>
-            <div className="mt-0.5 grid h-6 w-6 place-items-center rounded-full" style={{ backgroundColor: p.accent, color: p.surface }}>
-              <Check className="h-3.5 w-3.5" />
-            </div>
-            <div>
-              <div className="text-sm font-medium">Saved successfully</div>
-              <div className="text-xs" style={{ color: p.textMuted }}>
-                Your changes have been applied.
+          <div className="mt-4 overflow-hidden rounded-lg border" style={{ borderColor: rule, backgroundColor: p.surface }}>
+            <div className="h-2" style={{ backgroundColor: p.accent }} />
+            <div className="p-5">
+              <div className="text-2xl leading-[1.1] tracking-[-0.01em]" style={{ fontFamily: head }}>
+                Sample card
+              </div>
+              <p className="mb-4 mt-2.5 text-sm leading-relaxed text-pretty" style={{ fontFamily: body, color: soft }}>
+                A surface built from the theme&apos;s neutrals, with an accent header bar and matched radius.
+              </p>
+              <div className="flex items-center justify-between">
+                <div className="flex gap-1.5">
+                  <span className="h-4 w-4 rounded-full" style={{ backgroundColor: p.accent }} />
+                  <span className="h-4 w-4 rounded-full" style={{ backgroundColor: p.secondary }} />
+                  <span className="h-4 w-4 rounded-full" style={{ backgroundColor: p.textMuted }} />
+                </div>
+                <span className="font-mono-plex text-[10px] uppercase tracking-[0.16em]" style={{ color: dim }}>
+                  Live
+                </span>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      <nav className="grid grid-cols-1 border-t sm:grid-cols-2" style={{ borderColor: rule }}>
+        <Link href={`/browse/themes/${prev.slug}`} className="border-b px-6 py-7 sm:border-b-0 sm:border-r sm:px-12" style={{ borderColor: rule }}>
+          <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em]" style={{ color: dim }}>
+            ← Previous edition
+          </div>
+          <div className="mt-2 text-2xl tracking-[-0.01em]" style={{ fontFamily: head }}>
+            {prev.name}
+          </div>
+        </Link>
+        <Link href={`/browse/themes/${next.slug}`} className="px-6 py-7 text-right sm:px-12">
+          <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em]" style={{ color: dim }}>
+            Next edition →
+          </div>
+          <div className="mt-2 text-2xl tracking-[-0.01em]" style={{ fontFamily: head }}>
+            {next.name}
+          </div>
+        </Link>
+      </nav>
+
+      <footer
+        className="flex flex-wrap items-center justify-between gap-3 border-t px-6 py-9 font-mono-plex text-[10px] uppercase tracking-[0.2em] sm:px-12"
+        style={{ borderColor: rule, color: dim }}
+      >
+        <span>© {new Date().getFullYear()} StyleBook</span>
+        <span>
+          {theme.name} — {dark ? "Dark" : "Light"}
+        </span>
+      </footer>
     </div>
   );
-}
-
-function PreviewLabel({ children }: { children: React.ReactNode }) {
-  return <p className="text-[11px] font-medium uppercase tracking-widest opacity-70">{children}</p>;
 }
