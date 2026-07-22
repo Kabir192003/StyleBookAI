@@ -126,8 +126,14 @@ const designSystemSchema = z.object({
     .optional(),
 });
 
+const contextValues = ["saas", "ecommerce", "government", "editorial", "generic"] as const;
+
 export const GeminiPaletteResponseSchema = z.object({
   projectName: z.string().min(1).max(60),
+  // Drives which mock preview layout the AI results page renders — see
+  // components/ai/PromptInput.tsx. Defaults to "generic" if the model omits
+  // it (older prompt versions / retries).
+  context: z.enum(contextValues).optional(),
   // Widened from a fixed 5-7 so an explicit count in the prompt ("5-6 hex
   // codes", "a palette of 3") can actually be honored — see the count
   // instruction in lib/ai/prompt.ts.

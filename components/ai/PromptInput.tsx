@@ -12,11 +12,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { GoogleFontsLoader } from "@/components/fonts/GoogleFontsLoader";
-import { DesignSystemPreview } from "@/components/ai/DesignSystemPreview";
-import { useStudioStore } from "@/store";
+import { DesignSystemGallery } from "@/components/design-system/DesignSystemGallery";
+import { SpacingVisualization } from "@/components/design-system/SpacingVisualization";
+import { LivePreviewMock } from "@/components/ai/LivePreviewMock";
+import { useStudioStore, useAIResultStore } from "@/store";
 import { AIGeneratedProject } from "@/types/ai";
 import { getContrastRatio } from "@/lib/colors/colorUtils";
 
@@ -51,6 +53,22 @@ export function PromptInput() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AIGeneratedProject | null>(null);
   const [sentToStudio, setSentToStudio] = useState(false);
+  const saveAIResult = useAIResultStore((s) => s.setResult);
+
+  // Hydrate from the last generation (sessionStorage-backed) instead of
+  // always starting blank — fixes navigating to Studio and back losing the
+  // result. Done in an effect (not the useState initializer) so the first
+  // client render matches the server-rendered (blank) HTML — reading the
+  // store during the initializer would hydrate ahead of the server and
+  // trigger a React hydration-mismatch warning.
+  useEffect(() => {
+    const stored = useAIResultStore.getState();
+    if (stored.result) {
+      setPrompt(stored.prompt);
+      setIncludeDesignSystem(stored.includeDesignSystem);
+      setResult(stored.result);
+    }
+  }, []);
 
   async function handleGenerate() {
     if (!prompt.trim()) return;
@@ -72,7 +90,9 @@ export function PromptInput() {
         throw new Error(data?.error ?? `Request failed with ${response.status}`);
       }
 
-      setResult(data.project as AIGeneratedProject);
+      const project = data.project as AIGeneratedProject;
+      setResult(project);
+      saveAIResult(prompt, includeDesignSystem, project);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to generate right now.");
     } finally {
@@ -89,12 +109,13 @@ export function PromptInput() {
     setTypeScale(result.typeScale);
     setSentToStudio(true);
 
-    const accent = findColor(result.colors, ["accent"]);
+    const accent = findColor(result.colors, ["primary", "accent"]);
     const support = findColor(result.colors, ["secondary", "support"], 1);
     const surface = findColor(result.colors, ["background", "surface"], 2);
     const ink = findColor(result.colors, ["text"], 3);
-    const muted = findColor(result.colors, ["textmuted", "muted"], 4);
+    const muted = findColor(result.colors, ["muted", "textmuted"], 4);
     const params = new URLSearchParams({
+      from: "ai",
       name: result.name,
       mode: onColor(surface) === "#141110" ? "Light" : "Dark",
       accent,
@@ -109,7 +130,7 @@ export function PromptInput() {
     router.push(`/studio?${params.toString()}`);
   }
 
-  const accent = result ? findColor(result.colors, ["accent"]) : "#3B82F6";
+  const accent = result ? findColor(result.colors, ["primary", "accent"]) : "#3B82F6";
   const support = result ? findColor(result.colors, ["secondary", "support"], 1) : "#93C5FD";
   const surface = result ? findColor(result.colors, ["background", "surface"], 2) : "#F7F9FC";
   const ink = result ? findColor(result.colors, ["text"], 3) : "#1E2430";
@@ -300,12 +321,7 @@ export function PromptInput() {
                 <div className="grid grid-cols-3 gap-3">
                   {result.spacing && (
                     <div className="rounded-2xl border border-white/[0.12] bg-white/[0.03] p-4">
-                      <div className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#EFE9DC]/50">Spacing</div>
-                      <div className="mt-3 space-y-1.5">
-                        {result.spacing.steps.slice(0, 4).map((step) => (
-                          <div key={step} className="h-1.5 rounded-full bg-[#D2B68A]/40" style={{ width: `${Math.min(step, 88)}px` }} />
-                        ))}
-                      </div>
+                      <SpacingVisualization spacing={result.spacing} />
                     </div>
                   )}
                   {result.shadows && (
@@ -350,77 +366,10 @@ export function PromptInput() {
               )}
             </div>
 
-            <div className="overflow-hidden rounded-2xl border border-white/[0.12]" style={{ backgroundColor: surface, color: ink }}>
-              <div
-                className="flex items-center justify-between px-[18px] py-3.5"
-                style={{ borderBottom: `1px solid color-mix(in srgb, ${ink} 10%, transparent)` }}
-              >
-                <span style={{ fontFamily: `'${result.fonts.primary.family}', serif`, fontWeight: 700, fontSize: 17 }}>
-                  {result.name}
-                </span>
-                <span
-                  className="rounded-[10px] px-[15px] py-2 text-xs font-semibold"
-                  style={{ backgroundColor: accent, color: onAccent, fontFamily: `'${result.fonts.secondary.family}', sans-serif` }}
-                >
-                  Sign up
-                </span>
-              </div>
-              <div className="flex flex-col gap-3.5 px-[22px] py-[26px]">
-                <span
-                  className="self-start rounded-full px-[11px] py-[5px] text-[10px] uppercase tracking-[0.14em]"
-                  style={{
-                    fontFamily: `'${result.fonts.secondary.family}', sans-serif`,
-                    color: support,
-                    border: `1px solid color-mix(in srgb, ${support} 45%, transparent)`,
-                  }}
-                >
-                  Live preview
-                </span>
-                <div style={{ fontFamily: `'${result.fonts.primary.family}', serif`, fontWeight: 700, fontSize: 34, lineHeight: 1.02, letterSpacing: "-0.02em" }}>
-                  Your brand, <span style={{ color: accent }}>instantly</span> dressed.
-                </div>
-                <p style={{ fontFamily: `'${result.fonts.secondary.family}', sans-serif`, fontSize: 14, lineHeight: 1.6, margin: 0, color: `color-mix(in srgb, ${ink} 68%, transparent)` }}>
-                  Every element here is painted with the tokens generated from your prompt.
-                </p>
-                <div className="mt-0.5 flex gap-2.5">
-                  <span
-                    className="rounded-[10px] px-5 py-[11px] text-[13px] font-semibold"
-                    style={{ backgroundColor: accent, color: onAccent, fontFamily: `'${result.fonts.secondary.family}', sans-serif` }}
-                  >
-                    Primary
-                  </span>
-                  <span
-                    className="rounded-[10px] px-[18px] py-2.5 text-[13px]"
-                    style={{ border: `1px solid color-mix(in srgb, ${ink} 28%, transparent)`, color: ink, fontFamily: `'${result.fonts.secondary.family}', sans-serif` }}
-                  >
-                    Ghost
-                  </span>
-                </div>
-                <div className="mt-1.5 grid grid-cols-2 gap-2.5">
-                  <div
-                    className="rounded-[10px] p-3.5"
-                    style={{ backgroundColor: `color-mix(in srgb, ${ink} 5%, ${surface})`, border: `1px solid color-mix(in srgb, ${ink} 9%, transparent)` }}
-                  >
-                    <div className="h-[26px] w-[26px] rounded-md" style={{ backgroundColor: `color-mix(in srgb, ${accent} 18%, transparent)` }} />
-                    <div className="mt-2.5 text-sm font-semibold" style={{ fontFamily: `'${result.fonts.primary.family}', serif` }}>
-                      Fast setup
-                    </div>
-                  </div>
-                  <div
-                    className="rounded-[10px] p-3.5"
-                    style={{ backgroundColor: `color-mix(in srgb, ${ink} 5%, ${surface})`, border: `1px solid color-mix(in srgb, ${ink} 9%, transparent)` }}
-                  >
-                    <div className="h-[26px] w-[26px] rounded-md" style={{ backgroundColor: `color-mix(in srgb, ${support} 26%, transparent)` }} />
-                    <div className="mt-2.5 text-sm font-semibold" style={{ fontFamily: `'${result.fonts.primary.family}', serif` }}>
-                      On brand
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <LivePreviewMock result={result} surface={surface} ink={ink} accent={accent} support={support} onAccent={onAccent} />
           </div>
 
-          {result.designSystem && <DesignSystemPreview designSystem={result.designSystem} />}
+          {result.designSystem && <DesignSystemGallery designSystem={result.designSystem} />}
         </section>
       )}
     </div>

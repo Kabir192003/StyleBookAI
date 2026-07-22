@@ -72,6 +72,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     parsed.data.cornerRadius !== undefined ||
     parsed.data.moodboard !== undefined ||
     parsed.data.designSystem !== undefined ||
+    parsed.data.context !== undefined ||
     parsed.data.theme !== undefined ||
     parsed.data.aiReasoning !== undefined;
 
@@ -85,6 +86,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       cornerRadius: parsed.data.cornerRadius ?? existing.data.cornerRadius,
       moodboard: parsed.data.moodboard ?? existing.data.moodboard,
       designSystem: parsed.data.designSystem ?? existing.data.designSystem,
+      context: parsed.data.context ?? existing.data.context,
       theme: parsed.data.theme ?? existing.data.theme,
       aiReasoning: parsed.data.aiReasoning ?? existing.data.aiReasoning,
     };

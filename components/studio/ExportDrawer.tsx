@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { EXPORT_FILES, EXPORT_TABS, ExportTab, generateExportCode, StudioTokens } from "@/lib/studio/exportCode";
+import { EXPORT_FILES, EXPORT_TABS, ExportTab, generateExportCode, StudioExportTokens } from "@/lib/studio/exportCode";
 import { cn } from "@/lib/utils";
 
-export function ExportDrawer({ tokens, onClose }: { tokens: StudioTokens; onClose: () => void }) {
+export function ExportDrawer({ tokens, onClose }: { tokens: StudioExportTokens; onClose: () => void }) {
   const [tab, setTab] = useState<ExportTab>("CSS");
   const [copied, setCopied] = useState(false);
 

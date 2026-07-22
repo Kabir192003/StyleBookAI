@@ -17,6 +17,7 @@ type ProjectData = Pick<
   | "cornerRadius"
   | "moodboard"
   | "designSystem"
+  | "context"
   | "theme"
   | "aiReasoning"
 >;
@@ -47,6 +48,7 @@ export function rowToProject(row: ProjectRow, clerkUserId: string): Project {
     cornerRadius: row.data.cornerRadius,
     moodboard: row.data.moodboard,
     designSystem: row.data.designSystem,
+    context: row.data.context,
     theme: row.data.theme,
     aiGenerated: row.ai_generated,
     aiPrompt: row.ai_prompt ?? undefined,
@@ -66,6 +68,7 @@ export function projectInputToRow(input: ProjectInput) {
     cornerRadius: input.cornerRadius,
     moodboard: input.moodboard,
     designSystem: input.designSystem,
+    context: input.context,
     theme: input.theme,
     aiReasoning: input.aiReasoning,
   };
