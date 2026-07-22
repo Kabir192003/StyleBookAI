@@ -34,6 +34,7 @@ const config: Config = {
         "humanist-sans": ["var(--font-humanist-sans)"],
         "expressive-display": ["var(--font-expressive-display)"],
         "mono-plex": ["var(--font-mono-plex)"],
+        "technical-sans": ["var(--font-technical-sans)"],
       },
     },
   },

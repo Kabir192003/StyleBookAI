@@ -11,6 +11,7 @@ import {
   Inter,
   Unbounded,
   IBM_Plex_Mono,
+  Space_Grotesk,
 } from "next/font/google";
 
 export const geometricSans = Sora({
@@ -57,6 +58,15 @@ export const monoFont = IBM_Plex_Mono({
   display: "swap",
 });
 
+// One rung in the landing hero's "undesigned → designed" font-cycle
+// (Act II) — technical/geometric, distinct from Sora's warmer geometry.
+export const technicalSans = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-technical-sans",
+  display: "swap",
+});
+
 export const landingFontVariables = [
   geometricSans.variable,
   editorialSerif.variable,
@@ -64,6 +74,7 @@ export const landingFontVariables = [
   humanistSans.variable,
   expressiveDisplay.variable,
   monoFont.variable,
+  technicalSans.variable,
 ].join(" ");
 
 // Order matters: this is the cycle used by the hero's type-morph word and

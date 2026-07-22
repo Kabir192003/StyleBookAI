@@ -1,0 +1,55 @@
+/* Landing page ("the undesigned page comes to life") — keyframes and
+   fixed-UI chrome that CSS custom properties alone can't express (native
+   cursor hiding, marquee translation, floating dashed-box hints). */
+
+@keyframes sb-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes sb-hint {
+  0% {
+    transform: translateY(0);
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(9px);
+    opacity: 0.2;
+  }
+}
+
+@keyframes sb-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+body.landing-exp,
+body.landing-exp button,
+body.landing-exp a {
+  cursor: none;
+}
+
+@media (hover: none), (pointer: coarse) {
+  body.landing-exp,
+  body.landing-exp button,
+  body.landing-exp a {
+    cursor: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sb-float-el,
+  .sb-hint-el,
+  .sb-marquee-track {
+    animation: none !important;
+  }
+}
