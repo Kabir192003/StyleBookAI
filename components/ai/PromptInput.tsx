@@ -3,11 +3,14 @@
  * a live mock preview, all driving the real POST /api/ai/generate flow.
  * See docs/PRODUCT_AND_UX.md §4.
  *
- * Styled to match the AiGenerator.dc.html design pulled from
- * claude.ai/design (project "Website redesign request") — a dark cosmic
- * take distinct from the rest of the site's cream/ink editorial chrome,
- * same treatment as the theme detail page's full re-theme. The global
- * SiteHeader stays mounted above it; everything below goes dark.
+ * Styled to match the rest of the site's light cream/ink editorial chrome
+ * (same vocabulary as SiteHeader.tsx and StudioBuilder.tsx: bg-[#EDE6DA]
+ * page background, #211E18 ink, #222D52 accent, bg-[#F2EBE0] cards) — an
+ * earlier version used a one-off dark-cosmic palette distinct from every
+ * other page, which looked like a different product bolted on. The
+ * generated preview mock below (LivePreviewMock) is intentionally NOT
+ * part of this — it renders using the AI-generated brand's own colors,
+ * not the site's chrome.
  */
 "use client";
 
@@ -137,41 +140,36 @@ export function PromptInput() {
   const onAccent = onColor(accent);
 
   return (
-    <div
-      className="min-h-screen font-grotesk text-[#EFE9DC]"
-      style={{
-        background: "radial-gradient(1100px 620px at 50% -8%, #2A2140 0%, #171225 42%, #100C18 100%)",
-      }}
-    >
+    <div className="min-h-screen bg-[#EDE6DA] font-grotesk text-[#211E18]">
       {result && <GoogleFontsLoader fonts={[result.fonts.primary, result.fonts.secondary]} />}
 
       <section className="mx-auto max-w-[940px] px-6 pb-10 pt-16 text-center sm:px-8">
-        <div className="font-mono-plex text-[11px] uppercase tracking-[0.26em] text-[#D2B68A]">
+        <div className="font-mono-plex text-[11px] uppercase tracking-[0.26em] text-[#222D52]">
           AI Design-system generator
         </div>
         <h1 className="mt-4 font-editorial-serif text-[clamp(2.875rem,7vw,5.75rem)] font-normal leading-[0.98] tracking-[-0.025em]">
           Describe it. <br />
-          <em className="text-[#D2B68A] not-italic">We design it.</em>
+          <em className="text-[#222D52] not-italic">We design it.</em>
         </h1>
-        <p className="mx-auto mt-5 max-w-[520px] text-base leading-relaxed text-[#EFE9DC]/[0.66]">
+        <p className="mx-auto mt-5 max-w-[520px] text-base leading-relaxed text-[#6E675C]">
           Tell us the mood, the product, the audience. In one breath you get a complete system — palette,
           pairing, shape — ready to open in the Studio.
         </p>
 
-        <div className="mx-auto mt-9 max-w-[720px] rounded-[20px] border border-white/[0.14] bg-white/[0.04] p-5 text-left shadow-[0_30px_80px_-40px_rgba(0,0,0,0.8)] backdrop-blur-md">
+        <div className="mx-auto mt-9 max-w-[720px] rounded-[20px] border border-black/[0.14] bg-[#F2EBE0] p-5 text-left shadow-[0_20px_50px_-30px_rgba(33,30,24,0.4)]">
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="e.g. a warm, trustworthy fintech app for freelance creatives…"
             rows={3}
-            className="w-full resize-none border-none bg-transparent font-grotesk text-[19px] leading-relaxed text-[#EFE9DC] outline-none placeholder:text-[#EFE9DC]/40"
+            className="w-full resize-none border-none bg-transparent font-grotesk text-[19px] leading-relaxed text-[#211E18] outline-none placeholder:text-[#8A8477]"
           />
-          <label className="mt-2 flex w-fit cursor-pointer items-center gap-2 text-xs text-[#EFE9DC]/70">
+          <label className="mt-2 flex w-fit cursor-pointer items-center gap-2 text-xs text-[#6E675C]">
             <input
               type="checkbox"
               checked={includeDesignSystem}
               onChange={(e) => setIncludeDesignSystem(e.target.checked)}
-              className="h-3.5 w-3.5 accent-[#D2B68A]"
+              className="h-3.5 w-3.5 accent-[#222D52]"
             />
             Generate a full design system (components, states, light/dark, accessibility)
           </label>
@@ -182,7 +180,7 @@ export function PromptInput() {
                   key={sp}
                   type="button"
                   onClick={() => setPrompt(sp)}
-                  className="rounded-full border border-white/[0.16] bg-white/[0.03] px-[13px] py-[7px] text-xs text-[#EFE9DC]/[0.72]"
+                  className="rounded-full border border-black/[0.16] bg-white px-[13px] py-[7px] text-xs text-[#6E675C]"
                 >
                   {sp}
                 </button>
@@ -192,25 +190,24 @@ export function PromptInput() {
               type="button"
               onClick={handleGenerate}
               disabled={!prompt.trim() || isLoading}
-              className="whitespace-nowrap rounded-full px-7 py-[13px] text-[15px] font-semibold text-[#241B10] shadow-[0_8px_24px_-8px_rgba(210,182,138,0.7)] disabled:cursor-not-allowed disabled:opacity-50"
-              style={{ background: "linear-gradient(135deg, #D2B68A, #B98A4E)" }}
+              className="whitespace-nowrap rounded-full bg-[#222D52] px-7 py-[13px] text-[15px] font-semibold text-[#F2EBE0] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isLoading ? "Designing…" : result ? "Generate again ✦" : "Generate ✦"}
             </button>
           </div>
         </div>
 
-        {error && <p className="mt-4 text-sm text-[#F28B82]">{error}</p>}
+        {error && <p className="mt-4 text-sm text-[#B3261E]">{error}</p>}
       </section>
 
       {isLoading && (
         <section className="mx-auto max-w-[720px] px-6 pb-[70px] pt-5 text-center sm:px-8">
           <div className="mb-5 inline-flex gap-[9px]">
-            <span className="ai-dot h-[11px] w-[11px] rounded-full bg-[#D2B68A]" />
+            <span className="ai-dot h-[11px] w-[11px] rounded-full bg-[#222D52]" />
             <span className="ai-dot h-[11px] w-[11px] rounded-full bg-[#8B5CF6]" style={{ animationDelay: "0.18s" }} />
             <span className="ai-dot h-[11px] w-[11px] rounded-full bg-[#22D3EE]" style={{ animationDelay: "0.36s" }} />
           </div>
-          <div className="font-editorial-serif text-2xl tracking-[-0.01em] text-[#EFE9DC]">
+          <div className="font-editorial-serif text-2xl tracking-[-0.01em] text-[#211E18]">
             Reading the brief and mixing pigments…
           </div>
         </section>
@@ -218,7 +215,7 @@ export function PromptInput() {
 
       {!isLoading && !result && (
         <section className="mx-auto max-w-[1080px] px-6 pb-[90px] pt-5 text-center sm:px-8">
-          <div className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#EFE9DC]/40">
+          <div className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#8A8477]">
             Your generated system will appear here
           </div>
         </section>
@@ -228,14 +225,14 @@ export function PromptInput() {
         <section className="mx-auto max-w-[1080px] px-6 pb-20 pt-2 sm:px-8">
           <div className="mb-[18px] flex flex-wrap items-end justify-between gap-4">
             <div>
-              <div className="font-mono-plex text-[11px] uppercase tracking-[0.22em] text-[#D2B68A]">
+              <div className="font-mono-plex text-[11px] uppercase tracking-[0.22em] text-[#222D52]">
                 Generated system
               </div>
-              <h2 className="mt-2.5 font-editorial-serif text-[clamp(2.5rem,5.4vw,4.75rem)] font-normal leading-none tracking-[-0.02em] text-[#EFE9DC]">
+              <h2 className="mt-2.5 font-editorial-serif text-[clamp(2.5rem,5.4vw,4.75rem)] font-normal leading-none tracking-[-0.02em] text-[#211E18]">
                 {result.name}
               </h2>
               {result.aiReasoning?.overall && (
-                <p className="mt-3 max-w-[520px] text-[15px] leading-relaxed text-[#EFE9DC]/[0.66]">
+                <p className="mt-3 max-w-[520px] text-[15px] leading-relaxed text-[#6E675C]">
                   {result.aiReasoning.overall}
                 </p>
               )}
@@ -244,14 +241,14 @@ export function PromptInput() {
               <button
                 type="button"
                 onClick={handleGenerate}
-                className="rounded-full border border-white/[0.24] bg-transparent px-[22px] py-3 text-sm text-[#EFE9DC]"
+                className="rounded-full border border-black/[0.24] bg-transparent px-[22px] py-3 text-sm text-[#211E18]"
               >
                 ↻ Regenerate
               </button>
               <button
                 type="button"
                 onClick={openInStudio}
-                className="inline-flex items-center gap-1.5 rounded-full bg-[#EFE9DC] px-[26px] py-[13px] text-sm font-semibold text-[#141019]"
+                className="inline-flex items-center gap-1.5 rounded-full bg-[#222D52] px-[26px] py-[13px] text-sm font-semibold text-[#F2EBE0]"
               >
                 {sentToStudio && <Check className="h-3.5 w-3.5" />}
                 Open in Studio →
@@ -260,19 +257,19 @@ export function PromptInput() {
           </div>
 
           {result.aiReasoning && (
-            <div className="mb-5 rounded-2xl border border-white/[0.12] bg-white/[0.03] p-6">
-              <p className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#D2B68A]">AI reasoning</p>
-              <dl className="mt-3 grid gap-3 text-sm text-[#EFE9DC]/[0.8] sm:grid-cols-3">
+            <div className="mb-5 rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-6">
+              <p className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#222D52]">AI reasoning</p>
+              <dl className="mt-3 grid gap-3 text-sm text-[#6E675C] sm:grid-cols-3">
                 <div>
-                  <dt className="font-semibold text-[#EFE9DC]">Palette</dt>
+                  <dt className="font-semibold text-[#211E18]">Palette</dt>
                   <dd className="mt-1 leading-relaxed">{result.aiReasoning.palette}</dd>
                 </div>
                 <div>
-                  <dt className="font-semibold text-[#EFE9DC]">Fonts</dt>
+                  <dt className="font-semibold text-[#211E18]">Fonts</dt>
                   <dd className="mt-1 leading-relaxed">{result.aiReasoning.fonts}</dd>
                 </div>
                 <div>
-                  <dt className="font-semibold text-[#EFE9DC]">Type scale</dt>
+                  <dt className="font-semibold text-[#211E18]">Type scale</dt>
                   <dd className="mt-1 leading-relaxed">{result.aiReasoning.typeScale}</dd>
                 </div>
               </dl>
@@ -281,7 +278,7 @@ export function PromptInput() {
 
           <div className="grid items-start gap-5 lg:grid-cols-[1.05fr_1fr]">
             <div className="flex flex-col gap-4">
-              <div className="flex overflow-hidden rounded-2xl border border-white/[0.12]">
+              <div className="flex overflow-hidden rounded-2xl border border-black/[0.12]">
                 {result.colors.map((c) => (
                   <div key={c.id} className="min-h-[132px] flex-1 p-3.5" style={{ backgroundColor: c.hex, color: onColor(c.hex) }}>
                     <div className="flex h-full flex-col justify-between">
@@ -295,60 +292,60 @@ export function PromptInput() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-2xl border border-white/[0.12] bg-white/[0.03] p-[18px]">
-                  <div className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#EFE9DC]/50">Display</div>
+                <div className="rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-[18px]">
+                  <div className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#8A8477]">Display</div>
                   <div
                     className="mt-1.5 text-[46px] leading-[0.95]"
                     style={{ fontFamily: `'${result.fonts.primary.family}', serif` }}
                   >
                     Aa
                   </div>
-                  <div className="mt-1.5 text-[13px] text-[#EFE9DC]/[0.72]">{result.fonts.primary.family}</div>
+                  <div className="mt-1.5 text-[13px] text-[#6E675C]">{result.fonts.primary.family}</div>
                 </div>
-                <div className="rounded-2xl border border-white/[0.12] bg-white/[0.03] p-[18px]">
-                  <div className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#EFE9DC]/50">Body</div>
+                <div className="rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-[18px]">
+                  <div className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#8A8477]">Body</div>
                   <div
                     className="mt-1.5 text-[46px] leading-[0.95]"
                     style={{ fontFamily: `'${result.fonts.secondary.family}', sans-serif` }}
                   >
                     Aa
                   </div>
-                  <div className="mt-1.5 text-[13px] text-[#EFE9DC]/[0.72]">{result.fonts.secondary.family}</div>
+                  <div className="mt-1.5 text-[13px] text-[#6E675C]">{result.fonts.secondary.family}</div>
                 </div>
               </div>
 
               {(result.spacing || result.shadows || result.cornerRadius) && (
                 <div className="grid grid-cols-3 gap-3">
                   {result.spacing && (
-                    <div className="rounded-2xl border border-white/[0.12] bg-white/[0.03] p-4">
+                    <div className="rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-4">
                       <SpacingVisualization spacing={result.spacing} />
                     </div>
                   )}
                   {result.shadows && (
-                    <div className="rounded-2xl border border-white/[0.12] bg-white/[0.03] p-4">
-                      <div className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#EFE9DC]/50">Shadow</div>
-                      <div className="mt-3 text-[13px] capitalize text-[#EFE9DC]/[0.8]">{result.shadows.recommended}</div>
+                    <div className="rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-4">
+                      <div className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]">Shadow</div>
+                      <div className="mt-3 text-[13px] capitalize text-[#211E18]">{result.shadows.recommended}</div>
                     </div>
                   )}
                   {result.cornerRadius && (
-                    <div className="rounded-2xl border border-white/[0.12] bg-white/[0.03] p-4">
-                      <div className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#EFE9DC]/50">Radius</div>
-                      <div className="mt-3 text-[13px] text-[#EFE9DC]/[0.8]">{result.cornerRadius.recommended}px</div>
+                    <div className="rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-4">
+                      <div className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]">Radius</div>
+                      <div className="mt-3 text-[13px] text-[#211E18]">{result.cornerRadius.recommended}px</div>
                     </div>
                   )}
                 </div>
               )}
 
               {result.moodboard && result.moodboard.length > 0 && (
-                <div className="rounded-2xl border border-white/[0.12] bg-white/[0.03] p-[18px]">
-                  <div className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#EFE9DC]/50">Moodboard</div>
+                <div className="rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-[18px]">
+                  <div className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#8A8477]">Moodboard</div>
                   <div className="mt-3 grid grid-cols-3 gap-2">
                     {result.moodboard.map((image) => (
                       <div key={image.id}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={image.src} alt={image.alt} className="h-20 w-full rounded-lg object-cover" />
                         {image.credit && (
-                          <p className="mt-1 truncate text-[10px] text-[#EFE9DC]/40">
+                          <p className="mt-1 truncate text-[10px] text-[#8A8477]">
                             Photo:{" "}
                             <a href={image.credit.photographerUrl} target="_blank" rel="noopener noreferrer" className="underline">
                               {image.credit.photographerName}

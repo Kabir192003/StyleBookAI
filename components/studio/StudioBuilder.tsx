@@ -700,14 +700,51 @@ export function StudioBuilder() {
               </section>
             </div>
 
-            {(state.designSystem || state.spacing) && (
+            {(state.designSystem || state.spacing || state.shadows) && (
               <div className="px-6 pb-10 sm:px-8">
+                {state.shadows && (
+                  <div className="mb-4 flex items-center gap-3 rounded-2xl border border-black/[0.14] bg-white/60 p-4">
+                    <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Shadow</div>
+                    <div className="flex gap-2">
+                      {(["none", "subtle", "dramatic"] as const).map((level) => {
+                        const recommended = state.shadows?.recommended;
+                        return (
+                          <button
+                            key={level}
+                            type="button"
+                            onClick={() =>
+                              setState((s) => (s.shadows ? { ...s, shadows: { ...s.shadows, recommended: level } } : s))
+                            }
+                            className={cn(
+                              "rounded-lg border px-3.5 py-[7px] font-mono-plex text-[10px] uppercase tracking-[0.1em]",
+                              recommended === level
+                                ? "border-[#211E18] bg-[#211E18] text-[#F2EBE0]"
+                                : "border-black/[0.16] bg-white text-[#6E675C]"
+                            )}
+                          >
+                            {level}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
                 {state.designSystem ? (
-                  <DesignSystemGallery designSystem={state.designSystem} spacing={state.spacing} />
+                  <DesignSystemGallery
+                    designSystem={state.designSystem}
+                    spacing={state.spacing}
+                    editable
+                    onChange={(ds) => setState((s) => ({ ...s, designSystem: ds }))}
+                    onSpacingChange={(sp) => setState((s) => ({ ...s, spacing: sp }))}
+                  />
                 ) : (
                   state.spacing && (
                     <div className="rounded-2xl border border-black/[0.14] bg-white/60 p-4">
-                      <SpacingVisualization spacing={state.spacing} />
+                      <SpacingVisualization
+                        spacing={state.spacing}
+                        editable
+                        onChange={(sp) => setState((s) => ({ ...s, spacing: sp }))}
+                      />
                     </div>
                   )
                 )}
