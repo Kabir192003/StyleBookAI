@@ -127,6 +127,76 @@ const MoodboardImageSchema = z.object({
   mood: z.array(z.string()),
 });
 
+// Mirrors types/designSystem.ts — see lib/ai/schema.ts for the AI-response
+// version of this same shape.
+const HEX_REGEX = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+const hexSchema = z.string().regex(HEX_REGEX);
+
+const ComponentStateOverrideSchema = z.object({
+  background: hexSchema.optional(),
+  text: hexSchema.optional(),
+  border: hexSchema.optional(),
+});
+
+const ComponentTokenSetSchema = z.object({
+  background: hexSchema,
+  text: hexSchema,
+  border: hexSchema.optional(),
+  states: z
+    .object({
+      hover: ComponentStateOverrideSchema.optional(),
+      active: ComponentStateOverrideSchema.optional(),
+      disabled: ComponentStateOverrideSchema.optional(),
+      focus: ComponentStateOverrideSchema.optional(),
+    })
+    .optional(),
+});
+
+const ComponentTokensSchema = z.object({
+  button: ComponentTokenSetSchema.optional(),
+  buttonSecondary: ComponentTokenSetSchema.optional(),
+  input: ComponentTokenSetSchema.optional(),
+  dropdown: ComponentTokenSetSchema.optional(),
+  card: ComponentTokenSetSchema.optional(),
+  navigation: ComponentTokenSetSchema.optional(),
+  table: ComponentTokenSetSchema.optional(),
+  modal: ComponentTokenSetSchema.optional(),
+  alert: ComponentTokenSetSchema.optional(),
+  badge: ComponentTokenSetSchema.optional(),
+});
+
+const ThemeVariantTokensSchema = z.object({
+  colorRoles: z.object({
+    background: hexSchema,
+    surface: hexSchema,
+    text: hexSchema,
+    textMuted: hexSchema,
+    border: hexSchema,
+  }),
+  components: ComponentTokensSchema,
+});
+
+const DesignSystemSchema = z.object({
+  light: ThemeVariantTokensSchema,
+  dark: ThemeVariantTokensSchema.optional(),
+  accessibility: z
+    .object({ level: z.enum(["AA", "AAA"]), notes: z.array(z.string()) })
+    .optional(),
+  iconStyle: z
+    .object({
+      style: z.enum(["line", "solid", "duotone"]),
+      strokeWidth: z.number().optional(),
+      note: z.string(),
+    })
+    .optional(),
+  grid: z
+    .object({ columns: z.number(), gutter: z.number(), maxWidth: z.number() })
+    .optional(),
+  breakpoints: z
+    .object({ sm: z.number(), md: z.number(), lg: z.number(), xl: z.number() })
+    .optional(),
+});
+
 export const ProjectInputSchema = z.object({
   name: z.string().trim().min(1).max(100),
   description: z.string().max(500).optional(),
@@ -141,6 +211,7 @@ export const ProjectInputSchema = z.object({
   shadows: ShadowScaleSchema.optional(),
   cornerRadius: CornerRadiusScaleSchema.optional(),
   moodboard: z.array(MoodboardImageSchema).optional(),
+  designSystem: DesignSystemSchema.optional(),
   theme: z
     .object({ id: z.string(), slug: z.string(), name: z.string() })
     .optional(),

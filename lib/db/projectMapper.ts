@@ -9,7 +9,16 @@ import { ProjectInput } from "@/lib/validation/project";
 
 type ProjectData = Pick<
   Project,
-  "colors" | "fonts" | "typeScale" | "spacing" | "shadows" | "cornerRadius" | "moodboard" | "theme" | "aiReasoning"
+  | "colors"
+  | "fonts"
+  | "typeScale"
+  | "spacing"
+  | "shadows"
+  | "cornerRadius"
+  | "moodboard"
+  | "designSystem"
+  | "theme"
+  | "aiReasoning"
 >;
 
 export type ProjectRow = {
@@ -37,6 +46,7 @@ export function rowToProject(row: ProjectRow, clerkUserId: string): Project {
     shadows: row.data.shadows,
     cornerRadius: row.data.cornerRadius,
     moodboard: row.data.moodboard,
+    designSystem: row.data.designSystem,
     theme: row.data.theme,
     aiGenerated: row.ai_generated,
     aiPrompt: row.ai_prompt ?? undefined,
@@ -55,6 +65,7 @@ export function projectInputToRow(input: ProjectInput) {
     shadows: input.shadows,
     cornerRadius: input.cornerRadius,
     moodboard: input.moodboard,
+    designSystem: input.designSystem,
     theme: input.theme,
     aiReasoning: input.aiReasoning,
   };
