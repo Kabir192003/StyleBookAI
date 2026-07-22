@@ -30,6 +30,128 @@ const MAX_CANDIDATE_MOODBOARD_IMAGES = 60;
 
 export class AIGenerationError extends Error {}
 
+// The UI (components/ai/PromptInput.tsx) only ever sends the free-text
+// `prompt` — `style`/`colorPreferences`/`avoid` are never populated. That
+// meant candidate selection previously fell through to `pool.slice(0, N)`
+// on every request, which — since allColors is grouped by family — silently
+// handed Gemini the same ~60 neutrals/reds every single time, regardless of
+// what was typed. Tokenizing the prompt and matching against it is the
+// actual signal we have; keep the (currently dead but schema-supported)
+// style/colorPreferences/avoid handling too in case a future UI populates them.
+function tokenizePrompt(prompt: string): Set<string> {
+  return new Set(
+    prompt
+      .toLowerCase()
+      .split(/[^a-z0-9]+/)
+      .filter(Boolean)
+  );
+}
+
+// Common color words that don't literally match a ColorFamily/name (e.g.
+// "navy", "coral", "mint") but clearly signal one — without this a prompt
+// mentioning them would match nothing and fall back to the generic pool.
+const COLOR_FAMILY_SYNONYMS: Record<string, Color["family"]> = {
+  navy: "blue",
+  cobalt: "blue",
+  azure: "blue",
+  sky: "blue",
+  cerulean: "blue",
+  turquoise: "teal",
+  aqua: "teal",
+  cyan: "teal",
+  mint: "green",
+  sage: "green",
+  emerald: "green",
+  forest: "green",
+  olive: "green",
+  lime: "green",
+  coral: "red",
+  salmon: "red",
+  scarlet: "red",
+  crimson: "red",
+  maroon: "red",
+  cherry: "red",
+  ruby: "red",
+  gold: "yellow",
+  mustard: "yellow",
+  amber: "orange",
+  tangerine: "orange",
+  rust: "orange",
+  peach: "orange",
+  terracotta: "orange",
+  lavender: "purple",
+  violet: "purple",
+  plum: "purple",
+  burgundy: "purple",
+  magenta: "purple",
+  lilac: "purple",
+  indigo: "purple",
+  blush: "pink",
+  rose: "pink",
+  fuchsia: "pink",
+  tan: "brown",
+  beige: "brown",
+  khaki: "brown",
+  chocolate: "brown",
+  sand: "brown",
+  camel: "brown",
+  charcoal: "neutral",
+  graphite: "neutral",
+  ivory: "neutral",
+  cream: "neutral",
+  slate: "neutral",
+  stone: "neutral",
+  gray: "neutral",
+  grey: "neutral",
+  black: "neutral",
+  white: "neutral",
+};
+
+function colorMatchesPrompt(color: Color, tokens: Set<string>): boolean {
+  if (tokens.has(color.family)) return true;
+  if (color.mood.some((m) => tokens.has(m))) return true;
+  if (color.style.some((s) => tokens.has(s))) return true;
+  for (const token of tokens) {
+    if (COLOR_FAMILY_SYNONYMS[token] === color.family) return true;
+  }
+  return color.name
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((word) => word.length > 2)
+    .some((word) => tokens.has(word));
+}
+
+// Splits `items` into groups by `groupKeyFn` and interleaves them (round-
+// robin) up to `limit`, so a capped selection stays diverse across groups
+// instead of favoring whichever group happens to sort first in the source
+// array.
+function roundRobinSample<T>(items: T[], groupKeyFn: (item: T) => string, limit: number): T[] {
+  if (items.length <= limit) return items;
+
+  const groups = new Map<string, T[]>();
+  for (const item of items) {
+    const key = groupKeyFn(item);
+    const group = groups.get(key) ?? [];
+    group.push(item);
+    groups.set(key, group);
+  }
+
+  const groupArrays = Array.from(groups.values());
+  const result: T[] = [];
+  for (let i = 0; result.length < limit; i++) {
+    const before = result.length;
+    for (const group of groupArrays) {
+      if (i < group.length) {
+        result.push(group[i]);
+        if (result.length >= limit) break;
+      }
+    }
+    if (result.length === before) break; // every group exhausted
+  }
+
+  return result;
+}
+
 function selectCandidateColors(request: AIGenerateRequest): Color[] {
   let pool = allColors;
 
@@ -60,7 +182,32 @@ function selectCandidateColors(request: AIGenerateRequest): Color[] {
 
   if (pool.length === 0) pool = allColors;
 
-  return pool.slice(0, MAX_CANDIDATE_COLORS);
+  const tokens = tokenizePrompt(request.prompt);
+  const promptMatched = pool.filter((c) => colorMatchesPrompt(c, tokens));
+
+  if (promptMatched.length === 0) {
+    // No explicit color signal — still diversify across families instead of
+    // a raw slice (which would always be the same handful of neutrals).
+    return roundRobinSample(pool, (c) => c.family, MAX_CANDIDATE_COLORS);
+  }
+
+  if (promptMatched.length >= MAX_CANDIDATE_COLORS) {
+    return roundRobinSample(promptMatched, (c) => c.family, MAX_CANDIDATE_COLORS);
+  }
+
+  // Requested colors first (guaranteed present), then round out the palette
+  // with diverse supporting colors (backgrounds, neutrals, accents) for the
+  // remaining slots.
+  const matchedIds = new Set(promptMatched.map((c) => c.id));
+  const remaining = pool.filter((c) => !matchedIds.has(c.id));
+  const fill = roundRobinSample(remaining, (c) => c.family, MAX_CANDIDATE_COLORS - promptMatched.length);
+  return [...promptMatched, ...fill];
+}
+
+function fontMatchesPrompt(font: Font, tokens: Set<string>): boolean {
+  if (font.mood.some((m) => tokens.has(m.toLowerCase()))) return true;
+  if (font.style.some((s) => tokens.has(s.toLowerCase()))) return true;
+  return tokens.has(font.category.toLowerCase());
 }
 
 // allFonts is ~2000 entries now that the full Google Fonts catalog is in
@@ -86,11 +233,22 @@ function selectCandidateFonts(request: AIGenerateRequest): Font[] {
     if (styleMatched.length > 0) rest = styleMatched;
   }
 
-  for (const font of rest) {
-    if (candidates.length >= MAX_CANDIDATE_FONTS) break;
-    if (!seen.has(font.id)) {
-      seen.add(font.id);
-      candidates.push(font);
+  const remainingSlots = MAX_CANDIDATE_FONTS - candidates.length;
+  if (remainingSlots > 0) {
+    const tokens = tokenizePrompt(request.prompt);
+    const promptMatched = rest.filter((f) => fontMatchesPrompt(f, tokens));
+    const matchedIds = new Set(promptMatched.map((f) => f.id));
+    const unmatched = rest.filter((f) => !matchedIds.has(f.id));
+
+    const picked = promptMatched.length >= remainingSlots
+      ? roundRobinSample(promptMatched, (f) => f.category, remainingSlots)
+      : [...promptMatched, ...roundRobinSample(unmatched, (f) => f.category, remainingSlots - promptMatched.length)];
+
+    for (const font of picked) {
+      if (!seen.has(font.id)) {
+        seen.add(font.id);
+        candidates.push(font);
+      }
     }
   }
 
@@ -110,30 +268,24 @@ function selectCandidateMoodboardImages(request: AIGenerateRequest): MoodboardIm
     if (matched.length > 0) pool = matched;
   }
 
-  if (pool.length <= MAX_CANDIDATE_MOODBOARD_IMAGES) return pool;
+  const tokens = tokenizePrompt(request.prompt);
+  const promptMatched = pool.filter((m) => m.mood.some((mood) => tokens.has(mood.toLowerCase())));
 
-  const groups = new Map<string, MoodboardImage[]>();
-  for (const image of pool) {
-    const prefix = image.id.replace(/-\d+$/, "");
-    const group = groups.get(prefix) ?? [];
-    group.push(image);
-    groups.set(prefix, group);
+  const groupKey = (image: MoodboardImage) => image.id.replace(/-\d+$/, "");
+
+  if (promptMatched.length === 0) {
+    if (pool.length <= MAX_CANDIDATE_MOODBOARD_IMAGES) return pool;
+    return roundRobinSample(pool, groupKey, MAX_CANDIDATE_MOODBOARD_IMAGES);
   }
 
-  const groupArrays = Array.from(groups.values());
-  const result: MoodboardImage[] = [];
-  for (let i = 0; result.length < MAX_CANDIDATE_MOODBOARD_IMAGES; i++) {
-    const before = result.length;
-    for (const group of groupArrays) {
-      if (i < group.length) {
-        result.push(group[i]);
-        if (result.length >= MAX_CANDIDATE_MOODBOARD_IMAGES) break;
-      }
-    }
-    if (result.length === before) break; // every group exhausted
+  if (promptMatched.length >= MAX_CANDIDATE_MOODBOARD_IMAGES) {
+    return roundRobinSample(promptMatched, groupKey, MAX_CANDIDATE_MOODBOARD_IMAGES);
   }
 
-  return result;
+  const matchedIds = new Set(promptMatched.map((m) => m.id));
+  const remaining = pool.filter((m) => !matchedIds.has(m.id));
+  const fill = roundRobinSample(remaining, groupKey, MAX_CANDIDATE_MOODBOARD_IMAGES - promptMatched.length);
+  return [...promptMatched, ...fill];
 }
 
 async function callGemini(prompt: string): Promise<GeminiPaletteResponse> {
