@@ -17,6 +17,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ExportDrawer } from "./ExportDrawer";
+import { LivePreviewSection } from "./LivePreviewSection";
 import { DesignSystemGallery } from "@/components/design-system/DesignSystemGallery";
 import { SpacingVisualization } from "@/components/design-system/SpacingVisualization";
 import { getContrastRatio } from "@/lib/colors/colorUtils";
@@ -698,6 +699,10 @@ export function StudioBuilder() {
                   </span>
                 </div>
               </section>
+            </div>
+
+            <div className="px-6 pb-10 sm:px-8">
+              <LivePreviewSection tokens={state} />
             </div>
 
             {(state.designSystem || state.spacing || state.shadows) && (
