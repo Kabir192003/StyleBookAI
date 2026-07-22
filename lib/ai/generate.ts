@@ -14,7 +14,6 @@ import { buildRadiusScale } from "@/lib/designTokens/radius";
 import { synthesizeColorFromHex } from "@/lib/colors/deriveColorMetadata";
 import { allColors } from "@/data/colors";
 import { allFonts } from "@/data/fonts";
-import { fontsSeed } from "@/data/fonts/seed";
 import { moodboardImages } from "@/data/moodboards";
 import { AIGenerateRequest } from "@/types/ai";
 import { AIReasoning, Project } from "@/types/project";
@@ -210,55 +209,58 @@ function selectCandidateColors(request: AIGenerateRequest): Color[] {
   return [...promptMatched, ...fill];
 }
 
+// Previously this matched only mood/style/category — never the font's own
+// name — so a prompt naming a specific typeface ("something like Garamond")
+// could never match it. Splitting the family into words and checking prompt
+// tokens against them closes that gap (mirrors colorMatchesPrompt's name
+// check).
 function fontMatchesPrompt(font: Font, tokens: Set<string>): boolean {
   if (font.mood.some((m) => tokens.has(m.toLowerCase()))) return true;
   if (font.style.some((s) => tokens.has(s.toLowerCase()))) return true;
-  return tokens.has(font.category.toLowerCase());
+  if (tokens.has(font.category.toLowerCase())) return true;
+  return font.family
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((word) => word.length > 2)
+    .some((word) => tokens.has(word));
 }
 
 // allFonts is ~2000 entries now that the full Google Fonts catalog is in
-// (data/fonts/google.ts) — cap what's sent to Gemini the same way colors
-// are capped, but always keep the 36 hand-curated seed fonts (real
-// pairing data, bespoke notes) since they're the highest-quality picks.
+// (data/fonts/google.ts). Previously this unconditionally included all 36
+// fontsSeed entries before any prompt matching ran, leaving only 4 of the
+// 40-slot cap for the other ~1,950 fonts — so every request got nearly the
+// same candidate pool regardless of what was asked, and the model kept
+// landing on the same handful of fonts. Now the seed set and the Google
+// catalog are one unified pool, prompt-matched the same way colors are
+// (see selectCandidateColors) — seed fonts still surface disproportionately
+// for a matching prompt since their mood/style tags are real hand-written
+// data (Google Fonts entries are auto-generated, one tag set per category).
 function selectCandidateFonts(request: AIGenerateRequest): Font[] {
-  const seen = new Set<string>();
-  const candidates: Font[] = [];
-
-  for (const font of fontsSeed) {
-    if (!seen.has(font.id)) {
-      seen.add(font.id);
-      candidates.push(font);
-    }
-  }
-
-  let rest = allFonts.filter((f) => !seen.has(f.id));
+  let pool = allFonts;
 
   if (request.style?.length) {
     const requestedStyles: string[] = request.style;
-    const styleMatched = rest.filter((f) => f.style.some((s) => requestedStyles.includes(s)));
-    if (styleMatched.length > 0) rest = styleMatched;
+    const styleMatched = pool.filter((f) => f.style.some((s) => requestedStyles.includes(s)));
+    if (styleMatched.length > 0) pool = styleMatched;
   }
 
-  const remainingSlots = MAX_CANDIDATE_FONTS - candidates.length;
-  if (remainingSlots > 0) {
-    const tokens = tokenizePrompt(request.prompt);
-    const promptMatched = rest.filter((f) => fontMatchesPrompt(f, tokens));
-    const matchedIds = new Set(promptMatched.map((f) => f.id));
-    const unmatched = rest.filter((f) => !matchedIds.has(f.id));
+  const tokens = tokenizePrompt(request.prompt);
+  const promptMatched = pool.filter((f) => fontMatchesPrompt(f, tokens));
 
-    const picked = promptMatched.length >= remainingSlots
-      ? roundRobinSample(promptMatched, (f) => f.category, remainingSlots)
-      : [...promptMatched, ...roundRobinSample(unmatched, (f) => f.category, remainingSlots - promptMatched.length)];
-
-    for (const font of picked) {
-      if (!seen.has(font.id)) {
-        seen.add(font.id);
-        candidates.push(font);
-      }
-    }
+  if (promptMatched.length === 0) {
+    // No explicit font signal — still diversify across categories instead
+    // of always landing on the same seed-heavy slice.
+    return roundRobinSample(pool, (f) => f.category, MAX_CANDIDATE_FONTS);
   }
 
-  return candidates;
+  if (promptMatched.length >= MAX_CANDIDATE_FONTS) {
+    return roundRobinSample(promptMatched, (f) => f.category, MAX_CANDIDATE_FONTS);
+  }
+
+  const matchedIds = new Set(promptMatched.map((f) => f.id));
+  const remaining = pool.filter((f) => !matchedIds.has(f.id));
+  const fill = roundRobinSample(remaining, (f) => f.category, MAX_CANDIDATE_FONTS - promptMatched.length);
+  return [...promptMatched, ...fill];
 }
 
 // moodboardImages is grouped sequentially by category (see
@@ -380,6 +382,7 @@ export async function generateProjectFromPrompt(
     cornerRadius,
     moodboard: moodboard.length > 0 ? moodboard : undefined,
     designSystem: raw.designSystem,
+    context: raw.context ?? "generic",
     aiGenerated: true,
     aiPrompt: request.prompt,
     aiReasoning: reasoning,

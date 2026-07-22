@@ -21,7 +21,7 @@ function describeColor(c: Color): string {
 }
 
 function describeFont(f: Font): string {
-  return `${f.id} | ${f.family} | ${f.category} | mood:${f.mood.join(",")} | useCase:${f.useCase.join(",")}`;
+  return `${f.id} | ${f.family} | ${f.category} | mood:${f.mood.join(",")} | style:${f.style.join(",")} | useCase:${f.useCase.join(",")}`;
 }
 
 function describeMoodboardImage(m: MoodboardImage): string {
@@ -68,13 +68,27 @@ carry real editorial metadata (name, family, mood, a written note) the app
 displays elsewhere, so a good approximate match beats an arbitrary hex. But if
 the user gives an exact hex code or names a very specific brand color the
 candidates can't approximate, return that literal hex instead of guessing —
-see the colorId/hex contract in the JSON shape below. Never invent a font
-family that isn't in the candidate font list.
+see the colorId/hex contract in the JSON shape below.
+
+Every color entry's "role" must be exactly one of this fixed set (never a
+synonym or variant): "primary" (the main brand/accent color), "secondary",
+"background", "surface", "text", "muted". Use "primary" for the main
+brand color, not "accent" — the app looks specifically for "primary" first.
+
+For fonts: never invent a font family that isn't in the candidate list below.
+If the brand description names a specific typeface (e.g. "use Garamond" or
+"something like Futura"), pick the candidate whose family matches it, or the
+closest relative in the same category if no exact match exists. Otherwise
+weight your pick toward candidates whose mood/style match the brief.
 
 If the brand description states an exact number of colors (e.g. "5-6 hex
 codes", "a palette of 3", "10 colors") or an exact number of fonts (up to 3:
 primary/secondary/optional accent), return exactly that many instead of the
 default 5-7 colors / 2 fonts.
+
+Also classify the brand's context as one of: "saas", "ecommerce",
+"government", "editorial", "generic" — pick "generic" only if none of the
+others clearly fit. This drives which mock preview layout the app shows.
 
 Brand description: "${request.prompt}"
 ${request.style?.length ? `Preferred style keywords: ${request.style.join(", ")}` : ""}
@@ -98,7 +112,8 @@ Valid corner radius values: 4, 8, 12, 20
 Respond with JSON ONLY, matching exactly this shape:
 {
   "projectName": string (short, evocative, <= 60 chars),
-  "colors": [ { "role": string (e.g. "primary", "background", "accent", "text"), "colorId": string (one of the candidate ids above — omit if using "hex" instead), "hex": string (a literal hex like "#4B5FD1" — omit if using "colorId" instead; use this only when the candidates can't satisfy an exact request), "name": string (optional, only when using "hex" — a short name for the custom color) }, ... 5 to 7 entries by default, or the exact count requested ],
+  "context": string (exactly one of "saas", "ecommerce", "government", "editorial", "generic"),
+  "colors": [ { "role": string (exactly one of "primary", "secondary", "background", "surface", "text", "muted" — see the role rules above), "colorId": string (one of the candidate ids above — omit if using "hex" instead), "hex": string (a literal hex like "#4B5FD1" — omit if using "colorId" instead; use this only when the candidates can't satisfy an exact request), "name": string (optional, only when using "hex" — a short name for the custom color) }, ... 5 to 7 entries by default, or the exact count requested ],
   "primaryFontId": string (must be one of the candidate font ids, useCase includes "heading" or "body"),
   "secondaryFontId": string (must be one of the candidate font ids, different from primaryFontId),
   "accentFontId": string (optional, one of the candidate font ids),

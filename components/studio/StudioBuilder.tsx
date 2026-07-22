@@ -14,10 +14,18 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ExportDrawer } from "./ExportDrawer";
+import { DesignSystemGallery } from "@/components/design-system/DesignSystemGallery";
+import { SpacingVisualization } from "@/components/design-system/SpacingVisualization";
 import { getContrastRatio } from "@/lib/colors/colorUtils";
 import { cn } from "@/lib/utils";
+import { useAIResultStore } from "@/store";
+import { PaletteTokens } from "@/lib/studio/exportCode";
+import { SpacingScale, ShadowScale, MoodboardImage } from "@/types/designTokens";
+import { DesignSystem, ThemeVariantTokens } from "@/types/designSystem";
+import { AIReasoning } from "@/types/project";
 
 const FONTS = [
   "Fraunces",
@@ -90,25 +98,47 @@ function randomOf<T>(arr: readonly T[]): T {
 export type StudioState = {
   name: string;
   mode: "Light" | "Dark";
-  accent: string;
-  support: string;
-  surface: string;
-  ink: string;
-  muted: string;
+  // Two independently-editable token sets — previously a single flat
+  // palette with a "mode" label that nothing actually read. The mode
+  // toggle now switches which of these drives the preview (see
+  // previewVars below), so it's a real dark mode, not cosmetic.
+  light: PaletteTokens;
+  dark: PaletteTokens;
   headFont: string;
   bodyFont: string;
+  accentFont?: string;
   radius: number;
   density: Density;
+  // Only populated when hydrated from an AI-generated result (see
+  // store/aiResultStore.ts) — undefined for a fresh manual build.
+  spacing?: SpacingScale;
+  shadows?: ShadowScale;
+  designSystem?: DesignSystem;
+  moodboard?: MoodboardImage[];
+  aiReasoning?: AIReasoning;
 };
 
-const DEFAULT_STATE: StudioState = {
-  name: "Northwind",
-  mode: "Light",
+const DEFAULT_LIGHT: PaletteTokens = {
   accent: "#222D52",
   support: "#C36B3E",
   surface: "#F5F1E8",
   ink: "#211E18",
   muted: "#8A8477",
+};
+
+const DEFAULT_DARK: PaletteTokens = {
+  accent: "#8B5CF6",
+  support: "#22D3EE",
+  surface: "#121022",
+  ink: "#E6E1F5",
+  muted: "#6B6483",
+};
+
+const DEFAULT_STATE: StudioState = {
+  name: "Northwind",
+  mode: "Light",
+  light: DEFAULT_LIGHT,
+  dark: DEFAULT_DARK,
   headFont: "Fraunces",
   bodyFont: "Archivo",
   radius: 10,
@@ -117,12 +147,23 @@ const DEFAULT_STATE: StudioState = {
 
 function seedFromParams(params: URLSearchParams): Partial<StudioState> {
   const seeded: Partial<StudioState> = {};
-  (["name", "accent", "support", "surface", "ink", "muted"] as const).forEach((key) => {
-    const value = params.get(key);
-    if (value) seeded[key] = value;
-  });
+  const name = params.get("name");
+  if (name) seeded.name = name;
+
   const mode = params.get("mode");
+  const resolvedMode: "Light" | "Dark" = mode === "Dark" ? "Dark" : "Light";
   if (mode === "Light" || mode === "Dark") seeded.mode = mode;
+
+  const seededPalette: Partial<PaletteTokens> = {};
+  (["accent", "support", "surface", "ink", "muted"] as const).forEach((key) => {
+    const value = params.get(key);
+    if (value) seededPalette[key] = value;
+  });
+  if (Object.keys(seededPalette).length > 0) {
+    const base = resolvedMode === "Dark" ? DEFAULT_DARK : DEFAULT_LIGHT;
+    seeded[resolvedMode === "Dark" ? "dark" : "light"] = { ...base, ...seededPalette };
+  }
+
   const head = params.get("head");
   if (head) seeded.headFont = head;
   const body = params.get("body");
@@ -132,9 +173,44 @@ function seedFromParams(params: URLSearchParams): Partial<StudioState> {
   return seeded;
 }
 
+// Derives a flat 5-token palette from a designSystem theme variant's
+// colorRoles/component tokens — used to seed Studio's palette when arriving
+// from an AI result that included a full design system. Falls back to
+// whatever palette Studio would otherwise use for any field the design
+// system didn't specify.
+function paletteFromThemeVariant(variant: ThemeVariantTokens | undefined, fallback: PaletteTokens): PaletteTokens {
+  if (!variant) return fallback;
+  return {
+    accent: variant.components.button?.background ?? fallback.accent,
+    support: variant.components.buttonSecondary?.background ?? fallback.support,
+    surface: variant.colorRoles.surface,
+    ink: variant.colorRoles.text,
+    muted: variant.colorRoles.textMuted,
+  };
+}
+
 export function StudioBuilder() {
   const searchParams = useSearchParams();
-  const [state, setState] = useState<StudioState>(() => ({ ...DEFAULT_STATE, ...seedFromParams(searchParams) }));
+  const aiResult = useAIResultStore((s) => s.result);
+  const [state, setState] = useState<StudioState>(() => {
+    const seeded = { ...DEFAULT_STATE, ...seedFromParams(searchParams) };
+    // Only enrich from the persisted AI result when this navigation didn't
+    // already provide its own explicit palette from a different source
+    // (e.g. a saved theme's "Apply this edition" link) — avoids leaking a
+    // stale/unrelated AI result's design system into an unrelated deep link.
+    const cameFromOtherSource = Boolean(searchParams.get("accent")) && searchParams.get("from") !== "ai";
+    if (!aiResult || cameFromOtherSource) return seeded;
+    return {
+      ...seeded,
+      spacing: aiResult.spacing,
+      shadows: aiResult.shadows,
+      designSystem: aiResult.designSystem,
+      moodboard: aiResult.moodboard,
+      aiReasoning: aiResult.aiReasoning,
+      light: paletteFromThemeVariant(aiResult.designSystem?.light, seeded.light),
+      dark: paletteFromThemeVariant(aiResult.designSystem?.dark, seeded.dark),
+    };
+  });
   const [exportOpen, setExportOpen] = useState(false);
 
   useEffect(() => {
@@ -155,39 +231,52 @@ export function StudioBuilder() {
 
   const density = DENSITIES[state.density];
   const domain = `${state.name.toLowerCase().replace(/[^a-z0-9]/g, "")}.com`;
+  const activeVariant = state.mode === "Dark" ? "dark" : "light";
+  const activePalette = state[activeVariant];
 
   const previewVars = useMemo(
     () =>
       ({
-        "--accent": state.accent,
-        "--support": state.support,
-        "--surface": state.surface,
-        "--ink": state.ink,
-        "--muted": state.muted,
-        "--on-accent": onColor(state.accent),
+        "--accent": activePalette.accent,
+        "--support": activePalette.support,
+        "--surface": activePalette.surface,
+        "--ink": activePalette.ink,
+        "--muted": activePalette.muted,
+        "--on-accent": onColor(activePalette.accent),
         "--head": `'${state.headFont}', serif`,
         "--body": `'${state.bodyFont}', sans-serif`,
         "--r": `${state.radius}px`,
         "--pad": `${density.pad}px`,
         "--gap": `${density.gap}px`,
       }) as React.CSSProperties,
-    [state, density]
+    [activePalette, state.headFont, state.bodyFont, state.radius, density]
   );
 
   function set<K extends keyof StudioState>(key: K, value: StudioState[K]) {
     setState((s) => ({ ...s, [key]: value }));
   }
 
+  function setToken<K extends keyof PaletteTokens>(key: K, value: string) {
+    setState((s) => {
+      const variant = s.mode === "Dark" ? "dark" : "light";
+      return { ...s, [variant]: { ...s[variant], [key]: value } };
+    });
+  }
+
   function applyPalette(p: (typeof PALETTES)[number]) {
-    setState((s) => ({
-      ...s,
-      accent: p.accent,
-      support: p.support,
-      surface: p.surface,
-      ink: p.ink,
-      muted: onColor(p.surface) === "#141110" ? "#8A8477" : "#9A93B0",
-      mode: onColor(p.surface) === "#141110" ? "Light" : "Dark",
-    }));
+    setState((s) => {
+      const variant = s.mode === "Dark" ? "dark" : "light";
+      return {
+        ...s,
+        [variant]: {
+          accent: p.accent,
+          support: p.support,
+          surface: p.surface,
+          ink: p.ink,
+          muted: onColor(p.surface) === "#141110" ? "#8A8477" : "#9A93B0",
+        },
+      };
+    });
   }
 
   function shuffle() {
@@ -204,6 +293,14 @@ export function StudioBuilder() {
           The Studio — {state.name}
         </div>
         <div className="flex items-center gap-2.5">
+          {aiResult && (
+            <Link
+              href="/studio/ai"
+              className="rounded-full border border-black/30 px-4 py-2 font-mono-plex text-[11px] uppercase tracking-[0.12em] text-[#211E18]"
+            >
+              ← Back to AI result
+            </Link>
+          )}
           <button
             type="button"
             onClick={shuffle}
@@ -258,18 +355,23 @@ export function StudioBuilder() {
           </div>
 
           <div className="flex flex-col gap-3.5">
-            <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Palette</div>
+            <div className="flex items-center justify-between">
+              <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Palette</div>
+              <div className="font-mono-plex text-[9px] uppercase tracking-[0.12em] text-[#B4AD9E]">
+                Editing {state.mode}
+              </div>
+            </div>
             {ROLES.map((r) => (
               <label key={r.key} className="flex items-center gap-3">
                 <input
                   type="color"
-                  value={state[r.key]}
-                  onChange={(e) => set(r.key, e.target.value)}
+                  value={activePalette[r.key]}
+                  onChange={(e) => setToken(r.key, e.target.value)}
                   className="studio-color-input h-10 w-10 flex-none rounded-lg shadow-[0_0_0_1px_rgba(33,30,24,0.14)]"
                 />
                 <div className="flex flex-1 flex-col">
                   <span className="text-[13px] text-[#211E18]">{r.label}</span>
-                  <span className="font-mono-plex text-[11px] uppercase text-[#8A8477]">{state[r.key]}</span>
+                  <span className="font-mono-plex text-[11px] uppercase text-[#8A8477]">{activePalette[r.key]}</span>
                 </div>
                 <span className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#B4AD9E]">{r.token}</span>
               </label>
@@ -597,6 +699,20 @@ export function StudioBuilder() {
                 </div>
               </section>
             </div>
+
+            {(state.designSystem || state.spacing) && (
+              <div className="px-6 pb-10 sm:px-8">
+                {state.designSystem ? (
+                  <DesignSystemGallery designSystem={state.designSystem} spacing={state.spacing} />
+                ) : (
+                  state.spacing && (
+                    <div className="rounded-2xl border border-black/[0.14] bg-white/60 p-4">
+                      <SpacingVisualization spacing={state.spacing} />
+                    </div>
+                  )
+                )}
+              </div>
+            )}
           </div>
         </main>
       </div>

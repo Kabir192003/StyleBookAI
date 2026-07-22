@@ -4,3 +4,4 @@
  */
 export { useStudioStore } from "./studioStore";
 export { usePreviewLabStore } from "./previewLabStore";
+export { useAIResultStore } from "./aiResultStore";

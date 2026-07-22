@@ -212,6 +212,7 @@ export const ProjectInputSchema = z.object({
   cornerRadius: CornerRadiusScaleSchema.optional(),
   moodboard: z.array(MoodboardImageSchema).optional(),
   designSystem: DesignSystemSchema.optional(),
+  context: z.enum(["saas", "ecommerce", "government", "editorial", "generic"]).optional(),
   theme: z
     .object({ id: z.string(), slug: z.string(), name: z.string() })
     .optional(),

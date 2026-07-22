@@ -20,6 +20,10 @@ export type AIReasoning = {
   overall: string;
 };
 
+// Drives which mock preview layout the AI results page renders — see
+// components/ai/PromptInput.tsx.
+export type AIContext = "saas" | "ecommerce" | "government" | "editorial" | "generic";
+
 export type Project = {
   id: string;
   userId: string;
@@ -37,6 +41,7 @@ export type Project = {
   // breakpoints) rather than just a palette/font/type-scale — see
   // types/designSystem.ts.
   designSystem?: DesignSystem;
+  context?: AIContext;
   theme?: Pick<Theme, "id" | "slug" | "name">;
   aiGenerated: boolean;
   aiPrompt?: string;
