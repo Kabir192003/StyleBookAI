@@ -11,6 +11,7 @@ import { generateTypeScale } from "@/lib/typeScale/generateTypeScale";
 import { generateSpacingScale } from "@/lib/designTokens/spacing";
 import { buildShadowScale } from "@/lib/designTokens/shadows";
 import { buildRadiusScale } from "@/lib/designTokens/radius";
+import { synthesizeColorFromHex } from "@/lib/colors/deriveColorMetadata";
 import { allColors } from "@/data/colors";
 import { allFonts } from "@/data/fonts";
 import { fontsSeed } from "@/data/fonts/seed";
@@ -20,6 +21,11 @@ import { AIReasoning, Project } from "@/types/project";
 import { Color } from "@/types/color";
 import { Font } from "@/types/font";
 import { MoodboardImage } from "@/types/designTokens";
+
+// A full design-system response (component tokens x states x light/dark)
+// is much larger than a plain palette — give Gemini more headroom so it
+// doesn't get cut off mid-JSON.
+const DESIGN_SYSTEM_MAX_OUTPUT_TOKENS = 8192;
 
 // Kept small — a larger candidate list means a bigger prompt, which means
 // a slower Gemini round-trip, which risks the serverless function timeout
@@ -288,8 +294,8 @@ function selectCandidateMoodboardImages(request: AIGenerateRequest): MoodboardIm
   return [...promptMatched, ...fill];
 }
 
-async function callGemini(prompt: string): Promise<GeminiPaletteResponse> {
-  const model = getGeminiJsonModel();
+async function callGemini(prompt: string, options?: { maxOutputTokens?: number }): Promise<GeminiPaletteResponse> {
+  const model = getGeminiJsonModel(options);
   const result = await model.generateContent(prompt);
   const text = result.response.text();
 
@@ -314,19 +320,29 @@ export async function generateProjectFromPrompt(
   const candidateFonts = selectCandidateFonts(request);
   const candidateMoodboardImages = selectCandidateMoodboardImages(request);
   const prompt = buildGeneratePrompt(request, candidateColors, candidateFonts, candidateMoodboardImages);
+  const modelOptions = request.includeDesignSystem
+    ? { maxOutputTokens: DESIGN_SYSTEM_MAX_OUTPUT_TOKENS }
+    : undefined;
 
   let raw: GeminiPaletteResponse;
   try {
-    raw = await callGemini(prompt);
+    raw = await callGemini(prompt, modelOptions);
   } catch (firstError) {
     const reason = firstError instanceof Error ? firstError.message : String(firstError);
     const stricterPrompt = `${prompt}\n\nYour previous response was invalid: ${reason}. Return ONLY valid JSON matching the exact shape above, using real ids from the candidate lists.`;
-    raw = await callGemini(stricterPrompt);
+    raw = await callGemini(stricterPrompt, modelOptions);
   }
 
   const colorById = new Map(candidateColors.map((c) => [c.id, c]));
-  const resolvedColors = raw.colors.map(({ colorId, role }) => {
-    const color = colorById.get(colorId);
+  const resolvedColors = raw.colors.map(({ colorId, hex, name, role }) => {
+    if (hex) {
+      // Gemini returned a literal hex instead of a candidate id (asked for
+      // an exact color the catalog couldn't approximate) — synthesize a
+      // full Color around it so every downstream consumer (export,
+      // Project.colors) still sees a real Color shape.
+      return { ...synthesizeColorFromHex(hex, name), role };
+    }
+    const color = colorId ? colorById.get(colorId) : undefined;
     if (!color) {
       throw new AIGenerationError(`Gemini returned an unknown colorId: ${colorId}`);
     }
@@ -363,6 +379,7 @@ export async function generateProjectFromPrompt(
     shadows,
     cornerRadius,
     moodboard: moodboard.length > 0 ? moodboard : undefined,
+    designSystem: raw.designSystem,
     aiGenerated: true,
     aiPrompt: request.prompt,
     aiReasoning: reasoning,

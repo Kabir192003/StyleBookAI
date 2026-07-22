@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Check } from "lucide-react";
 import { GoogleFontsLoader } from "@/components/fonts/GoogleFontsLoader";
+import { DesignSystemPreview } from "@/components/ai/DesignSystemPreview";
 import { useStudioStore } from "@/store";
 import { AIGeneratedProject } from "@/types/ai";
 import { getContrastRatio } from "@/lib/colors/colorUtils";
@@ -45,6 +46,7 @@ export function PromptInput() {
   const setTypeScale = useStudioStore((s) => s.setTypeScale);
 
   const [prompt, setPrompt] = useState("");
+  const [includeDesignSystem, setIncludeDesignSystem] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AIGeneratedProject | null>(null);
@@ -61,7 +63,7 @@ export function PromptInput() {
       const response = await fetch("/api/ai/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, includeDesignSystem }),
       });
 
       const data = await response.json();
@@ -143,6 +145,15 @@ export function PromptInput() {
             rows={3}
             className="w-full resize-none border-none bg-transparent font-grotesk text-[19px] leading-relaxed text-[#EFE9DC] outline-none placeholder:text-[#EFE9DC]/40"
           />
+          <label className="mt-2 flex w-fit cursor-pointer items-center gap-2 text-xs text-[#EFE9DC]/70">
+            <input
+              type="checkbox"
+              checked={includeDesignSystem}
+              onChange={(e) => setIncludeDesignSystem(e.target.checked)}
+              className="h-3.5 w-3.5 accent-[#D2B68A]"
+            />
+            Generate a full design system (components, states, light/dark, accessibility)
+          </label>
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap gap-1.5">
               {starterPrompts.map((sp) => (
@@ -408,6 +419,8 @@ export function PromptInput() {
               </div>
             </div>
           </div>
+
+          {result.designSystem && <DesignSystemPreview designSystem={result.designSystem} />}
         </section>
       )}
     </div>

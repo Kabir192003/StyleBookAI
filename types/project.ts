@@ -11,6 +11,7 @@ import { Color } from "./color";
 import { Font } from "./font";
 import { Theme, TypeScale } from "./theme";
 import { SpacingScale, ShadowScale, CornerRadiusScale, MoodboardImage } from "./designTokens";
+import { DesignSystem } from "./designSystem";
 
 export type AIReasoning = {
   palette: string;
@@ -31,6 +32,11 @@ export type Project = {
   shadows?: ShadowScale;
   cornerRadius?: CornerRadiusScale;
   moodboard?: MoodboardImage[];
+  // Only present when AI Generate was asked for a full design system
+  // (component tokens/states, light+dark, accessibility, icon style, grid,
+  // breakpoints) rather than just a palette/font/type-scale — see
+  // types/designSystem.ts.
+  designSystem?: DesignSystem;
   theme?: Pick<Theme, "id" | "slug" | "name">;
   aiGenerated: boolean;
   aiPrompt?: string;

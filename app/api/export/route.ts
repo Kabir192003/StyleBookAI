@@ -21,6 +21,10 @@ const InlineProjectSchema = ProjectInputSchema.pick({
   colors: true,
   fonts: true,
   typeScale: true,
+  spacing: true,
+  shadows: true,
+  cornerRadius: true,
+  designSystem: true,
 });
 
 const ExportRequestSchema = z
@@ -75,7 +79,16 @@ export async function POST(req: NextRequest) {
   }
 
   const content = generateExport(
-    { name: row.name, colors: row.data.colors, fonts: row.data.fonts, typeScale: row.data.typeScale },
+    {
+      name: row.name,
+      colors: row.data.colors,
+      fonts: row.data.fonts,
+      typeScale: row.data.typeScale,
+      spacing: row.data.spacing,
+      shadows: row.data.shadows,
+      cornerRadius: row.data.cornerRadius,
+      designSystem: row.data.designSystem,
+    },
     exportFormat
   );
 

@@ -14,6 +14,10 @@ export type AIGenerateRequest = {
   style?: ColorStyle[];
   colorPreferences?: string[];
   avoid?: string[];
+  // Opts into the full design-system contract (component tokens/states,
+  // light+dark, accessibility, icon style, grid, breakpoints) — off by
+  // default so a plain "give me a palette" prompt stays fast/cheap.
+  includeDesignSystem?: boolean;
 };
 
 // What POST /api/ai/generate actually returns — a draft Project, not yet

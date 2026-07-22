@@ -26,12 +26,13 @@ function getClient(): GoogleGenerativeAI {
   return client;
 }
 
-export function getGeminiJsonModel() {
+export function getGeminiJsonModel(options?: { maxOutputTokens?: number }) {
   return getClient().getGenerativeModel({
     model: MODEL_NAME,
     generationConfig: {
       responseMimeType: "application/json",
       temperature: 0.8,
+      ...(options?.maxOutputTokens ? { maxOutputTokens: options.maxOutputTokens } : {}),
     },
   });
 }
