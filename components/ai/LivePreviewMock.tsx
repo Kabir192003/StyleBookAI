@@ -182,7 +182,7 @@ function EditorialBody({ result, ink, accent }: Tokens) {
         className="pl-3 text-[14px] italic leading-relaxed"
         style={{ borderLeft: `2px solid ${accent}`, color: `color-mix(in srgb, ${ink} 75%, transparent)`, fontFamily: `'${result.fonts.secondary.family}', sans-serif` }}
       >
-        "Every layout here is painted with the tokens generated from your prompt."
+        &ldquo;Every layout here is painted with the tokens generated from your prompt.&rdquo;
       </div>
       <span
         className="mt-1 self-start text-[13px] font-semibold"
