@@ -6,6 +6,57 @@
   --background: #ffffff;
   --foreground: #111111;
 
+  /* ── App-shell brand tokens ───────────────────────────────────────
+     Matched against docs/StyleBook-Design-System.pdf v1.0. Key rules
+     this encodes: §02 gold is objects/dividers or dark-ground text only
+     (Oxblood is the accent voice on Silk/Pearl); §02 Onyx is reserved for
+     one rare gallery moment, never general chrome; §06 buttons are
+     liquid glass (translucent+blur, no solid/gradient fills); §04
+     shadows are navy-ink, never pure black. Both light and dark hold up
+     — checking a palette against both is core to what this product does. */
+  --silk: #f2ebe0;
+  --pearl: #fdfdfb;
+  --marble: #e8e4e0;
+  --onyx: #0b0b0e;
+  --champagne: #d2b68a;
+  --bronze: #8c6a2f;
+
+  --app-bg: var(--silk);
+  --app-surface: var(--pearl);
+  --app-surface-hover: #f7f4ee;
+  --app-border: rgba(24, 28, 45, 0.1);
+  --app-border-strong: rgba(24, 28, 45, 0.18);
+  --app-text: #16192a;
+  --app-text-secondary: #494e60;
+  --app-text-muted: #6b7080;
+  --app-text-faint: #94a3b8;
+  --app-heading: #222d52;
+  --app-accent: #6e2a28;
+  --app-accent-hover: #521e1c;
+  --app-accent-soft: #f3e6e0;
+  --app-danger: #a83a2e;
+  --app-danger-soft: #f7e6e2;
+  --app-success: #22733f;
+
+  --app-gold-gradient: linear-gradient(105deg, #8c6a2f 0%, #c9a96a 40%, #d2b68a 55%, #8c6a2f 100%);
+
+  --app-glass-primary-bg: rgba(28, 38, 72, 0.82);
+  --app-glass-primary-border: rgba(255, 255, 255, 0.3);
+  --app-glass-ghost-bg: rgba(253, 253, 251, 0.42);
+  --app-glass-ghost-border: rgba(255, 255, 255, 0.65);
+  --app-glass-panel-bg: rgba(253, 253, 251, 0.84);
+  --app-glass-panel-border: rgba(24, 28, 45, 0.08);
+
+  --app-cover-bg: var(--onyx);
+  --app-cover-text: #f7f3ea;
+  --app-cover-text-muted: rgba(247, 243, 234, 0.6);
+  --app-cover-border: rgba(247, 243, 234, 0.12);
+
+  --shadow-sm: 0 1px 3px rgba(24, 28, 45, 0.05);
+  --shadow-md: 0 4px 14px rgba(24, 28, 45, 0.07);
+  --shadow-lg: 0 12px 40px rgba(24, 28, 45, 0.09);
+  --shadow-xl: 0 20px 60px rgba(24, 28, 45, 0.11);
+
   /* Landing-page scene state — written directly by ScrollProgressProvider
      on scroll (not React state) so background/atmosphere interpolation
      stays off the render path. */
@@ -21,6 +72,33 @@
   --scene-glow-3-y: 15%;
   --scene-glow-opacity: 0.55;
   --cursor-color: #150f1c;
+}
+
+.dark {
+  --app-bg: #131419;
+  --app-surface: #1b1d25;
+  --app-surface-hover: #22242e;
+  --app-border: rgba(242, 235, 224, 0.12);
+  --app-border-strong: rgba(242, 235, 224, 0.22);
+  --app-text: #f2efe6;
+  --app-text-secondary: #c8c4b8;
+  --app-text-muted: #918d82;
+  --app-text-faint: #6b6559;
+  --app-heading: #b7c1e8;
+  --app-accent: #e3958a;
+  --app-accent-hover: #edb2a8;
+  --app-accent-soft: rgba(227, 149, 138, 0.14);
+  --app-danger: #e58177;
+  --app-danger-soft: rgba(229, 129, 119, 0.14);
+  --app-success: #5cb885;
+  --app-cover-bg: #08080a;
+  --app-cover-border: rgba(247, 243, 234, 0.16);
+  --app-glass-primary-bg: rgba(28, 38, 72, 0.7);
+  --app-glass-primary-border: rgba(255, 255, 255, 0.18);
+  --app-glass-ghost-bg: rgba(27, 29, 37, 0.55);
+  --app-glass-ghost-border: rgba(255, 255, 255, 0.14);
+  --app-glass-panel-bg: rgba(27, 29, 37, 0.8);
+  --app-glass-panel-border: rgba(242, 235, 224, 0.1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -137,6 +215,50 @@ body:has([data-landing]) {
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   background-size: 180px 180px;
+}
+
+/* Liquid-glass sheen — spec §05 "a ::after sweeps a 115deg specular
+   gradient across on hover, 0.85s ease-out — buttons and nav CTA only." */
+.glass-sheen {
+  position: relative;
+  overflow: hidden;
+}
+.glass-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 20%, rgba(255, 255, 255, 0.35) 45%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.glass-sheen:hover::after {
+  transform: translateX(120%);
+}
+
+/* Focus ring per spec §10 — 2px solid Velvet, 3px offset, focus-visible only. */
+:focus-visible {
+  outline: 2px solid var(--app-heading);
+  outline-offset: 3px;
+}
+
+/* Scene eyebrow per spec §06 — mono, uppercase, oxblood, 20px hairline. */
+.app-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono-plex), ui-monospace, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--app-accent);
+}
+.app-eyebrow::before {
+  content: "";
+  width: 20px;
+  height: 1px;
+  background: var(--app-accent);
+  opacity: 0.5;
 }
 
 @media (prefers-reduced-motion: reduce) {

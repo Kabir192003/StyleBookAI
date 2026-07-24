@@ -10,6 +10,7 @@ import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { landingFontVariables } from "@/lib/landing/fonts";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -36,7 +37,10 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <html lang="en" className={landingFontVariables}>
+      <html lang="en" className={landingFontVariables} suppressHydrationWarning>
+        <head>
+          <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        </head>
         <body>
           <SiteHeader />
           {children}
