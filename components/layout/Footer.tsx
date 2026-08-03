@@ -6,10 +6,10 @@
  * Owner: Amna
  *
  * Unlike Navbar.tsx, nobody's added a global footer yet, so this one is
- * live: mounted per-route via app/account/layout.tsx, app/pricing/
- * layout.tsx, and app/dashboard/layout.tsx. Not mounted on the landing
- * page (LandingExperience.tsx already ends in its own <footer>) or on
- * auth screens (kept minimal/centered).
+ * live: mounted per-route via app/account/layout.tsx and
+ * app/dashboard/layout.tsx. Not mounted on the landing page
+ * (LandingExperience.tsx already ends in its own <footer>) or on auth
+ * screens (kept minimal/centered).
  */
 import Link from "next/link";
 
@@ -19,7 +19,6 @@ const LINKS = [
   { label: "Themes", href: "/browse/themes" },
   { label: "Studio", href: "/studio" },
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Pricing", href: "/pricing" },
 ];
 
 export function Footer() {

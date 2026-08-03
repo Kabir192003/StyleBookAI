@@ -1,25 +1,27 @@
 /**
- * /api/projects — list (GET) and create (POST) projects.
+ * /api/projects — list (GET) and create (POST) projects for the
+ * signed-in user (lib/auth/) — saving requires an account, browsing
+ * doesn't (see CLAUDE.md).
  *
  * Owner: Kabir
- *
- * Auth (Clerk) was removed — see CLAUDE.md — so every visitor currently
- * reads/writes the same shared anonymous workspace (getOrCreateAnonymousUserId).
- * Swap in a real per-account scope once username/password login exists.
  */
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/db/supabase";
-import { getOrCreateAnonymousUserId } from "@/lib/db/getOrCreateUser";
+import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { ProjectInputSchema } from "@/lib/validation/project";
 import { projectInputToRow, rowToProject, ProjectRow } from "@/lib/db/projectMapper";
 
 export async function GET(_req: NextRequest) {
-  const ownerId = await getOrCreateAnonymousUserId();
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ error: "Sign in required" }, { status: 401 });
+  }
+
   const admin = getSupabaseAdmin();
   const { data, error } = await admin
     .from("projects")
     .select("*")
-    .eq("user_id", ownerId)
+    .eq("user_id", user.id)
     .order("updated_at", { ascending: false });
 
   if (error) {
@@ -27,11 +29,16 @@ export async function GET(_req: NextRequest) {
     return NextResponse.json({ error: "Failed to load projects" }, { status: 500 });
   }
 
-  const projects = (data as ProjectRow[]).map((row) => rowToProject(row, ownerId));
+  const projects = (data as ProjectRow[]).map((row) => rowToProject(row, user.id));
   return NextResponse.json({ projects });
 }
 
 export async function POST(req: NextRequest) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ error: "Sign in required" }, { status: 401 });
+  }
+
   const body = await req.json();
   const parsed = ProjectInputSchema.safeParse(body);
   if (!parsed.success) {
@@ -41,11 +48,10 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const ownerId = await getOrCreateAnonymousUserId();
   const admin = getSupabaseAdmin();
   const { data, error } = await admin
     .from("projects")
-    .insert({ ...projectInputToRow(parsed.data), user_id: ownerId })
+    .insert({ ...projectInputToRow(parsed.data), user_id: user.id })
     .select("*")
     .single();
 
@@ -54,5 +60,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Failed to create project" }, { status: 500 });
   }
 
-  return NextResponse.json({ project: rowToProject(data as ProjectRow, ownerId) }, { status: 201 });
+  return NextResponse.json({ project: rowToProject(data as ProjectRow, user.id) }, { status: 201 });
 }

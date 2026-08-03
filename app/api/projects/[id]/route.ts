@@ -1,18 +1,14 @@
 /**
  * /api/projects/[id] — get (GET), update (PUT), delete (DELETE) a single
  * project. Enforces that the requesting user owns the project by checking
- * user_id against the internal owner id (belt-and-suspenders alongside
+ * user_id against the signed-in user's id (belt-and-suspenders alongside
  * Supabase RLS).
  *
  * Owner: Kabir
- *
- * Auth (Clerk) was removed — see CLAUDE.md — so "owns" currently means
- * "belongs to the shared anonymous workspace" (getOrCreateAnonymousUserId).
- * Swap in a real per-account scope once username/password login exists.
  */
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/db/supabase";
-import { getOrCreateAnonymousUserId } from "@/lib/db/getOrCreateUser";
+import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { ProjectUpdateSchema } from "@/lib/validation/project";
 import { rowToProject, ProjectRow } from "@/lib/db/projectMapper";
 
@@ -25,18 +21,26 @@ async function loadOwnedProject(id: string, ownerId: string): Promise<ProjectRow
 }
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
-  const ownerId = await getOrCreateAnonymousUserId();
-  const row = await loadOwnedProject(params.id, ownerId);
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ error: "Sign in required" }, { status: 401 });
+  }
+
+  const row = await loadOwnedProject(params.id, user.id);
   if (!row) {
     return NextResponse.json({ error: "Project not found" }, { status: 404 });
   }
 
-  return NextResponse.json({ project: rowToProject(row, ownerId) });
+  return NextResponse.json({ project: rowToProject(row, user.id) });
 }
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
-  const ownerId = await getOrCreateAnonymousUserId();
-  const existing = await loadOwnedProject(params.id, ownerId);
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ error: "Sign in required" }, { status: 401 });
+  }
+
+  const existing = await loadOwnedProject(params.id, user.id);
   if (!existing) {
     return NextResponse.json({ error: "Project not found" }, { status: 404 });
   }
@@ -98,12 +102,16 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     return NextResponse.json({ error: "Failed to update project" }, { status: 500 });
   }
 
-  return NextResponse.json({ project: rowToProject(data as ProjectRow, ownerId) });
+  return NextResponse.json({ project: rowToProject(data as ProjectRow, user.id) });
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
-  const ownerId = await getOrCreateAnonymousUserId();
-  const existing = await loadOwnedProject(params.id, ownerId);
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ error: "Sign in required" }, { status: 401 });
+  }
+
+  const existing = await loadOwnedProject(params.id, user.id);
   if (!existing) {
     return NextResponse.json({ error: "Project not found" }, { status: 404 });
   }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { Card } from "@/components/browse/Card";
+import { FavoriteButton } from "@/components/browse/FavoriteButton";
 import { Color } from "@/types/color";
 
 export function ColorCard({ color }: { color: Color & { role?: string } }) {
@@ -20,11 +21,16 @@ export function ColorCard({ color }: { color: Color & { role?: string } }) {
   }
 
   return (
-    <Card className="group p-0 hover:-translate-y-0.5 hover:shadow-lg">
+    <Card className="group relative p-0 hover:-translate-y-0.5 hover:shadow-lg">
       <div
         className="h-28 w-full transition-transform duration-300 group-hover:scale-[1.02]"
         style={{ backgroundColor: color.hex }}
         aria-label={`${color.name} swatch`}
+      />
+      <FavoriteButton
+        type="color"
+        id={color.id}
+        className="absolute right-2.5 top-2.5 bg-black/25 text-white backdrop-blur-sm hover:bg-black/40"
       />
       <div className="space-y-3 p-4">
         <div className="flex items-start justify-between gap-2">

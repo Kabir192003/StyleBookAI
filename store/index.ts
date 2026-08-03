@@ -5,3 +5,5 @@
 export { useStudioStore } from "./studioStore";
 export { usePreviewLabStore } from "./previewLabStore";
 export { useAIResultStore } from "./aiResultStore";
+export { useAuthStore } from "./authStore";
+export { useFavoritesStore } from "./favoritesStore";

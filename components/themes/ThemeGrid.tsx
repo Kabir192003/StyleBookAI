@@ -13,6 +13,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { EmptyState } from "@/components/browse/EmptyState";
+import { FavoriteButton } from "@/components/browse/FavoriteButton";
 import { Theme, ThemeCategory } from "@/types/theme";
 import { hexToRgb, rgbToHsl } from "@/lib/colors/colorUtils";
 
@@ -99,6 +100,12 @@ function Spotlight({ theme, index }: { theme: Theme; index: number }) {
       >
         {String(index + 1).padStart(2, "0")}
       </div>
+      <FavoriteButton
+        type="theme"
+        id={theme.id}
+        className="absolute right-4 top-16 z-10 border border-black/[0.14] bg-black/[0.06] opacity-90 backdrop-blur-sm sm:top-4"
+        style={{ color: p.text }}
+      />
       <div className="relative grid grid-cols-[repeat(auto-fit,minmax(340px,1fr))]">
         <div className="flex flex-col gap-6 border-r px-6 py-12 sm:px-12" style={{ borderColor: rule }}>
           <div className="flex justify-between gap-3.5 font-mono-plex text-[10px] uppercase tracking-[0.24em] opacity-70">
@@ -191,6 +198,12 @@ function ThemeTile({ theme, index }: { theme: Theme; index: number }) {
       >
         {String(index + 1).padStart(2, "0")}
       </div>
+      <FavoriteButton
+        type="theme"
+        id={theme.id}
+        className="absolute right-3 top-3 z-10 border border-black/[0.14] bg-black/[0.06] opacity-90 backdrop-blur-sm"
+        style={{ color: p.text }}
+      />
       <div className="relative flex justify-between gap-3.5 font-mono-plex text-[10px] uppercase tracking-[0.2em] opacity-[0.72]">
         <span>StyleBook · {theme.category}</span>
         <span>{dark ? "Dark" : "Light"}</span>

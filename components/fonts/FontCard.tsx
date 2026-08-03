@@ -1,10 +1,12 @@
 import { Card } from "@/components/browse/Card";
+import { FavoriteButton } from "@/components/browse/FavoriteButton";
 import { Font } from "@/types/font";
 
 export function FontCard({ font }: { font: Font }) {
   return (
-    <Card className="p-6 hover:-translate-y-0.5 hover:shadow-lg">
-      <div className="flex items-start justify-between gap-3">
+    <Card className="relative p-6 hover:-translate-y-0.5 hover:shadow-lg">
+      <FavoriteButton type="font" id={font.id} className="absolute right-3 top-3 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-900" />
+      <div className="flex items-start justify-between gap-3 pr-8">
         <div className="min-w-0">
           <h3 className="truncate text-sm font-semibold text-neutral-900">{font.family}</h3>
           <p className="mt-0.5 truncate text-xs text-neutral-500 capitalize">{font.category}</p>

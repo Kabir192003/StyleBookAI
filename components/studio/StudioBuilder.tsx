@@ -524,8 +524,8 @@ export function StudioBuilder() {
                 </span>
                 <div className="flex items-center gap-[22px]" style={{ fontFamily: "var(--body)", fontSize: 13 }}>
                   <span style={{ opacity: 0.7 }}>Product</span>
-                  <span style={{ opacity: 0.7 }}>Pricing</span>
                   <span style={{ opacity: 0.7 }}>Docs</span>
+                  <span style={{ opacity: 0.7 }}>About</span>
                   <span
                     style={{
                       backgroundColor: "var(--accent)",
