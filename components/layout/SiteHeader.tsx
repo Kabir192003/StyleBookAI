@@ -6,12 +6,14 @@
  * editorial palette. Studio and Profile aren't in that design (it has no
  * app shell to link to) but are styled in the same mono nav voice so the
  * header reads as one piece with the rest of the chrome.
+ *
+ * No sign-in state — Clerk was removed (see CLAUDE.md). "Profile" just
+ * links to /account unconditionally until real auth exists.
  */
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
@@ -61,18 +63,13 @@ export function SiteHeader() {
             Generate with AI
           </Link>
 
-          <SignedIn>
-            <UserButton afterSignOutUrl="/" />
-          </SignedIn>
-          <SignedOut>
-            <Link
-              href="/sign-in"
-              aria-current={pathname?.startsWith("/sign-in") || pathname?.startsWith("/account") ? "page" : undefined}
-              className={navLinkClasses(!!(pathname?.startsWith("/sign-in") || pathname?.startsWith("/account")))}
-            >
-              Profile
-            </Link>
-          </SignedOut>
+          <Link
+            href="/account"
+            aria-current={pathname?.startsWith("/account") ? "page" : undefined}
+            className={navLinkClasses(!!pathname?.startsWith("/account"))}
+          >
+            Profile
+          </Link>
         </div>
       </div>
     </header>

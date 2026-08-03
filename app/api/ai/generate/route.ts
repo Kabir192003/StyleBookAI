@@ -8,7 +8,6 @@
  * typeScale, and an AIReasoning object explaining each choice.
  */
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
 import { AIGenerateRequestSchema } from "@/lib/ai/schema";
 import { AIGenerationError, generateProjectFromPrompt } from "@/lib/ai/generate";
 
@@ -18,11 +17,6 @@ import { AIGenerationError, generateProjectFromPrompt } from "@/lib/ai/generate"
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
-  const { userId } = auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Sign in required" }, { status: 401 });
-  }
-
   const body = await req.json();
   const parsed = AIGenerateRequestSchema.safeParse(body);
   if (!parsed.success) {

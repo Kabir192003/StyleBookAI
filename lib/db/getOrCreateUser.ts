@@ -1,29 +1,29 @@
 /**
- * Resolves a Clerk user id to the internal Supabase `users.id` (uuid),
- * creating the row on first hit. `projects.user_id` is a FK to this table,
- * not the Clerk id directly, so every project route needs this first.
+ * Resolves the internal Supabase `users.id` (uuid) used to own saved
+ * projects. Auth (Clerk) was removed — see CLAUDE.md — so for now every
+ * visitor shares a single "anonymous" workspace rather than a per-user one;
+ * `projects.user_id` is a FK to this row. Swap this out for a real
+ * per-account lookup once username/password login exists.
  */
-import { currentUser } from "@clerk/nextjs/server";
 import { getSupabaseAdmin } from "./supabase";
 
-export async function getOrCreateUserId(clerkId: string): Promise<string> {
+const ANONYMOUS_USER_KEY = "anonymous";
+
+export async function getOrCreateAnonymousUserId(): Promise<string> {
   const admin = getSupabaseAdmin();
 
   const { data: existing, error: selectError } = await admin
     .from("users")
     .select("id")
-    .eq("clerk_id", clerkId)
+    .eq("clerk_id", ANONYMOUS_USER_KEY)
     .maybeSingle();
 
   if (selectError) throw selectError;
   if (existing) return existing.id;
 
-  const user = await currentUser();
-  const email = user?.emailAddresses[0]?.emailAddress ?? "";
-
   const { data: created, error: insertError } = await admin
     .from("users")
-    .insert({ clerk_id: clerkId, email })
+    .insert({ clerk_id: ANONYMOUS_USER_KEY, email: "" })
     .select("id")
     .single();
 

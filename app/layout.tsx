@@ -1,15 +1,15 @@
 /**
  * Root layout — wraps every route.
  *
- * Add Clerk's <ClerkProvider>, the shared <Navbar /> and <Footer />, and
- * any global font declarations here. Keep this file thin; per-route chrome
- * belongs in nested layouts.
+ * No auth provider here — Clerk was removed (see CLAUDE.md); the app is
+ * fully public for now, pending a simple username/password login later.
+ * Keep this file thin; per-route chrome belongs in nested layouts.
  */
 
 import type { Metadata, Viewport } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import { landingFontVariables } from "@/lib/landing/fonts";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -35,13 +35,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en" className={landingFontVariables}>
-        <body>
-          <SiteHeader />
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" className={landingFontVariables} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body>
+        <SiteHeader />
+        {children}
+      </body>
+    </html>
   );
 }

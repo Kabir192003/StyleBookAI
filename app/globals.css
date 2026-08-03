@@ -139,6 +139,11 @@ body:has([data-landing]) {
   background-size: 180px 180px;
 }
 
+:focus-visible {
+  outline: 2px solid #222d52;
+  outline-offset: 3px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   [data-landing] * {
     animation-duration: 0.001ms !important;
