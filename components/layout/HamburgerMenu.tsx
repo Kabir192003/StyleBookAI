@@ -8,10 +8,19 @@
  * (Dashboard, Account) plus sign-in/out — the header's top-level nav
  * (Colours/Fonts/Themes/Studio) stays as-is; this is for account-adjacent
  * navigation only.
+ *
+ * Rendered via a portal into document.body rather than inline where
+ * SiteHeader mounts it. SiteHeader's <header> is `position: sticky` with
+ * its own z-index, which creates a CSS stacking context — a `position:
+ * fixed` overlay nested inside it only stacks within that context, not
+ * against the rest of the page, so unrelated content elsewhere (e.g. a
+ * page's own buttons) could paint on top of the drawer. Portaling to
+ * body escapes the header's stacking context entirely.
  */
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LayoutGrid, LogOut, Menu, User, X } from "lucide-react";
@@ -39,6 +48,11 @@ export function HamburgerMenu({ open, onClose }: { open: boolean; onClose: () =>
   const user = useAuthStore((s) => s.user);
   const status = useAuthStore((s) => s.status);
   const logout = useAuthStore((s) => s.logout);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -49,7 +63,7 @@ export function HamburgerMenu({ open, onClose }: { open: boolean; onClose: () =>
     return () => document.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
   async function handleSignOut() {
     await logout();
@@ -57,7 +71,7 @@ export function HamburgerMenu({ open, onClose }: { open: boolean; onClose: () =>
     router.push("/");
   }
 
-  return (
+  return createPortal(
     <div
       onClick={onClose}
       className="fixed inset-0 z-[80] flex justify-end bg-[rgba(20,17,12,0.42)] backdrop-blur-[3px]"
@@ -119,7 +133,8 @@ export function HamburgerMenu({ open, onClose }: { open: boolean; onClose: () =>
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
