@@ -7,17 +7,20 @@
  * prominently, not collapsed, when the project is AI-generated).
  *
  * Fetches GET /api/projects/[id] client-side — Kabir's backend is real
- * (Supabase-backed). Auth (Clerk) was removed (see CLAUDE.md), so this
- * reads from the shared anonymous workspace, not a per-user project.
+ * (Supabase-backed), gated behind the username/password auth in lib/auth/
+ * (see CLAUDE.md). A 401 here means the session lapsed mid-visit, not a
+ * real 404 — handled as its own "unauthorized" state with a sign-in CTA,
+ * not lumped into the generic error state.
  *
  * "Edit in Studio": StudioBuilder (components/studio/StudioBuilder.tsx)
- * does NOT read from store/studioStore.ts — it hydrates its own local
- * state from useAIResultStore (store/aiResultStore.ts), the same bridge
- * /studio/ai uses to hand off a generated result. A saved Project is
- * already an AIGeneratedProject plus id/userId/timestamps
- * (types/ai.ts), so populating that store with everything but those
- * three fields and routing to /studio is the correct, real integration
- * — no changes to Qi's files needed.
+ * hydrates its local state from useAIResultStore (store/aiResultStore.ts),
+ * the same bridge /studio/ai uses to hand off a generated result — not
+ * from store/studioStore.ts, which nothing reads. A saved Project is
+ * already an AIGeneratedProject plus id/userId/timestamps (types/ai.ts),
+ * so populating that store with everything but those three fields (plus
+ * `setSavedProjectId(id)`, so Studio's Save button updates this row
+ * instead of creating a duplicate) and routing to /studio is the real
+ * integration.
  *
  * "Export": POST /api/export, which now returns real generated text
  * (see lib/export/generators.ts) for css/scss/tailwind/json — no PDF,
@@ -29,11 +32,11 @@
  *
  * The mockup panel is a small self-contained preview, not
  * components/studio/PreviewLab.tsx — that component takes no project
- * prop and reads from usePreviewLabStore/useStudioStore directly, built
- * for Studio's own active-editing session rather than as an embeddable
- * read-only viewer for an arbitrary saved project. Wiring this
- * read-only page into two stores it doesn't otherwise touch felt like
- * more risk than value, so it stays a lightweight local component.
+ * prop and reads from usePreviewLabStore directly, built for Studio's
+ * own active-editing session rather than as an embeddable read-only
+ * viewer for an arbitrary saved project. Wiring this read-only page into
+ * a store it doesn't otherwise touch felt like more risk than value, so
+ * it stays a lightweight local component.
  *
  * Styling adapted to the site's cream/ink/navy editorial system instead
  * of the separate glass/dark design system this was originally built
@@ -56,6 +59,7 @@ import type { Project } from "@/types";
 type FetchState =
   | { status: "loading" }
   | { status: "error"; message: string }
+  | { status: "unauthorized" }
   | { status: "ready"; project: Project };
 
 const EXPORT_FORMATS = [
@@ -158,6 +162,7 @@ function LiveMockup({ project }: { project: Project }) {
 export default function ProjectDetailPage({ params }: { params: { projectId: string } }) {
   const router = useRouter();
   const setAIResult = useAIResultStore((s) => s.setResult);
+  const setSavedProjectId = useAIResultStore((s) => s.setSavedProjectId);
 
   const [state, setState] = useState<FetchState>({ status: "loading" });
   const [exportOpen, setExportOpen] = useState(false);
@@ -172,6 +177,10 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
     (async () => {
       try {
         const res = await fetch(`/api/projects/${params.projectId}`);
+        if (res.status === 401) {
+          if (!cancelled) setState({ status: "unauthorized" });
+          return;
+        }
         const data = await res.json();
         if (!res.ok) throw new Error(data.error ?? `Request failed (${res.status})`);
         if (!cancelled) setState({ status: "ready", project: data.project });
@@ -192,6 +201,7 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
   function handleEdit(project: Project) {
     const { id, userId, createdAt, updatedAt, ...aiGeneratedShape } = project;
     setAIResult(project.aiPrompt ?? "", Boolean(project.designSystem), aiGeneratedShape);
+    setSavedProjectId(id);
     router.push("/studio");
   }
 
@@ -254,6 +264,35 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
           </Link>
           <div className="rounded-2xl border border-[#B3261E]/30 bg-[#B3261E]/10 px-6 py-10 text-center text-sm text-[#B3261E]">
             {state.message}
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (state.status === "unauthorized") {
+    return (
+      <main className="min-h-[calc(100vh-56px)] bg-[#EDE6DA] px-6 py-12 sm:px-12">
+        <div className="mx-auto max-w-6xl">
+          <Link href="/dashboard" className="mb-6 inline-flex items-center gap-1.5 text-sm text-[#6E675C] hover:text-[#211E18]">
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            Back to My Projects
+          </Link>
+          <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-black/[0.18] py-20 text-center">
+            <h2 className="font-editorial-serif text-xl font-bold tracking-tight text-[#211E18]">
+              Sign in to see this project
+            </h2>
+            <p className="mx-auto max-w-sm text-sm text-[#6E675C]">
+              Your session&rsquo;s expired or you&rsquo;re signed out — sign back in to pick up where you left off.
+            </p>
+            <div className="flex gap-3">
+              <Link href="/sign-in" className={buttonVariants({ variant: "primary" })}>
+                Sign in
+              </Link>
+              <Link href="/sign-up" className={buttonVariants({ variant: "ghost" })}>
+                Create account
+              </Link>
+            </div>
           </div>
         </div>
       </main>

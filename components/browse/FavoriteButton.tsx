@@ -5,6 +5,11 @@
  * than requiring every browse page to fetch them up front. Signed-out
  * clicks route to /sign-in instead of silently failing — favoriting
  * needs an account, browsing doesn't.
+ *
+ * Also watches favoritesStore's `sessionExpired` flag — set when a toggle
+ * comes back 401 (the session lapsed mid-visit) — and reacts by clearing
+ * the stale cached user and redirecting to sign-in, instead of leaving
+ * the heart looking "saved" when it silently wasn't.
  */
 "use client";
 
@@ -28,14 +33,24 @@ export function FavoriteButton({
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const authStatus = useAuthStore((s) => s.status);
+  const setUser = useAuthStore((s) => s.setUser);
   const loaded = useFavoritesStore((s) => s.loaded);
   const load = useFavoritesStore((s) => s.load);
   const toggle = useFavoritesStore((s) => s.toggle);
   const favorited = useFavoritesStore((s) => s.isFavorited(type, id));
+  const sessionExpired = useFavoritesStore((s) => s.sessionExpired);
+  const acknowledgeSessionExpired = useFavoritesStore((s) => s.acknowledgeSessionExpired);
 
   useEffect(() => {
     if (user && !loaded) load();
   }, [user, loaded, load]);
+
+  useEffect(() => {
+    if (!sessionExpired) return;
+    acknowledgeSessionExpired();
+    setUser(null);
+    router.push("/sign-in");
+  }, [sessionExpired, acknowledgeSessionExpired, setUser, router]);
 
   function handleClick(e: React.MouseEvent) {
     e.preventDefault();

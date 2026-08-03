@@ -3,6 +3,13 @@
  * so every ColorCard/FontCard/theme tile can check "is this favorited"
  * without its own network request. `toggle()` updates optimistically and
  * calls the API in the background — see components/browse/FavoriteButton.tsx.
+ *
+ * `toggle()` reverts the optimistic update on *any* non-OK response, not
+ * just network failures — a 401 (session expired mid-visit) used to leave
+ * the heart filled in the UI while the server silently rejected the
+ * write. `sessionExpired` flips true on a 401 specifically so
+ * FavoriteButton can redirect to sign-in instead of just looking
+ * "successful" and doing nothing server-side.
  */
 import { create } from "zustand";
 
@@ -11,9 +18,11 @@ export type FavoriteType = "color" | "font" | "theme";
 type FavoritesState = {
   loaded: boolean;
   items: Record<FavoriteType, Set<string>>;
+  sessionExpired: boolean;
   load: () => Promise<void>;
   isFavorited: (type: FavoriteType, id: string) => boolean;
   toggle: (type: FavoriteType, id: string) => Promise<void>;
+  acknowledgeSessionExpired: () => void;
   clear: () => void;
 };
 
@@ -24,6 +33,7 @@ function emptyItems(): Record<FavoriteType, Set<string>> {
 export const useFavoritesStore = create<FavoritesState>()((set, get) => ({
   loaded: false,
   items: emptyItems(),
+  sessionExpired: false,
   async load() {
     try {
       const res = await fetch("/api/favorites");
@@ -53,18 +63,7 @@ export const useFavoritesStore = create<FavoritesState>()((set, get) => ({
       return { items: { ...s.items, [type]: next } };
     });
 
-    try {
-      if (wasFavorited) {
-        await fetch(`/api/favorites?itemType=${type}&itemId=${encodeURIComponent(id)}`, { method: "DELETE" });
-      } else {
-        await fetch("/api/favorites", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ itemType: type, itemId: id }),
-        });
-      }
-    } catch {
-      // Revert on network failure — the optimistic update didn't stick.
+    function revert() {
       set((s) => {
         const next = new Set(s.items[type]);
         if (wasFavorited) next.add(id);
@@ -72,8 +71,29 @@ export const useFavoritesStore = create<FavoritesState>()((set, get) => ({
         return { items: { ...s.items, [type]: next } };
       });
     }
+
+    try {
+      const res = wasFavorited
+        ? await fetch(`/api/favorites?itemType=${type}&itemId=${encodeURIComponent(id)}`, { method: "DELETE" })
+        : await fetch("/api/favorites", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ itemType: type, itemId: id }),
+          });
+
+      if (!res.ok) {
+        revert();
+        if (res.status === 401) set({ sessionExpired: true });
+      }
+    } catch {
+      // Revert on network failure — the optimistic update didn't stick.
+      revert();
+    }
+  },
+  acknowledgeSessionExpired() {
+    set({ sessionExpired: false });
   },
   clear() {
-    set({ loaded: false, items: emptyItems() });
+    set({ loaded: false, items: emptyItems(), sessionExpired: false });
   },
 }));

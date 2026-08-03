@@ -4,7 +4,7 @@ import { Color } from "@/types/color";
 export const tailwindColors: Color[] = [
   {
     "id": "tw-slate-50",
-    "name": "Slate 50",
+    "name": "Whisper Slate",
     "hex": "#f8fafc",
     "family": "neutral",
     "mood": [
@@ -15,7 +15,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Slate — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 248,
       "g": 250,
@@ -29,7 +29,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-slate-100",
-    "name": "Slate 100",
+    "name": "Pale Slate",
     "hex": "#f1f5f9",
     "family": "neutral",
     "mood": [
@@ -40,7 +40,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Slate — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 241,
       "g": 245,
@@ -54,7 +54,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-slate-200",
-    "name": "Slate 200",
+    "name": "Soft Slate",
     "hex": "#e2e8f0",
     "family": "neutral",
     "mood": [
@@ -65,7 +65,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Slate — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 226,
       "g": 232,
@@ -79,7 +79,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-slate-300",
-    "name": "Slate 300",
+    "name": "Light Slate",
     "hex": "#cbd5e1",
     "family": "neutral",
     "mood": [
@@ -90,7 +90,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Slate — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 203,
       "g": 213,
@@ -104,7 +104,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-slate-400",
-    "name": "Slate 400",
+    "name": "Fair Slate",
     "hex": "#94a3b8",
     "family": "neutral",
     "mood": [
@@ -115,7 +115,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Slate — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 148,
       "g": 163,
@@ -129,7 +129,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-slate-500",
-    "name": "Slate 500",
+    "name": "True Slate",
     "hex": "#64748b",
     "family": "neutral",
     "mood": [
@@ -140,7 +140,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Slate — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 100,
       "g": 116,
@@ -154,7 +154,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-slate-600",
-    "name": "Slate 600",
+    "name": "Bold Slate",
     "hex": "#475569",
     "family": "neutral",
     "mood": [
@@ -165,7 +165,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Slate — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 71,
       "g": 85,
@@ -179,7 +179,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-slate-700",
-    "name": "Slate 700",
+    "name": "Rich Slate",
     "hex": "#334155",
     "family": "neutral",
     "mood": [
@@ -190,7 +190,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Slate — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 51,
       "g": 65,
@@ -204,7 +204,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-slate-800",
-    "name": "Slate 800",
+    "name": "Deep Slate",
     "hex": "#1e293b",
     "family": "neutral",
     "mood": [
@@ -215,7 +215,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Slate — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 30,
       "g": 41,
@@ -229,7 +229,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-slate-900",
-    "name": "Slate 900",
+    "name": "Shadow Slate",
     "hex": "#0f172a",
     "family": "neutral",
     "mood": [
@@ -240,7 +240,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Slate — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 15,
       "g": 23,
@@ -254,7 +254,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-slate-950",
-    "name": "Slate 950",
+    "name": "Midnight Slate",
     "hex": "#020617",
     "family": "neutral",
     "mood": [
@@ -265,7 +265,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Slate — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 2,
       "g": 6,
@@ -279,7 +279,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-gray-50",
-    "name": "Gray 50",
+    "name": "Whisper Gray",
     "hex": "#f9fafb",
     "family": "neutral",
     "mood": [
@@ -290,7 +290,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Gray — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 249,
       "g": 250,
@@ -304,7 +304,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-gray-100",
-    "name": "Gray 100",
+    "name": "Pale Gray",
     "hex": "#f3f4f6",
     "family": "neutral",
     "mood": [
@@ -315,7 +315,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Gray — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 243,
       "g": 244,
@@ -329,7 +329,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-gray-200",
-    "name": "Gray 200",
+    "name": "Soft Gray",
     "hex": "#e5e7eb",
     "family": "neutral",
     "mood": [
@@ -340,7 +340,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Gray — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 229,
       "g": 231,
@@ -354,7 +354,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-gray-300",
-    "name": "Gray 300",
+    "name": "Light Gray",
     "hex": "#d1d5db",
     "family": "neutral",
     "mood": [
@@ -365,7 +365,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Gray — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 209,
       "g": 213,
@@ -379,7 +379,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-gray-400",
-    "name": "Gray 400",
+    "name": "Fair Gray",
     "hex": "#9ca3af",
     "family": "neutral",
     "mood": [
@@ -390,7 +390,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Gray — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 156,
       "g": 163,
@@ -404,7 +404,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-gray-500",
-    "name": "Gray 500",
+    "name": "True Gray",
     "hex": "#6b7280",
     "family": "neutral",
     "mood": [
@@ -415,7 +415,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Gray — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 107,
       "g": 114,
@@ -429,7 +429,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-gray-600",
-    "name": "Gray 600",
+    "name": "Bold Gray",
     "hex": "#4b5563",
     "family": "neutral",
     "mood": [
@@ -440,7 +440,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Gray — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 75,
       "g": 85,
@@ -454,7 +454,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-gray-700",
-    "name": "Gray 700",
+    "name": "Rich Gray",
     "hex": "#374151",
     "family": "neutral",
     "mood": [
@@ -465,7 +465,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Gray — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 55,
       "g": 65,
@@ -479,7 +479,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-gray-800",
-    "name": "Gray 800",
+    "name": "Deep Gray",
     "hex": "#1f2937",
     "family": "neutral",
     "mood": [
@@ -490,7 +490,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Gray — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 31,
       "g": 41,
@@ -504,7 +504,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-gray-900",
-    "name": "Gray 900",
+    "name": "Shadow Gray",
     "hex": "#111827",
     "family": "neutral",
     "mood": [
@@ -515,7 +515,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Gray — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 17,
       "g": 24,
@@ -529,7 +529,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-gray-950",
-    "name": "Gray 950",
+    "name": "Midnight Gray",
     "hex": "#030712",
     "family": "neutral",
     "mood": [
@@ -540,7 +540,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Gray — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 3,
       "g": 7,
@@ -554,7 +554,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-zinc-50",
-    "name": "Zinc 50",
+    "name": "Whisper Zinc",
     "hex": "#fafafa",
     "family": "neutral",
     "mood": [
@@ -565,7 +565,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Zinc — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 250,
       "g": 250,
@@ -579,7 +579,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-zinc-100",
-    "name": "Zinc 100",
+    "name": "Pale Zinc",
     "hex": "#f4f4f5",
     "family": "neutral",
     "mood": [
@@ -590,7 +590,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Zinc — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 244,
       "g": 244,
@@ -604,7 +604,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-zinc-200",
-    "name": "Zinc 200",
+    "name": "Soft Zinc",
     "hex": "#e4e4e7",
     "family": "neutral",
     "mood": [
@@ -615,7 +615,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Zinc — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 228,
       "g": 228,
@@ -629,7 +629,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-zinc-300",
-    "name": "Zinc 300",
+    "name": "Light Zinc",
     "hex": "#d4d4d8",
     "family": "neutral",
     "mood": [
@@ -640,7 +640,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Zinc — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 212,
       "g": 212,
@@ -654,7 +654,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-zinc-400",
-    "name": "Zinc 400",
+    "name": "Fair Zinc",
     "hex": "#a1a1aa",
     "family": "neutral",
     "mood": [
@@ -665,7 +665,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Zinc — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 161,
       "g": 161,
@@ -679,7 +679,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-zinc-500",
-    "name": "Zinc 500",
+    "name": "True Zinc",
     "hex": "#71717a",
     "family": "neutral",
     "mood": [
@@ -690,7 +690,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Zinc — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 113,
       "g": 113,
@@ -704,7 +704,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-zinc-600",
-    "name": "Zinc 600",
+    "name": "Bold Zinc",
     "hex": "#52525b",
     "family": "neutral",
     "mood": [
@@ -715,7 +715,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Zinc — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 82,
       "g": 82,
@@ -729,7 +729,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-zinc-700",
-    "name": "Zinc 700",
+    "name": "Rich Zinc",
     "hex": "#3f3f46",
     "family": "neutral",
     "mood": [
@@ -740,7 +740,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Zinc — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 63,
       "g": 63,
@@ -754,7 +754,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-zinc-800",
-    "name": "Zinc 800",
+    "name": "Deep Zinc",
     "hex": "#27272a",
     "family": "neutral",
     "mood": [
@@ -765,7 +765,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Zinc — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 39,
       "g": 39,
@@ -779,7 +779,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-zinc-900",
-    "name": "Zinc 900",
+    "name": "Shadow Zinc",
     "hex": "#18181b",
     "family": "neutral",
     "mood": [
@@ -790,7 +790,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Zinc — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 24,
       "g": 24,
@@ -804,7 +804,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-zinc-950",
-    "name": "Zinc 950",
+    "name": "Midnight Zinc",
     "hex": "#09090b",
     "family": "neutral",
     "mood": [
@@ -815,7 +815,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Zinc — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 9,
       "g": 9,
@@ -829,7 +829,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-neutral-50",
-    "name": "Neutral 50",
+    "name": "Whisper Neutral",
     "hex": "#fafafa",
     "family": "neutral",
     "mood": [
@@ -840,7 +840,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Neutral — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 250,
       "g": 250,
@@ -854,7 +854,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-neutral-100",
-    "name": "Neutral 100",
+    "name": "Pale Neutral",
     "hex": "#f5f5f5",
     "family": "neutral",
     "mood": [
@@ -865,7 +865,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Neutral — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 245,
       "g": 245,
@@ -879,7 +879,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-neutral-200",
-    "name": "Neutral 200",
+    "name": "Soft Neutral",
     "hex": "#e5e5e5",
     "family": "neutral",
     "mood": [
@@ -890,7 +890,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Neutral — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 229,
       "g": 229,
@@ -904,7 +904,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-neutral-300",
-    "name": "Neutral 300",
+    "name": "Light Neutral",
     "hex": "#d4d4d4",
     "family": "neutral",
     "mood": [
@@ -915,7 +915,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Neutral — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 212,
       "g": 212,
@@ -929,7 +929,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-neutral-400",
-    "name": "Neutral 400",
+    "name": "Fair Neutral",
     "hex": "#a3a3a3",
     "family": "neutral",
     "mood": [
@@ -940,7 +940,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Neutral — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 163,
       "g": 163,
@@ -954,7 +954,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-neutral-500",
-    "name": "Neutral 500",
+    "name": "True Neutral",
     "hex": "#737373",
     "family": "neutral",
     "mood": [
@@ -965,7 +965,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Neutral — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 115,
       "g": 115,
@@ -979,7 +979,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-neutral-600",
-    "name": "Neutral 600",
+    "name": "Bold Neutral",
     "hex": "#525252",
     "family": "neutral",
     "mood": [
@@ -990,7 +990,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Neutral — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 82,
       "g": 82,
@@ -1004,7 +1004,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-neutral-700",
-    "name": "Neutral 700",
+    "name": "Rich Neutral",
     "hex": "#404040",
     "family": "neutral",
     "mood": [
@@ -1015,7 +1015,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Neutral — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 64,
       "g": 64,
@@ -1029,7 +1029,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-neutral-800",
-    "name": "Neutral 800",
+    "name": "Deep Neutral",
     "hex": "#262626",
     "family": "neutral",
     "mood": [
@@ -1040,7 +1040,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Neutral — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 38,
       "g": 38,
@@ -1054,7 +1054,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-neutral-900",
-    "name": "Neutral 900",
+    "name": "Shadow Neutral",
     "hex": "#171717",
     "family": "neutral",
     "mood": [
@@ -1065,7 +1065,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Neutral — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 23,
       "g": 23,
@@ -1079,7 +1079,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-neutral-950",
-    "name": "Neutral 950",
+    "name": "Midnight Neutral",
     "hex": "#0a0a0a",
     "family": "neutral",
     "mood": [
@@ -1090,7 +1090,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Neutral — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 10,
       "g": 10,
@@ -1104,7 +1104,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-stone-50",
-    "name": "Stone 50",
+    "name": "Whisper Stone",
     "hex": "#fafaf9",
     "family": "neutral",
     "mood": [
@@ -1115,7 +1115,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Stone — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 250,
       "g": 250,
@@ -1129,7 +1129,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-stone-100",
-    "name": "Stone 100",
+    "name": "Pale Stone",
     "hex": "#f5f5f4",
     "family": "neutral",
     "mood": [
@@ -1140,7 +1140,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Stone — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 245,
       "g": 245,
@@ -1154,7 +1154,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-stone-200",
-    "name": "Stone 200",
+    "name": "Soft Stone",
     "hex": "#e7e5e4",
     "family": "neutral",
     "mood": [
@@ -1165,7 +1165,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Stone — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 231,
       "g": 229,
@@ -1179,7 +1179,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-stone-300",
-    "name": "Stone 300",
+    "name": "Light Stone",
     "hex": "#d6d3d1",
     "family": "neutral",
     "mood": [
@@ -1190,7 +1190,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Stone — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 214,
       "g": 211,
@@ -1204,7 +1204,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-stone-400",
-    "name": "Stone 400",
+    "name": "Fair Stone",
     "hex": "#a8a29e",
     "family": "neutral",
     "mood": [
@@ -1215,7 +1215,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Stone — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 168,
       "g": 162,
@@ -1229,7 +1229,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-stone-500",
-    "name": "Stone 500",
+    "name": "True Stone",
     "hex": "#78716c",
     "family": "neutral",
     "mood": [
@@ -1240,7 +1240,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Stone — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 120,
       "g": 113,
@@ -1254,7 +1254,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-stone-600",
-    "name": "Stone 600",
+    "name": "Bold Stone",
     "hex": "#57534e",
     "family": "neutral",
     "mood": [
@@ -1265,7 +1265,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Stone — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 87,
       "g": 83,
@@ -1279,7 +1279,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-stone-700",
-    "name": "Stone 700",
+    "name": "Rich Stone",
     "hex": "#44403c",
     "family": "neutral",
     "mood": [
@@ -1290,7 +1290,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Stone — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 68,
       "g": 64,
@@ -1304,7 +1304,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-stone-800",
-    "name": "Stone 800",
+    "name": "Deep Stone",
     "hex": "#292524",
     "family": "neutral",
     "mood": [
@@ -1315,7 +1315,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Stone — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 41,
       "g": 37,
@@ -1329,7 +1329,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-stone-900",
-    "name": "Stone 900",
+    "name": "Shadow Stone",
     "hex": "#1c1917",
     "family": "neutral",
     "mood": [
@@ -1340,7 +1340,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Stone — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 28,
       "g": 25,
@@ -1354,7 +1354,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-stone-950",
-    "name": "Stone 950",
+    "name": "Midnight Stone",
     "hex": "#0c0a09",
     "family": "neutral",
     "mood": [
@@ -1365,7 +1365,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Stone — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 12,
       "g": 10,
@@ -1379,7 +1379,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-red-50",
-    "name": "Red 50",
+    "name": "Whisper Red",
     "hex": "#fef2f2",
     "family": "red",
     "mood": [
@@ -1390,7 +1390,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy red tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Red — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 254,
       "g": 242,
@@ -1404,7 +1404,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-red-100",
-    "name": "Red 100",
+    "name": "Pale Red",
     "hex": "#fee2e2",
     "family": "red",
     "mood": [
@@ -1415,7 +1415,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy red tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Red — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 254,
       "g": 226,
@@ -1429,7 +1429,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-red-200",
-    "name": "Red 200",
+    "name": "Soft Red",
     "hex": "#fecaca",
     "family": "red",
     "mood": [
@@ -1440,7 +1440,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy red tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Red — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 254,
       "g": 202,
@@ -1454,7 +1454,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-red-300",
-    "name": "Red 300",
+    "name": "Light Red",
     "hex": "#fca5a5",
     "family": "red",
     "mood": [
@@ -1465,7 +1465,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft red tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Red — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 252,
       "g": 165,
@@ -1479,7 +1479,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-red-400",
-    "name": "Red 400",
+    "name": "Fair Red",
     "hex": "#f87171",
     "family": "red",
     "mood": [
@@ -1490,7 +1490,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft red tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Red — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 248,
       "g": 113,
@@ -1504,7 +1504,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-red-500",
-    "name": "Red 500",
+    "name": "True Red",
     "hex": "#ef4444",
     "family": "red",
     "mood": [
@@ -1515,7 +1515,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced red tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Red — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 239,
       "g": 68,
@@ -1529,7 +1529,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-red-600",
-    "name": "Red 600",
+    "name": "Bold Red",
     "hex": "#dc2626",
     "family": "red",
     "mood": [
@@ -1540,7 +1540,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced red tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Red — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 220,
       "g": 38,
@@ -1554,7 +1554,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-red-700",
-    "name": "Red 700",
+    "name": "Rich Red",
     "hex": "#b91c1c",
     "family": "red",
     "mood": [
@@ -1565,7 +1565,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep red tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Red — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 185,
       "g": 28,
@@ -1579,7 +1579,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-red-800",
-    "name": "Red 800",
+    "name": "Deep Red",
     "hex": "#991b1b",
     "family": "red",
     "mood": [
@@ -1590,7 +1590,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep red tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Red — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 153,
       "g": 27,
@@ -1604,7 +1604,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-red-900",
-    "name": "Red 900",
+    "name": "Shadow Red",
     "hex": "#7f1d1d",
     "family": "red",
     "mood": [
@@ -1615,7 +1615,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark red tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Red — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 127,
       "g": 29,
@@ -1629,7 +1629,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-red-950",
-    "name": "Red 950",
+    "name": "Midnight Red",
     "hex": "#450a0a",
     "family": "red",
     "mood": [
@@ -1640,7 +1640,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark red tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Red — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 69,
       "g": 10,
@@ -1654,7 +1654,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-orange-50",
-    "name": "Orange 50",
+    "name": "Whisper Orange",
     "hex": "#fff7ed",
     "family": "orange",
     "mood": [
@@ -1665,7 +1665,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Orange — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 255,
       "g": 247,
@@ -1679,7 +1679,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-orange-100",
-    "name": "Orange 100",
+    "name": "Pale Orange",
     "hex": "#ffedd5",
     "family": "orange",
     "mood": [
@@ -1690,7 +1690,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Orange — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 255,
       "g": 237,
@@ -1704,7 +1704,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-orange-200",
-    "name": "Orange 200",
+    "name": "Soft Orange",
     "hex": "#fed7aa",
     "family": "orange",
     "mood": [
@@ -1715,7 +1715,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Orange — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 254,
       "g": 215,
@@ -1729,7 +1729,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-orange-300",
-    "name": "Orange 300",
+    "name": "Light Orange",
     "hex": "#fdba74",
     "family": "orange",
     "mood": [
@@ -1740,7 +1740,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Orange — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 253,
       "g": 186,
@@ -1754,7 +1754,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-orange-400",
-    "name": "Orange 400",
+    "name": "Fair Orange",
     "hex": "#fb923c",
     "family": "orange",
     "mood": [
@@ -1765,7 +1765,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Orange — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 251,
       "g": 146,
@@ -1779,7 +1779,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-orange-500",
-    "name": "Orange 500",
+    "name": "True Orange",
     "hex": "#f97316",
     "family": "orange",
     "mood": [
@@ -1790,7 +1790,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Orange — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 249,
       "g": 115,
@@ -1804,7 +1804,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-orange-600",
-    "name": "Orange 600",
+    "name": "Bold Orange",
     "hex": "#ea580c",
     "family": "orange",
     "mood": [
@@ -1815,7 +1815,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Orange — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 234,
       "g": 88,
@@ -1829,7 +1829,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-orange-700",
-    "name": "Orange 700",
+    "name": "Rich Orange",
     "hex": "#c2410c",
     "family": "orange",
     "mood": [
@@ -1840,7 +1840,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Orange — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 194,
       "g": 65,
@@ -1854,7 +1854,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-orange-800",
-    "name": "Orange 800",
+    "name": "Deep Orange",
     "hex": "#9a3412",
     "family": "orange",
     "mood": [
@@ -1865,7 +1865,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Orange — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 154,
       "g": 52,
@@ -1879,7 +1879,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-orange-900",
-    "name": "Orange 900",
+    "name": "Shadow Orange",
     "hex": "#7c2d12",
     "family": "orange",
     "mood": [
@@ -1890,7 +1890,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Orange — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 124,
       "g": 45,
@@ -1904,7 +1904,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-orange-950",
-    "name": "Orange 950",
+    "name": "Midnight Orange",
     "hex": "#431407",
     "family": "orange",
     "mood": [
@@ -1915,7 +1915,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Orange — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 67,
       "g": 20,
@@ -1929,7 +1929,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-amber-50",
-    "name": "Amber 50",
+    "name": "Whisper Amber",
     "hex": "#fffbeb",
     "family": "orange",
     "mood": [
@@ -1940,7 +1940,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Amber — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 255,
       "g": 251,
@@ -1954,7 +1954,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-amber-100",
-    "name": "Amber 100",
+    "name": "Pale Amber",
     "hex": "#fef3c7",
     "family": "orange",
     "mood": [
@@ -1965,7 +1965,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Amber — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 254,
       "g": 243,
@@ -1979,7 +1979,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-amber-200",
-    "name": "Amber 200",
+    "name": "Soft Amber",
     "hex": "#fde68a",
     "family": "orange",
     "mood": [
@@ -1990,7 +1990,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Amber — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 253,
       "g": 230,
@@ -2004,7 +2004,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-amber-300",
-    "name": "Amber 300",
+    "name": "Light Amber",
     "hex": "#fcd34d",
     "family": "orange",
     "mood": [
@@ -2015,7 +2015,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Amber — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 252,
       "g": 211,
@@ -2029,7 +2029,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-amber-400",
-    "name": "Amber 400",
+    "name": "Fair Amber",
     "hex": "#fbbf24",
     "family": "orange",
     "mood": [
@@ -2040,7 +2040,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Amber — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 251,
       "g": 191,
@@ -2054,7 +2054,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-amber-500",
-    "name": "Amber 500",
+    "name": "True Amber",
     "hex": "#f59e0b",
     "family": "orange",
     "mood": [
@@ -2065,7 +2065,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Amber — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 245,
       "g": 158,
@@ -2079,7 +2079,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-amber-600",
-    "name": "Amber 600",
+    "name": "Bold Amber",
     "hex": "#d97706",
     "family": "orange",
     "mood": [
@@ -2090,7 +2090,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Amber — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 217,
       "g": 119,
@@ -2104,7 +2104,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-amber-700",
-    "name": "Amber 700",
+    "name": "Rich Amber",
     "hex": "#b45309",
     "family": "orange",
     "mood": [
@@ -2115,7 +2115,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Amber — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 180,
       "g": 83,
@@ -2129,7 +2129,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-amber-800",
-    "name": "Amber 800",
+    "name": "Deep Amber",
     "hex": "#92400e",
     "family": "orange",
     "mood": [
@@ -2140,7 +2140,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Amber — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 146,
       "g": 64,
@@ -2154,7 +2154,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-amber-900",
-    "name": "Amber 900",
+    "name": "Shadow Amber",
     "hex": "#78350f",
     "family": "orange",
     "mood": [
@@ -2165,7 +2165,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Amber — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 120,
       "g": 53,
@@ -2179,7 +2179,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-amber-950",
-    "name": "Amber 950",
+    "name": "Midnight Amber",
     "hex": "#451a03",
     "family": "orange",
     "mood": [
@@ -2190,7 +2190,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark orange tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Amber — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 69,
       "g": 26,
@@ -2204,7 +2204,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-yellow-50",
-    "name": "Yellow 50",
+    "name": "Whisper Yellow",
     "hex": "#fefce8",
     "family": "yellow",
     "mood": [
@@ -2215,7 +2215,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy yellow tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Yellow — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 254,
       "g": 252,
@@ -2229,7 +2229,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-yellow-100",
-    "name": "Yellow 100",
+    "name": "Pale Yellow",
     "hex": "#fef9c3",
     "family": "yellow",
     "mood": [
@@ -2240,7 +2240,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy yellow tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Yellow — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 254,
       "g": 249,
@@ -2254,7 +2254,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-yellow-200",
-    "name": "Yellow 200",
+    "name": "Soft Yellow",
     "hex": "#fef08a",
     "family": "yellow",
     "mood": [
@@ -2265,7 +2265,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy yellow tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Yellow — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 254,
       "g": 240,
@@ -2279,7 +2279,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-yellow-300",
-    "name": "Yellow 300",
+    "name": "Light Yellow",
     "hex": "#fde047",
     "family": "yellow",
     "mood": [
@@ -2290,7 +2290,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft yellow tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Yellow — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 253,
       "g": 224,
@@ -2304,7 +2304,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-yellow-400",
-    "name": "Yellow 400",
+    "name": "Fair Yellow",
     "hex": "#facc15",
     "family": "yellow",
     "mood": [
@@ -2315,7 +2315,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft yellow tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Yellow — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 250,
       "g": 204,
@@ -2329,7 +2329,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-yellow-500",
-    "name": "Yellow 500",
+    "name": "True Yellow",
     "hex": "#eab308",
     "family": "yellow",
     "mood": [
@@ -2340,7 +2340,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced yellow tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Yellow — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 234,
       "g": 179,
@@ -2354,7 +2354,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-yellow-600",
-    "name": "Yellow 600",
+    "name": "Bold Yellow",
     "hex": "#ca8a04",
     "family": "yellow",
     "mood": [
@@ -2365,7 +2365,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced yellow tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Yellow — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 202,
       "g": 138,
@@ -2379,7 +2379,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-yellow-700",
-    "name": "Yellow 700",
+    "name": "Rich Yellow",
     "hex": "#a16207",
     "family": "yellow",
     "mood": [
@@ -2390,7 +2390,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep yellow tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Yellow — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 161,
       "g": 98,
@@ -2404,7 +2404,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-yellow-800",
-    "name": "Yellow 800",
+    "name": "Deep Yellow",
     "hex": "#854d0e",
     "family": "yellow",
     "mood": [
@@ -2415,7 +2415,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep yellow tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Yellow — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 133,
       "g": 77,
@@ -2429,7 +2429,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-yellow-900",
-    "name": "Yellow 900",
+    "name": "Shadow Yellow",
     "hex": "#713f12",
     "family": "yellow",
     "mood": [
@@ -2440,7 +2440,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark yellow tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Yellow — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 113,
       "g": 63,
@@ -2454,7 +2454,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-yellow-950",
-    "name": "Yellow 950",
+    "name": "Midnight Yellow",
     "hex": "#422006",
     "family": "yellow",
     "mood": [
@@ -2465,7 +2465,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark yellow tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Yellow — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 66,
       "g": 32,
@@ -2479,7 +2479,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lime-50",
-    "name": "Lime 50",
+    "name": "Whisper Lime",
     "hex": "#f7fee7",
     "family": "green",
     "mood": [
@@ -2490,7 +2490,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Lime — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 247,
       "g": 254,
@@ -2504,7 +2504,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lime-100",
-    "name": "Lime 100",
+    "name": "Pale Lime",
     "hex": "#ecfccb",
     "family": "green",
     "mood": [
@@ -2515,7 +2515,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Lime — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 236,
       "g": 252,
@@ -2529,7 +2529,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lime-200",
-    "name": "Lime 200",
+    "name": "Soft Lime",
     "hex": "#d9f99d",
     "family": "green",
     "mood": [
@@ -2540,7 +2540,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Lime — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 217,
       "g": 249,
@@ -2554,7 +2554,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lime-300",
-    "name": "Lime 300",
+    "name": "Light Lime",
     "hex": "#bef264",
     "family": "green",
     "mood": [
@@ -2565,7 +2565,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Lime — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 190,
       "g": 242,
@@ -2579,7 +2579,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lime-400",
-    "name": "Lime 400",
+    "name": "Fair Lime",
     "hex": "#a3e635",
     "family": "green",
     "mood": [
@@ -2590,7 +2590,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Lime — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 163,
       "g": 230,
@@ -2604,7 +2604,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lime-500",
-    "name": "Lime 500",
+    "name": "True Lime",
     "hex": "#84cc16",
     "family": "green",
     "mood": [
@@ -2615,7 +2615,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Lime — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 132,
       "g": 204,
@@ -2629,7 +2629,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lime-600",
-    "name": "Lime 600",
+    "name": "Bold Lime",
     "hex": "#65a30d",
     "family": "green",
     "mood": [
@@ -2640,7 +2640,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Lime — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 101,
       "g": 163,
@@ -2654,7 +2654,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lime-700",
-    "name": "Lime 700",
+    "name": "Rich Lime",
     "hex": "#4d7c0f",
     "family": "green",
     "mood": [
@@ -2665,7 +2665,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Lime — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 77,
       "g": 124,
@@ -2679,7 +2679,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lime-800",
-    "name": "Lime 800",
+    "name": "Deep Lime",
     "hex": "#3f6212",
     "family": "green",
     "mood": [
@@ -2690,7 +2690,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Lime — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 63,
       "g": 98,
@@ -2704,7 +2704,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lime-900",
-    "name": "Lime 900",
+    "name": "Shadow Lime",
     "hex": "#365314",
     "family": "green",
     "mood": [
@@ -2715,7 +2715,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Lime — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 54,
       "g": 83,
@@ -2729,7 +2729,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lime-950",
-    "name": "Lime 950",
+    "name": "Midnight Lime",
     "hex": "#1a2e05",
     "family": "green",
     "mood": [
@@ -2740,7 +2740,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Lime — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 26,
       "g": 46,
@@ -2754,7 +2754,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-green-50",
-    "name": "Green 50",
+    "name": "Whisper Green",
     "hex": "#f0fdf4",
     "family": "green",
     "mood": [
@@ -2765,7 +2765,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Green — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 240,
       "g": 253,
@@ -2779,7 +2779,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-green-100",
-    "name": "Green 100",
+    "name": "Pale Green",
     "hex": "#dcfce7",
     "family": "green",
     "mood": [
@@ -2790,7 +2790,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Green — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 220,
       "g": 252,
@@ -2804,7 +2804,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-green-200",
-    "name": "Green 200",
+    "name": "Soft Green",
     "hex": "#bbf7d0",
     "family": "green",
     "mood": [
@@ -2815,7 +2815,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Green — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 187,
       "g": 247,
@@ -2829,7 +2829,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-green-300",
-    "name": "Green 300",
+    "name": "Light Green",
     "hex": "#86efac",
     "family": "green",
     "mood": [
@@ -2840,7 +2840,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Green — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 134,
       "g": 239,
@@ -2854,7 +2854,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-green-400",
-    "name": "Green 400",
+    "name": "Fair Green",
     "hex": "#4ade80",
     "family": "green",
     "mood": [
@@ -2865,7 +2865,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Green — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 74,
       "g": 222,
@@ -2879,7 +2879,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-green-500",
-    "name": "Green 500",
+    "name": "True Green",
     "hex": "#22c55e",
     "family": "green",
     "mood": [
@@ -2890,7 +2890,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Green — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 34,
       "g": 197,
@@ -2904,7 +2904,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-green-600",
-    "name": "Green 600",
+    "name": "Bold Green",
     "hex": "#16a34a",
     "family": "green",
     "mood": [
@@ -2915,7 +2915,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Green — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 22,
       "g": 163,
@@ -2929,7 +2929,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-green-700",
-    "name": "Green 700",
+    "name": "Rich Green",
     "hex": "#15803d",
     "family": "green",
     "mood": [
@@ -2940,7 +2940,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Green — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 21,
       "g": 128,
@@ -2954,7 +2954,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-green-800",
-    "name": "Green 800",
+    "name": "Deep Green",
     "hex": "#166534",
     "family": "green",
     "mood": [
@@ -2965,7 +2965,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Green — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 22,
       "g": 101,
@@ -2979,7 +2979,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-green-900",
-    "name": "Green 900",
+    "name": "Shadow Green",
     "hex": "#14532d",
     "family": "green",
     "mood": [
@@ -2990,7 +2990,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Green — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 20,
       "g": 83,
@@ -3004,7 +3004,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-green-950",
-    "name": "Green 950",
+    "name": "Midnight Green",
     "hex": "#052e16",
     "family": "green",
     "mood": [
@@ -3015,7 +3015,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Green — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 5,
       "g": 46,
@@ -3029,7 +3029,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-emerald-50",
-    "name": "Emerald 50",
+    "name": "Whisper Emerald",
     "hex": "#ecfdf5",
     "family": "green",
     "mood": [
@@ -3040,7 +3040,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Emerald — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 236,
       "g": 253,
@@ -3054,7 +3054,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-emerald-100",
-    "name": "Emerald 100",
+    "name": "Pale Emerald",
     "hex": "#d1fae5",
     "family": "green",
     "mood": [
@@ -3065,7 +3065,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Emerald — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 209,
       "g": 250,
@@ -3079,7 +3079,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-emerald-200",
-    "name": "Emerald 200",
+    "name": "Soft Emerald",
     "hex": "#a7f3d0",
     "family": "green",
     "mood": [
@@ -3090,7 +3090,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Emerald — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 167,
       "g": 243,
@@ -3104,7 +3104,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-emerald-300",
-    "name": "Emerald 300",
+    "name": "Light Emerald",
     "hex": "#6ee7b7",
     "family": "green",
     "mood": [
@@ -3115,7 +3115,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Emerald — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 110,
       "g": 231,
@@ -3129,7 +3129,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-emerald-400",
-    "name": "Emerald 400",
+    "name": "Fair Emerald",
     "hex": "#34d399",
     "family": "green",
     "mood": [
@@ -3140,7 +3140,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Emerald — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 52,
       "g": 211,
@@ -3154,7 +3154,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-emerald-500",
-    "name": "Emerald 500",
+    "name": "True Emerald",
     "hex": "#10b981",
     "family": "green",
     "mood": [
@@ -3165,7 +3165,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Emerald — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 16,
       "g": 185,
@@ -3179,7 +3179,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-emerald-600",
-    "name": "Emerald 600",
+    "name": "Bold Emerald",
     "hex": "#059669",
     "family": "green",
     "mood": [
@@ -3190,7 +3190,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Emerald — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 5,
       "g": 150,
@@ -3204,7 +3204,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-emerald-700",
-    "name": "Emerald 700",
+    "name": "Rich Emerald",
     "hex": "#047857",
     "family": "green",
     "mood": [
@@ -3215,7 +3215,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Emerald — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 4,
       "g": 120,
@@ -3229,7 +3229,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-emerald-800",
-    "name": "Emerald 800",
+    "name": "Deep Emerald",
     "hex": "#065f46",
     "family": "green",
     "mood": [
@@ -3240,7 +3240,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Emerald — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 6,
       "g": 95,
@@ -3254,7 +3254,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-emerald-900",
-    "name": "Emerald 900",
+    "name": "Shadow Emerald",
     "hex": "#064e3b",
     "family": "green",
     "mood": [
@@ -3265,7 +3265,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Emerald — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 6,
       "g": 78,
@@ -3279,7 +3279,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-emerald-950",
-    "name": "Emerald 950",
+    "name": "Midnight Emerald",
     "hex": "#022c22",
     "family": "green",
     "mood": [
@@ -3290,7 +3290,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark green tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Emerald — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 2,
       "g": 44,
@@ -3304,7 +3304,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-teal-50",
-    "name": "Teal 50",
+    "name": "Whisper Teal",
     "hex": "#f0fdfa",
     "family": "teal",
     "mood": [
@@ -3315,7 +3315,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Teal — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 240,
       "g": 253,
@@ -3329,7 +3329,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-teal-100",
-    "name": "Teal 100",
+    "name": "Pale Teal",
     "hex": "#ccfbf1",
     "family": "teal",
     "mood": [
@@ -3340,7 +3340,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Teal — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 204,
       "g": 251,
@@ -3354,7 +3354,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-teal-200",
-    "name": "Teal 200",
+    "name": "Soft Teal",
     "hex": "#99f6e4",
     "family": "teal",
     "mood": [
@@ -3365,7 +3365,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Teal — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 153,
       "g": 246,
@@ -3379,7 +3379,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-teal-300",
-    "name": "Teal 300",
+    "name": "Light Teal",
     "hex": "#5eead4",
     "family": "teal",
     "mood": [
@@ -3390,7 +3390,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Teal — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 94,
       "g": 234,
@@ -3404,7 +3404,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-teal-400",
-    "name": "Teal 400",
+    "name": "Fair Teal",
     "hex": "#2dd4bf",
     "family": "teal",
     "mood": [
@@ -3415,7 +3415,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Teal — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 45,
       "g": 212,
@@ -3429,7 +3429,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-teal-500",
-    "name": "Teal 500",
+    "name": "True Teal",
     "hex": "#14b8a6",
     "family": "teal",
     "mood": [
@@ -3440,7 +3440,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Teal — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 20,
       "g": 184,
@@ -3454,7 +3454,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-teal-600",
-    "name": "Teal 600",
+    "name": "Bold Teal",
     "hex": "#0d9488",
     "family": "teal",
     "mood": [
@@ -3465,7 +3465,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Teal — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 13,
       "g": 148,
@@ -3479,7 +3479,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-teal-700",
-    "name": "Teal 700",
+    "name": "Rich Teal",
     "hex": "#0f766e",
     "family": "teal",
     "mood": [
@@ -3490,7 +3490,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Teal — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 15,
       "g": 118,
@@ -3504,7 +3504,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-teal-800",
-    "name": "Teal 800",
+    "name": "Deep Teal",
     "hex": "#115e59",
     "family": "teal",
     "mood": [
@@ -3515,7 +3515,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Teal — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 17,
       "g": 94,
@@ -3529,7 +3529,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-teal-900",
-    "name": "Teal 900",
+    "name": "Shadow Teal",
     "hex": "#134e4a",
     "family": "teal",
     "mood": [
@@ -3540,7 +3540,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Teal — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 19,
       "g": 78,
@@ -3554,7 +3554,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-teal-950",
-    "name": "Teal 950",
+    "name": "Midnight Teal",
     "hex": "#042f2e",
     "family": "teal",
     "mood": [
@@ -3565,7 +3565,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Teal — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 4,
       "g": 47,
@@ -3579,7 +3579,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-cyan-50",
-    "name": "Cyan 50",
+    "name": "Whisper Cyan",
     "hex": "#ecfeff",
     "family": "teal",
     "mood": [
@@ -3590,7 +3590,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Cyan — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 236,
       "g": 254,
@@ -3604,7 +3604,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-cyan-100",
-    "name": "Cyan 100",
+    "name": "Pale Cyan",
     "hex": "#cffafe",
     "family": "teal",
     "mood": [
@@ -3615,7 +3615,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Cyan — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 207,
       "g": 250,
@@ -3629,7 +3629,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-cyan-200",
-    "name": "Cyan 200",
+    "name": "Soft Cyan",
     "hex": "#a5f3fc",
     "family": "teal",
     "mood": [
@@ -3640,7 +3640,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Cyan — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 165,
       "g": 243,
@@ -3654,7 +3654,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-cyan-300",
-    "name": "Cyan 300",
+    "name": "Light Cyan",
     "hex": "#67e8f9",
     "family": "teal",
     "mood": [
@@ -3665,7 +3665,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Cyan — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 103,
       "g": 232,
@@ -3679,7 +3679,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-cyan-400",
-    "name": "Cyan 400",
+    "name": "Fair Cyan",
     "hex": "#22d3ee",
     "family": "teal",
     "mood": [
@@ -3690,7 +3690,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Cyan — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 34,
       "g": 211,
@@ -3704,7 +3704,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-cyan-500",
-    "name": "Cyan 500",
+    "name": "True Cyan",
     "hex": "#06b6d4",
     "family": "teal",
     "mood": [
@@ -3715,7 +3715,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Cyan — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 6,
       "g": 182,
@@ -3729,7 +3729,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-cyan-600",
-    "name": "Cyan 600",
+    "name": "Bold Cyan",
     "hex": "#0891b2",
     "family": "teal",
     "mood": [
@@ -3740,7 +3740,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Cyan — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 8,
       "g": 145,
@@ -3754,7 +3754,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-cyan-700",
-    "name": "Cyan 700",
+    "name": "Rich Cyan",
     "hex": "#0e7490",
     "family": "teal",
     "mood": [
@@ -3765,7 +3765,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Cyan — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 14,
       "g": 116,
@@ -3779,7 +3779,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-cyan-800",
-    "name": "Cyan 800",
+    "name": "Deep Cyan",
     "hex": "#155e75",
     "family": "teal",
     "mood": [
@@ -3790,7 +3790,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Cyan — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 21,
       "g": 94,
@@ -3804,7 +3804,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-cyan-900",
-    "name": "Cyan 900",
+    "name": "Shadow Cyan",
     "hex": "#164e63",
     "family": "teal",
     "mood": [
@@ -3815,7 +3815,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Cyan — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 22,
       "g": 78,
@@ -3829,7 +3829,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-cyan-950",
-    "name": "Cyan 950",
+    "name": "Midnight Cyan",
     "hex": "#083344",
     "family": "teal",
     "mood": [
@@ -3840,7 +3840,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark teal tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Cyan — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 8,
       "g": 51,
@@ -3854,7 +3854,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-sky-50",
-    "name": "Sky 50",
+    "name": "Whisper Sky",
     "hex": "#f0f9ff",
     "family": "blue",
     "mood": [
@@ -3865,7 +3865,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Sky — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 240,
       "g": 249,
@@ -3879,7 +3879,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-sky-100",
-    "name": "Sky 100",
+    "name": "Pale Sky",
     "hex": "#e0f2fe",
     "family": "blue",
     "mood": [
@@ -3890,7 +3890,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Sky — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 224,
       "g": 242,
@@ -3904,7 +3904,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-sky-200",
-    "name": "Sky 200",
+    "name": "Soft Sky",
     "hex": "#bae6fd",
     "family": "blue",
     "mood": [
@@ -3915,7 +3915,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Sky — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 186,
       "g": 230,
@@ -3929,7 +3929,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-sky-300",
-    "name": "Sky 300",
+    "name": "Light Sky",
     "hex": "#7dd3fc",
     "family": "blue",
     "mood": [
@@ -3940,7 +3940,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Sky — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 125,
       "g": 211,
@@ -3954,7 +3954,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-sky-400",
-    "name": "Sky 400",
+    "name": "Fair Sky",
     "hex": "#38bdf8",
     "family": "blue",
     "mood": [
@@ -3965,7 +3965,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Sky — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 56,
       "g": 189,
@@ -3979,7 +3979,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-sky-500",
-    "name": "Sky 500",
+    "name": "True Sky",
     "hex": "#0ea5e9",
     "family": "blue",
     "mood": [
@@ -3990,7 +3990,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Sky — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 14,
       "g": 165,
@@ -4004,7 +4004,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-sky-600",
-    "name": "Sky 600",
+    "name": "Bold Sky",
     "hex": "#0284c7",
     "family": "blue",
     "mood": [
@@ -4015,7 +4015,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Sky — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 2,
       "g": 132,
@@ -4029,7 +4029,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-sky-700",
-    "name": "Sky 700",
+    "name": "Rich Sky",
     "hex": "#0369a1",
     "family": "blue",
     "mood": [
@@ -4040,7 +4040,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Sky — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 3,
       "g": 105,
@@ -4054,7 +4054,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-sky-800",
-    "name": "Sky 800",
+    "name": "Deep Sky",
     "hex": "#075985",
     "family": "blue",
     "mood": [
@@ -4065,7 +4065,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Sky — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 7,
       "g": 89,
@@ -4079,7 +4079,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-sky-900",
-    "name": "Sky 900",
+    "name": "Shadow Sky",
     "hex": "#0c4a6e",
     "family": "blue",
     "mood": [
@@ -4090,7 +4090,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Sky — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 12,
       "g": 74,
@@ -4104,7 +4104,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-sky-950",
-    "name": "Sky 950",
+    "name": "Midnight Sky",
     "hex": "#082f49",
     "family": "blue",
     "mood": [
@@ -4115,7 +4115,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Sky — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 8,
       "g": 47,
@@ -4129,7 +4129,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blue-50",
-    "name": "Blue 50",
+    "name": "Whisper Blue",
     "hex": "#eff6ff",
     "family": "blue",
     "mood": [
@@ -4140,7 +4140,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Blue — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 239,
       "g": 246,
@@ -4154,7 +4154,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blue-100",
-    "name": "Blue 100",
+    "name": "Pale Blue",
     "hex": "#dbeafe",
     "family": "blue",
     "mood": [
@@ -4165,7 +4165,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Blue — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 219,
       "g": 234,
@@ -4179,7 +4179,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blue-200",
-    "name": "Blue 200",
+    "name": "Soft Blue",
     "hex": "#bfdbfe",
     "family": "blue",
     "mood": [
@@ -4190,7 +4190,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Blue — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 191,
       "g": 219,
@@ -4204,7 +4204,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blue-300",
-    "name": "Blue 300",
+    "name": "Light Blue",
     "hex": "#93c5fd",
     "family": "blue",
     "mood": [
@@ -4215,7 +4215,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Blue — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 147,
       "g": 197,
@@ -4229,7 +4229,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blue-400",
-    "name": "Blue 400",
+    "name": "Fair Blue",
     "hex": "#60a5fa",
     "family": "blue",
     "mood": [
@@ -4240,7 +4240,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Blue — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 96,
       "g": 165,
@@ -4254,7 +4254,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blue-500",
-    "name": "Blue 500",
+    "name": "True Blue",
     "hex": "#3b82f6",
     "family": "blue",
     "mood": [
@@ -4265,7 +4265,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Blue — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 59,
       "g": 130,
@@ -4279,7 +4279,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blue-600",
-    "name": "Blue 600",
+    "name": "Bold Blue",
     "hex": "#2563eb",
     "family": "blue",
     "mood": [
@@ -4290,7 +4290,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Blue — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 37,
       "g": 99,
@@ -4304,7 +4304,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blue-700",
-    "name": "Blue 700",
+    "name": "Rich Blue",
     "hex": "#1d4ed8",
     "family": "blue",
     "mood": [
@@ -4315,7 +4315,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Blue — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 29,
       "g": 78,
@@ -4329,7 +4329,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blue-800",
-    "name": "Blue 800",
+    "name": "Deep Blue",
     "hex": "#1e40af",
     "family": "blue",
     "mood": [
@@ -4340,7 +4340,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Blue — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 30,
       "g": 64,
@@ -4354,7 +4354,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blue-900",
-    "name": "Blue 900",
+    "name": "Shadow Blue",
     "hex": "#1e3a8a",
     "family": "blue",
     "mood": [
@@ -4365,7 +4365,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Blue — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 30,
       "g": 58,
@@ -4379,7 +4379,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blue-950",
-    "name": "Blue 950",
+    "name": "Midnight Blue",
     "hex": "#172554",
     "family": "blue",
     "mood": [
@@ -4390,7 +4390,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Blue — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 23,
       "g": 37,
@@ -4404,7 +4404,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-indigo-50",
-    "name": "Indigo 50",
+    "name": "Whisper Indigo",
     "hex": "#eef2ff",
     "family": "blue",
     "mood": [
@@ -4415,7 +4415,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Indigo — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 238,
       "g": 242,
@@ -4429,7 +4429,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-indigo-100",
-    "name": "Indigo 100",
+    "name": "Pale Indigo",
     "hex": "#e0e7ff",
     "family": "blue",
     "mood": [
@@ -4440,7 +4440,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Indigo — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 224,
       "g": 231,
@@ -4454,7 +4454,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-indigo-200",
-    "name": "Indigo 200",
+    "name": "Soft Indigo",
     "hex": "#c7d2fe",
     "family": "blue",
     "mood": [
@@ -4465,7 +4465,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Indigo — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 199,
       "g": 210,
@@ -4479,7 +4479,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-indigo-300",
-    "name": "Indigo 300",
+    "name": "Light Indigo",
     "hex": "#a5b4fc",
     "family": "blue",
     "mood": [
@@ -4490,7 +4490,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Indigo — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 165,
       "g": 180,
@@ -4504,7 +4504,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-indigo-400",
-    "name": "Indigo 400",
+    "name": "Fair Indigo",
     "hex": "#818cf8",
     "family": "blue",
     "mood": [
@@ -4515,7 +4515,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Indigo — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 129,
       "g": 140,
@@ -4529,7 +4529,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-indigo-500",
-    "name": "Indigo 500",
+    "name": "True Indigo",
     "hex": "#6366f1",
     "family": "blue",
     "mood": [
@@ -4540,7 +4540,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Indigo — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 99,
       "g": 102,
@@ -4554,7 +4554,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-indigo-600",
-    "name": "Indigo 600",
+    "name": "Bold Indigo",
     "hex": "#4f46e5",
     "family": "blue",
     "mood": [
@@ -4565,7 +4565,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Indigo — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 79,
       "g": 70,
@@ -4579,7 +4579,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-indigo-700",
-    "name": "Indigo 700",
+    "name": "Rich Indigo",
     "hex": "#4338ca",
     "family": "blue",
     "mood": [
@@ -4590,7 +4590,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Indigo — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 67,
       "g": 56,
@@ -4604,7 +4604,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-indigo-800",
-    "name": "Indigo 800",
+    "name": "Deep Indigo",
     "hex": "#3730a3",
     "family": "blue",
     "mood": [
@@ -4615,7 +4615,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Indigo — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 55,
       "g": 48,
@@ -4629,7 +4629,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-indigo-900",
-    "name": "Indigo 900",
+    "name": "Shadow Indigo",
     "hex": "#312e81",
     "family": "blue",
     "mood": [
@@ -4640,7 +4640,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Indigo — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 49,
       "g": 46,
@@ -4654,7 +4654,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-indigo-950",
-    "name": "Indigo 950",
+    "name": "Midnight Indigo",
     "hex": "#1e1b4b",
     "family": "blue",
     "mood": [
@@ -4665,7 +4665,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark blue tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Indigo — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 30,
       "g": 27,
@@ -4679,7 +4679,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-violet-50",
-    "name": "Violet 50",
+    "name": "Whisper Violet",
     "hex": "#f5f3ff",
     "family": "purple",
     "mood": [
@@ -4690,7 +4690,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Violet — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 245,
       "g": 243,
@@ -4704,7 +4704,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-violet-100",
-    "name": "Violet 100",
+    "name": "Pale Violet",
     "hex": "#ede9fe",
     "family": "purple",
     "mood": [
@@ -4715,7 +4715,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Violet — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 237,
       "g": 233,
@@ -4729,7 +4729,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-violet-200",
-    "name": "Violet 200",
+    "name": "Soft Violet",
     "hex": "#ddd6fe",
     "family": "purple",
     "mood": [
@@ -4740,7 +4740,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Violet — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 221,
       "g": 214,
@@ -4754,7 +4754,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-violet-300",
-    "name": "Violet 300",
+    "name": "Light Violet",
     "hex": "#c4b5fd",
     "family": "purple",
     "mood": [
@@ -4765,7 +4765,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Violet — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 196,
       "g": 181,
@@ -4779,7 +4779,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-violet-400",
-    "name": "Violet 400",
+    "name": "Fair Violet",
     "hex": "#a78bfa",
     "family": "purple",
     "mood": [
@@ -4790,7 +4790,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Violet — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 167,
       "g": 139,
@@ -4804,7 +4804,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-violet-500",
-    "name": "Violet 500",
+    "name": "True Violet",
     "hex": "#8b5cf6",
     "family": "purple",
     "mood": [
@@ -4815,7 +4815,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Violet — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 139,
       "g": 92,
@@ -4829,7 +4829,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-violet-600",
-    "name": "Violet 600",
+    "name": "Bold Violet",
     "hex": "#7c3aed",
     "family": "purple",
     "mood": [
@@ -4840,7 +4840,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Violet — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 124,
       "g": 58,
@@ -4854,7 +4854,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-violet-700",
-    "name": "Violet 700",
+    "name": "Rich Violet",
     "hex": "#6d28d9",
     "family": "purple",
     "mood": [
@@ -4865,7 +4865,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Violet — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 109,
       "g": 40,
@@ -4879,7 +4879,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-violet-800",
-    "name": "Violet 800",
+    "name": "Deep Violet",
     "hex": "#5b21b6",
     "family": "purple",
     "mood": [
@@ -4890,7 +4890,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Violet — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 91,
       "g": 33,
@@ -4904,7 +4904,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-violet-900",
-    "name": "Violet 900",
+    "name": "Shadow Violet",
     "hex": "#4c1d95",
     "family": "purple",
     "mood": [
@@ -4915,7 +4915,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Violet — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 76,
       "g": 29,
@@ -4929,7 +4929,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-violet-950",
-    "name": "Violet 950",
+    "name": "Midnight Violet",
     "hex": "#2e1065",
     "family": "purple",
     "mood": [
@@ -4940,7 +4940,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Violet — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 46,
       "g": 16,
@@ -4954,7 +4954,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-purple-50",
-    "name": "Purple 50",
+    "name": "Whisper Purple",
     "hex": "#faf5ff",
     "family": "purple",
     "mood": [
@@ -4965,7 +4965,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Purple — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 250,
       "g": 245,
@@ -4979,7 +4979,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-purple-100",
-    "name": "Purple 100",
+    "name": "Pale Purple",
     "hex": "#f3e8ff",
     "family": "purple",
     "mood": [
@@ -4990,7 +4990,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Purple — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 243,
       "g": 232,
@@ -5004,7 +5004,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-purple-200",
-    "name": "Purple 200",
+    "name": "Soft Purple",
     "hex": "#e9d5ff",
     "family": "purple",
     "mood": [
@@ -5015,7 +5015,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Purple — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 233,
       "g": 213,
@@ -5029,7 +5029,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-purple-300",
-    "name": "Purple 300",
+    "name": "Light Purple",
     "hex": "#d8b4fe",
     "family": "purple",
     "mood": [
@@ -5040,7 +5040,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Purple — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 216,
       "g": 180,
@@ -5054,7 +5054,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-purple-400",
-    "name": "Purple 400",
+    "name": "Fair Purple",
     "hex": "#c084fc",
     "family": "purple",
     "mood": [
@@ -5065,7 +5065,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Purple — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 192,
       "g": 132,
@@ -5079,7 +5079,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-purple-500",
-    "name": "Purple 500",
+    "name": "True Purple",
     "hex": "#a855f7",
     "family": "purple",
     "mood": [
@@ -5090,7 +5090,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Purple — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 168,
       "g": 85,
@@ -5104,7 +5104,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-purple-600",
-    "name": "Purple 600",
+    "name": "Bold Purple",
     "hex": "#9333ea",
     "family": "purple",
     "mood": [
@@ -5115,7 +5115,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Purple — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 147,
       "g": 51,
@@ -5129,7 +5129,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-purple-700",
-    "name": "Purple 700",
+    "name": "Rich Purple",
     "hex": "#7e22ce",
     "family": "purple",
     "mood": [
@@ -5140,7 +5140,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Purple — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 126,
       "g": 34,
@@ -5154,7 +5154,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-purple-800",
-    "name": "Purple 800",
+    "name": "Deep Purple",
     "hex": "#6b21a8",
     "family": "purple",
     "mood": [
@@ -5165,7 +5165,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Purple — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 107,
       "g": 33,
@@ -5179,7 +5179,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-purple-900",
-    "name": "Purple 900",
+    "name": "Shadow Purple",
     "hex": "#581c87",
     "family": "purple",
     "mood": [
@@ -5190,7 +5190,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Purple — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 88,
       "g": 28,
@@ -5204,7 +5204,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-purple-950",
-    "name": "Purple 950",
+    "name": "Midnight Purple",
     "hex": "#3b0764",
     "family": "purple",
     "mood": [
@@ -5215,7 +5215,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark purple tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Purple — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 59,
       "g": 7,
@@ -5229,7 +5229,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-fuchsia-50",
-    "name": "Fuchsia 50",
+    "name": "Whisper Fuchsia",
     "hex": "#fdf4ff",
     "family": "pink",
     "mood": [
@@ -5240,7 +5240,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Fuchsia — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 253,
       "g": 244,
@@ -5254,7 +5254,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-fuchsia-100",
-    "name": "Fuchsia 100",
+    "name": "Pale Fuchsia",
     "hex": "#fae8ff",
     "family": "pink",
     "mood": [
@@ -5265,7 +5265,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Fuchsia — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 250,
       "g": 232,
@@ -5279,7 +5279,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-fuchsia-200",
-    "name": "Fuchsia 200",
+    "name": "Soft Fuchsia",
     "hex": "#f5d0fe",
     "family": "pink",
     "mood": [
@@ -5290,7 +5290,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Fuchsia — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 245,
       "g": 208,
@@ -5304,7 +5304,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-fuchsia-300",
-    "name": "Fuchsia 300",
+    "name": "Light Fuchsia",
     "hex": "#f0abfc",
     "family": "pink",
     "mood": [
@@ -5315,7 +5315,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Fuchsia — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 240,
       "g": 171,
@@ -5329,7 +5329,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-fuchsia-400",
-    "name": "Fuchsia 400",
+    "name": "Fair Fuchsia",
     "hex": "#e879f9",
     "family": "pink",
     "mood": [
@@ -5340,7 +5340,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Fuchsia — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 232,
       "g": 121,
@@ -5354,7 +5354,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-fuchsia-500",
-    "name": "Fuchsia 500",
+    "name": "True Fuchsia",
     "hex": "#d946ef",
     "family": "pink",
     "mood": [
@@ -5365,7 +5365,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Fuchsia — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 217,
       "g": 70,
@@ -5379,7 +5379,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-fuchsia-600",
-    "name": "Fuchsia 600",
+    "name": "Bold Fuchsia",
     "hex": "#c026d3",
     "family": "pink",
     "mood": [
@@ -5390,7 +5390,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Fuchsia — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 192,
       "g": 38,
@@ -5404,7 +5404,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-fuchsia-700",
-    "name": "Fuchsia 700",
+    "name": "Rich Fuchsia",
     "hex": "#a21caf",
     "family": "pink",
     "mood": [
@@ -5415,7 +5415,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Fuchsia — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 162,
       "g": 28,
@@ -5429,7 +5429,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-fuchsia-800",
-    "name": "Fuchsia 800",
+    "name": "Deep Fuchsia",
     "hex": "#86198f",
     "family": "pink",
     "mood": [
@@ -5440,7 +5440,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Fuchsia — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 134,
       "g": 25,
@@ -5454,7 +5454,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-fuchsia-900",
-    "name": "Fuchsia 900",
+    "name": "Shadow Fuchsia",
     "hex": "#701a75",
     "family": "pink",
     "mood": [
@@ -5465,7 +5465,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Fuchsia — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 112,
       "g": 26,
@@ -5479,7 +5479,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-fuchsia-950",
-    "name": "Fuchsia 950",
+    "name": "Midnight Fuchsia",
     "hex": "#4a044e",
     "family": "pink",
     "mood": [
@@ -5490,7 +5490,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Fuchsia — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 74,
       "g": 4,
@@ -5504,7 +5504,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-pink-50",
-    "name": "Pink 50",
+    "name": "Whisper Pink",
     "hex": "#fdf2f8",
     "family": "pink",
     "mood": [
@@ -5515,7 +5515,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Pink — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 253,
       "g": 242,
@@ -5529,7 +5529,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-pink-100",
-    "name": "Pink 100",
+    "name": "Pale Pink",
     "hex": "#fce7f3",
     "family": "pink",
     "mood": [
@@ -5540,7 +5540,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Pink — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 252,
       "g": 231,
@@ -5554,7 +5554,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-pink-200",
-    "name": "Pink 200",
+    "name": "Soft Pink",
     "hex": "#fbcfe8",
     "family": "pink",
     "mood": [
@@ -5565,7 +5565,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Pink — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 251,
       "g": 207,
@@ -5579,7 +5579,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-pink-300",
-    "name": "Pink 300",
+    "name": "Light Pink",
     "hex": "#f9a8d4",
     "family": "pink",
     "mood": [
@@ -5590,7 +5590,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Pink — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 249,
       "g": 168,
@@ -5604,7 +5604,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-pink-400",
-    "name": "Pink 400",
+    "name": "Fair Pink",
     "hex": "#f472b6",
     "family": "pink",
     "mood": [
@@ -5615,7 +5615,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Pink — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 244,
       "g": 114,
@@ -5629,7 +5629,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-pink-500",
-    "name": "Pink 500",
+    "name": "True Pink",
     "hex": "#ec4899",
     "family": "pink",
     "mood": [
@@ -5640,7 +5640,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Pink — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 236,
       "g": 72,
@@ -5654,7 +5654,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-pink-600",
-    "name": "Pink 600",
+    "name": "Bold Pink",
     "hex": "#db2777",
     "family": "pink",
     "mood": [
@@ -5665,7 +5665,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Pink — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 219,
       "g": 39,
@@ -5679,7 +5679,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-pink-700",
-    "name": "Pink 700",
+    "name": "Rich Pink",
     "hex": "#be185d",
     "family": "pink",
     "mood": [
@@ -5690,7 +5690,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Pink — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 190,
       "g": 24,
@@ -5704,7 +5704,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-pink-800",
-    "name": "Pink 800",
+    "name": "Deep Pink",
     "hex": "#9d174d",
     "family": "pink",
     "mood": [
@@ -5715,7 +5715,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Pink — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 157,
       "g": 23,
@@ -5729,7 +5729,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-pink-900",
-    "name": "Pink 900",
+    "name": "Shadow Pink",
     "hex": "#831843",
     "family": "pink",
     "mood": [
@@ -5740,7 +5740,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Pink — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 131,
       "g": 24,
@@ -5754,7 +5754,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-pink-950",
-    "name": "Pink 950",
+    "name": "Midnight Pink",
     "hex": "#500724",
     "family": "pink",
     "mood": [
@@ -5765,7 +5765,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Pink — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 80,
       "g": 7,
@@ -5779,7 +5779,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-rose-50",
-    "name": "Rose 50",
+    "name": "Whisper Rose",
     "hex": "#fff1f2",
     "family": "pink",
     "mood": [
@@ -5790,7 +5790,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Rose — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 255,
       "g": 241,
@@ -5804,7 +5804,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-rose-100",
-    "name": "Rose 100",
+    "name": "Pale Rose",
     "hex": "#ffe4e6",
     "family": "pink",
     "mood": [
@@ -5815,7 +5815,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Rose — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 255,
       "g": 228,
@@ -5829,7 +5829,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-rose-200",
-    "name": "Rose 200",
+    "name": "Soft Rose",
     "hex": "#fecdd3",
     "family": "pink",
     "mood": [
@@ -5840,7 +5840,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Rose — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 254,
       "g": 205,
@@ -5854,7 +5854,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-rose-300",
-    "name": "Rose 300",
+    "name": "Light Rose",
     "hex": "#fda4af",
     "family": "pink",
     "mood": [
@@ -5865,7 +5865,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Rose — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 253,
       "g": 164,
@@ -5879,7 +5879,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-rose-400",
-    "name": "Rose 400",
+    "name": "Fair Rose",
     "hex": "#fb7185",
     "family": "pink",
     "mood": [
@@ -5890,7 +5890,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Rose — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 251,
       "g": 113,
@@ -5904,7 +5904,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-rose-500",
-    "name": "Rose 500",
+    "name": "True Rose",
     "hex": "#f43f5e",
     "family": "pink",
     "mood": [
@@ -5915,7 +5915,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Rose — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 244,
       "g": 63,
@@ -5929,7 +5929,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-rose-600",
-    "name": "Rose 600",
+    "name": "Bold Rose",
     "hex": "#e11d48",
     "family": "pink",
     "mood": [
@@ -5940,7 +5940,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Rose — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 225,
       "g": 29,
@@ -5954,7 +5954,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-rose-700",
-    "name": "Rose 700",
+    "name": "Rich Rose",
     "hex": "#be123c",
     "family": "pink",
     "mood": [
@@ -5965,7 +5965,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Rose — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 190,
       "g": 18,
@@ -5979,7 +5979,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-rose-800",
-    "name": "Rose 800",
+    "name": "Deep Rose",
     "hex": "#9f1239",
     "family": "pink",
     "mood": [
@@ -5990,7 +5990,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Rose — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 159,
       "g": 18,
@@ -6004,7 +6004,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-rose-900",
-    "name": "Rose 900",
+    "name": "Shadow Rose",
     "hex": "#881337",
     "family": "pink",
     "mood": [
@@ -6015,7 +6015,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Rose — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 136,
       "g": 19,
@@ -6029,7 +6029,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-rose-950",
-    "name": "Rose 950",
+    "name": "Midnight Rose",
     "hex": "#4c0519",
     "family": "pink",
     "mood": [
@@ -6040,7 +6040,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark pink tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "Rose — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 76,
       "g": 5,
@@ -6054,7 +6054,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lightBlue-50",
-    "name": "LightBlue 50",
+    "name": "Whisper LightBlue",
     "hex": "#f0f9ff",
     "family": "neutral",
     "mood": [
@@ -6065,7 +6065,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "LightBlue — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 240,
       "g": 249,
@@ -6079,7 +6079,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lightBlue-100",
-    "name": "LightBlue 100",
+    "name": "Pale LightBlue",
     "hex": "#e0f2fe",
     "family": "neutral",
     "mood": [
@@ -6090,7 +6090,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "LightBlue — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 224,
       "g": 242,
@@ -6104,7 +6104,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lightBlue-200",
-    "name": "LightBlue 200",
+    "name": "Soft LightBlue",
     "hex": "#bae6fd",
     "family": "neutral",
     "mood": [
@@ -6115,7 +6115,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "LightBlue — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 186,
       "g": 230,
@@ -6129,7 +6129,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lightBlue-300",
-    "name": "LightBlue 300",
+    "name": "Light LightBlue",
     "hex": "#7dd3fc",
     "family": "neutral",
     "mood": [
@@ -6140,7 +6140,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "LightBlue — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 125,
       "g": 211,
@@ -6154,7 +6154,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lightBlue-400",
-    "name": "LightBlue 400",
+    "name": "Fair LightBlue",
     "hex": "#38bdf8",
     "family": "neutral",
     "mood": [
@@ -6165,7 +6165,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "LightBlue — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 56,
       "g": 189,
@@ -6179,7 +6179,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lightBlue-500",
-    "name": "LightBlue 500",
+    "name": "True LightBlue",
     "hex": "#0ea5e9",
     "family": "neutral",
     "mood": [
@@ -6190,7 +6190,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "LightBlue — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 14,
       "g": 165,
@@ -6204,7 +6204,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lightBlue-600",
-    "name": "LightBlue 600",
+    "name": "Bold LightBlue",
     "hex": "#0284c7",
     "family": "neutral",
     "mood": [
@@ -6215,7 +6215,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "LightBlue — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 2,
       "g": 132,
@@ -6229,7 +6229,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lightBlue-700",
-    "name": "LightBlue 700",
+    "name": "Rich LightBlue",
     "hex": "#0369a1",
     "family": "neutral",
     "mood": [
@@ -6240,7 +6240,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "LightBlue — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 3,
       "g": 105,
@@ -6254,7 +6254,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lightBlue-800",
-    "name": "LightBlue 800",
+    "name": "Deep LightBlue",
     "hex": "#075985",
     "family": "neutral",
     "mood": [
@@ -6265,7 +6265,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "LightBlue — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 7,
       "g": 89,
@@ -6279,7 +6279,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lightBlue-900",
-    "name": "LightBlue 900",
+    "name": "Shadow LightBlue",
     "hex": "#0c4a6e",
     "family": "neutral",
     "mood": [
@@ -6290,7 +6290,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "LightBlue — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 12,
       "g": 74,
@@ -6304,7 +6304,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-lightBlue-950",
-    "name": "LightBlue 950",
+    "name": "Midnight LightBlue",
     "hex": "#082f49",
     "family": "neutral",
     "mood": [
@@ -6315,7 +6315,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "LightBlue — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 8,
       "g": 47,
@@ -6329,7 +6329,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-warmGray-50",
-    "name": "WarmGray 50",
+    "name": "Whisper WarmGray",
     "hex": "#fafaf9",
     "family": "neutral",
     "mood": [
@@ -6340,7 +6340,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "WarmGray — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 250,
       "g": 250,
@@ -6354,7 +6354,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-warmGray-100",
-    "name": "WarmGray 100",
+    "name": "Pale WarmGray",
     "hex": "#f5f5f4",
     "family": "neutral",
     "mood": [
@@ -6365,7 +6365,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "WarmGray — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 245,
       "g": 245,
@@ -6379,7 +6379,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-warmGray-200",
-    "name": "WarmGray 200",
+    "name": "Soft WarmGray",
     "hex": "#e7e5e4",
     "family": "neutral",
     "mood": [
@@ -6390,7 +6390,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "WarmGray — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 231,
       "g": 229,
@@ -6404,7 +6404,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-warmGray-300",
-    "name": "WarmGray 300",
+    "name": "Light WarmGray",
     "hex": "#d6d3d1",
     "family": "neutral",
     "mood": [
@@ -6415,7 +6415,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "WarmGray — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 214,
       "g": 211,
@@ -6429,7 +6429,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-warmGray-400",
-    "name": "WarmGray 400",
+    "name": "Fair WarmGray",
     "hex": "#a8a29e",
     "family": "neutral",
     "mood": [
@@ -6440,7 +6440,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "WarmGray — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 168,
       "g": 162,
@@ -6454,7 +6454,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-warmGray-500",
-    "name": "WarmGray 500",
+    "name": "True WarmGray",
     "hex": "#78716c",
     "family": "neutral",
     "mood": [
@@ -6465,7 +6465,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "WarmGray — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 120,
       "g": 113,
@@ -6479,7 +6479,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-warmGray-600",
-    "name": "WarmGray 600",
+    "name": "Bold WarmGray",
     "hex": "#57534e",
     "family": "neutral",
     "mood": [
@@ -6490,7 +6490,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "WarmGray — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 87,
       "g": 83,
@@ -6504,7 +6504,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-warmGray-700",
-    "name": "WarmGray 700",
+    "name": "Rich WarmGray",
     "hex": "#44403c",
     "family": "neutral",
     "mood": [
@@ -6515,7 +6515,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "WarmGray — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 68,
       "g": 64,
@@ -6529,7 +6529,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-warmGray-800",
-    "name": "WarmGray 800",
+    "name": "Deep WarmGray",
     "hex": "#292524",
     "family": "neutral",
     "mood": [
@@ -6540,7 +6540,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "WarmGray — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 41,
       "g": 37,
@@ -6554,7 +6554,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-warmGray-900",
-    "name": "WarmGray 900",
+    "name": "Shadow WarmGray",
     "hex": "#1c1917",
     "family": "neutral",
     "mood": [
@@ -6565,7 +6565,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "WarmGray — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 28,
       "g": 25,
@@ -6579,7 +6579,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-warmGray-950",
-    "name": "WarmGray 950",
+    "name": "Midnight WarmGray",
     "hex": "#0c0a09",
     "family": "neutral",
     "mood": [
@@ -6590,7 +6590,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "WarmGray — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 12,
       "g": 10,
@@ -6604,7 +6604,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-trueGray-50",
-    "name": "TrueGray 50",
+    "name": "Whisper TrueGray",
     "hex": "#fafafa",
     "family": "neutral",
     "mood": [
@@ -6615,7 +6615,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "TrueGray — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 250,
       "g": 250,
@@ -6629,7 +6629,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-trueGray-100",
-    "name": "TrueGray 100",
+    "name": "Pale TrueGray",
     "hex": "#f5f5f5",
     "family": "neutral",
     "mood": [
@@ -6640,7 +6640,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "TrueGray — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 245,
       "g": 245,
@@ -6654,7 +6654,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-trueGray-200",
-    "name": "TrueGray 200",
+    "name": "Soft TrueGray",
     "hex": "#e5e5e5",
     "family": "neutral",
     "mood": [
@@ -6665,7 +6665,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "TrueGray — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 229,
       "g": 229,
@@ -6679,7 +6679,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-trueGray-300",
-    "name": "TrueGray 300",
+    "name": "Light TrueGray",
     "hex": "#d4d4d4",
     "family": "neutral",
     "mood": [
@@ -6690,7 +6690,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "TrueGray — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 212,
       "g": 212,
@@ -6704,7 +6704,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-trueGray-400",
-    "name": "TrueGray 400",
+    "name": "Fair TrueGray",
     "hex": "#a3a3a3",
     "family": "neutral",
     "mood": [
@@ -6715,7 +6715,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "TrueGray — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 163,
       "g": 163,
@@ -6729,7 +6729,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-trueGray-500",
-    "name": "TrueGray 500",
+    "name": "True TrueGray",
     "hex": "#737373",
     "family": "neutral",
     "mood": [
@@ -6740,7 +6740,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "TrueGray — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 115,
       "g": 115,
@@ -6754,7 +6754,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-trueGray-600",
-    "name": "TrueGray 600",
+    "name": "Bold TrueGray",
     "hex": "#525252",
     "family": "neutral",
     "mood": [
@@ -6765,7 +6765,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "TrueGray — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 82,
       "g": 82,
@@ -6779,7 +6779,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-trueGray-700",
-    "name": "TrueGray 700",
+    "name": "Rich TrueGray",
     "hex": "#404040",
     "family": "neutral",
     "mood": [
@@ -6790,7 +6790,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "TrueGray — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 64,
       "g": 64,
@@ -6804,7 +6804,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-trueGray-800",
-    "name": "TrueGray 800",
+    "name": "Deep TrueGray",
     "hex": "#262626",
     "family": "neutral",
     "mood": [
@@ -6815,7 +6815,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "TrueGray — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 38,
       "g": 38,
@@ -6829,7 +6829,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-trueGray-900",
-    "name": "TrueGray 900",
+    "name": "Shadow TrueGray",
     "hex": "#171717",
     "family": "neutral",
     "mood": [
@@ -6840,7 +6840,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "TrueGray — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 23,
       "g": 23,
@@ -6854,7 +6854,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-trueGray-950",
-    "name": "TrueGray 950",
+    "name": "Midnight TrueGray",
     "hex": "#0a0a0a",
     "family": "neutral",
     "mood": [
@@ -6865,7 +6865,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "TrueGray — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 10,
       "g": 10,
@@ -6879,7 +6879,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-coolGray-50",
-    "name": "CoolGray 50",
+    "name": "Whisper CoolGray",
     "hex": "#f9fafb",
     "family": "neutral",
     "mood": [
@@ -6890,7 +6890,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "CoolGray — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 249,
       "g": 250,
@@ -6904,7 +6904,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-coolGray-100",
-    "name": "CoolGray 100",
+    "name": "Pale CoolGray",
     "hex": "#f3f4f6",
     "family": "neutral",
     "mood": [
@@ -6915,7 +6915,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "CoolGray — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 243,
       "g": 244,
@@ -6929,7 +6929,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-coolGray-200",
-    "name": "CoolGray 200",
+    "name": "Soft CoolGray",
     "hex": "#e5e7eb",
     "family": "neutral",
     "mood": [
@@ -6940,7 +6940,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "CoolGray — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 229,
       "g": 231,
@@ -6954,7 +6954,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-coolGray-300",
-    "name": "CoolGray 300",
+    "name": "Light CoolGray",
     "hex": "#d1d5db",
     "family": "neutral",
     "mood": [
@@ -6965,7 +6965,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "CoolGray — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 209,
       "g": 213,
@@ -6979,7 +6979,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-coolGray-400",
-    "name": "CoolGray 400",
+    "name": "Fair CoolGray",
     "hex": "#9ca3af",
     "family": "neutral",
     "mood": [
@@ -6990,7 +6990,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "CoolGray — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 156,
       "g": 163,
@@ -7004,7 +7004,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-coolGray-500",
-    "name": "CoolGray 500",
+    "name": "True CoolGray",
     "hex": "#6b7280",
     "family": "neutral",
     "mood": [
@@ -7015,7 +7015,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "CoolGray — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 107,
       "g": 114,
@@ -7029,7 +7029,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-coolGray-600",
-    "name": "CoolGray 600",
+    "name": "Bold CoolGray",
     "hex": "#4b5563",
     "family": "neutral",
     "mood": [
@@ -7040,7 +7040,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "CoolGray — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 75,
       "g": 85,
@@ -7054,7 +7054,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-coolGray-700",
-    "name": "CoolGray 700",
+    "name": "Rich CoolGray",
     "hex": "#374151",
     "family": "neutral",
     "mood": [
@@ -7065,7 +7065,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "CoolGray — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 55,
       "g": 65,
@@ -7079,7 +7079,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-coolGray-800",
-    "name": "CoolGray 800",
+    "name": "Deep CoolGray",
     "hex": "#1f2937",
     "family": "neutral",
     "mood": [
@@ -7090,7 +7090,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "CoolGray — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 31,
       "g": 41,
@@ -7104,7 +7104,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-coolGray-900",
-    "name": "CoolGray 900",
+    "name": "Shadow CoolGray",
     "hex": "#111827",
     "family": "neutral",
     "mood": [
@@ -7115,7 +7115,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "CoolGray — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 17,
       "g": 24,
@@ -7129,7 +7129,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-coolGray-950",
-    "name": "CoolGray 950",
+    "name": "Midnight CoolGray",
     "hex": "#030712",
     "family": "neutral",
     "mood": [
@@ -7140,7 +7140,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "CoolGray — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 3,
       "g": 7,
@@ -7154,7 +7154,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blueGray-50",
-    "name": "BlueGray 50",
+    "name": "Whisper BlueGray",
     "hex": "#f8fafc",
     "family": "neutral",
     "mood": [
@@ -7165,7 +7165,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "BlueGray — part of Tailwind's default palette — so faint it nearly disappears into the page.",
     "rgb": {
       "r": 248,
       "g": 250,
@@ -7179,7 +7179,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blueGray-100",
-    "name": "BlueGray 100",
+    "name": "Pale BlueGray",
     "hex": "#f1f5f9",
     "family": "neutral",
     "mood": [
@@ -7190,7 +7190,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "BlueGray — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 241,
       "g": 245,
@@ -7204,7 +7204,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blueGray-200",
-    "name": "BlueGray 200",
+    "name": "Soft BlueGray",
     "hex": "#e2e8f0",
     "family": "neutral",
     "mood": [
@@ -7215,7 +7215,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A light, airy neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "BlueGray — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 226,
       "g": 232,
@@ -7229,7 +7229,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blueGray-300",
-    "name": "BlueGray 300",
+    "name": "Light BlueGray",
     "hex": "#cbd5e1",
     "family": "neutral",
     "mood": [
@@ -7240,7 +7240,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "BlueGray — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 203,
       "g": 213,
@@ -7254,7 +7254,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blueGray-400",
-    "name": "BlueGray 400",
+    "name": "Fair BlueGray",
     "hex": "#94a3b8",
     "family": "neutral",
     "mood": [
@@ -7265,7 +7265,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A soft neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "BlueGray — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 148,
       "g": 163,
@@ -7279,7 +7279,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blueGray-500",
-    "name": "BlueGray 500",
+    "name": "True BlueGray",
     "hex": "#64748b",
     "family": "neutral",
     "mood": [
@@ -7290,7 +7290,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "BlueGray — part of Tailwind's default palette — the colour in its truest, most balanced form.",
     "rgb": {
       "r": 100,
       "g": 116,
@@ -7304,7 +7304,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blueGray-600",
-    "name": "BlueGray 600",
+    "name": "Bold BlueGray",
     "hex": "#475569",
     "family": "neutral",
     "mood": [
@@ -7315,7 +7315,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A balanced neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "BlueGray — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 71,
       "g": 85,
@@ -7329,7 +7329,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blueGray-700",
-    "name": "BlueGray 700",
+    "name": "Rich BlueGray",
     "hex": "#334155",
     "family": "neutral",
     "mood": [
@@ -7340,7 +7340,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "BlueGray — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 51,
       "g": 65,
@@ -7354,7 +7354,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blueGray-800",
-    "name": "BlueGray 800",
+    "name": "Deep BlueGray",
     "hex": "#1e293b",
     "family": "neutral",
     "mood": [
@@ -7365,7 +7365,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "A deep neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "BlueGray — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 30,
       "g": 41,
@@ -7379,7 +7379,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blueGray-900",
-    "name": "BlueGray 900",
+    "name": "Shadow BlueGray",
     "hex": "#0f172a",
     "family": "neutral",
     "mood": [
@@ -7390,7 +7390,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "BlueGray — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 15,
       "g": 23,
@@ -7404,7 +7404,7 @@ export const tailwindColors: Color[] = [
   },
   {
     "id": "tw-blueGray-950",
-    "name": "BlueGray 950",
+    "name": "Midnight BlueGray",
     "hex": "#020617",
     "family": "neutral",
     "mood": [
@@ -7415,7 +7415,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "A very dark neutral tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.",
+    "note": "BlueGray — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 2,
       "g": 6,

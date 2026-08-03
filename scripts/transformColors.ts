@@ -50,18 +50,26 @@ function titleCase(word: string) {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
-function generateNote(name: string, shadeNum: number, family: ColorFamily): string {
-  const weight =
-    shadeNum <= 200
-      ? "a light, airy"
-      : shadeNum <= 400
-      ? "a soft"
-      : shadeNum <= 600
-      ? "a balanced"
-      : shadeNum <= 800
-      ? "a deep"
-      : "a very dark";
-  return `${titleCase(weight)} ${family} tone — part of Tailwind's default palette, a dependable utility shade for backgrounds and UI states.`;
+// Every Tailwind shade (50–950) maps onto one of these tier words so no
+// color ever ships as a bare number like "Red 750" — same light-to-dark
+// vocabulary the curated library uses (see scripts/generateCuratedColors.ts),
+// so a shade's name alone hints at where it sits on the ramp.
+const TIER_BY_SHADE: Record<string, { word: string; note: string }> = {
+  "50": { word: "Whisper", note: "so faint it nearly disappears into the page" },
+  "100": { word: "Pale", note: "soft enough to sit behind content without competing with it" },
+  "200": { word: "Soft", note: "gentle and easy on the eye, good for large surfaces" },
+  "300": { word: "Light", note: "clear and approachable, sits comfortably as a secondary tone" },
+  "400": { word: "Fair", note: "even-toned and easygoing, a dependable UI colour" },
+  "500": { word: "True", note: "the colour in its truest, most balanced form" },
+  "600": { word: "Bold", note: "confident and saturated, built to anchor a single focal point" },
+  "700": { word: "Rich", note: "deep and full-bodied, reads as premium rather than loud" },
+  "800": { word: "Deep", note: "dark and weighty, good for grounding a palette" },
+  "900": { word: "Shadow", note: "dark and a little moody, sits closer to black than to its own family" },
+  "950": { word: "Midnight", note: "as dark as the family gets, nearly swallowed by black" },
+};
+
+function generateNote(subfamily: string, shadeNum: number, tierNote: string): string {
+  return `${titleCase(subfamily)} — part of Tailwind's default palette — ${tierNote}.`;
 }
 
 function buildTailwindColors(): Color[] {
@@ -75,18 +83,19 @@ function buildTailwindColors(): Color[] {
       if (typeof hex !== "string") continue;
       const shadeNum = Number(shade);
       const id = `tw-${familyKey}-${shade}`;
+      const tier = TIER_BY_SHADE[shade] ?? { word: "True", note: "a dependable, versatile shade" };
 
       out.push(
         buildColor({
           id,
-          name: `${titleCase(familyKey)} ${shade}`,
+          name: `${tier.word} ${titleCase(familyKey)}`,
           hex,
           family,
           mood: shadeNum >= 600 ? ["moody"] : shadeNum <= 200 ? ["calm"] : ["energetic"],
           style: shadeNum <= 200 ? ["pastel"] : shadeNum >= 700 ? ["bold"] : ["modern"],
           collection: "tailwind",
           isPro: shadeNum % 200 === 0, // arbitrary placeholder gating, adjust later
-          note: generateNote(`${titleCase(familyKey)} ${shade}`, shadeNum, family),
+          note: generateNote(familyKey, shadeNum, tier.note),
         })
       );
     }

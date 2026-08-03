@@ -15,15 +15,19 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Check, Loader2 } from "lucide-react";
 import { ExportDrawer } from "./ExportDrawer";
 import { LivePreviewSection } from "./LivePreviewSection";
 import { DesignSystemGallery } from "@/components/design-system/DesignSystemGallery";
 import { SpacingVisualization } from "@/components/design-system/SpacingVisualization";
 import { getContrastRatio } from "@/lib/colors/colorUtils";
 import { cn } from "@/lib/utils";
-import { useAIResultStore } from "@/store";
+import { useAIResultStore, useAuthStore } from "@/store";
+import { useStudioImportStore } from "@/store/studioImportStore";
 import { PaletteTokens } from "@/lib/studio/exportCode";
+import { projectInputFromStudioState } from "@/lib/studio/projectFromState";
+import { applyStudioImport } from "@/lib/studio/applyImport";
 import { SpacingScale, ShadowScale, MoodboardImage } from "@/types/designTokens";
 import { DesignSystem, ThemeVariantTokens } from "@/types/designSystem";
 import { AIReasoning } from "@/types/project";
@@ -191,8 +195,13 @@ function paletteFromThemeVariant(variant: ThemeVariantTokens | undefined, fallba
 }
 
 export function StudioBuilder() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const aiResult = useAIResultStore((s) => s.result);
+  const savedProjectId = useAIResultStore((s) => s.savedProjectId);
+  const setSavedProjectId = useAIResultStore((s) => s.setSavedProjectId);
+  const user = useAuthStore((s) => s.user);
+  const authStatus = useAuthStore((s) => s.status);
   const [state, setState] = useState<StudioState>(() => {
     const seeded = { ...DEFAULT_STATE, ...seedFromParams(searchParams) };
     // Only enrich from the persisted AI result when this navigation didn't
@@ -200,19 +209,27 @@ export function StudioBuilder() {
     // (e.g. a saved theme's "Apply this edition" link) — avoids leaking a
     // stale/unrelated AI result's design system into an unrelated deep link.
     const cameFromOtherSource = Boolean(searchParams.get("accent")) && searchParams.get("from") !== "ai";
-    if (!aiResult || cameFromOtherSource) return seeded;
-    return {
-      ...seeded,
-      spacing: aiResult.spacing,
-      shadows: aiResult.shadows,
-      designSystem: aiResult.designSystem,
-      moodboard: aiResult.moodboard,
-      aiReasoning: aiResult.aiReasoning,
-      light: paletteFromThemeVariant(aiResult.designSystem?.light, seeded.light),
-      dark: paletteFromThemeVariant(aiResult.designSystem?.dark, seeded.dark),
-    };
+    const base =
+      !aiResult || cameFromOtherSource
+        ? seeded
+        : {
+            ...seeded,
+            spacing: aiResult.spacing,
+            shadows: aiResult.shadows,
+            designSystem: aiResult.designSystem,
+            moodboard: aiResult.moodboard,
+            aiReasoning: aiResult.aiReasoning,
+            light: paletteFromThemeVariant(aiResult.designSystem?.light, seeded.light),
+            dark: paletteFromThemeVariant(aiResult.designSystem?.dark, seeded.dark),
+          };
+
+    const importPayload = useStudioImportStore.getState().consume();
+    return importPayload ? applyStudioImport(base, importPayload) : base;
   });
   const [exportOpen, setExportOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [savedPing, setSavedPing] = useState(false);
 
   useEffect(() => {
     const families = [state.headFont, state.bodyFont]
@@ -287,6 +304,34 @@ export function StudioBuilder() {
     setState((s) => ({ ...s, headFont: pair.head, bodyFont: pair.body, radius: randomOf(RADII) }));
   }
 
+  async function handleSave() {
+    if (authStatus === "loading") return;
+    if (!user) {
+      router.push(`/sign-in?from=${encodeURIComponent("/studio")}`);
+      return;
+    }
+
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const payload = projectInputFromStudioState(state);
+      const res = await fetch(savedProjectId ? `/api/projects/${savedProjectId}` : "/api/projects", {
+        method: savedProjectId ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Couldn't save this project.");
+      if (!savedProjectId) setSavedProjectId(data.project.id);
+      setSavedPing(true);
+      setTimeout(() => setSavedPing(false), 1800);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Couldn't save this project.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#EDE6DA] font-grotesk text-[#211E18]">
       <div className="sticky top-14 z-40 flex flex-wrap items-center justify-between gap-4 border-b border-black/[0.18] bg-[#EDE6DA]/[0.94] px-6 py-3.5 backdrop-blur-md sm:px-12">
@@ -311,6 +356,19 @@ export function StudioBuilder() {
           </button>
           <button
             type="button"
+            onClick={handleSave}
+            disabled={saving}
+            className="flex items-center gap-1.5 rounded-full border border-black/30 px-4 py-2 font-mono-plex text-[11px] uppercase tracking-[0.12em] text-[#211E18] disabled:opacity-50"
+          >
+            {saving ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+            ) : savedPing ? (
+              <Check className="h-3.5 w-3.5" aria-hidden="true" />
+            ) : null}
+            {saving ? "Saving…" : savedProjectId ? "Update" : "Save"}
+          </button>
+          <button
+            type="button"
             onClick={() => setExportOpen(true)}
             className="rounded-full bg-[#222D52] px-[22px] py-2.5 text-[13px] tracking-[0.02em] text-[#F2EBE0]"
           >
@@ -318,6 +376,11 @@ export function StudioBuilder() {
           </button>
         </div>
       </div>
+      {saveError && (
+        <div className="border-b border-[#B3261E]/30 bg-[#B3261E]/10 px-6 py-2.5 text-center text-xs text-[#B3261E] sm:px-12">
+          {saveError}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-[376px_1fr]">
         <aside className="flex flex-col gap-[30px] border-b border-black/[0.18] bg-[#F2EBE0] px-6 py-6 lg:sticky lg:top-[105px] lg:max-h-[calc(100vh-105px)] lg:overflow-y-auto lg:border-b-0 lg:border-r">
