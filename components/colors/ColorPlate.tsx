@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Color } from "@/types/color";
 import { getContrastRatio } from "@/lib/colors/colorUtils";
+import { FavoriteButton } from "@/components/browse/FavoriteButton";
 
 // One "plate" on the /browse/colors salon wall — distinct from the compact
 // <ColorCard> used elsewhere (e.g. AI-generate results), which needs a
@@ -37,8 +38,9 @@ export function ColorPlate({ color, index }: { color: Color; index: number }) {
           copy();
         }
       }}
-      className="group flex cursor-pointer flex-col border-b border-r border-black/[0.18] bg-[#F2EBE0] transition-colors hover:bg-[#EBE2D2]"
+      className="group relative flex cursor-pointer flex-col border-b border-r border-black/[0.18] bg-[#F2EBE0] transition-colors hover:bg-[#EBE2D2]"
     >
+      <FavoriteButton type="color" id={color.id} className="absolute right-3 top-3 z-10" style={{ color: overlay }} />
       <div
         className="flex h-[200px] items-end justify-between px-4 py-3.5"
         style={{ backgroundColor: color.hex }}

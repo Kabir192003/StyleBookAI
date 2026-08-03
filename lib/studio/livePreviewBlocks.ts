@@ -29,8 +29,8 @@ export const LIVE_PREVIEW_BLOCKS: LivePreviewBlock[] = [
     <span style="font-family:var(--font-display, serif);font-weight:700;font-size:16px;">Brand</span>
     <div style="display:flex;gap:var(--space-3, 18px);font-size:13px;opacity:0.75;">
       <span>Product</span>
-      <span>Pricing</span>
       <span>Docs</span>
+      <span>About</span>
     </div>
   </nav>
 </div>`,

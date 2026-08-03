@@ -3,18 +3,23 @@
  * the header markup shared by Colours.dc.html / Fonts.dc.html /
  * Themes.dc.html from claude.ai/design (project "Website redesign
  * request"): Fraunces wordmark, IBM Plex Mono nav, cream/ink/navy
- * editorial palette. Studio and Profile aren't in that design (it has no
- * app shell to link to) but are styled in the same mono nav voice so the
- * header reads as one piece with the rest of the chrome.
+ * editorial palette. Studio isn't in that design (it has no app shell to
+ * link to) but is styled in the same mono nav voice so the header reads
+ * as one piece with the rest of the chrome.
  *
- * No sign-in state — Clerk was removed (see CLAUDE.md). "Profile" just
- * links to /account unconditionally until real auth exists.
+ * The old "Profile" text link is now a hamburger trigger (see
+ * HamburgerMenu.tsx) that also holds Dashboard/Account/sign-in — fetches
+ * the current user once here so the drawer and every FavoriteButton on
+ * the page share one auth check instead of each firing their own.
  */
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store";
+import { HamburgerMenu, HamburgerTrigger } from "./HamburgerMenu";
 
 const NAV_LINKS = [
   { href: "/browse/colors", label: "Colours" },
@@ -32,6 +37,12 @@ function navLinkClasses(active: boolean) {
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const fetchUser = useAuthStore((s) => s.fetchUser);
+
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-black/[0.18] bg-[#F2EBE0]/[0.94] backdrop-blur-md">
@@ -55,7 +66,7 @@ export function SiteHeader() {
           })}
         </nav>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
           <Link
             href="/studio/ai"
             className="rounded-full bg-[#222D52] px-[22px] py-2.5 text-[13px] tracking-[0.02em] text-[#F2EBE0] transition-transform hover:-translate-y-0.5"
@@ -63,15 +74,11 @@ export function SiteHeader() {
             Generate with AI
           </Link>
 
-          <Link
-            href="/account"
-            aria-current={pathname?.startsWith("/account") ? "page" : undefined}
-            className={navLinkClasses(!!pathname?.startsWith("/account"))}
-          >
-            Profile
-          </Link>
+          <HamburgerTrigger onClick={() => setMenuOpen(true)} />
         </div>
       </div>
+
+      <HamburgerMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
     </header>
   );
 }

@@ -3,11 +3,11 @@
  *
  * Owner: Amna
  *
- * Spec: docs/PRODUCT_AND_UX.md §2 (Dashboard). Lists every saved project,
- * newest first. Fetches GET /api/projects client-side — Kabir's backend
- * is real (Supabase-backed, see app/api/projects/route.ts). Auth (Clerk)
- * was removed (see CLAUDE.md), so this currently lists the single shared
- * anonymous workspace's projects, not a per-user list.
+ * Spec: docs/PRODUCT_AND_UX.md §2 (Dashboard). Lists every saved project
+ * for the signed-in user, newest first. Fetches GET /api/projects
+ * client-side — Kabir's backend is real (Supabase-backed, see
+ * app/api/projects/route.ts), gated behind the username/password login
+ * in lib/auth/ (see CLAUDE.md).
  *
  * Styling adapted to the site's cream/ink/navy editorial system instead
  * of the separate glass/dark design system this was originally built
@@ -26,6 +26,7 @@ import type { Project } from "@/types";
 type FetchState =
   | { status: "loading" }
   | { status: "error"; message: string }
+  | { status: "unauthorized" }
   | { status: "ready"; projects: Project[] };
 
 type Filter = "all" | "ai" | "manual";
@@ -78,6 +79,10 @@ export default function DashboardPage() {
     setState({ status: "loading" });
     try {
       const res = await fetch("/api/projects");
+      if (res.status === 401) {
+        setState({ status: "unauthorized" });
+        return;
+      }
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error ?? `Request failed (${res.status})`);
@@ -119,7 +124,9 @@ export default function DashboardPage() {
             <p className="mt-1 text-sm text-[#6E675C]">
               {state.status === "ready"
                 ? `${projects.length} saved project${projects.length === 1 ? "" : "s"}, newest first`
-                : "Loading your saved projects…"}
+                : state.status === "unauthorized"
+                  ? "Sign in to see your projects"
+                  : "Loading your saved projects…"}
             </p>
           </div>
           <Link href="/studio" className={buttonVariants({ variant: "primary" }) + " flex shrink-0 items-center gap-1.5"}>
@@ -164,6 +171,26 @@ export default function DashboardPage() {
               <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
               Try again
             </button>
+          </div>
+        )}
+
+        {state.status === "unauthorized" && (
+          <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-black/[0.18] py-20 text-center">
+            <h2 className="font-editorial-serif text-xl font-bold tracking-tight text-[#211E18]">
+              Sign in to see your projects
+            </h2>
+            <p className="mx-auto max-w-sm text-sm text-[#6E675C]">
+              Saved projects live on your account — sign in or create one to
+              get started.
+            </p>
+            <div className="flex gap-3">
+              <Link href="/sign-in" className={buttonVariants({ variant: "primary" })}>
+                Sign in
+              </Link>
+              <Link href="/sign-up" className={buttonVariants({ variant: "ghost" })}>
+                Create account
+              </Link>
+            </div>
           </div>
         )}
 

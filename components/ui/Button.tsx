@@ -1,6 +1,6 @@
 /**
- * Button — shared primitive used across the dashboard/account/pricing
- * pages instead of raw <button> tags.
+ * Button — shared primitive used across the dashboard/account pages
+ * instead of raw <button> tags.
  *
  * Owner: Amna (styling adapted to the site's cream/ink/navy editorial
  * system — see CLAUDE.md — instead of the separate glass/dark design

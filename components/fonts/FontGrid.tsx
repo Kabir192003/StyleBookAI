@@ -12,6 +12,7 @@
 
 import { useMemo, useState } from "react";
 import { EmptyState } from "@/components/browse/EmptyState";
+import { FavoriteButton } from "@/components/browse/FavoriteButton";
 import { GoogleFontsLoader } from "./GoogleFontsLoader";
 import { Font, FontCategory } from "@/types/font";
 
@@ -65,9 +66,12 @@ function FontRow({ font, index, proofText }: { font: Font; index: number; proofT
             {font.category}
           </span>
         </div>
-        <span className="font-mono-plex text-[10px] tracking-[0.14em] text-[#8A8477]">
-          {font.variants.join(" · ")}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="font-mono-plex text-[10px] tracking-[0.14em] text-[#8A8477]">
+            {font.variants.join(" · ")}
+          </span>
+          <FavoriteButton type="font" id={font.id} className="text-[#8A8477] hover:bg-black/[0.05] hover:text-[#211E18]" />
+        </div>
       </div>
       <div
         className="mt-5 overflow-hidden text-ellipsis whitespace-nowrap text-[clamp(2rem,5vw,4rem)] leading-[1.12] tracking-tight text-[#211E18]"
