@@ -3,24 +3,17 @@
  *
  * Owner: Amna
  *
- * v1 has no billing (see docs/PRODUCT_AND_UX.md — Stripe is explicitly
- * deferred), so this page is just profile info via Clerk's <UserProfile />
- * plus an account-level preferences stub.
- *
- * TODO (Amna):
- * - Embed Clerk's <UserProfile />
- * - Any app-specific preference (e.g. default unit for type scale) goes
- *   below it
+ * Auth (Clerk) was removed — see CLAUDE.md. This is a placeholder until a
+ * simple username/password login exists to back real account settings.
  */
-import { UserProfile } from "@clerk/nextjs";
-
 export default function AccountPage() {
   return (
     <main className="p-8">
       <h1 className="text-3xl font-bold tracking-tight">Account</h1>
-      <div className="mt-6">
-        <UserProfile />
-      </div>
+      <p className="mt-3 text-sm text-neutral-500">
+        Account settings aren&apos;t wired up yet — sign-in isn&apos;t built. Coming
+        with the username/password login.
+      </p>
     </main>
   );
 }

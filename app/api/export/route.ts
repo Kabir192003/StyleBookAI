@@ -1,17 +1,17 @@
 /**
  * POST /api/export — generates a text code snippet (CSS vars / SCSS /
  * Tailwind config / JSON) for a project. Accepts either a saved
- * `projectId` (auth required, ownership enforced) or an inline `project`
- * payload for unsaved Studio drafts. PNG/PDF export is client-side via
- * html-to-image, not handled here.
+ * `projectId` (ownership enforced against the shared anonymous workspace —
+ * auth was removed, see CLAUDE.md) or an inline `project` payload for
+ * unsaved Studio drafts. PNG/PDF export is client-side via html-to-image,
+ * not handled here.
  *
  * Owner: Kabir
  */
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { getSupabaseAdmin } from "@/lib/db/supabase";
-import { getOrCreateUserId } from "@/lib/db/getOrCreateUser";
+import { getOrCreateAnonymousUserId } from "@/lib/db/getOrCreateUser";
 import { ProjectInputSchema } from "@/lib/validation/project";
 import { ProjectRow } from "@/lib/db/projectMapper";
 import { generateExport, ExportFormat } from "@/lib/export/generators";
@@ -55,12 +55,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ content, format: exportFormat });
   }
 
-  const { userId } = auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Sign in required" }, { status: 401 });
-  }
-
-  const internalUserId = await getOrCreateUserId(userId);
+  const ownerId = await getOrCreateAnonymousUserId();
   const admin = getSupabaseAdmin();
   const { data, error } = await admin
     .from("projects")
@@ -74,7 +69,7 @@ export async function POST(req: NextRequest) {
   }
 
   const row = data as ProjectRow | null;
-  if (!row || row.user_id !== internalUserId) {
+  if (!row || row.user_id !== ownerId) {
     return NextResponse.json({ error: "Project not found" }, { status: 404 });
   }
 
