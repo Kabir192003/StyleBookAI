@@ -1,137 +1,260 @@
 /**
- * /account — account settings preview
+ * /account — account settings
  *
  * Owner: Amna
  *
- * Auth (Clerk) was removed — see CLAUDE.md — so there's no real signed-in
- * user or stored preferences yet. This is a styled, non-functional preview
- * of the eventual page: every field is disabled and the banner up top says
- * so explicitly. When the username/password login lands, wire these up for
- * real (profile fields to the user record, preferences to a per-user
- * settings row) and remove the `disabled` props + banner.
+ * v1 has no billing (see docs/PRODUCT_AND_UX.md — Stripe is explicitly
+ * deferred). Auth (Clerk) was also removed (see CLAUDE.md), so the
+ * profile section is a placeholder pending real sign-in — everything
+ * below it (preferences) is real and functional, no auth required.
+ *
+ * Preferences (type-scale unit, export format, AI-generation email,
+ * theme) have no dedicated API endpoint yet, so they persist to
+ * localStorage for now. Theme itself is backed by lib/theme.ts, which is
+ * real (toggling actually flips `.dark` on <html>) — though no other
+ * page in the app has `dark:` variants yet, so it's currently a saved
+ * preference more than a visible effect; the other three are UI-only
+ * until a preferences endpoint exists.
+ *
+ * Styling adapted to the site's cream/ink/navy editorial system instead
+ * of the separate glass/dark design system this was originally built
+ * against, to stay visually consistent with Studio/browse/SiteHeader.
  */
-const inputClasses =
-  "w-full cursor-not-allowed rounded-lg border border-black/20 bg-white px-[13px] py-[11px] text-sm text-[#211E18] opacity-60";
+"use client";
 
-function ToggleGroup({ options, active }: { options: string[]; active: string }) {
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { applyTheme, getStoredTheme, type ThemePreference } from "@/lib/theme";
+import { Button } from "@/components/ui/Button";
+
+const PREFS_KEY = "stylebook-prefs";
+
+type Prefs = {
+  typeScaleUnit: "px" | "rem";
+  exportFormat: "css" | "tailwind" | "scss" | "json";
+  notifyOnGenerate: boolean;
+};
+
+const DEFAULT_PREFS: Prefs = {
+  typeScaleUnit: "px",
+  exportFormat: "css",
+  notifyOnGenerate: true,
+};
+
+function SegmentedControl<T extends string>({
+  value,
+  options,
+  onChange,
+}: {
+  value: T;
+  options: { label: string; value: T }[];
+  onChange: (v: T) => void;
+}) {
   return (
-    <div className="flex gap-2">
-      {options.map((o) => (
+    <div className="inline-flex rounded-full border border-black/[0.14] bg-[#EDE6DA] p-1">
+      {options.map((opt) => (
         <button
-          key={o}
+          key={opt.value}
           type="button"
-          disabled
-          className={`flex-1 cursor-not-allowed rounded-lg border py-[9px] font-mono-plex text-[10px] uppercase tracking-[0.14em] opacity-60 ${
-            o === active ? "border-[#211E18] bg-[#211E18] text-[#F2EBE0]" : "border-black/[0.16] bg-white text-[#6E675C]"
+          onClick={() => onChange(opt.value)}
+          className={`relative rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+            value === opt.value
+              ? "bg-white text-[#211E18] shadow-[0_1px_3px_rgba(24,28,45,0.12)]"
+              : "text-[#8A8477] hover:text-[#6E675C]"
           }`}
         >
-          {o}
+          {opt.label}
         </button>
       ))}
     </div>
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Toggle({ on, onToggle, label }: { on: boolean; onToggle: () => void; label: string }) {
   return (
-    <div className="rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-6">
-      <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">{title}</div>
-      <div className="mt-4 flex flex-col gap-4">{children}</div>
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      aria-label={label}
+      onClick={onToggle}
+      className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${on ? "bg-[#22733F]" : "bg-black/[0.18]"}`}
+    >
+      <motion.span
+        layout
+        transition={{ type: "spring", stiffness: 500, damping: 32 }}
+        className="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow"
+        style={{ left: on ? "22px" : "2px" }}
+      />
+    </button>
+  );
+}
+
+function PreferenceRow({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-6 py-4">
+      <div>
+        <div className="text-sm font-medium text-[#211E18]">{title}</div>
+        {description && <div className="mt-0.5 text-xs text-[#8A8477]">{description}</div>}
+      </div>
+      {children}
     </div>
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="flex flex-col gap-1.5">
-      <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#B4AD9E]">{label}</span>
-      {children}
-    </label>
-  );
-}
-
 export default function AccountPage() {
+  const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
+  const [themePref, setThemePref] = useState<ThemePreference>("system");
+  const [savedPing, setSavedPing] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem(PREFS_KEY);
+      if (stored) setPrefs({ ...DEFAULT_PREFS, ...JSON.parse(stored) });
+    } catch {
+      // Corrupt/blocked storage — fall back to defaults silently.
+    }
+    setThemePref(getStoredTheme());
+  }, []);
+
+  function updatePrefs(next: Partial<Prefs>) {
+    setPrefs((prev) => {
+      const merged = { ...prev, ...next };
+      try {
+        window.localStorage.setItem(PREFS_KEY, JSON.stringify(merged));
+      } catch {
+        // TODO: once a preferences API exists, this is where the PATCH
+        // call goes; localStorage failing shouldn't block the UI update.
+      }
+      return merged;
+    });
+    pingSaved();
+  }
+
+  function updateTheme(next: ThemePreference) {
+    setThemePref(next);
+    applyTheme(next);
+    pingSaved();
+  }
+
+  function pingSaved() {
+    setSavedPing(true);
+    setTimeout(() => setSavedPing(false), 1400);
+  }
+
   return (
     <main className="min-h-[calc(100vh-56px)] bg-[#EDE6DA] px-6 py-10 sm:px-12">
-      <div className="mx-auto max-w-[720px]">
-        <div className="font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#8A8477]">Account · Vol. 01</div>
-        <h1 className="mt-2 font-editorial-serif text-[34px] font-normal leading-[1.02] tracking-[-0.02em] text-[#211E18]">
-          Your account.
-        </h1>
-
-        <div className="mt-4 rounded-xl border border-black/[0.14] bg-white/60 px-4 py-3 text-sm text-[#6E675C]">
-          Preview only — account settings aren&apos;t wired up yet, since sign-in
-          isn&apos;t built. This is what&apos;s coming with the username/password login;
-          every field below is disabled for now.
+      <div className="mx-auto max-w-2xl">
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <div className="font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#8A8477]">Account · Vol. 01</div>
+            <h1 className="mt-2 font-editorial-serif text-[34px] font-normal leading-[1.02] tracking-[-0.02em] text-[#211E18]">
+              Your account.
+            </h1>
+          </div>
+          <AnimatePresence>
+            {savedPing && (
+              <motion.span
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="text-xs font-medium text-[#22733F]"
+              >
+                Saved
+              </motion.span>
+            )}
+          </AnimatePresence>
         </div>
 
-        <div className="mt-6 flex flex-col gap-5">
-          <Section title="Profile">
-            <div className="flex items-center gap-4">
-              <div className="grid h-16 w-16 flex-none place-items-center rounded-full border border-black/[0.16] bg-white font-editorial-serif text-2xl text-[#8A8477] opacity-60">
-                ?
-              </div>
-              <button
-                type="button"
-                disabled
-                className="cursor-not-allowed rounded-full border border-black/20 bg-white px-5 py-2 text-sm text-[#6E675C] opacity-60"
-              >
-                Change photo
-              </button>
-            </div>
-            <Field label="Name">
-              <input disabled placeholder="Your name" className={inputClasses} />
-            </Field>
-            <Field label="Email">
-              <input disabled placeholder="you@example.com" className={inputClasses} />
-            </Field>
-          </Section>
+        <section className="mb-6 rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-6">
+          <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Profile</div>
+          <p className="mt-3 text-sm text-[#6E675C]">
+            No sign-in yet — profile details will live here once the
+            username/password login ships. Everything below (preferences)
+            already works without an account.
+          </p>
+        </section>
 
-          <Section title="Plan">
-            <div className="flex items-center justify-between rounded-lg border border-black/[0.14] bg-white/60 px-4 py-3">
-              <div>
-                <div className="text-sm font-semibold text-[#211E18]">Free</div>
-                <div className="mt-0.5 text-xs text-[#8A8477]">Everything is free while StyleBook is in v1.</div>
-              </div>
-              <span className="rounded-full bg-[#222D52]/10 px-3 py-1 font-mono-plex text-[10px] uppercase tracking-[0.12em] text-[#222D52]">
-                Active
-              </span>
-            </div>
-          </Section>
+        <section className="relative overflow-hidden rounded-2xl border border-black/[0.12] bg-[#F2EBE0] px-6">
+          <h2 className="border-b border-black/[0.1] py-4 font-mono-plex text-xs font-semibold uppercase tracking-wider text-[#8A8477]">
+            Preferences
+          </h2>
 
-          <Section title="Preferences">
-            <Field label="Theme">
-              <ToggleGroup options={["Light", "Dark"]} active="Light" />
-            </Field>
-            <Field label="Type scale unit">
-              <ToggleGroup options={["px", "rem"]} active="px" />
-            </Field>
-            <Field label="Default export format">
-              <select disabled className={inputClasses}>
-                <option>CSS variables</option>
-              </select>
-            </Field>
-          </Section>
+          <div className="divide-y divide-black/[0.1]">
+            <PreferenceRow
+              title="Default type-scale unit"
+              description="Used when Studio displays or exports a project's type scale."
+            >
+              <SegmentedControl
+                value={prefs.typeScaleUnit}
+                options={[
+                  { label: "px", value: "px" },
+                  { label: "rem", value: "rem" },
+                ]}
+                onChange={(v) => updatePrefs({ typeScaleUnit: v })}
+              />
+            </PreferenceRow>
 
-          <Section title="Danger zone">
-            <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                disabled
-                className="cursor-not-allowed rounded-full border border-black/20 bg-white px-6 py-2.5 text-sm text-[#6E675C] opacity-60"
-              >
-                Sign out
-              </button>
-              <button
-                type="button"
-                disabled
-                className="cursor-not-allowed rounded-full border border-[#B3261E]/30 bg-white px-6 py-2.5 text-sm text-[#B3261E] opacity-60"
-              >
-                Delete account
-              </button>
-            </div>
-          </Section>
-        </div>
+            <PreferenceRow
+              title="Default export format"
+              description="Preselected on a project's Export menu."
+            >
+              <SegmentedControl
+                value={prefs.exportFormat}
+                options={[
+                  { label: "CSS", value: "css" },
+                  { label: "Tailwind", value: "tailwind" },
+                  { label: "SCSS", value: "scss" },
+                  { label: "JSON", value: "json" },
+                ]}
+                onChange={(v) => updatePrefs({ exportFormat: v })}
+              />
+            </PreferenceRow>
+
+            <PreferenceRow
+              title="Email me when AI generation finishes"
+              description="Useful for longer, more detailed prompts."
+            >
+              <Toggle
+                on={prefs.notifyOnGenerate}
+                onToggle={() => updatePrefs({ notifyOnGenerate: !prefs.notifyOnGenerate })}
+                label="Email me when AI generation finishes"
+              />
+            </PreferenceRow>
+
+            <PreferenceRow title="Theme" description="Saved as a preference — no page in the app reacts to it yet.">
+              <SegmentedControl
+                value={themePref}
+                options={[
+                  { label: "Light", value: "light" },
+                  { label: "Dark", value: "dark" },
+                  { label: "System", value: "system" },
+                ]}
+                onChange={updateTheme}
+              />
+            </PreferenceRow>
+          </div>
+        </section>
+
+        <section className="mt-6 flex items-center justify-between gap-6 rounded-2xl border border-[#B3261E]/30 bg-[#B3261E]/10 px-6 py-5">
+          <div>
+            <h2 className="text-sm font-semibold text-[#B3261E]">Delete account</h2>
+            <p className="mt-0.5 text-xs text-[#B3261E]/80">
+              No account to delete yet — comes with the username/password login.
+            </p>
+          </div>
+          <Button variant="destructive" size="sm" disabled>
+            Delete
+          </Button>
+        </section>
       </div>
     </main>
   );

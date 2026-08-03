@@ -9,6 +9,7 @@
 import type { Metadata, Viewport } from "next";
 import { landingFontVariables } from "@/lib/landing/fonts";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -34,7 +35,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={landingFontVariables}>
+    <html lang="en" className={landingFontVariables} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body>
         <SiteHeader />
         {children}

@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -35,6 +36,7 @@ const config: Config = {
         "expressive-display": ["var(--font-expressive-display)"],
         "mono-plex": ["var(--font-mono-plex)"],
         "technical-sans": ["var(--font-technical-sans)"],
+        mono: ["var(--font-mono-plex)", "ui-monospace", "monospace"],
       },
     },
   },
