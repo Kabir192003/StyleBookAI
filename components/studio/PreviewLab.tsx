@@ -11,8 +11,9 @@ import { DndContext, PointerSensor, closestCenter, useSensor, useSensors, type D
 import { SortableContext, arrayMove, horizontalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { colord } from "colord";
+import { useRouter } from "next/navigation";
 import { usePreviewLabStore } from "@/store/previewLabStore";
-import { useStudioStore } from "@/store/studioStore";
+import { useStudioImportStore } from "@/store/studioImportStore";
 import { Color } from "@/types/color";
 import { Font } from "@/types/font";
 
@@ -173,7 +174,8 @@ export function PreviewLab() {
     setHeadingFont,
     setBodyFont,
   } = usePreviewLabStore();
-  const { setColors } = useStudioStore();
+  const router = useRouter();
+  const stageStudioImport = useStudioImportStore((s) => s.stage);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
@@ -200,7 +202,14 @@ export function PreviewLab() {
         </div>
         <button
           type="button"
-          onClick={() => setColors(selectedColors.map((color) => ({ ...color, role: "accent" })))}
+          onClick={() => {
+            stageStudioImport({
+              colors: selectedColors.map((color) => ({ hex: color.hex })),
+              primaryFont: headingFont?.family,
+              secondaryFont: bodyFont?.family,
+            });
+            router.push("/studio");
+          }}
           className="rounded-full border border-neutral-200 bg-neutral-900 px-4 py-2 text-sm font-medium text-white"
         >
           Send to Studio

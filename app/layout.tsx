@@ -1,14 +1,15 @@
 /**
  * Root layout — wraps every route.
  *
- * No auth provider here — Clerk was removed (see CLAUDE.md); the app is
- * fully public for now, pending a simple username/password login later.
- * Keep this file thin; per-route chrome belongs in nested layouts.
+ * No third-party auth provider — auth is self-hosted username/password
+ * (see lib/auth/, CLAUDE.md) via a plain session cookie, not a context
+ * provider. Keep this file thin; per-route chrome belongs in nested layouts.
  */
 
 import type { Metadata, Viewport } from "next";
 import { landingFontVariables } from "@/lib/landing/fonts";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { ClipboardTray } from "@/components/clipboard/ClipboardTray";
 import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
@@ -42,6 +43,7 @@ export default function RootLayout({
       <body>
         <SiteHeader />
         {children}
+        <ClipboardTray />
       </body>
     </html>
   );

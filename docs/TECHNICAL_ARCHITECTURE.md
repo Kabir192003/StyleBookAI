@@ -11,7 +11,7 @@ separately as a deferred phase.
 | Framework | Next.js 14, App Router | Server components for data-heavy browse pages, API routes for AI/export, one deploy target (Vercel). |
 | Language | TypeScript, strict mode | Color/Font/Theme/Project shapes are the backbone of the whole app — types catch shape drift early. |
 | Styling | Tailwind CSS | Fast iteration, and the app's own color data is partly seeded from Tailwind's palette, so the design system and the product data share a vocabulary. |
-| Auth | Clerk | Hosted auth, drop-in components, easy to add org/team accounts later if needed. |
+| Auth | Custom username/password (`bcryptjs` + `jose`) | Clerk was tried and removed; a simple self-hosted password + JWT-cookie session needs no external auth provider or webhook setup. |
 | Database | Supabase (Postgres) | Generous free tier, built-in row-level security, good enough for relational + JSONB project data. |
 | AI | Anthropic SDK (Claude) | Generates palette + font pairing + type scale + reasoning from a text prompt. |
 | State | Zustand | Studio/Preview Lab need shared client state (selected colors, fonts, roles) without prop-drilling; lighter than Redux. |
@@ -34,7 +34,7 @@ All five core types already exist and should be imported, not redefined:
 - **`Font`** — `id, family, category, variants[], mood[], style[], era, useCase[], googleFontsId, isPro, pairsWith[]`
 - **`Theme`** — bundles a `colors[]` array + `colorRoles` (primary/secondary/accent/background/surface/text/textMuted) + `primaryFont`/`secondaryFont`/`accentFont` + a `TypeScale`
 - **`Project`** — a user's saved work: colors with assigned roles, fonts, type scale, optional theme reference, `aiGenerated` flag, `aiPrompt`, `aiReasoning`
-- **`User`** — Clerk-linked record with `plan` field (kept for the future, unused for now)
+- **`User`** — `username`/`password_hash` record with `plan` field (kept for the future, unused for now)
 
 `isPro` stays on `Color`/`Font`/`Theme` as a data attribute — some library
 items are simply tagged as premium-quality for later — but nothing in the
@@ -55,35 +55,40 @@ app/
   studio/type-scale/            → type scale adjuster
   dashboard/                    → saved projects list
   dashboard/[projectId]/        → edit a saved project
-  (auth)/sign-in/, (auth)/sign-up/
-  account/                      → user settings
+  sign-in/, sign-up/            → auth pages
+  account/                      → real profile/favorites/projects/preferences
   api/
     colors/, fonts/, themes/[slug]/   → data fetch routes (or skip these
                                          and import from data/ directly in
                                          server components — see §5)
+    auth/                        → signup/login/logout/me
     ai/generate/                → Claude call
-    projects/, projects/[id]/   → CRUD, Supabase-backed
+    projects/, projects/[id]/   → CRUD, Supabase-backed, gated behind auth
+    favorites/                   → favorite/unfavorite colors, fonts, themes
     export/                     → bundle generation
 
 components/
   ui/        → buttons, inputs, primitives (shadcn-style, hand-rolled)
-  layout/    → nav, footer, shells
-  colors/    → ColorGrid, ColorCard, ColorDetail, ColorFilterBar
-  fonts/     → FontGrid, FontCard, FontPreview
+  layout/    → SiteHeader (with hamburger nav), footer, shells
+  colors/    → ColorGrid, ColorPlate, ColorDetail, ColorFilterBar
+  fonts/     → FontGrid, FontPreview
+  browse/    → FavoriteButton, shared browse primitives
   themes/    → ThemeGrid, ThemeCard, ThemeDetail
-  studio/    → ProjectCanvas, RoleAssigner, TypeScaleControls
+  studio/    → StudioBuilder, PreviewLab, ExportDrawer, LivePreviewSection
   ai/        → PromptInput, GenerationResult, ReasoningPanel
+  design-system/ → DesignSystemGallery, SpacingVisualization
   export/    → ExportPanel, formatters per output type
   landing/   → HeroSection, HorizontalScrollSection, ScrollProgressDots
 
 lib/
-  colors/    → colorUtils.ts (hex/rgb/hsl conversion, contrast calc)
+  colors/    → colorUtils.ts (hex/rgb/hsl conversion, contrast calc), deriveColorMetadata.ts
   fonts/     → font pairing helpers
   typeScale/ → scale generation (ratio-based, e.g. 1.25 perfect fourth)
   ai/        → Claude client + prompt templates
   db/        → supabase.ts (client + admin), schema.sql, queries/
   export/    → CSS/SCSS/Tailwind/JSON/PDF generators
-  auth/      → Clerk helpers (current user → Supabase user lookup)
+  auth/      → password hashing (bcryptjs) + JWT session cookies (jose)
+  studio/    → projectFromState.ts (Studio → Project conversion), applyImport.ts (staged-import merge)
 
 data/
   colors/    → tailwind.ts (generated), index.ts (aggregator)
@@ -91,7 +96,8 @@ data/
   themes/    → curated theme definitions
 
 hooks/        → useColors, useFonts, useDebounce, useScrollProgress
-store/        → Zustand stores (studioStore, previewLabStore)
+store/        → Zustand stores (authStore, favoritesStore, aiResultStore,
+                previewLabStore, studioImportStore)
 types/        → color.ts, font.ts, theme.ts, project.ts, user.ts, ai.ts, index.ts
 scripts/      → transformColors.ts (one-time data transform, see §4)
 ```
@@ -146,27 +152,29 @@ import directly from `data/` in server components — there's no need for an
 
 Schema already written in `lib/db/schema.sql`:
 
-- `users` — mirrors Clerk identity (`clerk_id`), keeps a `plan` column for
-  later, no enforcement yet.
+- `users` — `username` (unique), `password_hash` (bcrypt), keeps a `plan`
+  column for later, no enforcement yet.
 - `projects` — `user_id` FK, `data JSONB` (the full `Project` minus id/user/
   timestamps), `ai_generated`, `ai_prompt`.
+- `favorites` — `user_id` FK, `type` (color/font/theme), `item_id`.
 
-Row-level security policies restrict each user to their own rows via
-`current_setting('request.jwt.claims', true)::json->>'sub'` matched against
-Clerk's JWT subject claim — set up the Supabase↔Clerk JWT integration
-(Supabase supports custom JWT providers) before relying on these policies.
+All access goes through the server-only service-role admin client
+(`getSupabaseAdmin()`); row-level security is enabled with `USING (false)`
+policies (no client-side/anon access), and route handlers enforce the
+`user_id` scoping themselves after verifying the session JWT.
 
 ## 8. Environment variables
 
-See `.env.local.example`. Required now: `ANTHROPIC_API_KEY`, Clerk keys,
-Supabase keys, `GOOGLE_FONTS_API_KEY` (dev-time only, for the font transform
-script). Stripe vars are commented out — leave them that way.
+See `.env.local.example`. Required now: `ANTHROPIC_API_KEY`, Supabase keys,
+a JWT signing secret for session cookies, `GOOGLE_FONTS_API_KEY` (dev-time
+only, for the font transform script). Stripe vars are commented out — leave
+them that way.
 
 ## 9. Deployment
 
 Vercel, connected to the GitHub repo, auto-deploy on push to `main`. Supabase
-and Clerk are both managed services with their own dashboards — no
-additional infra to stand up.
+is a managed service with its own dashboard — no additional infra to stand
+up. Auth is self-hosted in the app itself (no third-party auth dashboard).
 
 ## 10. Deferred: billing phase (do not build yet)
 

@@ -14,8 +14,8 @@
  *   3. Font-on-color — heading + body fonts rendered on the mockup's
  *      background colors
  *
- * TODO: build <PreviewLab /> in components/studio/PreviewLab.tsx and
- * render it here. "Send to Studio" action should write into studioStore.
+ * "Send to Studio" stages the selection via store/studioImportStore.ts
+ * and navigates to /studio, which consumes it once on mount.
  */
 import { PreviewLab } from "@/components/studio/PreviewLab";
 

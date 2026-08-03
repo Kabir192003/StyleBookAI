@@ -21,7 +21,7 @@ import { GoogleFontsLoader } from "@/components/fonts/GoogleFontsLoader";
 import { DesignSystemGallery } from "@/components/design-system/DesignSystemGallery";
 import { SpacingVisualization } from "@/components/design-system/SpacingVisualization";
 import { LivePreviewMock } from "@/components/ai/LivePreviewMock";
-import { useStudioStore, useAIResultStore } from "@/store";
+import { useAIResultStore } from "@/store";
 import { AIGeneratedProject } from "@/types/ai";
 import { getContrastRatio } from "@/lib/colors/colorUtils";
 
@@ -45,10 +45,6 @@ function findColor(colors: AIGeneratedProject["colors"], roles: string[], fallba
 
 export function PromptInput() {
   const router = useRouter();
-  const setColors = useStudioStore((s) => s.setColors);
-  const setPrimaryFont = useStudioStore((s) => s.setPrimaryFont);
-  const setSecondaryFont = useStudioStore((s) => s.setSecondaryFont);
-  const setTypeScale = useStudioStore((s) => s.setTypeScale);
 
   const [prompt, setPrompt] = useState("");
   const [includeDesignSystem, setIncludeDesignSystem] = useState(false);
@@ -105,11 +101,6 @@ export function PromptInput() {
 
   function openInStudio() {
     if (!result) return;
-    // Preview Lab (/studio/compare) still reads from studioStore.
-    setColors(result.colors);
-    setPrimaryFont(result.fonts.primary);
-    setSecondaryFont(result.fonts.secondary);
-    setTypeScale(result.typeScale);
     setSentToStudio(true);
 
     const accent = findColor(result.colors, ["primary", "accent"]);

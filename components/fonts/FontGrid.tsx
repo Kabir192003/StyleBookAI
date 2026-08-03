@@ -11,8 +11,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { EmptyState } from "@/components/browse/EmptyState";
 import { FavoriteButton } from "@/components/browse/FavoriteButton";
+import { ClipboardButton } from "@/components/clipboard/ClipboardButton";
 import { GoogleFontsLoader } from "./GoogleFontsLoader";
 import { Font, FontCategory } from "@/types/font";
 
@@ -61,7 +63,12 @@ function FontRow({ font, index, proofText }: { font: Font; index: number; proofT
           <span className="font-mono-plex text-[10px] tracking-[0.2em] text-[#8A8477]">
             {String(index).padStart(2, "0")}
           </span>
-          <span className="font-editorial-serif text-lg tracking-tight text-[#211E18]">{font.family}</span>
+          <Link
+            href={`/browse/fonts/${font.id}`}
+            className="font-editorial-serif text-lg tracking-tight text-[#211E18] hover:underline"
+          >
+            {font.family}
+          </Link>
           <span className="font-mono-plex text-[10px] uppercase tracking-[0.16em] text-[#8A8477]">
             {font.category}
           </span>
@@ -70,6 +77,10 @@ function FontRow({ font, index, proofText }: { font: Font; index: number; proofT
           <span className="font-mono-plex text-[10px] tracking-[0.14em] text-[#8A8477]">
             {font.variants.join(" · ")}
           </span>
+          <ClipboardButton
+            target={{ type: "font", item: { id: font.id, family: font.family, category: font.category } }}
+            className="text-[#8A8477] hover:bg-black/[0.05] hover:text-[#211E18]"
+          />
           <FavoriteButton type="font" id={font.id} className="text-[#8A8477] hover:bg-black/[0.05] hover:text-[#211E18]" />
         </div>
       </div>

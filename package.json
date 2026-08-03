@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "transform:colors": "tsx scripts/transformColors.ts",
+    "generate:curated-colors": "tsx scripts/generateCuratedColors.ts",
     "transform:fonts": "tsx scripts/transformFonts.ts",
     "transform:moodboards": "tsx scripts/transformMoodboards.ts",
     "generate:theme-thumbnails": "tsx scripts/generateThemeThumbnails.ts"
