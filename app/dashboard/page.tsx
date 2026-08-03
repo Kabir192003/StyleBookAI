@@ -14,9 +14,9 @@
  */
 export default function DashboardPage() {
   return (
-    <main className="p-8">
-      <h1 className="text-3xl font-bold tracking-tight">My Projects</h1>
-      <p className="mt-1 text-sm text-neutral-500">
+    <main className="min-h-[calc(100vh-56px)] bg-[#EDE6DA] p-8">
+      <h1 className="font-editorial-serif text-3xl font-bold tracking-tight text-[#211E18]">My Projects</h1>
+      <p className="mt-1 text-sm text-[#6E675C]">
         Project list not wired up yet — see TODO at the top of this file.
       </p>
     </main>
