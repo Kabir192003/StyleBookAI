@@ -28,18 +28,12 @@ export function ColorPlate({ color, index }: { color: Color; index: number }) {
       : "rgba(25,22,17,0.78)";
 
   return (
-    <div
-      onClick={copy}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          copy();
-        }
-      }}
-      className="group relative flex cursor-pointer flex-col border-b border-r border-black/[0.18] bg-[#F2EBE0] transition-colors hover:bg-[#EBE2D2]"
-    >
+    // Deliberately not interactive itself (no role="button"/onClick) — it
+    // used to be a click-anywhere-to-copy card wrapping three more
+    // interactive controls (clipboard, favorite, detail link), which is
+    // invalid nested-interactive markup and made keyboard/AT behavior
+    // ambiguous. Copying now lives on its own explicit button below.
+    <div className="group relative flex flex-col border-b border-r border-black/[0.18] bg-[#F2EBE0] transition-colors hover:bg-[#EBE2D2]">
       <div className="absolute right-3 top-3 z-10 flex items-center gap-1">
         <ClipboardButton
           target={{ type: "color", item: { id: color.id, hex: color.hex, name: color.name } }}
@@ -51,9 +45,15 @@ export function ColorPlate({ color, index }: { color: Color; index: number }) {
         className="flex h-[200px] items-end justify-between px-4 py-3.5"
         style={{ backgroundColor: color.hex }}
       >
-        <span className="font-mono-plex text-[11px] tracking-[0.08em]" style={{ color: overlay }}>
+        <button
+          type="button"
+          onClick={copy}
+          aria-label={`Copy hex value ${color.hex}`}
+          className="font-mono-plex text-[11px] tracking-[0.08em] underline-offset-2 hover:underline"
+          style={{ color: overlay }}
+        >
           {copied ? "Copied ✓" : color.hex}
-        </span>
+        </button>
         <span className="font-mono-plex text-[10px] uppercase tracking-[0.18em]" style={{ color: overlay }}>
           {color.mood[0]}
         </span>
@@ -65,7 +65,6 @@ export function ColorPlate({ color, index }: { color: Color; index: number }) {
         </div>
         <Link
           href={`/browse/colors/${color.id}`}
-          onClick={(e) => e.stopPropagation()}
           className="mt-2 block font-editorial-serif text-[26px] leading-tight tracking-tight text-[#211E18] hover:underline"
         >
           {color.name}

@@ -28,6 +28,7 @@ import { useStudioImportStore } from "@/store/studioImportStore";
 import { PaletteTokens } from "@/lib/studio/exportCode";
 import { projectInputFromStudioState } from "@/lib/studio/projectFromState";
 import { applyStudioImport } from "@/lib/studio/applyImport";
+import { paletteFromAIColors } from "@/lib/studio/paletteFromAIColors";
 import { SpacingScale, ShadowScale, MoodboardImage } from "@/types/designTokens";
 import { DesignSystem, ThemeVariantTokens } from "@/types/designSystem";
 import { AIReasoning } from "@/types/project";
@@ -179,8 +180,9 @@ function seedFromParams(params: URLSearchParams): Partial<StudioState> {
 }
 
 // Derives a flat 5-token palette from a designSystem theme variant's
-// colorRoles/component tokens — used to seed Studio's palette when arriving
-// from an AI result that included a full design system. Falls back to
+// colorRoles/component tokens — used only to seed Studio's DARK palette,
+// since an AI result's `colors` array (the canonical source, see
+// paletteFromAIColors) has no dark-mode concept of its own. Falls back to
 // whatever palette Studio would otherwise use for any field the design
 // system didn't specify.
 function paletteFromThemeVariant(variant: ThemeVariantTokens | undefined, fallback: PaletteTokens): PaletteTokens {
@@ -219,7 +221,17 @@ export function StudioBuilder() {
             designSystem: aiResult.designSystem,
             moodboard: aiResult.moodboard,
             aiReasoning: aiResult.aiReasoning,
-            light: paletteFromThemeVariant(aiResult.designSystem?.light, seeded.light),
+            // Light always traces back to aiResult.colors — the same
+            // canonical source the AI results page itself renders and
+            // that "Open in Studio" already seeds via URL params (see
+            // paletteFromAIColors) — never to designSystem.light, which is
+            // a second, independently-generated color set that isn't
+            // guaranteed to agree with it (a confirmed data-fidelity bug:
+            // the two could silently disagree, e.g. "Secondary" showing
+            // one hex on the results page and a different one in Studio).
+            // Dark has no equivalent in aiResult.colors, so it's still the
+            // best available signal for dark mode specifically.
+            light: paletteFromAIColors(aiResult.colors, seeded.light),
             dark: paletteFromThemeVariant(aiResult.designSystem?.dark, seeded.dark),
           };
 
@@ -249,6 +261,16 @@ export function StudioBuilder() {
 
   const density = DENSITIES[state.density];
   const domain = `${state.name.toLowerCase().replace(/[^a-z0-9]/g, "")}.com`;
+
+  // FONTS is a small curated list for the manual builder's dropdown, but
+  // an AI-generated result can seed headFont/bodyFont with any font from
+  // the full ~2,000-font catalog (e.g. "IBM Plex Mono"). Previously the
+  // <select> silently had no matching <option> for those, so it rendered
+  // out of sync with the actually-applied font — a confirmed data-fidelity
+  // bug. Unioning the current value in keeps the control honest for any
+  // font, not just the 12 curated ones.
+  const headFontOptions = FONTS.includes(state.headFont) ? FONTS : [state.headFont, ...FONTS];
+  const bodyFontOptions = FONTS.includes(state.bodyFont) ? FONTS : [state.bodyFont, ...FONTS];
   const activeVariant = state.mode === "Dark" ? "dark" : "light";
   const activePalette = state[activeVariant];
 
@@ -307,7 +329,7 @@ export function StudioBuilder() {
   async function handleSave() {
     if (authStatus === "loading") return;
     if (!user) {
-      router.push(`/sign-in?from=${encodeURIComponent("/studio")}`);
+      router.push(`/sign-in?reason=save-project&from=${encodeURIComponent("/studio")}`);
       return;
     }
 
@@ -467,7 +489,7 @@ export function StudioBuilder() {
                 onChange={(e) => set("headFont", e.target.value)}
                 className="rounded-lg border border-black/20 bg-white px-3 py-2.5 text-sm text-[#211E18]"
               >
-                {FONTS.map((f) => (
+                {headFontOptions.map((f) => (
                   <option key={f} value={f}>
                     {f}
                   </option>
@@ -481,7 +503,7 @@ export function StudioBuilder() {
                 onChange={(e) => set("bodyFont", e.target.value)}
                 className="rounded-lg border border-black/20 bg-white px-3 py-2.5 text-sm text-[#211E18]"
               >
-                {FONTS.map((f) => (
+                {bodyFontOptions.map((f) => (
                   <option key={f} value={f}>
                     {f}
                   </option>

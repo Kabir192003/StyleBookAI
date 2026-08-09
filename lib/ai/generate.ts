@@ -15,8 +15,8 @@ import { synthesizeColorFromHex } from "@/lib/colors/deriveColorMetadata";
 import { allColors } from "@/data/colors";
 import { allFonts } from "@/data/fonts";
 import { moodboardImages } from "@/data/moodboards";
-import { AIGenerateRequest } from "@/types/ai";
-import { AIReasoning, Project } from "@/types/project";
+import { AIGenerateRequest, AIGeneratedProject } from "@/types/ai";
+import { AIReasoning } from "@/types/project";
 import { Color } from "@/types/color";
 import { Font } from "@/types/font";
 import { MoodboardImage } from "@/types/designTokens";
@@ -315,9 +315,7 @@ async function callGemini(prompt: string, options?: { maxOutputTokens?: number }
   return parsed.data;
 }
 
-export async function generateProjectFromPrompt(
-  request: AIGenerateRequest
-): Promise<Omit<Project, "id" | "userId" | "createdAt" | "updatedAt">> {
+export async function generateProjectFromPrompt(request: AIGenerateRequest): Promise<AIGeneratedProject> {
   const candidateColors = selectCandidateColors(request);
   const candidateFonts = selectCandidateFonts(request);
   const candidateMoodboardImages = selectCandidateMoodboardImages(request);
@@ -383,6 +381,7 @@ export async function generateProjectFromPrompt(
     moodboard: moodboard.length > 0 ? moodboard : undefined,
     designSystem: raw.designSystem,
     context: raw.context ?? "generic",
+    mockup: raw.mockup,
     aiGenerated: true,
     aiPrompt: request.prompt,
     aiReasoning: reasoning,

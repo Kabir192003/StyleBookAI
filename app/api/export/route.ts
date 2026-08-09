@@ -3,8 +3,11 @@
  * Tailwind config / JSON) for a project. Accepts either a saved
  * `projectId` (sign-in required, ownership enforced) or an inline
  * `project` payload for unsaved Studio drafts (no auth needed — exporting
- * a draft you haven't saved doesn't touch anyone's account). PNG/PDF
- * export is client-side via html-to-image, not handled here.
+ * a draft you haven't saved doesn't touch anyone's account). The PDF
+ * style-guide export is entirely client-side (see
+ * lib/export/pdfStyleGuide.ts, wired into Studio's ExportDrawer) — it
+ * rasterizes rendered DOM with html-to-image, so it never touches this
+ * route.
  *
  * Owner: Kabir
  */

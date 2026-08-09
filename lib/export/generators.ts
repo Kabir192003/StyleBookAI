@@ -1,8 +1,9 @@
 /**
  * Text-format export generators — CSS custom properties, SCSS variables,
- * a Tailwind config fragment, and raw JSON. PNG/PDF export stays
- * client-side via html-to-image (see docs/TECHNICAL_ARCHITECTURE.md),
- * this file only covers the code-snippet formats.
+ * a Tailwind config fragment, and raw JSON. The PDF style guide is a
+ * separate, fully client-side export (lib/export/pdfStyleGuide.ts,
+ * rasterized with html-to-image) — this file only covers the
+ * code-snippet formats.
  */
 import { Color } from "@/types/color";
 import { Font } from "@/types/font";

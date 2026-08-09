@@ -103,12 +103,14 @@ function FontRow({ font, index, proofText }: { font: Font; index: number; proofT
 export function FontGrid({ fonts }: { fonts: Font[] }) {
   const [category, setCategory] = useState<FontCategory | "all">("all");
   const [proofText, setProofText] = useState(DEFAULT_PROOF_TEXT);
+  const [search, setSearch] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
-  const items = useMemo(
-    () => (category === "all" ? fonts : fonts.filter((f) => f.category === category)),
-    [fonts, category]
-  );
+  const items = useMemo(() => {
+    const filtered = category === "all" ? fonts : fonts.filter((f) => f.category === category);
+    const query = search.trim().toLowerCase();
+    return query ? filtered.filter((f) => f.family.toLowerCase().includes(query)) : filtered;
+  }, [fonts, category, search]);
 
   // ~2000 fonts at full specimen size is a page hundreds of thousands of
   // pixels tall — page like ColorGrid does for the colour wall.
@@ -116,6 +118,11 @@ export function FontGrid({ fonts }: { fonts: Font[] }) {
 
   function selectCategory(c: FontCategory | "all") {
     setCategory(c);
+    setVisibleCount(PAGE_SIZE);
+  }
+
+  function updateSearch(value: string) {
+    setSearch(value);
     setVisibleCount(PAGE_SIZE);
   }
 
@@ -137,7 +144,7 @@ export function FontGrid({ fonts }: { fonts: Font[] }) {
             you commit.
           </p>
           <span className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#8A8477]">
-            {String(items.length).padStart(2, "0")} faces proofed
+            {String(items.length).padStart(2, "0")} faces matched
           </span>
         </div>
       </section>
@@ -152,6 +159,30 @@ export function FontGrid({ fonts }: { fonts: Font[] }) {
           placeholder="Type a line to proof…"
           className="min-w-[200px] flex-1 border-b border-black/[0.35] bg-transparent font-editorial-serif text-xl italic text-[#211E18] outline-none placeholder:text-[#8A8477]"
         />
+      </div>
+
+      <div className="flex items-center gap-3 border-b border-black/[0.18] px-6 py-5 sm:px-12">
+        <span className="whitespace-nowrap font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#8A8477]">
+          Search
+        </span>
+        <div className="relative flex-1 min-w-[160px] max-w-sm">
+          <input
+            value={search}
+            onChange={(e) => updateSearch(e.target.value)}
+            placeholder="Font family — “Inter”, “Playfair”…"
+            className="w-full border-b border-black/[0.35] bg-transparent py-1 pr-7 font-mono-plex text-[13px] text-[#211E18] outline-none placeholder:text-[#8A8477]"
+          />
+          {search && (
+            <button
+              type="button"
+              onClick={() => updateSearch("")}
+              aria-label="Clear search"
+              className="absolute right-0 top-1/2 -translate-y-1/2 font-mono-plex text-[13px] text-[#8A8477] hover:text-[#211E18]"
+            >
+              ×
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="sticky top-14 z-40 flex gap-6 overflow-x-auto border-b border-black/[0.18] bg-[#F2EBE0] px-6 sm:px-12">

@@ -1,12 +1,20 @@
 /**
- * Live mock preview on the AI results screen — branches its layout/copy by
- * `result.context` (classified by the model, see lib/ai/prompt.ts) so an
- * e-commerce brief gets product-ish elements, a government brief reads
- * formally, etc. Every variant still derives all colors/fonts from the same
- * resolved tokens passed in — only the layout and copy change per context,
- * not how tokens are resolved.
+ * Live mock preview on the AI results screen. Renders from
+ * `result.mockup` — real nav/hero/card copy the model wrote specifically
+ * for the described business (a car dealership brief gets inventory
+ * cards and "Schedule a test drive", a hotel brief gets room types, a
+ * SaaS brief gets feature/pricing cards), not a fixed set of generic
+ * per-industry templates. See lib/ai/prompt.ts for the mockup contract
+ * and lib/ai/schema.ts for its shape.
+ *
+ * Every visual element still derives its color/font from the same
+ * resolved tokens passed in — only the copy comes from the model.
+ * `buildFallbackMockup` covers `result.mockup` being absent (older
+ * sessionStorage-cached aiResultStore entries from before this field
+ * existed) with generic-but-real copy instead of crashing.
  */
 import { AIGeneratedProject } from "@/types/ai";
+import { MockupSpec } from "@/types/ai";
 
 type Tokens = {
   result: AIGeneratedProject;
@@ -17,17 +25,72 @@ type Tokens = {
   onAccent: string;
 };
 
-function Header({ result, ink, accent, onAccent, ctaLabel }: Tokens & { ctaLabel: string }) {
+const FALLBACK_MOCKUPS: Record<string, MockupSpec> = {
+  ecommerce: {
+    siteLabel: "Shop",
+    navItems: ["New arrivals", "Shop all", "About", "Cart"],
+    hero: { headline: "New arrivals, made to last.", subheadline: "A shopfront styled entirely from your generated tokens.", primaryCta: "Shop now" },
+    cards: [
+      { title: "Everyday tote", subtitle: "Canvas, hand-finished", meta: "$68", cta: "Add to cart" },
+      { title: "Studio candle", subtitle: "Soy wax, 40hr burn", meta: "$24", cta: "Add to cart" },
+    ],
+  },
+  government: {
+    siteLabel: "Official portal",
+    navItems: ["Services", "Forms", "Contact", "Search"],
+    hero: { headline: "Official information portal", subheadline: "Find services, forms, and guidance below.", primaryCta: "Search" },
+    cards: [
+      { title: "Renew a licence", subtitle: "Online in under 10 minutes", cta: "Start" },
+      { title: "Pay a fine", subtitle: "Secure payment portal", cta: "Pay now" },
+      { title: "Book an appointment", subtitle: "Choose a nearby office", cta: "Book" },
+    ],
+  },
+  editorial: {
+    siteLabel: "Field notes",
+    navItems: ["Stories", "Essays", "About", "Subscribe"],
+    hero: { eyebrow: "Field notes · 6 min read", headline: "On building something worth reading.", subheadline: "Every layout here is painted with the tokens generated from your prompt.", primaryCta: "Read more" },
+    cards: [
+      { title: "The long way round", subtitle: "On patience as a design principle", cta: "Read" },
+      { title: "Notes from the studio", subtitle: "A year in sketches", cta: "Read" },
+    ],
+  },
+  saas: {
+    siteLabel: "Product",
+    navItems: ["Product", "Pricing", "Docs", "Sign in"],
+    hero: { eyebrow: "Live preview", headline: "Your brand, instantly dressed.", subheadline: "Every element here is painted with the tokens generated from your prompt.", primaryCta: "Sign up", secondaryCta: "See pricing" },
+    cards: [
+      { title: "Fast setup", subtitle: "Live in minutes, not weeks", cta: "Learn more" },
+      { title: "On brand", subtitle: "Every token stays consistent", cta: "Learn more" },
+    ],
+  },
+};
+
+function buildFallbackMockup(context: string): MockupSpec {
+  return FALLBACK_MOCKUPS[context] ?? FALLBACK_MOCKUPS.saas;
+}
+
+function Header({ result, ink, accent, onAccent, navItems, ctaLabel }: Tokens & { navItems: string[]; ctaLabel: string }) {
   return (
     <div
-      className="flex items-center justify-between px-[18px] py-3.5"
+      className="flex items-center justify-between gap-3 px-[18px] py-3.5"
       style={{ borderBottom: `1px solid color-mix(in srgb, ${ink} 10%, transparent)` }}
     >
-      <span style={{ fontFamily: `'${result.fonts.primary.family}', serif`, fontWeight: 700, fontSize: 17 }}>
+      <span style={{ fontFamily: `'${result.fonts.primary.family}', serif`, fontWeight: 700, fontSize: 17, whiteSpace: "nowrap" }}>
         {result.name}
       </span>
+      <div className="hidden flex-1 items-center justify-center gap-4 sm:flex">
+        {navItems.slice(0, 4).map((item) => (
+          <span
+            key={item}
+            className="truncate text-[11px]"
+            style={{ fontFamily: `'${result.fonts.secondary.family}', sans-serif`, color: `color-mix(in srgb, ${ink} 62%, transparent)` }}
+          >
+            {item}
+          </span>
+        ))}
+      </div>
       <span
-        className="rounded-[10px] px-[15px] py-2 text-xs font-semibold"
+        className="shrink-0 rounded-[10px] px-[15px] py-2 text-xs font-semibold"
         style={{ backgroundColor: accent, color: onAccent, fontFamily: `'${result.fonts.secondary.family}', sans-serif` }}
       >
         {ctaLabel}
@@ -36,160 +99,110 @@ function Header({ result, ink, accent, onAccent, ctaLabel }: Tokens & { ctaLabel
   );
 }
 
-function SaasBody({ result, surface, ink, accent, support, onAccent }: Tokens) {
+function Hero({ result, ink, accent, onAccent, mockup }: Tokens & { mockup: MockupSpec }) {
   return (
     <div className="flex flex-col gap-3.5 px-[22px] py-[26px]">
-      <span
-        className="self-start rounded-full px-[11px] py-[5px] text-[10px] uppercase tracking-[0.14em]"
+      {mockup.hero.eyebrow && (
+        <span
+          className="self-start rounded-full px-[11px] py-[5px] text-[10px] uppercase tracking-[0.14em]"
+          style={{
+            fontFamily: `'${result.fonts.secondary.family}', sans-serif`,
+            color: `color-mix(in srgb, ${ink} 62%, transparent)`,
+            border: `1px solid color-mix(in srgb, ${ink} 24%, transparent)`,
+          }}
+        >
+          {mockup.hero.eyebrow}
+        </span>
+      )}
+      <div style={{ fontFamily: `'${result.fonts.primary.family}', serif`, fontWeight: 700, fontSize: 30, lineHeight: 1.08, letterSpacing: "-0.01em" }}>
+        {mockup.hero.headline}
+      </div>
+      <p
         style={{
           fontFamily: `'${result.fonts.secondary.family}', sans-serif`,
-          color: support,
-          border: `1px solid color-mix(in srgb, ${support} 45%, transparent)`,
+          fontSize: 14,
+          lineHeight: 1.55,
+          margin: 0,
+          color: `color-mix(in srgb, ${ink} 68%, transparent)`,
         }}
       >
-        Live preview
-      </span>
-      <div style={{ fontFamily: `'${result.fonts.primary.family}', serif`, fontWeight: 700, fontSize: 34, lineHeight: 1.02, letterSpacing: "-0.02em" }}>
-        Your brand, <span style={{ color: accent }}>instantly</span> dressed.
-      </div>
-      <p style={{ fontFamily: `'${result.fonts.secondary.family}', sans-serif`, fontSize: 14, lineHeight: 1.6, margin: 0, color: `color-mix(in srgb, ${ink} 68%, transparent)` }}>
-        Every element here is painted with the tokens generated from your prompt.
+        {mockup.hero.subheadline}
       </p>
       <div className="mt-0.5 flex gap-2.5">
         <span
           className="rounded-[10px] px-5 py-[11px] text-[13px] font-semibold"
           style={{ backgroundColor: accent, color: onAccent, fontFamily: `'${result.fonts.secondary.family}', sans-serif` }}
         >
-          Primary
+          {mockup.hero.primaryCta}
         </span>
-        <span
-          className="rounded-[10px] px-[18px] py-2.5 text-[13px]"
-          style={{ border: `1px solid color-mix(in srgb, ${ink} 28%, transparent)`, color: ink, fontFamily: `'${result.fonts.secondary.family}', sans-serif` }}
+        {mockup.hero.secondaryCta && (
+          <span
+            className="rounded-[10px] px-[18px] py-2.5 text-[13px]"
+            style={{ border: `1px solid color-mix(in srgb, ${ink} 28%, transparent)`, color: ink, fontFamily: `'${result.fonts.secondary.family}', sans-serif` }}
+          >
+            {mockup.hero.secondaryCta}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Cards({ result, surface, ink, accent, support, onAccent, cards }: Tokens & { cards: MockupSpec["cards"] }) {
+  return (
+    <div className="grid grid-cols-2 gap-2.5 px-[22px] pb-[26px]">
+      {cards.slice(0, 4).map((card, i) => (
+        <div
+          key={card.title}
+          className="rounded-[10px] p-3.5"
+          style={{ backgroundColor: `color-mix(in srgb, ${ink} 5%, ${surface})`, border: `1px solid color-mix(in srgb, ${ink} 9%, transparent)` }}
         >
-          Ghost
-        </span>
-      </div>
-      <div className="mt-1.5 grid grid-cols-2 gap-2.5">
-        {["Fast setup", "On brand"].map((label, i) => (
           <div
-            key={label}
-            className="rounded-[10px] p-3.5"
-            style={{ backgroundColor: `color-mix(in srgb, ${ink} 5%, ${surface})`, border: `1px solid color-mix(in srgb, ${ink} 9%, transparent)` }}
-          >
-            <div
-              className="h-[26px] w-[26px] rounded-md"
-              style={{ backgroundColor: `color-mix(in srgb, ${i === 0 ? accent : support} ${i === 0 ? 18 : 26}%, transparent)` }}
-            />
-            <div className="mt-2.5 text-sm font-semibold" style={{ fontFamily: `'${result.fonts.primary.family}', serif` }}>
-              {label}
-            </div>
+            className="h-[26px] w-[26px] rounded-md"
+            style={{ backgroundColor: `color-mix(in srgb, ${i % 2 === 0 ? accent : support} ${i % 2 === 0 ? 18 : 26}%, transparent)` }}
+          />
+          <div className="mt-2.5 truncate text-sm font-semibold" style={{ fontFamily: `'${result.fonts.primary.family}', serif` }}>
+            {card.title}
           </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function EcommerceBody({ result, surface, ink, accent, support, onAccent }: Tokens) {
-  const products = [
-    { name: "Everyday tote", price: "$68" },
-    { name: "Studio candle", price: "$24" },
-  ];
-  return (
-    <div className="flex flex-col gap-3.5 px-[22px] py-[26px]">
-      <div style={{ fontFamily: `'${result.fonts.primary.family}', serif`, fontWeight: 700, fontSize: 26, lineHeight: 1.05 }}>
-        New arrivals
-      </div>
-      <p style={{ fontFamily: `'${result.fonts.secondary.family}', sans-serif`, fontSize: 13, margin: 0, color: `color-mix(in srgb, ${ink} 68%, transparent)` }}>
-        A shopfront styled entirely from your generated tokens.
-      </p>
-      <div className="mt-1 grid grid-cols-2 gap-2.5">
-        {products.map((p, i) => (
           <div
-            key={p.name}
-            className="rounded-[10px] p-3"
-            style={{ backgroundColor: `color-mix(in srgb, ${ink} 5%, ${surface})`, border: `1px solid color-mix(in srgb, ${ink} 9%, transparent)` }}
+            className="mt-0.5 truncate text-[11px]"
+            style={{ fontFamily: `'${result.fonts.secondary.family}', sans-serif`, color: `color-mix(in srgb, ${ink} 62%, transparent)` }}
           >
-            <div
-              className="h-[64px] w-full rounded-md"
-              style={{ backgroundColor: `color-mix(in srgb, ${i === 0 ? accent : support} 22%, transparent)` }}
-            />
-            <div className="mt-2 text-[13px] font-semibold" style={{ fontFamily: `'${result.fonts.primary.family}', serif` }}>
-              {p.name}
-            </div>
-            <div className="mt-1 flex items-center justify-between">
-              <span className="text-[12px]" style={{ color: `color-mix(in srgb, ${ink} 68%, transparent)` }}>
-                {p.price}
-              </span>
-              <span
-                className="rounded-full px-2.5 py-1 text-[10px] font-semibold"
-                style={{ backgroundColor: accent, color: onAccent, fontFamily: `'${result.fonts.secondary.family}', sans-serif` }}
-              >
-                Add to cart
-              </span>
-            </div>
+            {card.subtitle}
           </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function GovernmentBody({ result, ink, accent }: Tokens) {
-  const services = ["Renew a licence", "Pay a fine", "Book an appointment"];
-  return (
-    <div className="flex flex-col gap-3 px-[22px] py-[26px]">
-      <div
-        style={{
-          fontFamily: `'${result.fonts.primary.family}', serif`,
-          fontWeight: 700,
-          fontSize: 22,
-          color: ink,
-        }}
-      >
-        Official information portal
-      </div>
-      <p style={{ fontFamily: `'${result.fonts.secondary.family}', sans-serif`, fontSize: 13, margin: 0, color: `color-mix(in srgb, ${ink} 70%, transparent)` }}>
-        Find services, forms, and guidance below.
-      </p>
-      <div style={{ borderTop: `1px solid color-mix(in srgb, ${ink} 20%, transparent)` }} className="mt-1 pt-3">
-        <div className="flex flex-col divide-y" style={{ borderColor: `color-mix(in srgb, ${ink} 10%, transparent)` }}>
-          {services.map((s) => (
-            <div key={s} className="flex items-center justify-between py-2 text-[13px]" style={{ color: ink }}>
-              <span style={{ fontFamily: `'${result.fonts.secondary.family}', sans-serif` }}>{s}</span>
-              <span style={{ color: accent }}>→</span>
-            </div>
-          ))}
+          <div className="mt-2 flex items-center justify-between gap-2">
+            {card.meta ? (
+              <span className="truncate text-[12px]" style={{ color: `color-mix(in srgb, ${ink} 68%, transparent)` }}>
+                {card.meta}
+              </span>
+            ) : (
+              <span />
+            )}
+            <span
+              className="shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold"
+              style={{ backgroundColor: accent, color: onAccent, fontFamily: `'${result.fonts.secondary.family}', sans-serif` }}
+            >
+              {card.cta}
+            </span>
+          </div>
         </div>
-      </div>
+      ))}
     </div>
   );
 }
 
-function EditorialBody({ result, ink, accent }: Tokens) {
+function Footer({ result, ink, footerNote }: Tokens & { footerNote?: string }) {
+  if (!footerNote) return null;
   return (
-    <div className="flex flex-col gap-3.5 px-[22px] py-[26px]">
-      <span
-        className="text-[10px] uppercase tracking-[0.18em]"
-        style={{ fontFamily: `'${result.fonts.secondary.family}', sans-serif`, color: `color-mix(in srgb, ${ink} 55%, transparent)` }}
-      >
-        Field notes · 6 min read
-      </span>
-      <div style={{ fontFamily: `'${result.fonts.primary.family}', serif`, fontWeight: 700, fontSize: 30, lineHeight: 1.08, letterSpacing: "-0.01em" }}>
-        On building something worth reading.
-      </div>
-      <div
-        className="pl-3 text-[14px] italic leading-relaxed"
-        style={{ borderLeft: `2px solid ${accent}`, color: `color-mix(in srgb, ${ink} 75%, transparent)`, fontFamily: `'${result.fonts.secondary.family}', sans-serif` }}
-      >
-        &ldquo;Every layout here is painted with the tokens generated from your prompt.&rdquo;
-      </div>
-      <span
-        className="mt-1 self-start text-[13px] font-semibold"
-        style={{ color: accent, fontFamily: `'${result.fonts.secondary.family}', sans-serif` }}
-      >
-        Read more →
-      </span>
+    <div
+      className="px-[22px] py-3 text-[11px]"
+      style={{
+        borderTop: `1px solid color-mix(in srgb, ${ink} 10%, transparent)`,
+        color: `color-mix(in srgb, ${ink} 55%, transparent)`,
+        fontFamily: `'${result.fonts.secondary.family}', sans-serif`,
+      }}
+    >
+      {footerNote}
     </div>
   );
 }
@@ -197,20 +210,15 @@ function EditorialBody({ result, ink, accent }: Tokens) {
 export function LivePreviewMock(props: Tokens) {
   const { result, surface, ink } = props;
   const context = result.context ?? "generic";
-  const ctaLabel = context === "ecommerce" ? "Cart (2)" : context === "government" ? "Search" : "Sign up";
-
-  let body = <SaasBody {...props} />;
-  if (context === "ecommerce") body = <EcommerceBody {...props} />;
-  else if (context === "government") body = <GovernmentBody {...props} />;
-  else if (context === "editorial") body = <EditorialBody {...props} />;
+  const mockup = result.mockup ?? buildFallbackMockup(context);
+  const ctaLabel = mockup.hero.primaryCta;
 
   return (
-    <div
-      className={`overflow-hidden border border-white/[0.12] ${context === "government" ? "rounded-md" : "rounded-2xl"}`}
-      style={{ backgroundColor: surface, color: ink }}
-    >
-      <Header {...props} ctaLabel={ctaLabel} />
-      {body}
+    <div className={`overflow-hidden border border-white/[0.12] ${context === "government" ? "rounded-md" : "rounded-2xl"}`} style={{ backgroundColor: surface, color: ink }}>
+      <Header {...props} navItems={mockup.navItems} ctaLabel={ctaLabel} />
+      <Hero {...props} mockup={mockup} />
+      <Cards {...props} cards={mockup.cards} />
+      <Footer {...props} footerNote={mockup.footerNote} />
     </div>
   );
 }

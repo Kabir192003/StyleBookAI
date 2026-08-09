@@ -71,12 +71,21 @@ function TabButton({
 export function ColorGrid({ colors }: { colors: Color[] }) {
   const [family, setFamily] = useState<ColorFamily | "all">("all");
   const [sort, setSort] = useState<SortMode>("spectrum");
+  const [search, setSearch] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   const items = useMemo(() => {
     const filtered = family === "all" ? colors : colors.filter((c) => c.family === family);
-    return sortColors(filtered, sort);
-  }, [colors, family, sort]);
+    const query = search.trim().toLowerCase().replace(/^#/, "");
+    const searched = query
+      ? filtered.filter((c) => {
+          const name = c.name.toLowerCase();
+          const hex = c.hex.toLowerCase().replace(/^#/, "");
+          return name.includes(query) || hex.includes(query);
+        })
+      : filtered;
+    return sortColors(searched, sort);
+  }, [colors, family, sort, search]);
 
   // 871 shades at full tile size is ~200k px of page — rendering them all
   // at once makes the grid janky to scroll. Page like FontGrid does.
@@ -89,6 +98,11 @@ export function ColorGrid({ colors }: { colors: Color[] }) {
 
   function selectSort(s: SortMode) {
     setSort(s);
+    setVisibleCount(PAGE_SIZE);
+  }
+
+  function updateSearch(value: string) {
+    setSearch(value);
     setVisibleCount(PAGE_SIZE);
   }
 
@@ -108,10 +122,34 @@ export function ColorGrid({ colors }: { colors: Color[] }) {
             straight into your design system.
           </p>
           <span className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#8A8477]">
-            {String(items.length).padStart(3, "0")} plates shown
+            {String(items.length).padStart(3, "0")} shades matched
           </span>
         </div>
       </section>
+
+      <div className="flex items-center gap-3 border-b border-black/[0.18] bg-[#F2EBE0] px-6 py-5 sm:px-12">
+        <span className="whitespace-nowrap font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#8A8477]">
+          Search
+        </span>
+        <div className="relative flex-1 min-w-[160px] max-w-sm">
+          <input
+            value={search}
+            onChange={(e) => updateSearch(e.target.value)}
+            placeholder="Name or hex — “midnight” or “3B82F6”…"
+            className="w-full border-b border-black/[0.35] bg-transparent py-1 pr-7 font-mono-plex text-[13px] text-[#211E18] outline-none placeholder:text-[#8A8477]"
+          />
+          {search && (
+            <button
+              type="button"
+              onClick={() => updateSearch("")}
+              aria-label="Clear search"
+              className="absolute right-0 top-1/2 -translate-y-1/2 font-mono-plex text-[13px] text-[#8A8477] hover:text-[#211E18]"
+            >
+              ×
+            </button>
+          )}
+        </div>
+      </div>
 
       <div className="sticky top-14 z-40 flex items-center justify-between gap-7 overflow-x-auto border-b border-black/[0.18] bg-[#F2EBE0] px-6 sm:px-12">
         <div className="flex gap-6">

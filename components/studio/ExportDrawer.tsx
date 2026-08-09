@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { EXPORT_FILES, EXPORT_TABS, ExportTab, generateExportCode, StudioExportTokens } from "@/lib/studio/exportCode";
+import { exportStyleGuidePdf } from "@/lib/export/pdfStyleGuide";
 import { cn } from "@/lib/utils";
 
 export function ExportDrawer({ tokens, onClose }: { tokens: StudioExportTokens; onClose: () => void }) {
   const [tab, setTab] = useState<ExportTab>("CSS");
   const [copied, setCopied] = useState(false);
+  const [pdfState, setPdfState] = useState<"idle" | "generating" | "error">("idle");
 
   const code = generateExportCode(tab, tokens);
 
@@ -18,6 +20,17 @@ export function ExportDrawer({ tokens, onClose }: { tokens: StudioExportTokens; 
     } catch {
       // Clipboard can fail (permissions, insecure context) — button label
       // simply won't flip to "Copied", no need to surface an error.
+    }
+  }
+
+  async function downloadPdf() {
+    setPdfState("generating");
+    try {
+      await exportStyleGuidePdf(tokens);
+      setPdfState("idle");
+    } catch {
+      setPdfState("error");
+      setTimeout(() => setPdfState("idle"), 2500);
     }
   }
 
@@ -37,14 +50,24 @@ export function ExportDrawer({ tokens, onClose }: { tokens: StudioExportTokens; 
               {tokens.name}
             </h2>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="grid h-[34px] w-[34px] place-items-center rounded-full border border-black/[0.24] text-base text-[#211E18]"
-            aria-label="Close export drawer"
-          >
-            ✕
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={downloadPdf}
+              disabled={pdfState === "generating"}
+              className="rounded-full border border-[#211E18]/[0.24] px-4 py-2 font-mono-plex text-[11px] tracking-[0.06em] text-[#211E18] disabled:opacity-60"
+            >
+              {pdfState === "generating" ? "Generating…" : pdfState === "error" ? "Try again" : "Download PDF"}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="grid h-[34px] w-[34px] place-items-center rounded-full border border-black/[0.24] text-base text-[#211E18]"
+              aria-label="Close export drawer"
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-1.5 border-b border-black/[0.12] px-7 pb-3 pt-4">

@@ -107,7 +107,9 @@ export default function ThemeDetailPage({ params }: { params: { slug: string } }
           <span>
             Edition {String(index + 1).padStart(2, "0")} — {theme.category}
           </span>
-          <span>{dark ? "Dark" : "Light"} · 6 tokens</span>
+          <span>
+            {dark ? "Dark" : "Light"} · {Object.keys(theme.colorRoles).length} tokens
+          </span>
         </div>
         <h1
           className="relative mt-6 text-balance text-[clamp(4rem,11vw,10.5rem)] font-bold leading-[0.92] tracking-[-0.025em]"

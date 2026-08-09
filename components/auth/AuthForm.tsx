@@ -10,10 +10,18 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store";
 
+const REASON_MESSAGES: Record<string, string> = {
+  favorites: "Sign in to save favorites and sync your library.",
+  "save-project": "Sign in to save your project and pick up where you left off.",
+  "session-expired": "Your session expired. Sign in again to keep going.",
+};
+
 export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const setUser = useAuthStore((s) => s.setUser);
+  const reason = searchParams.get("reason");
+  const reasonMessage = reason ? REASON_MESSAGES[reason] : null;
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -48,6 +56,11 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
   return (
     <main className="flex min-h-[calc(100vh-56px)] items-center justify-center bg-[#EDE6DA] px-6 py-16">
       <div className="w-full max-w-[400px]">
+        {reasonMessage && (
+          <div className="mb-5 rounded-xl border border-black/[0.12] bg-[#F2EBE0] px-4 py-3 text-center text-sm text-[#6E675C]">
+            {reasonMessage}
+          </div>
+        )}
         <div className="text-center">
           <div className="font-mono-plex text-[11px] uppercase tracking-[0.22em] text-[#8A8477]">
             {isSignUp ? "Create account" : "Sign in"}

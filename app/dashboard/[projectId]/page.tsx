@@ -22,11 +22,11 @@
  * instead of creating a duplicate) and routing to /studio is the real
  * integration.
  *
- * "Export": POST /api/export, which now returns real generated text
- * (see lib/export/generators.ts) for css/scss/tailwind/json — no PDF,
- * that's client-side via html-to-image per the route's own comment, not
- * built here. Downloads the returned content with file-saver (already a
- * dependency for exactly this).
+ * "Export": POST /api/export, which returns real generated text (see
+ * lib/export/generators.ts) for css/scss/tailwind/json. Downloads the
+ * returned content with file-saver. The PDF style guide is a separate,
+ * fully client-side export (lib/export/pdfStyleGuide.ts) available from
+ * Studio's own export drawer, not this page.
  *
  * "Delete": DELETE /api/projects/[id] behind an inline confirm.
  *
