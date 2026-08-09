@@ -13,10 +13,10 @@
  */
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, Undo2, Redo2 } from "lucide-react";
 import { ExportDrawer } from "./ExportDrawer";
 import { LivePreviewSection } from "./LivePreviewSection";
 import { DesignSystemGallery } from "@/components/design-system/DesignSystemGallery";
@@ -29,8 +29,13 @@ import { PaletteTokens } from "@/lib/studio/exportCode";
 import { projectInputFromStudioState } from "@/lib/studio/projectFromState";
 import { applyStudioImport } from "@/lib/studio/applyImport";
 import { paletteFromAIColors } from "@/lib/studio/paletteFromAIColors";
+import { synthesizeDesignSystemFromPalettes } from "@/lib/studio/deriveThemeVariant";
+import { generateTypeScale, TYPE_SCALE_RATIOS } from "@/lib/typeScale/generateTypeScale";
+import { generateSpacingScale } from "@/lib/designTokens/spacing";
+import { buildShadowScale } from "@/lib/designTokens/shadows";
 import { SpacingScale, ShadowScale, MoodboardImage } from "@/types/designTokens";
 import { DesignSystem, ThemeVariantTokens } from "@/types/designSystem";
+import { TypeScale } from "@/types/theme";
 import { AIReasoning } from "@/types/project";
 
 const FONTS = [
@@ -48,13 +53,18 @@ const FONTS = [
   "Unbounded",
 ];
 
+// Each preset is a complete 5-token palette in its own right, muted
+// included — previously `muted` wasn't part of this data at all and was
+// patched on afterward with a 2-value brightness guess (applyPalette
+// below), so the swatch button shown here didn't even represent the
+// colour it was about to apply.
 const PALETTES = [
-  { name: "Studio Navy", accent: "#222D52", support: "#C36B3E", surface: "#F5F1E8", ink: "#211E18" },
-  { name: "Emerald", accent: "#1F5C41", support: "#C9A96E", surface: "#F4F2EC", ink: "#1C2B24" },
-  { name: "Punch", accent: "#E63946", support: "#2540C6", surface: "#F4F2EE", ink: "#16141A" },
-  { name: "Midnight", accent: "#8B5CF6", support: "#22D3EE", surface: "#121022", ink: "#E6E1F5" },
-  { name: "Terracotta", accent: "#B65735", support: "#4E7147", surface: "#F7EFE6", ink: "#38291F" },
-  { name: "Mono", accent: "#3C3C36", support: "#8A8477", surface: "#F6F6F4", ink: "#1F1F1E" },
+  { name: "Studio Navy", accent: "#222D52", support: "#C36B3E", surface: "#F5F1E8", ink: "#211E18", muted: "#8A8477" },
+  { name: "Emerald", accent: "#1F5C41", support: "#C9A96E", surface: "#F4F2EC", ink: "#1C2B24", muted: "#7C9186" },
+  { name: "Punch", accent: "#E63946", support: "#2540C6", surface: "#F4F2EE", ink: "#16141A", muted: "#8A8577" },
+  { name: "Midnight", accent: "#8B5CF6", support: "#22D3EE", surface: "#121022", ink: "#E6E1F5", muted: "#6B6483" },
+  { name: "Terracotta", accent: "#B65735", support: "#4E7147", surface: "#F7EFE6", ink: "#38291F", muted: "#9C8879" },
+  { name: "Mono", accent: "#3C3C36", support: "#8A8477", surface: "#F6F6F4", ink: "#1F1F1E", muted: "#A6A197" },
 ] as const;
 
 const PAIRS = [
@@ -115,10 +125,19 @@ export type StudioState = {
   accentFont?: string;
   radius: number;
   density: Density;
-  // Only populated when hydrated from an AI-generated result (see
-  // store/aiResultStore.ts) — undefined for a fresh manual build.
-  spacing?: SpacingScale;
-  shadows?: ShadowScale;
+  // Always present now, manual build or AI-seeded alike — these three
+  // used to only exist when hydrated from an AI result, so a from-scratch
+  // build had no way to see or edit type scale at all, and the Shadow/
+  // Spacing controls further down would simply never appear. Every
+  // Studio project is now a real typographic + spacing system, not just
+  // a palette.
+  typeScale: TypeScale;
+  spacing: SpacingScale;
+  shadows: ShadowScale;
+  // The "advanced" layer (per-component tokens, accessibility, icon
+  // style, grid, breakpoints) — still optional. A manual build starts
+  // without one; the "Enable component tokens" action synthesizes a
+  // real starting one rather than this staying AI-generation-only.
   designSystem?: DesignSystem;
   moodboard?: MoodboardImage[];
   aiReasoning?: AIReasoning;
@@ -149,6 +168,9 @@ const DEFAULT_STATE: StudioState = {
   bodyFont: "Archivo",
   radius: 10,
   density: "Cozy",
+  typeScale: generateTypeScale(16, "Major Third"),
+  spacing: generateSpacingScale(4),
+  shadows: buildShadowScale("subtle"),
 };
 
 function seedFromParams(params: URLSearchParams): Partial<StudioState> {
@@ -216,8 +238,9 @@ export function StudioBuilder() {
         ? seeded
         : {
             ...seeded,
-            spacing: aiResult.spacing,
-            shadows: aiResult.shadows,
+            typeScale: aiResult.typeScale ?? seeded.typeScale,
+            spacing: aiResult.spacing ?? seeded.spacing,
+            shadows: aiResult.shadows ?? seeded.shadows,
             designSystem: aiResult.designSystem,
             moodboard: aiResult.moodboard,
             aiReasoning: aiResult.aiReasoning,
@@ -242,6 +265,65 @@ export function StudioBuilder() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [savedPing, setSavedPing] = useState(false);
+
+  // Debounced snapshot history — a snapshot is only pushed once edits
+  // settle for 500ms, so dragging a color/slider doesn't spam undo with
+  // one entry per pixel. isUndoRedoRef suppresses the snapshot that would
+  // otherwise fire from undo/redo's own setState.
+  const [past, setPast] = useState<StudioState[]>([]);
+  const [future, setFuture] = useState<StudioState[]>([]);
+  const prevStateRef = useRef(state);
+  const isUndoRedoRef = useRef(false);
+  // Dirty is derived by identity against the last-saved snapshot rather
+  // than tracked via its own useState — a "skip the first effect run"
+  // flag doesn't survive React Strict Mode's double-invoked mount effect
+  // in dev, which was flipping this true immediately on load.
+  const savedSnapshotRef = useRef(state);
+  const isDirty = state !== savedSnapshotRef.current;
+
+  useEffect(() => {
+    if (isUndoRedoRef.current) {
+      isUndoRedoRef.current = false;
+      prevStateRef.current = state;
+      return;
+    }
+    const timeout = setTimeout(() => {
+      if (prevStateRef.current !== state) {
+        setPast((p) => [...p, prevStateRef.current]);
+        setFuture([]);
+        prevStateRef.current = state;
+      }
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [state]);
+
+  useEffect(() => {
+    if (!isDirty) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isDirty]);
+
+  function undo() {
+    if (past.length === 0) return;
+    const previous = past[past.length - 1];
+    setPast((p) => p.slice(0, -1));
+    setFuture((f) => [state, ...f]);
+    isUndoRedoRef.current = true;
+    setState(previous);
+  }
+
+  function redo() {
+    if (future.length === 0) return;
+    const next = future[0];
+    setFuture((f) => f.slice(1));
+    setPast((p) => [...p, state]);
+    isUndoRedoRef.current = true;
+    setState(next);
+  }
 
   useEffect(() => {
     const families = [state.headFont, state.bodyFont]
@@ -313,7 +395,7 @@ export function StudioBuilder() {
           support: p.support,
           surface: p.surface,
           ink: p.ink,
-          muted: onColor(p.surface) === "#141110" ? "#8A8477" : "#9A93B0",
+          muted: p.muted,
         },
       };
     });
@@ -345,6 +427,7 @@ export function StudioBuilder() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Couldn't save this project.");
       if (!savedProjectId) setSavedProjectId(data.project.id);
+      savedSnapshotRef.current = state;
       setSavedPing(true);
       setTimeout(() => setSavedPing(false), 1800);
     } catch (err) {
@@ -357,8 +440,15 @@ export function StudioBuilder() {
   return (
     <div className="min-h-screen bg-[#EDE6DA] font-grotesk text-[#211E18]">
       <div className="sticky top-14 z-40 flex flex-wrap items-center justify-between gap-4 border-b border-black/[0.18] bg-[#EDE6DA]/[0.94] px-6 py-3.5 backdrop-blur-md sm:px-12">
-        <div className="font-mono-plex text-[11px] uppercase tracking-[0.18em] text-[#8A8477]">
+        <div className="flex items-center gap-2 font-mono-plex text-[11px] uppercase tracking-[0.18em] text-[#8A8477]">
           The Studio — {state.name}
+          {isDirty && (
+            <span
+              className="h-1.5 w-1.5 flex-none rounded-full bg-[#C36B3E]"
+              title="Unsaved changes"
+              aria-label="Unsaved changes"
+            />
+          )}
         </div>
         <div className="flex items-center gap-2.5">
           {aiResult && (
@@ -369,6 +459,29 @@ export function StudioBuilder() {
               ← Back to AI result
             </Link>
           )}
+          <div className="flex items-center overflow-hidden rounded-full border border-black/30">
+            <button
+              type="button"
+              onClick={undo}
+              disabled={past.length === 0}
+              title="Undo"
+              aria-label="Undo"
+              className="px-3 py-2 text-[#211E18] disabled:opacity-30"
+            >
+              <Undo2 className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+            <div className="h-4 w-px bg-black/20" />
+            <button
+              type="button"
+              onClick={redo}
+              disabled={future.length === 0}
+              title="Redo"
+              aria-label="Redo"
+              className="px-3 py-2 text-[#211E18] disabled:opacity-30"
+            >
+              <Redo2 className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+          </div>
           <button
             type="button"
             onClick={shuffle}
@@ -475,6 +588,7 @@ export function StudioBuilder() {
                   <span className="w-3.5" style={{ backgroundColor: p.support }} />
                   <span className="w-3.5" style={{ backgroundColor: p.surface }} />
                   <span className="w-3.5" style={{ backgroundColor: p.ink }} />
+                  <span className="w-3.5" style={{ backgroundColor: p.muted }} />
                 </button>
               ))}
             </div>
@@ -508,6 +622,23 @@ export function StudioBuilder() {
                     {f}
                   </option>
                 ))}
+              </select>
+            </label>
+            <label className="flex flex-col gap-1.5">
+              <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#B4AD9E]">Accent (optional)</span>
+              <select
+                value={state.accentFont ?? ""}
+                onChange={(e) => set("accentFont", e.target.value || undefined)}
+                className="rounded-lg border border-black/20 bg-white px-3 py-2.5 text-sm text-[#211E18]"
+              >
+                <option value="">None</option>
+                {(state.accentFont && !FONTS.includes(state.accentFont) ? [state.accentFont, ...FONTS] : FONTS).map(
+                  (f) => (
+                    <option key={f} value={f}>
+                      {f}
+                    </option>
+                  )
+                )}
               </select>
             </label>
             <div className="flex flex-wrap gap-2 pt-0.5">
@@ -554,6 +685,51 @@ export function StudioBuilder() {
                 >
                   {d}
                 </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Type scale</div>
+            <label className="flex flex-col gap-1.5">
+              <span className="flex justify-between text-xs text-[#6E675C]">
+                <span>Base size</span>
+                <span className="font-mono-plex text-[#211E18]">{state.typeScale.baseSize}px</span>
+              </span>
+              <input
+                type="range"
+                min={12}
+                max={22}
+                step={1}
+                value={state.typeScale.baseSize}
+                onChange={(e) => set("typeScale", generateTypeScale(Number(e.target.value), state.typeScale.ratioName))}
+                className="studio-range w-full"
+              />
+            </label>
+            <label className="flex flex-col gap-1.5">
+              <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#B4AD9E]">Ratio</span>
+              <select
+                value={state.typeScale.ratioName}
+                onChange={(e) => set("typeScale", generateTypeScale(state.typeScale.baseSize, e.target.value))}
+                className="rounded-lg border border-black/20 bg-white px-3 py-2.5 text-sm text-[#211E18]"
+              >
+                {Object.keys(TYPE_SCALE_RATIOS).map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="flex items-end gap-2 rounded-lg border border-black/[0.12] bg-white px-3 py-3">
+              {(["sm", "base", "lg", "xl", "2xl", "3xl"] as const).map((k) => (
+                <span
+                  key={k}
+                  className="font-editorial-serif leading-none text-[#211E18]"
+                  style={{ fontSize: Math.min(state.typeScale.sizes[k], 34) }}
+                  title={`${k}: ${state.typeScale.sizes[k]}px`}
+                >
+                  Aa
+                </span>
               ))}
             </div>
           </div>
@@ -787,59 +963,70 @@ export function StudioBuilder() {
             </div>
 
             <div className="px-6 pb-10 sm:px-8">
-              <LivePreviewSection tokens={state} />
+              <LivePreviewSection
+                tokens={state}
+                theme={activeVariant}
+                onThemeChange={(t) => set("mode", t === "dark" ? "Dark" : "Light")}
+              />
             </div>
 
-            {(state.designSystem || state.spacing || state.shadows) && (
-              <div className="px-6 pb-10 sm:px-8">
-                {state.shadows && (
-                  <div className="mb-4 flex items-center gap-3 rounded-2xl border border-black/[0.14] bg-white/60 p-4">
-                    <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Shadow</div>
-                    <div className="flex gap-2">
-                      {(["none", "subtle", "dramatic"] as const).map((level) => {
-                        const recommended = state.shadows?.recommended;
-                        return (
-                          <button
-                            key={level}
-                            type="button"
-                            onClick={() =>
-                              setState((s) => (s.shadows ? { ...s, shadows: { ...s.shadows, recommended: level } } : s))
-                            }
-                            className={cn(
-                              "rounded-lg border px-3.5 py-[7px] font-mono-plex text-[10px] uppercase tracking-[0.1em]",
-                              recommended === level
-                                ? "border-[#211E18] bg-[#211E18] text-[#F2EBE0]"
-                                : "border-black/[0.16] bg-white text-[#6E675C]"
-                            )}
-                          >
-                            {level}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-                {state.designSystem ? (
-                  <DesignSystemGallery
-                    designSystem={state.designSystem}
-                    spacing={state.spacing}
-                    editable
-                    onChange={(ds) => setState((s) => ({ ...s, designSystem: ds }))}
-                    onSpacingChange={(sp) => setState((s) => ({ ...s, spacing: sp }))}
-                  />
-                ) : (
-                  state.spacing && (
-                    <div className="rounded-2xl border border-black/[0.14] bg-white/60 p-4">
-                      <SpacingVisualization
-                        spacing={state.spacing}
-                        editable
-                        onChange={(sp) => setState((s) => ({ ...s, spacing: sp }))}
-                      />
-                    </div>
-                  )
-                )}
+            <div className="px-6 pb-10 sm:px-8">
+              <div className="mb-4 flex items-center gap-3 rounded-2xl border border-black/[0.14] bg-white/60 p-4">
+                <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Shadow</div>
+                <div className="flex gap-2">
+                  {(["none", "subtle", "dramatic"] as const).map((level) => (
+                    <button
+                      key={level}
+                      type="button"
+                      onClick={() =>
+                        setState((s) => ({ ...s, shadows: { ...s.shadows, recommended: level } }))
+                      }
+                      className={cn(
+                        "rounded-lg border px-3.5 py-[7px] font-mono-plex text-[10px] uppercase tracking-[0.1em]",
+                        state.shadows.recommended === level
+                          ? "border-[#211E18] bg-[#211E18] text-[#F2EBE0]"
+                          : "border-black/[0.16] bg-white text-[#6E675C]"
+                      )}
+                    >
+                      {level}
+                    </button>
+                  ))}
+                </div>
               </div>
-            )}
+              {state.designSystem ? (
+                <DesignSystemGallery
+                  designSystem={state.designSystem}
+                  spacing={state.spacing}
+                  editable
+                  variant={activeVariant}
+                  onVariantChange={(v) => set("mode", v === "dark" ? "Dark" : "Light")}
+                  onChange={(ds) => setState((s) => ({ ...s, designSystem: ds }))}
+                  onSpacingChange={(sp) => setState((s) => ({ ...s, spacing: sp }))}
+                />
+              ) : (
+                <div className="flex flex-col gap-4">
+                  <div className="rounded-2xl border border-black/[0.14] bg-white/60 p-4">
+                    <SpacingVisualization
+                      spacing={state.spacing}
+                      editable
+                      onChange={(sp) => setState((s) => ({ ...s, spacing: sp }))}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setState((s) => ({
+                        ...s,
+                        designSystem: synthesizeDesignSystemFromPalettes(s.light, s.dark),
+                      }))
+                    }
+                    className="self-start rounded-full border border-black/30 px-4 py-2 font-mono-plex text-[11px] uppercase tracking-[0.12em] text-[#211E18]"
+                  >
+                    Enable component tokens
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </main>
       </div>

@@ -11,6 +11,13 @@
  * The Light/Dark toggle just flips `data-theme` on the iframe document's
  * <html>, which is exactly the selector the generated CSS's dark block
  * targets — no separate dark-mode styling logic.
+ *
+ * `theme`/`onThemeChange` are controlled by the caller (StudioBuilder)
+ * rather than owned locally — this used to be its own independent
+ * useState, so Studio's main Light/Dark toggle, this preview, and the
+ * design-system panel below it could each show a different mode at the
+ * same time with nothing indicating why. One theme, driven from one
+ * place, shown consistently everywhere.
  */
 "use client";
 
@@ -18,8 +25,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { generateExportCode, StudioExportTokens } from "@/lib/studio/exportCode";
 import { buildLivePreviewDocument } from "@/lib/studio/livePreviewDocument";
 
-export function LivePreviewSection({ tokens }: { tokens: StudioExportTokens }) {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+export function LivePreviewSection({
+  tokens,
+  theme,
+  onThemeChange,
+}: {
+  tokens: StudioExportTokens;
+  theme: "light" | "dark";
+  onThemeChange: (theme: "light" | "dark") => void;
+}) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [height, setHeight] = useState(480);
 
@@ -51,7 +65,7 @@ export function LivePreviewSection({ tokens }: { tokens: StudioExportTokens }) {
             <button
               key={t}
               type="button"
-              onClick={() => setTheme(t)}
+              onClick={() => onThemeChange(t)}
               className="px-4 py-1.5 text-xs capitalize"
               style={{
                 backgroundColor: theme === t ? "#222D52" : "transparent",
