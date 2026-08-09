@@ -24,6 +24,8 @@ import { LivePreviewMock } from "@/components/ai/LivePreviewMock";
 import { useAIResultStore } from "@/store";
 import { AIGeneratedProject } from "@/types/ai";
 import { getContrastRatio } from "@/lib/colors/colorUtils";
+import { paletteFromAIColors } from "@/lib/studio/paletteFromAIColors";
+import { PaletteTokens } from "@/lib/studio/exportCode";
 
 const starterPrompts = [
   "Minimal SaaS for a calm B2B brand",
@@ -31,16 +33,20 @@ const starterPrompts = [
   "Playful kids brand with bold color moments",
 ];
 
+// Also the fallback passed to paletteFromAIColors when a role can't be
+// matched at all — same values used both for this page's own live preview
+// and for openInStudio()'s handoff, so both draw from one function
+// (paletteFromAIColors) instead of two independently-maintained mappings.
+const DEFAULT_PREVIEW_PALETTE: PaletteTokens = {
+  accent: "#3B82F6",
+  support: "#93C5FD",
+  surface: "#F7F9FC",
+  ink: "#1E2430",
+  muted: "#8A8477",
+};
+
 function onColor(hex: string): string {
   return getContrastRatio(hex, "#FBF8F2") >= getContrastRatio(hex, "#141110") ? "#FBF8F2" : "#141110";
-}
-
-function findColor(colors: AIGeneratedProject["colors"], roles: string[], fallbackIndex = 0): string {
-  for (const role of roles) {
-    const match = colors.find((c) => c.role?.toLowerCase() === role);
-    if (match) return match.hex;
-  }
-  return colors[fallbackIndex]?.hex ?? "#211E18";
 }
 
 export function PromptInput() {
@@ -103,11 +109,7 @@ export function PromptInput() {
     if (!result) return;
     setSentToStudio(true);
 
-    const accent = findColor(result.colors, ["primary", "accent"]);
-    const support = findColor(result.colors, ["secondary", "support"], 1);
-    const surface = findColor(result.colors, ["background", "surface"], 2);
-    const ink = findColor(result.colors, ["text"], 3);
-    const muted = findColor(result.colors, ["muted", "textmuted"], 4);
+    const { accent, support, surface, ink, muted } = paletteFromAIColors(result.colors, DEFAULT_PREVIEW_PALETTE);
     const params = new URLSearchParams({
       from: "ai",
       name: result.name,
@@ -124,10 +126,8 @@ export function PromptInput() {
     router.push(`/studio?${params.toString()}`);
   }
 
-  const accent = result ? findColor(result.colors, ["primary", "accent"]) : "#3B82F6";
-  const support = result ? findColor(result.colors, ["secondary", "support"], 1) : "#93C5FD";
-  const surface = result ? findColor(result.colors, ["background", "surface"], 2) : "#F7F9FC";
-  const ink = result ? findColor(result.colors, ["text"], 3) : "#1E2430";
+  const palette = result ? paletteFromAIColors(result.colors, DEFAULT_PREVIEW_PALETTE) : DEFAULT_PREVIEW_PALETTE;
+  const { accent, support, surface, ink } = palette;
   const onAccent = onColor(accent);
 
   return (

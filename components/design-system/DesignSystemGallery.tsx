@@ -27,11 +27,38 @@
 import { useState } from "react";
 import { DesignSystem, ComponentName, ComponentTokenSet, ThemeVariantTokens } from "@/types/designSystem";
 import { getContrastRatio } from "@/lib/colors/colorUtils";
+import { ContrastBadge } from "@/components/ui/ContrastBadge";
 import { SpacingVisualization } from "./SpacingVisualization";
 import { SpacingScale } from "@/types/designTokens";
+import { cn } from "@/lib/utils";
 
 function onColor(hex: string): string {
   return getContrastRatio(hex, "#FBF8F2") >= getContrastRatio(hex, "#141110") ? "#FBF8F2" : "#141110";
+}
+
+// The AI's own accessibility.level/notes are prose it wrote about the
+// palette, not a calculated fact — this app previously displayed that
+// claim as if it were verified. These pairs are the actual foreground/
+// background combinations end users will read: the core text roles
+// against their surfaces, plus every present component's own text vs
+// background. WCAG normal-text AA is 4.5:1 — anything under that is a
+// real, deterministic failure regardless of what the AI claimed.
+const NORMAL_TEXT_AA = 4.5;
+
+type VerifiedPair = { label: string; foreground: string; background: string; ratio: number };
+
+function verifyContrastPairs(active: ThemeVariantTokens): VerifiedPair[] {
+  const { colorRoles, components } = active;
+  const pairs: Array<{ label: string; foreground: string; background: string }> = [
+    { label: "Text on surface", foreground: colorRoles.text, background: colorRoles.surface },
+    { label: "Text on background", foreground: colorRoles.text, background: colorRoles.background },
+    { label: "Muted text on surface", foreground: colorRoles.textMuted, background: colorRoles.surface },
+  ];
+  (Object.keys(components) as ComponentName[]).forEach((name) => {
+    const tokens = components[name];
+    if (tokens) pairs.push({ label: `${COMPONENT_LABELS[name]} text`, foreground: tokens.text, background: tokens.background });
+  });
+  return pairs.map((p) => ({ ...p, ratio: getContrastRatio(p.foreground, p.background) }));
 }
 
 const COMPONENT_LABELS: Record<ComponentName, string> = {
@@ -320,6 +347,8 @@ export function DesignSystemGallery({
   const componentEntries = (Object.keys(active.components) as ComponentName[])
     .filter((name) => active.components[name])
     .map((name) => [name, active.components[name]!] as const);
+  const verifiedPairs = verifyContrastPairs(active);
+  const failingPairs = verifiedPairs.filter((p) => p.ratio < NORMAL_TEXT_AA);
 
   function updateDesignSystem(mutator: (ds: DesignSystem) => DesignSystem) {
     if (!onChange) return;
@@ -404,9 +433,12 @@ export function DesignSystemGallery({
         <div className="mb-5 grid gap-3 sm:grid-cols-2">
           {componentEntries.map(([name, tokens]) => (
             <div key={name} className="rounded-xl border border-black/[0.1] bg-white p-3.5">
-              <p className="mb-3 font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]">
-                {COMPONENT_LABELS[name]}
-              </p>
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <p className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]">
+                  {COMPONENT_LABELS[name]}
+                </p>
+                <ContrastBadge foreground={tokens.text} background={tokens.background} />
+              </div>
               <div className="flex justify-start">
                 <ComponentShape name={name} tokens={tokens} />
               </div>
@@ -442,10 +474,49 @@ export function DesignSystemGallery({
         </div>
       )}
 
+      {verifiedPairs.length > 0 && (
+        <div className={cn("mb-5 rounded-xl border p-3.5", failingPairs.length > 0 ? "border-[#B3261E]/30 bg-[#B3261E]/[0.04]" : "border-[#22733F]/25 bg-[#22733F]/[0.04]")}>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]">
+              System-verified contrast — not the AI&rsquo;s claim
+            </p>
+            <span className="font-mono-plex text-[10px] uppercase tracking-[0.1em] text-[#211E18]">
+              {verifiedPairs.length - failingPairs.length}/{verifiedPairs.length} pairs pass normal-text AA (4.5:1)
+            </span>
+          </div>
+          {failingPairs.length > 0 ? (
+            <ul className="mt-2.5 space-y-1.5">
+              {failingPairs.map((pair) => (
+                <li key={pair.label} className="flex flex-wrap items-center gap-2 text-[11px] text-[#211E18]">
+                  <span
+                    className="inline-flex h-4 w-4 shrink-0 rounded-full border border-black/10"
+                    style={{ backgroundColor: pair.background }}
+                  />
+                  <span
+                    className="font-mono-plex text-[10px]"
+                    style={{ color: pair.foreground, backgroundColor: pair.background, padding: "1px 5px", borderRadius: 4 }}
+                  >
+                    Aa
+                  </span>
+                  {pair.label}
+                  <ContrastBadge foreground={pair.foreground} background={pair.background} />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-2 text-[11px] text-[#22733F]">
+              Every checked text/background pair independently passes WCAG AA for normal text.
+            </p>
+          )}
+        </div>
+      )}
+
       <div className="grid gap-3 sm:grid-cols-3">
         {designSystem.accessibility && (
           <div className="rounded-xl border border-black/[0.1] bg-white p-3.5">
-            <p className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]">Accessibility</p>
+            <p className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]">
+              AI-written accessibility notes
+            </p>
             {editable ? (
               <div className="mt-2 space-y-2">
                 <select

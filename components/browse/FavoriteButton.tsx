@@ -14,7 +14,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Heart } from "lucide-react";
 import { useAuthStore, useFavoritesStore } from "@/store";
 import type { FavoriteType } from "@/store/favoritesStore";
@@ -31,6 +31,7 @@ export function FavoriteButton({
   style?: React.CSSProperties;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const user = useAuthStore((s) => s.user);
   const authStatus = useAuthStore((s) => s.status);
   const setUser = useAuthStore((s) => s.setUser);
@@ -49,15 +50,15 @@ export function FavoriteButton({
     if (!sessionExpired) return;
     acknowledgeSessionExpired();
     setUser(null);
-    router.push("/sign-in");
-  }, [sessionExpired, acknowledgeSessionExpired, setUser, router]);
+    router.push(`/sign-in?reason=session-expired&from=${encodeURIComponent(pathname)}`);
+  }, [sessionExpired, acknowledgeSessionExpired, setUser, router, pathname]);
 
   function handleClick(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
     if (authStatus === "loading") return;
     if (!user) {
-      router.push("/sign-in");
+      router.push(`/sign-in?reason=favorites&from=${encodeURIComponent(pathname)}`);
       return;
     }
     toggle(type, id);

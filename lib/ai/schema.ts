@@ -128,6 +128,31 @@ const designSystemSchema = z.object({
 
 const contextValues = ["saas", "ecommerce", "government", "editorial", "generic"] as const;
 
+// Content for the live mock preview (components/ai/LivePreviewMock.tsx) —
+// the model writes real copy for the described business instead of the
+// app filling in a generic template. See the mockup contract in
+// prompt.ts for the instructions that produce this.
+const mockupCardSchema = z.object({
+  title: z.string().min(1).max(60),
+  subtitle: z.string().min(1).max(80),
+  meta: z.string().max(40).optional(),
+  cta: z.string().min(1).max(30),
+});
+
+const mockupSchema = z.object({
+  siteLabel: z.string().min(1).max(40),
+  navItems: z.array(z.string().min(1).max(24)).min(3).max(5),
+  hero: z.object({
+    eyebrow: z.string().max(40).optional(),
+    headline: z.string().min(1).max(90),
+    subheadline: z.string().min(1).max(160),
+    primaryCta: z.string().min(1).max(30),
+    secondaryCta: z.string().max(30).optional(),
+  }),
+  cards: z.array(mockupCardSchema).min(2).max(4),
+  footerNote: z.string().max(80).optional(),
+});
+
 export const GeminiPaletteResponseSchema = z.object({
   projectName: z.string().min(1).max(60),
   // Drives which mock preview layout the AI results page renders — see
@@ -148,6 +173,7 @@ export const GeminiPaletteResponseSchema = z.object({
   cornerRadius: z.union([z.literal(4), z.literal(8), z.literal(12), z.literal(20)]).optional(),
   moodboardImageIds: z.array(z.string().min(1)).min(2).max(3).optional(),
   designSystem: designSystemSchema.optional(),
+  mockup: mockupSchema,
   reasoning: z.object({
     palette: z.string().min(1),
     fonts: z.string().min(1),

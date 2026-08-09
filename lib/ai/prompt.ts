@@ -88,7 +88,24 @@ default 5-7 colors / 2 fonts.
 
 Also classify the brand's context as one of: "saas", "ecommerce",
 "government", "editorial", "generic" — pick "generic" only if none of the
-others clearly fit. This drives which mock preview layout the app shows.
+others clearly fit.
+
+You must also write the actual content for a live mock preview of this
+brand's website — a "mockup" object with real, specific copy for what
+this exact business would show, not a generic template. Read the brand
+description literally: if it says "car dealership", the mockup should
+show a dealership's homepage — nav items like "Inventory", "Financing",
+"Service", "About"; a hero selling the lot or the brand promise; 2-4 cards
+that are actual vehicle listings with realistic model names, trims, and
+prices (e.g. "2024 Meridian SE — $32,400", cta "View details") and a
+"Schedule a test drive" or similar CTA. If it says "boutique hotel", the
+cards should be room types or amenities with rates, not vehicles. If it's
+a SaaS product, the cards should be features or pricing tiers. Invent
+plausible, concrete specifics (names, prices, dates, locations) rather
+than placeholders like "Product 1" or "Lorem ipsum" — the goal is a
+mockup someone could mistake for a real early sketch of that specific
+business's site, not a reskinned template. Keep every string short enough
+to read as UI copy, not paragraphs.
 
 Brand description: "${request.prompt}"
 ${request.style?.length ? `Preferred style keywords: ${request.style.join(", ")}` : ""}
@@ -124,6 +141,19 @@ Respond with JSON ONLY, matching exactly this shape:
   "cornerRadius": number (must be exactly one of the valid corner radius values — lower for sharp/serious brands, higher for soft/friendly brands),
   "moodboardImageIds": [ string, string ] (2 to 3 of the candidate moodboard image ids above whose mood best matches the brand),
   ${request.includeDesignSystem ? `"designSystem": DesignSystem (see the detailed shape below — REQUIRED since the user asked for a full design system),` : ""}
+  "mockup": {
+    "siteLabel": string (<= 40 chars, what kind of business this is, e.g. "Car dealership"),
+    "navItems": [ string, ... ] (3 to 5 short nav labels specific to this business),
+    "hero": {
+      "eyebrow": string (optional, <= 40 chars),
+      "headline": string (<= 90 chars, specific to this business, not generic brand copy),
+      "subheadline": string (<= 160 chars),
+      "primaryCta": string (<= 30 chars),
+      "secondaryCta": string (optional, <= 30 chars)
+    },
+    "cards": [ { "title": string (<= 60 chars), "subtitle": string (<= 80 chars), "meta": string (optional, <= 40 chars — a price/date/location/stat), "cta": string (<= 30 chars) }, ... 2 to 4 entries, concrete and specific to the business, see the instructions above ],
+    "footerNote": string (optional, <= 80 chars)
+  },
   "reasoning": {
     "palette": string (plain language, why these colors together),
     "fonts": string (plain language, why this pairing),
