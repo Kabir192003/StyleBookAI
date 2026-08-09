@@ -7,6 +7,7 @@
  */
 import { SpacingScale, ShadowScale } from "@/types/designTokens";
 import { ComponentName, ComponentTokenSet, DesignSystem, ThemeVariantTokens } from "@/types/designSystem";
+import { TypeScale } from "@/types/theme";
 
 export type PaletteTokens = {
   accent: string;
@@ -24,6 +25,7 @@ export type StudioExportTokens = {
   bodyFont: string;
   accentFont?: string;
   radius: number;
+  typeScale?: TypeScale;
   spacing?: SpacingScale;
   shadows?: ShadowScale;
   designSystem?: DesignSystem;
@@ -104,6 +106,12 @@ export function generateExportCode(tab: ExportTab, s: StudioExportTokens): strin
         "",
         `  --radius: ${s.radius}px;`,
       ];
+      if (s.typeScale) {
+        lines.push("");
+        (Object.entries(s.typeScale.sizes) as Array<[string, number]>).forEach(([key, size]) =>
+          lines.push(`  --text-${key}: ${size}px;`)
+        );
+      }
       if (s.spacing) {
         lines.push("");
         s.spacing.steps.forEach((step, i) => lines.push(`  --space-${i + 1}: ${step}px;`));
@@ -160,7 +168,14 @@ ${dsDarkColors.join("\n")}
         display: ['${s.headFont}', 'serif'],
         body: ['${s.bodyFont}', 'sans-serif'],
       },
-      borderRadius: { DEFAULT: '${s.radius}px' },
+      borderRadius: { DEFAULT: '${s.radius}px' },${
+        s.typeScale
+          ? `
+      fontSize: {
+${(Object.entries(s.typeScale.sizes) as Array<[string, number]>).map(([key, size]) => `        '${key}': '${size}px',`).join("\n")}
+      },`
+          : ""
+      }
     },
   },
 };`;
@@ -172,6 +187,7 @@ ${dsDarkColors.join("\n")}
           light: s.light,
           dark: s.dark,
           type: { display: s.headFont, body: s.bodyFont, accent: s.accentFont },
+          typeScale: s.typeScale,
           radius: `${s.radius}px`,
           spacing: s.spacing,
           shadows: s.shadows,
@@ -198,6 +214,15 @@ ${swatch("supportDark", s.dark.support)}
 ${swatch("surfaceDark", s.dark.surface)}
 ${swatch("inkDark", s.dark.ink)}
 ${swatch("mutedDark", s.dark.muted)}
+}
+${
+  s.typeScale
+    ? `
+enum AppFontSize {
+${(Object.entries(s.typeScale.sizes) as Array<[string, number]>).map(([key, size]) => `    static let ${key.replace(/^(\d)/, "size$1")}: CGFloat = ${size}`).join("\n")}
+}
+`
+    : ""
 }`;
     }
     case "Figma":
@@ -221,6 +246,16 @@ ${swatch("mutedDark", s.dark.muted)}
               },
             },
             radius: { value: `${s.radius}px`, type: "borderRadius" },
+            ...(s.typeScale
+              ? {
+                  fontSize: Object.fromEntries(
+                    Object.entries(s.typeScale.sizes).map(([key, size]) => [
+                      key,
+                      { value: `${size}px`, type: "fontSizes" },
+                    ])
+                  ),
+                }
+              : {}),
           },
         },
         null,
@@ -249,6 +284,16 @@ class AppRadius {
   static const double base = ${s.radius};
 }
 ${
+  s.typeScale
+    ? `
+class AppFontSize {
+${Object.entries(s.typeScale.sizes)
+  .map(([key, size]) => `  static const double ${key.replace(/^(\d)/, "size$1")} = ${size};`)
+  .join("\n")}
+}
+`
+    : ""
+}${
   s.spacing
     ? `
 class AppSpacing {
@@ -289,7 +334,7 @@ final appDarkTheme = ThemeData(
   },
   fonts: { display: "${s.headFont}", body: "${s.bodyFont}"${s.accentFont ? `, accent: "${s.accentFont}"` : ""} },
   radius: ${s.radius},
-${s.spacing ? `  spacing: ${JSON.stringify(s.spacing.steps)},\n` : ""}${componentsBlock}} as const;
+${s.typeScale ? `  fontSize: ${JSON.stringify(s.typeScale.sizes)},\n` : ""}${s.spacing ? `  spacing: ${JSON.stringify(s.spacing.steps)},\n` : ""}${componentsBlock}} as const;
 `;
     }
     case "Style Guide": {
@@ -300,6 +345,12 @@ ${s.spacing ? `  spacing: ${JSON.stringify(s.spacing.steps)},\n` : ""}${componen
       lines.push("", "## Typography", "", `- Display: ${s.headFont}`, `- Body: ${s.bodyFont}`);
       if (s.accentFont) lines.push(`- Accent: ${s.accentFont}`);
       lines.push("", "## Shape", "", `- Corner radius: ${s.radius}px`);
+      if (s.typeScale) {
+        lines.push("", "## Type scale", "", `Base: ${s.typeScale.baseSize}px · Ratio: ${s.typeScale.ratioName} (${s.typeScale.ratio})`, "");
+        (Object.entries(s.typeScale.sizes) as Array<[string, number]>).forEach(([key, size]) =>
+          lines.push(`- **${key}**: ${size}px`)
+        );
+      }
       if (s.spacing) {
         lines.push("", "## Spacing", "", `Base: ${s.spacing.base}px`, "");
         s.spacing.steps.forEach((step, i) => lines.push(`- Step ${i + 1}: ${step}px`));

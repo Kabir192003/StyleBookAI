@@ -335,14 +335,24 @@ export function DesignSystemGallery({
   editable = false,
   onChange,
   onSpacingChange,
+  variant: variantProp,
+  onVariantChange,
 }: {
   designSystem: DesignSystem;
   spacing?: SpacingScale;
   editable?: boolean;
   onChange?: (next: DesignSystem) => void;
   onSpacingChange?: (next: SpacingScale) => void;
+  // Controlled by the caller when provided (Studio, so its one Light/Dark
+  // toggle drives this panel too instead of each maintaining its own).
+  // Omitted on the AI results page (components/ai/PromptInput.tsx, always
+  // read-only there), which falls back to owning its own local toggle.
+  variant?: "light" | "dark";
+  onVariantChange?: (variant: "light" | "dark") => void;
 }) {
-  const [variant, setVariant] = useState<"light" | "dark">("light");
+  const [internalVariant, setInternalVariant] = useState<"light" | "dark">("light");
+  const variant = variantProp ?? internalVariant;
+  const setVariant = onVariantChange ?? setInternalVariant;
   const active = variant === "dark" && designSystem.dark ? designSystem.dark : designSystem.light;
   const componentEntries = (Object.keys(active.components) as ComponentName[])
     .filter((name) => active.components[name])

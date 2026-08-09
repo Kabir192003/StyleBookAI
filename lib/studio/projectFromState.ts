@@ -3,26 +3,26 @@
  * strings — see components/studio/StudioBuilder.tsx) into a real
  * ProjectInput payload for POST/PUT /api/projects.
  *
- * Studio's manual-build model is much simpler than the full Project shape
- * (a bare hex per role, a font family name, no type scale at all) — this
- * is the one place that bridges the two, synthesizing the metadata a
- * saved Project requires:
- *  - Colors: synthesizeColorFromHex() (already used for AI-picked custom
- *    hexes) derives family/mood/style/rgb/hsl from the hex itself, so a
- *    manually-picked color doesn't need to exist in the curated library.
- *  - Fonts: looked up by family name in the real font library first (so a
- *    saved project references the actual catalog entry, with its real
- *    note/variants/etc.); falls back to a minimal synthesized Font if the
- *    family isn't in the library for some reason.
- *  - Type scale: Studio has no type-scale editor, so a sensible default
- *    (16px, Major Third) is generated on save — not read from anywhere,
- *    since there's nowhere in Studio's UI to have set one.
+ * Previously this silently discarded real work on every save:
+ *  - Only the *currently active* mode's palette (state.light OR
+ *    state.dark, whichever the toggle was on) was ever persisted — the
+ *    other was thrown away with no warning.
+ *  - cornerRadius was set to `undefined` whenever a designSystem was
+ *    present, even though the radius slider is always live and always
+ *    edited independently of whether a designSystem exists.
+ *  - typeScale was hardcoded to 16px/Major Third regardless of what
+ *    Studio's own state.typeScale (now always present, either the AI's
+ *    real generated scale or the user's own edit) actually held.
+ * None of that is true anymore: both palettes are preserved via a real
+ * designSystem (deriveThemeVariantFromPalette, one call per mode), radius
+ * and typeScale are always taken from state, not conditionally dropped.
  */
 import { allFonts } from "@/data/fonts";
 import { synthesizeColorFromHex } from "@/lib/colors/deriveColorMetadata";
-import { generateTypeScale } from "@/lib/typeScale/generateTypeScale";
+import { deriveThemeVariantFromPalette } from "./deriveThemeVariant";
 import type { ProjectInput } from "@/lib/validation/project";
 import type { Font } from "@/types/font";
+import type { DesignSystem } from "@/types/designSystem";
 import type { StudioState } from "@/components/studio/StudioBuilder";
 
 const ROLE_LABELS: Record<string, string> = {
@@ -53,6 +53,38 @@ function findOrSynthesizeFont(family: string): Font {
   };
 }
 
+// Both palettes always survive a save via a real designSystem, whether or
+// not one arrived from AI. If state.designSystem already exists (an AI
+// result with component-level tokens, accessibility notes, icon style,
+// etc.), that richer data is preserved as-is — only colorRoles and the
+// two palette-driven components (button/buttonSecondary) are refreshed
+// from state.light/state.dark, since the palette editor is the one place
+// a designer actually edits color in Studio and must always win.
+function buildDesignSystem(state: StudioState): DesignSystem {
+  const light = deriveThemeVariantFromPalette(state.light);
+  const dark = deriveThemeVariantFromPalette(state.dark);
+
+  if (!state.designSystem) {
+    return { light, dark };
+  }
+
+  return {
+    ...state.designSystem,
+    light: {
+      ...state.designSystem.light,
+      colorRoles: light.colorRoles,
+      components: { ...state.designSystem.light.components, ...light.components },
+    },
+    dark: state.designSystem.dark
+      ? {
+          ...state.designSystem.dark,
+          colorRoles: dark.colorRoles,
+          components: { ...state.designSystem.dark.components, ...dark.components },
+        }
+      : dark,
+  };
+}
+
 export function projectInputFromStudioState(state: StudioState): ProjectInput {
   const activePalette = state.mode === "Dark" ? state.dark : state.light;
 
@@ -69,12 +101,12 @@ export function projectInputFromStudioState(state: StudioState): ProjectInput {
       secondary: findOrSynthesizeFont(state.bodyFont),
       ...(state.accentFont ? { accent: findOrSynthesizeFont(state.accentFont) } : {}),
     },
-    typeScale: generateTypeScale(16, "Major Third"),
+    typeScale: state.typeScale,
     spacing: state.spacing,
     shadows: state.shadows,
-    cornerRadius: state.designSystem ? undefined : { options: [state.radius], recommended: state.radius },
+    cornerRadius: { options: [state.radius], recommended: state.radius },
     moodboard: state.moodboard,
-    designSystem: state.designSystem,
+    designSystem: buildDesignSystem(state),
     aiGenerated: Boolean(state.aiReasoning),
     aiReasoning: state.aiReasoning,
   };
