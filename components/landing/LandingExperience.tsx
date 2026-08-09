@@ -17,12 +17,25 @@
  */
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import { prefersReducedMotion } from "@/lib/landing/motion";
+import { GoogleFontsLoader } from "@/components/fonts/GoogleFontsLoader";
+import { LandingGeneratePanel } from "@/components/landing/LandingGeneratePanel";
+import { useAIResultStore } from "@/store";
+import { paletteFromAIColors } from "@/lib/studio/paletteFromAIColors";
+import {
+  DEFAULT_LANDING_PROMPT,
+  FALLBACK_PREVIEW,
+  FALLBACK_STUDIO_PALETTE,
+  LandingPreview,
+  STARTER_PREVIEW,
+} from "@/lib/landing/aiPreview";
+import { AIGeneratedProject } from "@/types/ai";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -148,6 +161,13 @@ const DOORS = [
 
 const EXPORT_FORMATS = ["{ } CSS Variables", "[ ] JSON Tokens", "~/ Tailwind", "◇ Figma Tokens", "⚛ React", "◆ Flutter", "SwiftUI", "↓ Style Guide"];
 
+// The AI generator (S6, the navy panel, now also the top-of-page hero)
+// is a real, working generator — POSTs to the same /api/ai/generate
+// route as /studio/ai — not a static mockup. State lives here (shared by
+// both render sites, see components/landing/LandingGeneratePanel.tsx);
+// LandingPreview normalizes a real AIGeneratedProject and the two static
+// fallbacks (pre-interaction, and "the live call failed") into one shape.
+
 export function LandingExperience() {
   const rootRef = useRef<HTMLDivElement>(null);
   const loaderRef = useRef<HTMLDivElement>(null);
@@ -162,6 +182,77 @@ export function LandingExperience() {
   const edTrackRef = useRef<HTMLDivElement>(null);
   const edFillRef = useRef<HTMLSpanElement>(null);
   const edNumRef = useRef<HTMLSpanElement>(null);
+
+  const router = useRouter();
+  const stageAIResult = useAIResultStore((s) => s.setResult);
+  const [landingPrompt, setLandingPrompt] = useState(DEFAULT_LANDING_PROMPT);
+  const [landingStatus, setLandingStatus] = useState<"idle" | "loading" | "done">("idle");
+  const [landingProject, setLandingProject] = useState<AIGeneratedProject | null>(null);
+  const [landingFellBack, setLandingFellBack] = useState(false);
+
+  async function handleLandingGenerate() {
+    const trimmed = landingPrompt.trim();
+    if (!trimmed || landingStatus === "loading") return;
+    setLandingStatus("loading");
+    try {
+      const res = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: trimmed }),
+      });
+      if (!res.ok) throw new Error("generation failed");
+      const data = await res.json();
+      setLandingProject(data.project as AIGeneratedProject);
+      setLandingFellBack(false);
+    } catch {
+      // Network failure, timeout, cold-start, rate limit — whatever it is,
+      // the visitor sees a graceful example instead of an error state.
+      setLandingProject(null);
+      setLandingFellBack(true);
+    } finally {
+      setLandingStatus("done");
+      // Content height just changed (result cards, maybe the fallback
+      // note) — keep downstream ScrollTrigger positions (Colophon's
+      // reveal) accurate.
+      ScrollTrigger.refresh();
+    }
+  }
+
+  function openLandingResultInStudio() {
+    if (!landingProject) {
+      router.push("/studio/ai");
+      return;
+    }
+    stageAIResult(landingPrompt, false, landingProject);
+    const palette = paletteFromAIColors(landingProject.colors, FALLBACK_STUDIO_PALETTE);
+    const params = new URLSearchParams({
+      from: "ai",
+      name: landingProject.name,
+      accent: palette.accent,
+      support: palette.support,
+      surface: palette.surface,
+      ink: palette.ink,
+      muted: palette.muted,
+      head: landingProject.fonts.primary.family,
+      body: landingProject.fonts.secondary.family,
+    });
+    router.push(`/studio?${params.toString()}`);
+  }
+
+  const landingPalette = landingProject ? paletteFromAIColors(landingProject.colors, FALLBACK_STUDIO_PALETTE) : null;
+  const landingPreview: LandingPreview = landingProject
+    ? {
+        name: landingProject.name,
+        swatches: landingProject.colors.slice(0, 5).map((c) => c.hex),
+        fontFamily: `'${landingProject.fonts.primary.family}',${landingProject.fonts.primary.category === "serif" ? "serif" : "sans-serif"}`,
+        fontLabel: `${landingProject.fonts.primary.family} · display`,
+        contrastFg: landingPalette!.ink,
+        contrastBg: landingPalette!.surface,
+        contrastLabel: `radius ${landingProject.cornerRadius?.recommended ?? 12}px · space ${landingProject.spacing?.base ?? 8}px`,
+      }
+    : landingFellBack
+    ? FALLBACK_PREVIEW
+    : STARTER_PREVIEW;
 
   useEffect(() => {
     document.body.classList.add("landing-exp");
@@ -420,7 +511,12 @@ export function LandingExperience() {
           },
         });
       }
-      const labels = ["Undesigned", "Act I — Colour", "Act II — Type", "Act III — Rhythm", "Act IV — Theme", "Act V — Editions", "Three doors", "Alive"];
+      // "Welcome" covers the new top-of-page product hero (S0) — every
+      // label after it shifts by one now that there's a section before
+      // the "Undesigned" story hero; this array is positionally matched
+      // against root.querySelectorAll("section") below, so it must have
+      // exactly one entry per <section> in the same order.
+      const labels = ["Welcome", "Undesigned", "Act I — Colour", "Act II — Type", "Act III — Rhythm", "Act IV — Theme", "Act V — Editions", "Three doors", "Alive"];
       root.querySelectorAll<HTMLElement>("section").forEach((sec, i) => {
         ScrollTrigger.create({
           trigger: sec,
@@ -600,8 +696,71 @@ export function LandingExperience() {
       </div>
 
       <main id="main">
+        {landingProject && <GoogleFontsLoader fonts={[landingProject.fonts.primary]} />}
+
+        {/* S0 — Product hero: what this is, and a working generator, both
+            above the fold and above the scroll story. The story below is
+            reframed as an optional deep-dive ("see how it's built"), not
+            the thing a visitor has to get through first. */}
+        <section data-reveal-group className="relative mx-auto flex min-h-[calc(100vh-56px)] max-w-[1040px] flex-col justify-center px-6 py-16 sm:px-12" style={{ background: "#F2EBE0", color: "#211E18" }}>
+          <div data-reveal-item className="font-mono-plex text-xs uppercase tracking-[0.28em]" style={{ color: "#C36B3E" }}>
+            StyleBook — AI design-system generator
+          </div>
+          <h1 data-reveal-item className="mt-[18px] max-w-[18ch] font-editorial-serif text-[clamp(38px,5.6vw,72px)] font-normal leading-[1.04] tracking-[-0.01em]">
+            Describe your brand.
+            <br />
+            Get a complete design system.
+          </h1>
+          <p data-reveal-item className="mt-5 max-w-[54ch] text-[clamp(15px,1.3vw,18px)] leading-relaxed" style={{ color: "#6E675C" }}>
+            Palette, typography, spacing and accessibility — generated in seconds, verified for real contrast (not
+            just claimed), refined in Studio, exported anywhere.
+          </p>
+
+          <div data-reveal-item className="mt-9 max-w-[720px]">
+            <LandingGeneratePanel
+              theme="light"
+              inputId="landing-ai-prompt-hero"
+              prompt={landingPrompt}
+              onPromptChange={setLandingPrompt}
+              status={landingStatus}
+              onGenerate={handleLandingGenerate}
+              fellBack={landingFellBack}
+              hasProject={Boolean(landingProject)}
+              preview={landingPreview}
+            />
+          </div>
+
+          <div data-reveal-item className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+            {landingProject && (
+              <button
+                type="button"
+                onClick={openLandingResultInStudio}
+                className="rounded-full px-6 py-3 text-sm font-semibold"
+                style={{ background: "#211E18", color: "#F2EBE0" }}
+              >
+                Open &ldquo;{landingProject.name}&rdquo; in Studio →
+              </button>
+            )}
+            <Link href="/browse/colors" className="text-sm font-semibold" style={{ color: "#211E18" }}>
+              Browse the library →
+            </Link>
+            <Link href="/studio" className="text-sm font-semibold" style={{ color: "#211E18" }}>
+              Open the Studio →
+            </Link>
+          </div>
+
+          <a
+            href="#story"
+            className="pointer-events-auto absolute bottom-[30px] left-1/2 flex -translate-x-1/2 flex-col items-center gap-2.5 font-mono-plex text-[10px] uppercase tracking-[0.24em]"
+            style={{ color: "#8A8477" }}
+          >
+            <span>See how it&apos;s built</span>
+            <span className="sb-hint-el h-[26px] w-px" style={{ background: "#8A8477", animation: "sb-hint 1.8s ease-in-out infinite" }} />
+          </a>
+        </section>
+
         {/* S1 — Undesigned hero */}
-        <section className="relative mx-auto flex min-h-[calc(100vh-56px)] max-w-[1160px] flex-col justify-center px-6 pb-[90px] pt-16 sm:px-12">
+        <section id="story" className="relative mx-auto flex min-h-[calc(100vh-56px)] max-w-[1160px] flex-col justify-center px-6 pb-[90px] pt-16 sm:px-12">
           <div className="relative z-[2]">
             <div data-hero-line className="mb-[30px] font-mono-plex text-xs uppercase tracking-[0.28em]" style={{ color: "var(--mut)" }}>
               stylebook — watch a page come to life
@@ -1049,50 +1208,18 @@ export function LandingExperience() {
                 ))}
               </div>
 
-              <div data-reveal-item className="max-w-[720px] rounded-[18px] border p-5" style={{ background: "rgba(242,235,224,0.05)", borderColor: "rgba(242,235,224,0.16)" }}>
-                <div className="mb-2.5 font-mono-plex text-[10px] uppercase tracking-[0.16em]" style={{ color: "rgba(242,235,224,0.55)" }}>
-                  Describe your brand
-                </div>
-                <div className="text-xl leading-relaxed" style={{ color: "#F2EBE0" }}>
-                  Luxury skincare brand for Gen Z that feels calm, premium and trustworthy.
-                </div>
-                <div className="mt-4 flex justify-end">
-                  <span className="rounded-full px-[22px] py-[11px] text-sm font-semibold" style={{ background: "linear-gradient(135deg,#D2B68A,#B98A4E)", color: "#241B10" }}>
-                    ✦ Generate design system
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-5 grid gap-4 sm:grid-cols-3">
-                <div data-reveal-item className="overflow-hidden rounded-2xl border" style={{ borderColor: "rgba(242,235,224,0.14)" }}>
-                  <div className="flex h-[54px]">
-                    <span className="flex-1" style={{ background: "#E8D6C8" }} />
-                    <span className="flex-1" style={{ background: "#D9B8A6" }} />
-                    <span className="flex-1" style={{ background: "#B98A6E" }} />
-                    <span className="flex-1" style={{ background: "#6E5646" }} />
-                    <span className="flex-1" style={{ background: "#2C2320" }} />
-                  </div>
-                  <div className="px-3.5 py-3 font-mono-plex text-[9.5px] uppercase tracking-[0.12em]" style={{ color: "rgba(242,235,224,0.55)" }}>
-                    Palette · 5 tokens
-                  </div>
-                </div>
-                <div data-reveal-item className="rounded-2xl border p-3.5" style={{ borderColor: "rgba(242,235,224,0.14)" }}>
-                  <div className="text-[30px] leading-[0.95]" style={{ fontFamily: "var(--font-geometric-sans),sans-serif", color: "#F2EBE0" }}>
-                    Aa
-                  </div>
-                  <div className="mt-2 font-mono-plex text-[9.5px] uppercase tracking-[0.12em]" style={{ color: "rgba(242,235,224,0.55)" }}>
-                    Sora · display
-                  </div>
-                </div>
-                <div data-reveal-item className="flex flex-col justify-between rounded-2xl border p-3.5" style={{ borderColor: "rgba(242,235,224,0.14)" }}>
-                  <div className="font-mono-plex text-xs" style={{ color: "#8FD8B0" }}>
-                    AA ✓ contrast-safe
-                  </div>
-                  <div className="mt-2 font-mono-plex text-[9.5px] uppercase tracking-[0.12em]" style={{ color: "rgba(242,235,224,0.55)" }}>
-                    radius 12 · space 8 · soft shadow
-                  </div>
-                </div>
-              </div>
+              <LandingGeneratePanel
+                theme="dark"
+                inputId="landing-ai-prompt-panel"
+                prompt={landingPrompt}
+                onPromptChange={setLandingPrompt}
+                status={landingStatus}
+                onGenerate={handleLandingGenerate}
+                fellBack={landingFellBack}
+                hasProject={Boolean(landingProject)}
+                preview={landingPreview}
+                dataRevealItem
+              />
 
               <div data-reveal-item className="mt-[26px]">
                 <div className="mb-3 font-mono-plex text-[10px] uppercase tracking-[0.18em]" style={{ color: "rgba(242,235,224,0.55)" }}>
@@ -1108,9 +1235,19 @@ export function LandingExperience() {
               </div>
 
               <div data-reveal-item className="mt-[30px] flex flex-wrap gap-3.5">
-                <Link href="/studio/ai" data-pill className="rounded-full px-[30px] py-4 text-[15.5px] font-semibold" style={{ background: "#F4EEE2", color: "#17141F" }}>
-                  Try the AI atelier ✦
-                </Link>
+                {/* Always the same button element (never swapped for a
+                    <Link>) so the magnetic [data-pill] mousemove listener
+                    attached once at mount keeps working after a live
+                    generation changes its label/action. */}
+                <button
+                  type="button"
+                  data-pill
+                  onClick={openLandingResultInStudio}
+                  className="rounded-full px-[30px] py-4 text-[15.5px] font-semibold"
+                  style={{ background: "#F4EEE2", color: "#17141F" }}
+                >
+                  {landingProject ? `Open "${landingProject.name}" in Studio →` : "Try the AI atelier ✦"}
+                </button>
                 <Link href="/browse/themes" data-pill className="rounded-full border px-7 py-3.5 text-[15.5px]" style={{ borderColor: "rgba(244,238,226,0.4)", color: "#F4EEE2" }}>
                   Browse ready themes
                 </Link>
