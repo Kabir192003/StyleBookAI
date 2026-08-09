@@ -16,6 +16,17 @@ const REASON_MESSAGES: Record<string, string> = {
   "session-expired": "Your session expired. Sign in again to keep going.",
 };
 
+// Kept in sync with lib/validation/auth.ts's CredentialsSchema. Validated
+// here in JS (not via the input's native `pattern` attribute) because a
+// failed `pattern` match blocks submission with the browser's own
+// generic, unstyled "The string did not match the expected pattern."
+// bubble — real users hit this and had no idea what was actually wrong
+// (usually a stray space from autofill/paste, since typed input already
+// can't contain most invalid characters). A clear inline message next to
+// the form, matching every other error here, is worth more than relying
+// on the browser's tooltip.
+const USERNAME_PATTERN = /^[a-zA-Z0-9_-]+$/;
+
 export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -33,12 +44,19 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    const trimmedUsername = username.trim();
+    if (!USERNAME_PATTERN.test(trimmedUsername)) {
+      setError("Username can only contain letters, numbers, hyphens and underscores.");
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch(`/api/auth/${isSignUp ? "signup" : "login"}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username: trimmedUsername, password }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -75,12 +93,11 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
             <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#8A8477]">Username</span>
             <input
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value.replace(/\s/g, ""))}
               autoComplete="username"
               required
               minLength={3}
               maxLength={24}
-              pattern="[a-zA-Z0-9_-]+"
               className="rounded-lg border border-black/20 bg-white px-[13px] py-[11px] text-sm text-[#211E18] outline-none focus:border-[#222D52]"
               placeholder="e.g. northwind"
             />
