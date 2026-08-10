@@ -17,6 +17,9 @@ type ProjectData = Pick<
   | "cornerRadius"
   | "moodboard"
   | "designSystem"
+  | "colorPrimitives"
+  | "studioPaletteLinks"
+  | "previewLayout"
   | "context"
   | "theme"
   | "aiReasoning"
@@ -48,6 +51,9 @@ export function rowToProject(row: ProjectRow, clerkUserId: string): Project {
     cornerRadius: row.data.cornerRadius,
     moodboard: row.data.moodboard,
     designSystem: row.data.designSystem,
+    colorPrimitives: row.data.colorPrimitives,
+    studioPaletteLinks: row.data.studioPaletteLinks,
+    previewLayout: row.data.previewLayout,
     context: row.data.context,
     theme: row.data.theme,
     aiGenerated: row.ai_generated,
@@ -68,6 +74,9 @@ export function projectInputToRow(input: ProjectInput) {
     cornerRadius: input.cornerRadius,
     moodboard: input.moodboard,
     designSystem: input.designSystem,
+    colorPrimitives: input.colorPrimitives,
+    studioPaletteLinks: input.studioPaletteLinks,
+    previewLayout: input.previewLayout,
     context: input.context,
     theme: input.theme,
     aiReasoning: input.aiReasoning,
