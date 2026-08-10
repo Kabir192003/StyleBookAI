@@ -18,6 +18,16 @@ export type LivePreviewBlock = {
   html: string;
 };
 
+// A block's arranged position/size in the Studio live-preview canvas —
+// order in the array is display order (reordered via drag), `width: null`
+// means full-width (the default), and hidden blocks stay in the array
+// (visible: false) rather than being removed, so toggling is reversible.
+export type PreviewLayoutItem = { id: string; visible: boolean; width: number | null };
+
+export function defaultPreviewLayout(): PreviewLayoutItem[] {
+  return LIVE_PREVIEW_BLOCKS.map((b) => ({ id: b.id, visible: true, width: null }));
+}
+
 export const LIVE_PREVIEW_BLOCKS: LivePreviewBlock[] = [
   {
     id: "navigation",

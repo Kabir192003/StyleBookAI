@@ -30,6 +30,15 @@ import { projectInputFromStudioState } from "@/lib/studio/projectFromState";
 import { applyStudioImport } from "@/lib/studio/applyImport";
 import { paletteFromAIColors } from "@/lib/studio/paletteFromAIColors";
 import { synthesizeDesignSystemFromPalettes } from "@/lib/studio/deriveThemeVariant";
+import {
+  PrimitiveColor,
+  ColorValue,
+  isColorRef,
+  resolvePalette,
+  unlinkPrimitiveFromPalette,
+  makePrimitiveId,
+} from "@/lib/studio/tokenGraph";
+import { PreviewLayoutItem, defaultPreviewLayout } from "@/lib/studio/livePreviewBlocks";
 import { generateTypeScale, TYPE_SCALE_RATIOS } from "@/lib/typeScale/generateTypeScale";
 import { generateSpacingScale } from "@/lib/designTokens/spacing";
 import { buildShadowScale } from "@/lib/designTokens/shadows";
@@ -111,6 +120,19 @@ function randomOf<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+// Each of the 5 roles now holds either a literal hex (today's behavior,
+// "Custom" in the UI) or a reference to a named entry in state.primitives
+// ("Linked") — see lib/studio/tokenGraph.ts. Resolution to plain hex
+// happens once, in resolvedLight/resolvedDark below; every other consumer
+// (preview, export, save) only ever sees resolved hex, unchanged.
+export type EditablePaletteTokens = {
+  accent: ColorValue;
+  support: ColorValue;
+  surface: ColorValue;
+  ink: ColorValue;
+  muted: ColorValue;
+};
+
 export type StudioState = {
   name: string;
   mode: "Light" | "Dark";
@@ -118,8 +140,12 @@ export type StudioState = {
   // palette with a "mode" label that nothing actually read. The mode
   // toggle now switches which of these drives the preview (see
   // previewVars below), so it's a real dark mode, not cosmetic.
-  light: PaletteTokens;
-  dark: PaletteTokens;
+  light: EditablePaletteTokens;
+  dark: EditablePaletteTokens;
+  // Named, unlimited-count swatches a palette role can alias instead of
+  // holding its own literal hex — editing a primitive here cascades to
+  // every role (light or dark) linked to it.
+  primitives: PrimitiveColor[];
   headFont: string;
   bodyFont: string;
   accentFont?: string;
@@ -141,6 +167,10 @@ export type StudioState = {
   designSystem?: DesignSystem;
   moodboard?: MoodboardImage[];
   aiReasoning?: AIReasoning;
+  // Live Preview's arranged order/visibility/width per block — always
+  // present, defaulted to LIVE_PREVIEW_BLOCKS's own order, everything
+  // visible, full width.
+  previewLayout: PreviewLayoutItem[];
 };
 
 const DEFAULT_LIGHT: PaletteTokens = {
@@ -159,11 +189,26 @@ const DEFAULT_DARK: PaletteTokens = {
   muted: "#6B6483",
 };
 
+// Fixed ids (not makePrimitiveId()) — this array is built at module init,
+// which also runs during SSR; a random id generated there would differ
+// between the server-rendered HTML and the client's first render and
+// trip a hydration mismatch. Starts unlinked (every role below still
+// ships in "Custom" mode) — the Primitives panel just has a named
+// starter set ready to link to, not a required migration.
+const DEFAULT_PRIMITIVES: PrimitiveColor[] = [
+  { id: "primitive-navy", name: "Navy", hex: DEFAULT_LIGHT.accent },
+  { id: "primitive-terracotta", name: "Terracotta", hex: DEFAULT_LIGHT.support },
+  { id: "primitive-cream", name: "Cream", hex: DEFAULT_LIGHT.surface },
+  { id: "primitive-charcoal", name: "Charcoal", hex: DEFAULT_LIGHT.ink },
+  { id: "primitive-stone", name: "Stone", hex: DEFAULT_LIGHT.muted },
+];
+
 const DEFAULT_STATE: StudioState = {
   name: "Northwind",
   mode: "Light",
   light: DEFAULT_LIGHT,
   dark: DEFAULT_DARK,
+  primitives: DEFAULT_PRIMITIVES,
   headFont: "Fraunces",
   bodyFont: "Archivo",
   radius: 10,
@@ -171,6 +216,7 @@ const DEFAULT_STATE: StudioState = {
   typeScale: generateTypeScale(16, "Major Third"),
   spacing: generateSpacingScale(4),
   shadows: buildShadowScale("subtle"),
+  previewLayout: defaultPreviewLayout(),
 };
 
 function seedFromParams(params: URLSearchParams): Partial<StudioState> {
@@ -244,6 +290,13 @@ export function StudioBuilder() {
             designSystem: aiResult.designSystem,
             moodboard: aiResult.moodboard,
             aiReasoning: aiResult.aiReasoning,
+            // A saved project that already went through Studio once carries
+            // its own primitives/links forward as-is — re-deriving from
+            // aiResult.colors would silently drop them. Only a result with
+            // no prior Studio session falls back to the literal-hex
+            // derivation below.
+            primitives: aiResult.colorPrimitives ?? seeded.primitives,
+            previewLayout: aiResult.previewLayout ?? seeded.previewLayout,
             // Light always traces back to aiResult.colors — the same
             // canonical source the AI results page itself renders and
             // that "Open in Studio" already seeds via URL params (see
@@ -254,8 +307,12 @@ export function StudioBuilder() {
             // one hex on the results page and a different one in Studio).
             // Dark has no equivalent in aiResult.colors, so it's still the
             // best available signal for dark mode specifically.
-            light: paletteFromAIColors(aiResult.colors, seeded.light),
-            dark: paletteFromThemeVariant(aiResult.designSystem?.dark, seeded.dark),
+            light:
+              aiResult.studioPaletteLinks?.light ??
+              paletteFromAIColors(aiResult.colors, resolvePalette(seeded.light, seeded.primitives)),
+            dark:
+              aiResult.studioPaletteLinks?.dark ??
+              paletteFromThemeVariant(aiResult.designSystem?.dark, resolvePalette(seeded.dark, seeded.primitives)),
           };
 
     const importPayload = useStudioImportStore.getState().consume();
@@ -354,35 +411,73 @@ export function StudioBuilder() {
   const headFontOptions = FONTS.includes(state.headFont) ? FONTS : [state.headFont, ...FONTS];
   const bodyFontOptions = FONTS.includes(state.bodyFont) ? FONTS : [state.bodyFont, ...FONTS];
   const activeVariant = state.mode === "Dark" ? "dark" : "light";
+  // Raw (possibly-linked) palette — used only by the editor UI below to
+  // decide Custom vs Linked per role. Everything else (preview, export,
+  // save) reads the resolved version, which is always plain hex.
   const activePalette = state[activeVariant];
+  const resolvedLight = useMemo(() => resolvePalette(state.light, state.primitives), [state.light, state.primitives]);
+  const resolvedDark = useMemo(() => resolvePalette(state.dark, state.primitives), [state.dark, state.primitives]);
+  const resolvedActivePalette = activeVariant === "dark" ? resolvedDark : resolvedLight;
+  // Everything downstream that only needs to render/export (Live Preview,
+  // the Export drawer) reads this — plain resolved hex, so those consumers
+  // never need to know the token graph exists. Saving is different: it
+  // needs the raw, unresolved state.light/state.dark/state.primitives too
+  // (to persist links), so handleSave passes `state` itself, not this.
+  const resolvedState = useMemo(
+    () => ({ ...state, light: resolvedLight, dark: resolvedDark }),
+    [state, resolvedLight, resolvedDark]
+  );
 
   const previewVars = useMemo(
     () =>
       ({
-        "--accent": activePalette.accent,
-        "--support": activePalette.support,
-        "--surface": activePalette.surface,
-        "--ink": activePalette.ink,
-        "--muted": activePalette.muted,
-        "--on-accent": onColor(activePalette.accent),
+        "--accent": resolvedActivePalette.accent,
+        "--support": resolvedActivePalette.support,
+        "--surface": resolvedActivePalette.surface,
+        "--ink": resolvedActivePalette.ink,
+        "--muted": resolvedActivePalette.muted,
+        "--on-accent": onColor(resolvedActivePalette.accent),
         "--head": `'${state.headFont}', serif`,
         "--body": `'${state.bodyFont}', sans-serif`,
         "--r": `${state.radius}px`,
         "--pad": `${density.pad}px`,
         "--gap": `${density.gap}px`,
       }) as React.CSSProperties,
-    [activePalette, state.headFont, state.bodyFont, state.radius, density]
+    [resolvedActivePalette, state.headFont, state.bodyFont, state.radius, density]
   );
 
   function set<K extends keyof StudioState>(key: K, value: StudioState[K]) {
     setState((s) => ({ ...s, [key]: value }));
   }
 
-  function setToken<K extends keyof PaletteTokens>(key: K, value: string) {
+  function setToken<K extends keyof EditablePaletteTokens>(key: K, value: ColorValue) {
     setState((s) => {
       const variant = s.mode === "Dark" ? "dark" : "light";
       return { ...s, [variant]: { ...s[variant], [key]: value } };
     });
+  }
+
+  function addPrimitive() {
+    setState((s) => ({
+      ...s,
+      primitives: [...s.primitives, { id: makePrimitiveId(), name: `Color ${s.primitives.length + 1}`, hex: "#888888" }],
+    }));
+  }
+
+  function updatePrimitive(id: string, patch: Partial<Omit<PrimitiveColor, "id">>) {
+    setState((s) => ({
+      ...s,
+      primitives: s.primitives.map((p) => (p.id === id ? { ...p, ...patch } : p)),
+    }));
+  }
+
+  function removePrimitive(id: string) {
+    setState((s) => ({
+      ...s,
+      primitives: s.primitives.filter((p) => p.id !== id),
+      light: unlinkPrimitiveFromPalette(s.light, id, s.primitives),
+      dark: unlinkPrimitiveFromPalette(s.dark, id, s.primitives),
+    }));
   }
 
   function applyPalette(p: (typeof PALETTES)[number]) {
@@ -560,21 +655,75 @@ export function StudioBuilder() {
                 Editing {state.mode}
               </div>
             </div>
-            {ROLES.map((r) => (
-              <label key={r.key} className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={activePalette[r.key]}
-                  onChange={(e) => setToken(r.key, e.target.value)}
-                  className="studio-color-input h-10 w-10 flex-none rounded-lg shadow-[0_0_0_1px_rgba(33,30,24,0.14)]"
-                />
-                <div className="flex flex-1 flex-col">
-                  <span className="text-[13px] text-[#211E18]">{r.label}</span>
-                  <span className="font-mono-plex text-[11px] uppercase text-[#8A8477]">{activePalette[r.key]}</span>
+            {ROLES.map((r) => {
+              const raw = activePalette[r.key];
+              const linked = isColorRef(raw);
+              const resolvedHex = resolvedActivePalette[r.key];
+              return (
+                <div key={r.key} className="flex items-center gap-3">
+                  {linked ? (
+                    <span
+                      className="h-10 w-10 flex-none rounded-lg shadow-[0_0_0_1px_rgba(33,30,24,0.14)]"
+                      style={{ backgroundColor: resolvedHex }}
+                      title={resolvedHex}
+                    />
+                  ) : (
+                    <input
+                      type="color"
+                      value={raw}
+                      onChange={(e) => setToken(r.key, e.target.value)}
+                      className="studio-color-input h-10 w-10 flex-none rounded-lg shadow-[0_0_0_1px_rgba(33,30,24,0.14)]"
+                    />
+                  )}
+                  <div className="flex flex-1 flex-col gap-1">
+                    <span className="text-[13px] text-[#211E18]">{r.label}</span>
+                    {linked ? (
+                      <select
+                        value={raw.primitiveId}
+                        onChange={(e) => setToken(r.key, { primitiveId: e.target.value })}
+                        className="rounded-md border border-black/[0.16] bg-white px-1.5 py-1 font-mono-plex text-[11px] uppercase text-[#211E18]"
+                      >
+                        {state.primitives.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <span className="font-mono-plex text-[11px] uppercase text-[#8A8477]">{resolvedHex}</span>
+                    )}
+                  </div>
+                  <div className="flex flex-none overflow-hidden rounded-md border border-black/[0.16]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (linked) setToken(r.key, resolvedHex);
+                      }}
+                      className={cn(
+                        "px-2 py-1 font-mono-plex text-[9px] uppercase tracking-[0.08em]",
+                        !linked ? "bg-[#211E18] text-[#F2EBE0]" : "bg-white text-[#8A8477]"
+                      )}
+                    >
+                      Custom
+                    </button>
+                    <button
+                      type="button"
+                      disabled={state.primitives.length === 0}
+                      onClick={() => {
+                        if (!linked) setToken(r.key, { primitiveId: state.primitives[0].id });
+                      }}
+                      className={cn(
+                        "px-2 py-1 font-mono-plex text-[9px] uppercase tracking-[0.08em] disabled:opacity-30",
+                        linked ? "bg-[#211E18] text-[#F2EBE0]" : "bg-white text-[#8A8477]"
+                      )}
+                    >
+                      Linked
+                    </button>
+                  </div>
+                  <span className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#B4AD9E]">{r.token}</span>
                 </div>
-                <span className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#B4AD9E]">{r.token}</span>
-              </label>
-            ))}
+              );
+            })}
             <div className="flex flex-wrap gap-2 pt-1">
               {PALETTES.map((p) => (
                 <button
@@ -592,6 +741,51 @@ export function StudioBuilder() {
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Primitives</div>
+              <button
+                type="button"
+                onClick={addPrimitive}
+                className="font-mono-plex text-[9px] uppercase tracking-[0.12em] text-[#222D52]"
+              >
+                + Add
+              </button>
+            </div>
+            <p className="text-[12px] leading-relaxed text-[#6E675C]">
+              Named swatches a palette role can link to instead of holding its own hex — edit one here and every
+              linked role, in both modes, updates with it.
+            </p>
+            {state.primitives.map((p) => (
+              <div key={p.id} className="flex items-center gap-3">
+                <input
+                  type="color"
+                  value={p.hex}
+                  onChange={(e) => updatePrimitive(p.id, { hex: e.target.value })}
+                  className="studio-color-input h-9 w-9 flex-none rounded-lg shadow-[0_0_0_1px_rgba(33,30,24,0.14)]"
+                />
+                <input
+                  value={p.name}
+                  onChange={(e) => updatePrimitive(p.id, { name: e.target.value })}
+                  className="min-w-0 flex-1 rounded-md border border-black/[0.16] bg-white px-2 py-1.5 text-[13px] text-[#211E18]"
+                />
+                <span className="font-mono-plex text-[11px] uppercase text-[#8A8477]">{p.hex}</span>
+                <button
+                  type="button"
+                  onClick={() => removePrimitive(p.id)}
+                  className="font-mono-plex text-[13px] text-[#B4AD9E]"
+                  aria-label={`Remove ${p.name}`}
+                  title={`Remove ${p.name}`}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+            {state.primitives.length === 0 && (
+              <p className="font-mono-plex text-[11px] uppercase text-[#B4AD9E]">No primitives yet.</p>
+            )}
           </div>
 
           <div className="flex flex-col gap-3">
@@ -964,9 +1158,11 @@ export function StudioBuilder() {
 
             <div className="px-6 pb-10 sm:px-8">
               <LivePreviewSection
-                tokens={state}
+                tokens={resolvedState}
                 theme={activeVariant}
                 onThemeChange={(t) => set("mode", t === "dark" ? "Dark" : "Light")}
+                layout={state.previewLayout}
+                onLayoutChange={(l) => set("previewLayout", l)}
               />
             </div>
 
@@ -1017,7 +1213,10 @@ export function StudioBuilder() {
                     onClick={() =>
                       setState((s) => ({
                         ...s,
-                        designSystem: synthesizeDesignSystemFromPalettes(s.light, s.dark),
+                        designSystem: synthesizeDesignSystemFromPalettes(
+                          resolvePalette(s.light, s.primitives),
+                          resolvePalette(s.dark, s.primitives)
+                        ),
                       }))
                     }
                     className="self-start rounded-full border border-black/30 px-4 py-2 font-mono-plex text-[11px] uppercase tracking-[0.12em] text-[#211E18]"
@@ -1031,7 +1230,7 @@ export function StudioBuilder() {
         </main>
       </div>
 
-      {exportOpen && <ExportDrawer tokens={state} onClose={() => setExportOpen(false)} />}
+      {exportOpen && <ExportDrawer tokens={resolvedState} onClose={() => setExportOpen(false)} />}
     </div>
   );
 }

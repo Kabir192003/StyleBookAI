@@ -20,7 +20,9 @@
 import { allFonts } from "@/data/fonts";
 import { synthesizeColorFromHex } from "@/lib/colors/deriveColorMetadata";
 import { deriveThemeVariantFromPalette } from "./deriveThemeVariant";
+import { resolvePalette } from "./tokenGraph";
 import type { ProjectInput } from "@/lib/validation/project";
+import type { PaletteTokens } from "./exportCode";
 import type { Font } from "@/types/font";
 import type { DesignSystem } from "@/types/designSystem";
 import type { StudioState } from "@/components/studio/StudioBuilder";
@@ -58,11 +60,11 @@ function findOrSynthesizeFont(family: string): Font {
 // result with component-level tokens, accessibility notes, icon style,
 // etc.), that richer data is preserved as-is — only colorRoles and the
 // two palette-driven components (button/buttonSecondary) are refreshed
-// from state.light/state.dark, since the palette editor is the one place
+// from the resolved palette, since the palette editor is the one place
 // a designer actually edits color in Studio and must always win.
-function buildDesignSystem(state: StudioState): DesignSystem {
-  const light = deriveThemeVariantFromPalette(state.light);
-  const dark = deriveThemeVariantFromPalette(state.dark);
+function buildDesignSystem(state: StudioState, resolvedLight: PaletteTokens, resolvedDark: PaletteTokens): DesignSystem {
+  const light = deriveThemeVariantFromPalette(resolvedLight);
+  const dark = deriveThemeVariantFromPalette(resolvedDark);
 
   if (!state.designSystem) {
     return { light, dark };
@@ -86,10 +88,12 @@ function buildDesignSystem(state: StudioState): DesignSystem {
 }
 
 export function projectInputFromStudioState(state: StudioState): ProjectInput {
-  const activePalette = state.mode === "Dark" ? state.dark : state.light;
+  const resolvedLight = resolvePalette(state.light, state.primitives);
+  const resolvedDark = resolvePalette(state.dark, state.primitives);
+  const resolvedActivePalette = state.mode === "Dark" ? resolvedDark : resolvedLight;
 
-  const colors = (Object.keys(activePalette) as Array<keyof typeof activePalette>).map((role) => ({
-    ...synthesizeColorFromHex(activePalette[role], ROLE_LABELS[role]),
+  const colors = (Object.keys(resolvedActivePalette) as Array<keyof typeof resolvedActivePalette>).map((role) => ({
+    ...synthesizeColorFromHex(resolvedActivePalette[role], ROLE_LABELS[role]),
     role,
   }));
 
@@ -106,7 +110,13 @@ export function projectInputFromStudioState(state: StudioState): ProjectInput {
     shadows: state.shadows,
     cornerRadius: { options: [state.radius], recommended: state.radius },
     moodboard: state.moodboard,
-    designSystem: buildDesignSystem(state),
+    designSystem: buildDesignSystem(state, resolvedLight, resolvedDark),
+    // Raw (possibly-linked) palette + the named primitives it references —
+    // restores which role is Custom vs Linked on reload, rather than just
+    // the resolved hex above (which is all `colors`/`designSystem` need).
+    colorPrimitives: state.primitives,
+    studioPaletteLinks: { light: state.light, dark: state.dark },
+    previewLayout: state.previewLayout,
     aiGenerated: Boolean(state.aiReasoning),
     aiReasoning: state.aiReasoning,
   };

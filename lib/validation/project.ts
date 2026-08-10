@@ -197,6 +197,32 @@ const DesignSystemSchema = z.object({
     .optional(),
 });
 
+// Mirrors lib/studio/tokenGraph.ts's ColorValue — a literal hex (today's
+// behavior) or a reference to a colorPrimitives entry by id.
+const ColorValueSchema = z.union([hexSchema, z.object({ primitiveId: z.string() })]);
+
+const PrimitiveColorSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  hex: hexSchema,
+});
+
+const EditablePaletteTokensSchema = z.object({
+  accent: ColorValueSchema,
+  support: ColorValueSchema,
+  surface: ColorValueSchema,
+  ink: ColorValueSchema,
+  muted: ColorValueSchema,
+});
+
+// A block's arranged position/size in the Studio live-preview canvas.
+// Mirrors lib/studio/livePreviewBlocks.ts's PreviewLayoutItem.
+const PreviewLayoutItemSchema = z.object({
+  id: z.string(),
+  visible: z.boolean(),
+  width: z.number().nullable(),
+});
+
 export const ProjectInputSchema = z.object({
   name: z.string().trim().min(1).max(100),
   description: z.string().max(500).optional(),
@@ -212,6 +238,11 @@ export const ProjectInputSchema = z.object({
   cornerRadius: CornerRadiusScaleSchema.optional(),
   moodboard: z.array(MoodboardImageSchema).optional(),
   designSystem: DesignSystemSchema.optional(),
+  colorPrimitives: z.array(PrimitiveColorSchema).optional(),
+  studioPaletteLinks: z
+    .object({ light: EditablePaletteTokensSchema, dark: EditablePaletteTokensSchema })
+    .optional(),
+  previewLayout: z.array(PreviewLayoutItemSchema).optional(),
   context: z.enum(["saas", "ecommerce", "government", "editorial", "generic"]).optional(),
   theme: z
     .object({ id: z.string(), slug: z.string(), name: z.string() })

@@ -90,11 +90,21 @@ function variantEntries(variant: ThemeVariantTokens): Array<{ key: string; hex: 
   return entries;
 }
 
-export function generateExportCode(tab: ExportTab, s: StudioExportTokens): string {
+export type GenerateExportCodeOptions = {
+  // Overrides the CSS tab's root selector (":root") — used by the Studio
+  // live-preview canvas to inject the same generated CSS into the host
+  // document scoped under a wrapper attribute, instead of the real page's
+  // own :root custom properties. Ignored by every other tab/export target.
+  scopeSelector?: string;
+};
+
+export function generateExportCode(tab: ExportTab, s: StudioExportTokens, options?: GenerateExportCodeOptions): string {
   switch (tab) {
     case "CSS": {
+      const rootSelector = options?.scopeSelector ?? ":root";
+      const darkSelector = options?.scopeSelector ? `${options.scopeSelector}[data-theme="dark"]` : '[data-theme="dark"]';
       const lines: string[] = [
-        ":root {",
+        `${rootSelector} {`,
         `  --color-accent: ${s.light.accent};`,
         `  --color-support: ${s.light.support};`,
         `  --color-surface: ${s.light.surface};`,
@@ -126,7 +136,7 @@ export function generateExportCode(tab: ExportTab, s: StudioExportTokens): strin
       }
       lines.push("}");
 
-      lines.push("", '[data-theme="dark"] {');
+      lines.push("", `${darkSelector} {`);
       lines.push(`  --color-accent: ${s.dark.accent};`);
       lines.push(`  --color-support: ${s.dark.support};`);
       lines.push(`  --color-surface: ${s.dark.surface};`);

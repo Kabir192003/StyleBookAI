@@ -12,6 +12,8 @@ import { Font } from "./font";
 import { Theme, TypeScale } from "./theme";
 import { SpacingScale, ShadowScale, CornerRadiusScale, MoodboardImage } from "./designTokens";
 import { DesignSystem } from "./designSystem";
+import { PrimitiveColor, ColorValue } from "@/lib/studio/tokenGraph";
+import { PreviewLayoutItem } from "@/lib/studio/livePreviewBlocks";
 
 export type AIReasoning = {
   palette: string;
@@ -41,6 +43,19 @@ export type Project = {
   // breakpoints) rather than just a palette/font/type-scale — see
   // types/designSystem.ts.
   designSystem?: DesignSystem;
+  // Studio's color token graph — optional, additive. Old projects saved
+  // before this existed simply don't have it and fall back to the literal
+  // hex already in `colors`/`designSystem`, exactly as before. When
+  // present, restores which palette role links to which named primitive
+  // on reload, rather than just the resolved hex.
+  colorPrimitives?: PrimitiveColor[];
+  studioPaletteLinks?: {
+    light: { accent: ColorValue; support: ColorValue; surface: ColorValue; ink: ColorValue; muted: ColorValue };
+    dark: { accent: ColorValue; support: ColorValue; surface: ColorValue; ink: ColorValue; muted: ColorValue };
+  };
+  // The live-preview canvas's arranged order/visibility/width per block —
+  // also optional/additive, same reasoning as colorPrimitives above.
+  previewLayout?: PreviewLayoutItem[];
   context?: AIContext;
   theme?: Pick<Theme, "id" | "slug" | "name">;
   aiGenerated: boolean;
