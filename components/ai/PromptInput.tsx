@@ -22,7 +22,7 @@ import { DesignSystemGallery } from "@/components/design-system/DesignSystemGall
 import { SpacingVisualization } from "@/components/design-system/SpacingVisualization";
 import { LivePreviewMock } from "@/components/ai/LivePreviewMock";
 import { useAIResultStore } from "@/store";
-import { AIGeneratedProject } from "@/types/ai";
+import { AIDeviation, AIGeneratedProject, ContrastReport } from "@/types/ai";
 import { getContrastRatio } from "@/lib/colors/colorUtils";
 import { paletteFromAIColors } from "@/lib/studio/paletteFromAIColors";
 import { PaletteTokens } from "@/lib/studio/exportCode";
@@ -47,6 +47,130 @@ const DEFAULT_PREVIEW_PALETTE: PaletteTokens = {
 
 function onColor(hex: string): string {
   return getContrastRatio(hex, "#FBF8F2") >= getContrastRatio(hex, "#141110") ? "#FBF8F2" : "#141110";
+}
+
+/**
+ * Shows the measured contrast results and anything the pipeline changed or
+ * couldn't honour.
+ *
+ * Both halves exist because QA caught the generator being quietly untrue: it
+ * shipped body text at 1.02:1 while its own prose claimed WCAG AA, and it
+ * silently turned a "hard 0px corners" brief into 4px. lib/ai/validateTokens.ts
+ * now measures and repairs, and lib/ai/constraints.ts records substitutions —
+ * but until this panel existed none of that reached the person reading the
+ * result, so from the outside the tool looked exactly as untrustworthy as
+ * before. Numbers here are always measurements of the final tokens, never
+ * model claims.
+ */
+function VerificationPanel({
+  report,
+  deviations,
+}: {
+  report?: ContrastReport;
+  deviations?: AIDeviation[];
+}) {
+  // Only the pairs actually held to a threshold. Disabled controls and
+  // decorative surface-on-surface pairs are measured but exempt (see
+  // ContrastCheck.informational) — listing them as "passes" would inflate
+  // the count, and as "failures" would be wrong.
+  const enforced = report?.checks.filter((c) => !c.informational) ?? [];
+  const failures = enforced.filter((c) => !c.passes);
+  const repaired = report?.checks.filter((c) => c.repaired) ?? [];
+
+  if (!report && !deviations?.length) return null;
+
+  return (
+    <div className="mb-5 rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#222D52]">
+          Verified, not claimed
+        </p>
+        {report && (
+          <span
+            className="rounded-full px-3 py-1 font-mono-plex text-[10px] uppercase tracking-[0.12em]"
+            style={{
+              backgroundColor: report.level === "Fail" ? "#B3261E" : "#1F5C41",
+              color: "#F2EBE0",
+            }}
+          >
+            {report.level === "Fail"
+              ? `${failures.length} pair${failures.length === 1 ? "" : "s"} below AA`
+              : `WCAG ${report.level} · ${enforced.length} pairs checked`}
+          </span>
+        )}
+      </div>
+
+      {report && (
+        <p className="mt-2.5 text-[13px] leading-relaxed text-[#6E675C]">
+          Every colour pair in this system was measured after generation
+          {repaired.length > 0
+            ? `, and ${repaired.length} token${repaired.length === 1 ? " was" : "s were"} adjusted to reach AA.`
+            : "."}{" "}
+          These are the ratios of the tokens you&rsquo;re actually getting.
+        </p>
+      )}
+
+      {/* Failures first — a reviewer needs to see what's wrong before what's
+          right. This ordering is the QA report's own recommendation. */}
+      {failures.length > 0 && (
+        <ul className="mt-4 flex flex-col gap-1.5">
+          {failures.map((c) => (
+            <li
+              key={c.id}
+              className="flex flex-wrap items-center gap-2 rounded-lg border border-[#B3261E]/30 bg-[#B3261E]/[0.06] px-3 py-2 text-[13px]"
+            >
+              <span className="font-semibold text-[#211E18]">{c.label}</span>
+              <span className="font-mono-plex text-[11px] uppercase text-[#8A8477]">{c.variant}</span>
+              <span className="ml-auto font-mono-plex text-[12px] text-[#B3261E]">
+                {c.ratio}:1 · needs {c.required}:1
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {report && enforced.length > 0 && (
+        <details className="mt-3">
+          <summary className="cursor-pointer font-mono-plex text-[10px] uppercase tracking-[0.14em] text-[#8A8477]">
+            All {enforced.length} measured pairs
+          </summary>
+          <ul className="mt-2 grid gap-x-6 gap-y-1 sm:grid-cols-2">
+            {enforced.map((c) => (
+              <li key={c.id} className="flex items-baseline gap-2 text-[12px] text-[#6E675C]">
+                <span
+                  aria-hidden="true"
+                  className="h-2.5 w-2.5 flex-none rounded-full"
+                  style={{ backgroundColor: c.passes ? "#1F5C41" : "#B3261E" }}
+                />
+                <span className="truncate">{c.label}</span>
+                <span className="ml-auto font-mono-plex text-[11px] text-[#211E18]">{c.ratio}:1</span>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
+
+      {deviations && deviations.length > 0 && (
+        <div className="mt-5 border-t border-black/[0.1] pt-4">
+          <p className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">
+            What we changed
+          </p>
+          <ul className="mt-2.5 flex flex-col gap-2.5">
+            {deviations.map((d, i) => (
+              <li key={`${d.subject}-${i}`} className="text-[13px] leading-relaxed text-[#6E675C]">
+                <span className="font-semibold text-[#211E18]">{d.subject}</span>
+                {" — asked for "}
+                <span className="font-mono-plex text-[12px] text-[#211E18]">{d.requested}</span>
+                {", shipped "}
+                <span className="font-mono-plex text-[12px] text-[#211E18]">{d.applied}</span>
+                {`. ${d.reason}`}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function PromptInput() {
@@ -266,6 +390,8 @@ export function PromptInput() {
               </dl>
             </div>
           )}
+
+          <VerificationPanel report={result.contrastReport} deviations={result.deviations} />
 
           <div className="grid items-start gap-5 lg:grid-cols-[1.05fr_1fr]">
             <div className="flex flex-col gap-4">
