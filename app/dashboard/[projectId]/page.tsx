@@ -62,11 +62,17 @@ type FetchState =
   | { status: "unauthorized" }
   | { status: "ready"; project: Project };
 
+// `json` is the W3C DTCG token file (the one that imports into Figma), not a
+// loose dump — labelled explicitly because someone at a demo picking "JSON"
+// and getting an unimportable blob is exactly the confusion this avoids.
+// See EXPORT_FORMAT_META in lib/export/generators.ts for the canonical list.
 const EXPORT_FORMATS = [
   { label: "CSS variables", value: "css", ext: "css" },
   { label: "Tailwind config", value: "tailwind", ext: "js" },
   { label: "SCSS", value: "scss", ext: "scss" },
-  { label: "JSON", value: "json", ext: "json" },
+  { label: "Design tokens (W3C)", value: "json", ext: "tokens.json" },
+  { label: "Figma / Tokens Studio", value: "figma", ext: "figma.tokens.json" },
+  { label: "Readable JSON", value: "json-readable", ext: "json" },
 ] as const;
 
 function roleColor(project: Project, role: string, fallbackIndex = 0) {
@@ -217,8 +223,16 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Export failed.");
       const project = state.status === "ready" ? state.project : null;
-      const filename = `${(project?.name ?? "stylebook").toLowerCase().replace(/\s+/g, "-")}.${format.ext}`;
-      saveAs(new Blob([data.content], { type: "text/plain;charset=utf-8" }), filename);
+      const fallbackName = `${(project?.name ?? "stylebook").toLowerCase().replace(/\s+/g, "-")}.${format.ext}`;
+      // Prefer the server's filename/contentType — it's generated alongside
+      // the content, so a DTCG token file arrives as `*.tokens.json` typed
+      // `application/json`. Blobbing everything as `text/plain` meant some
+      // Figma/Tokens Studio import dialogs (which filter on type as well as
+      // extension) refused the file outright.
+      saveAs(
+        new Blob([data.content], { type: data.contentType ?? "text/plain;charset=utf-8" }),
+        data.filename ?? fallbackName
+      );
     } catch (err) {
       setExportError(err instanceof Error ? err.message : "Export failed.");
     } finally {

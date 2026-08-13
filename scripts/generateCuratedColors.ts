@@ -176,6 +176,89 @@ const TEMPERATURE: Partial<Record<ColorFamily, ColorMood>> = {
 const LUXE_TIERS = new Set(["Rich", "Deep", "Midnight"]);
 const LUXE_FAMILIES = new Set<ColorFamily>(["purple", "red", "brown"]);
 
+/**
+ * Note copy — see buildNote() below.
+ *
+ * The first version of this file glued the hue's `personality` onto every
+ * one of its 20 tiers verbatim, which a UX review caught twice over: every
+ * Scarlet in the library opened with the identical clause, *and* the clause
+ * was often flatly untrue of the swatch it sat under — "Whisper Crimson is
+ * a deep, deliberate red" describes a near-white tint as if it were the
+ * darkest step on the ramp. A `personality` written for a hue at full
+ * strength only holds around the middle of the ramp, so it's now used only
+ * there; the pale, saturated, muted, and dark bands get sentences written
+ * for what those steps actually look like.
+ */
+type TierBand = "tint" | "mid" | "saturated" | "muted" | "dark";
+
+const BAND_BY_TIER: Record<string, TierBand> = {
+  Whisper: "tint",
+  Ghost: "tint",
+  Pale: "tint",
+  Soft: "tint",
+  Blush: "tint",
+  Pastel: "tint",
+  Light: "mid",
+  Fair: "mid",
+  True: "mid",
+  Vivid: "saturated",
+  Bright: "saturated",
+  Bold: "saturated",
+  Dusky: "muted",
+  Smoky: "muted",
+  Muted: "muted",
+  Dusty: "muted",
+  Rich: "dark",
+  Deep: "dark",
+  Shadow: "dark",
+  Midnight: "dark",
+};
+
+/**
+ * Sentence shapes per band. Several per band, rotated by (hue + tier)
+ * index, so two swatches a user is likely to see side by side — adjacent
+ * tiers of one hue, or the same tier across neighbouring hues — don't open
+ * the same way. `%NAME%`, `%HUE%`, `%PERSONALITY%` and `%ENDING%` are
+ * substituted; `%ENDING%` is the tier's own clause, which already varies.
+ */
+const NOTE_TEMPLATES: Record<TierBand, string[]> = {
+  tint: [
+    "%NAME% holds just a trace of %HUE% — %ENDING%.",
+    "%NAME% is %HUE% thinned almost to paper: %ENDING%.",
+    "Almost more paper than %HUE% — %NAME% is %ENDING%.",
+  ],
+  mid: [
+    "%NAME% is %PERSONALITY% — %ENDING%.",
+    "%NAME%: %PERSONALITY%. At this step it's %ENDING%.",
+    "This is %HUE% at working strength — %PERSONALITY% — %ENDING%.",
+  ],
+  saturated: [
+    "%NAME% runs %HUE% close to full strength — %ENDING%.",
+    "%NAME% is %PERSONALITY%, dialled up until it's %ENDING%.",
+    "%HUE% with nothing held back: %NAME% is %ENDING%.",
+  ],
+  muted: [
+    "%NAME% is %HUE% with the volume turned down — %ENDING%.",
+    "The %HUE% is still there in %NAME%, just softened: %ENDING%.",
+    "%NAME% trades saturation for restraint — %ENDING%.",
+  ],
+  dark: [
+    "%NAME% takes %HUE% down into the dark — %ENDING%.",
+    "%NAME% is %HUE% at its heaviest: %ENDING%.",
+    "Deep in the %HUE% range, %NAME% is %ENDING%.",
+  ],
+};
+
+function buildNote(hueDef: Hue, tier: Tier, name: string, rotation: number): string {
+  const band = BAND_BY_TIER[tier.word] ?? "mid";
+  const templates = NOTE_TEMPLATES[band];
+  return templates[rotation % templates.length]
+    .replace("%NAME%", name)
+    .replace("%HUE%", hueDef.name.toLowerCase())
+    .replace("%PERSONALITY%", hueDef.personality)
+    .replace("%ENDING%", tier.noteEnding);
+}
+
 function slugify(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
@@ -196,8 +279,8 @@ function hslToHex(h: number, s: number, l: number): string {
 function buildCuratedColors(): Color[] {
   const out: Color[] = [];
 
-  for (const hueDef of HUES) {
-    for (const tier of TIERS) {
+  for (const [hueIndex, hueDef] of HUES.entries()) {
+    for (const [tierIndex, tier] of TIERS.entries()) {
       const sat = Math.max(2, Math.min(95, Math.round(hueDef.satBase * tier.satMul)));
       const hex = hslToHex(hueDef.hue, sat, tier.l);
 
@@ -221,7 +304,7 @@ function buildCuratedColors(): Color[] {
           style: Array.from(new Set(style)),
           collection: "curated",
           isPro: tier.isPro,
-          note: `${name} is ${hueDef.personality} — ${tier.noteEnding}.`,
+          note: buildNote(hueDef, tier, name, hueIndex + tierIndex),
         })
       );
     }

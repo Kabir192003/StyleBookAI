@@ -74,11 +74,16 @@ export function HamburgerMenu({ open, onClose }: { open: boolean; onClose: () =>
   return createPortal(
     <div
       onClick={onClose}
-      className="fixed inset-0 z-[80] flex justify-end bg-[rgba(20,17,12,0.42)] backdrop-blur-[3px]"
+      className="fixed inset-0 z-[80] flex justify-start bg-[rgba(20,17,12,0.42)] backdrop-blur-[3px]"
     >
+      {/* Anchored to the LEFT edge, following its trigger (see
+          SiteHeader.tsx) — a drawer that opens on the opposite side of the
+          screen from the button that opened it is exactly the pan-across
+          problem the accessibility review flagged, just moved one step
+          later in the interaction. */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className="flex h-full w-[min(340px,88vw)] flex-col border-l border-black/20 bg-[#F2EBE0]"
+        className="flex h-full w-[min(340px,88vw)] flex-col border-r border-black/20 bg-[#F2EBE0]"
       >
         <div className="flex items-center justify-between border-b border-black/[0.14] px-6 py-5">
           <span className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Menu</span>

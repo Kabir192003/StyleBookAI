@@ -10,6 +10,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store";
 
+/** `code` values from lib/auth/authFailure.ts that mean "our fault, not yours". */
+const SERVER_FAULT_CODES = new Set(["config_missing", "db_unreachable", "db_schema", "db_error", "unknown"]);
+
 const REASON_MESSAGES: Record<string, string> = {
   favorites: "Sign in to save favorites and sync your library.",
   "save-project": "Sign in to save your project and pick up where you left off.",
@@ -26,6 +29,12 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  // Server-side faults (missing env var, unreachable database) are shown
+  // differently from "wrong password": repeated "unable to register"
+  // reports came from a deployment fault that the form presented as if the
+  // person had typed something wrong, so they kept retyping. When the API
+  // says the failure is its own, say so plainly. See lib/auth/authFailure.ts.
+  const [isServerFault, setIsServerFault] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const isSignUp = mode === "sign-up";
@@ -33,6 +42,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setIsServerFault(false);
 
     const trimmedUsername = username.trim();
 
@@ -43,14 +53,25 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: trimmedUsername, password }),
       });
-      const data = await res.json();
+      // A gateway timeout or a crashed function returns HTML, not JSON —
+      // parsing it used to throw and be reported as the useless
+      // "Something went wrong", hiding the status code entirely.
+      const data = await res.json().catch(() => null);
       if (!res.ok) {
-        throw new Error(data.error ?? "Something went wrong");
+        setIsServerFault(SERVER_FAULT_CODES.has(data?.code) || res.status >= 500);
+        throw new Error(data?.error ?? `The server returned an error (${res.status}). Please try again.`);
       }
       setUser(data.user);
       router.push(searchParams.get("from") ?? "/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      // A thrown TypeError here means the request never completed at all
+      // (offline, DNS, blocked) — distinct from the server answering badly.
+      if (err instanceof TypeError) {
+        setIsServerFault(true);
+        setError("Couldn't reach the server. Check your connection and try again.");
+      } else {
+        setError(err instanceof Error ? err.message : "Something went wrong");
+      }
     } finally {
       setLoading(false);
     }
@@ -99,7 +120,25 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
             />
           </label>
 
-          {error && <p className="text-xs text-[#B3261E]">{error}</p>}
+          {error && (
+            <div
+              role="alert"
+              className={
+                isServerFault
+                  ? "rounded-lg border border-[#B3261E]/30 bg-[#B3261E]/[0.06] px-3 py-2.5"
+                  : undefined
+              }
+            >
+              <p className="text-xs text-[#B3261E]">{error}</p>
+              {isServerFault && (
+                <p className="mt-1 text-[11px] leading-relaxed text-[#6E675C]">
+                  This one is on us, not on you — retyping won&apos;t help. If it keeps happening, whoever runs
+                  this site can check <span className="font-mono-plex">/api/auth/health</span> for the exact
+                  cause.
+                </p>
+              )}
+            </div>
+          )}
 
           <button
             type="submit"

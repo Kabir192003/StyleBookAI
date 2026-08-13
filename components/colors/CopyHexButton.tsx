@@ -11,22 +11,36 @@ export function CopyHexButton({
   className?: string;
   style?: React.CSSProperties;
 }) {
-  const [copied, setCopied] = useState(false);
+  const [status, setStatus] = useState<"idle" | "copied" | "failed">("idle");
 
   async function copy() {
     try {
       await navigator.clipboard.writeText(hex);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1400);
+      setStatus("copied");
     } catch {
-      // Clipboard can fail (permissions, insecure context) — the label
-      // simply won't flip to "Copied ✓", no need to surface an error.
+      // Same reasoning as components/colors/ColorPlate.tsx: a refused
+      // clipboard write used to leave the button looking broken rather
+      // than telling the user to select the value themselves.
+      setStatus("failed");
     }
+    setTimeout(() => setStatus("idle"), 1800);
   }
 
   return (
-    <button type="button" onClick={copy} className={className} style={style}>
-      {copied ? "Copied ✓" : "Copy hex"}
+    // Confirms the actual value copied rather than a context-free
+    // "Copied ✓" — same defect a UX review raised on the colour wall
+    // (see components/colors/ColorPlate.tsx): the user is told the
+    // clipboard changed but not what is now on it.
+    <button
+      type="button"
+      onClick={copy}
+      aria-label={`Copy hex value ${hex} to clipboard`}
+      className={className}
+      style={style}
+    >
+      <span role="status">
+        {status === "copied" ? `${hex} copied ✓` : status === "failed" ? "Copy blocked — select it" : "Copy hex"}
+      </span>
     </button>
   );
 }

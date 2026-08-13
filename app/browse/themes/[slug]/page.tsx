@@ -152,7 +152,29 @@ export default function ThemeDetailPage({ params }: { params: { slug: string } }
           <span>01 — Palette</span>
           <span>Roles &amp; contrast</span>
         </div>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
+
+        {/* "Token" is jargon this page leans on repeatedly — in the header
+            count, on the Copy tokens button, and under every swatch — while
+            never defining it. A reviewer asked outright what tokens are and
+            what "copy tokens" would do to their clipboard. One sentence,
+            placed just before the first --token label a visitor reads, and
+            kept matter-of-fact so it doesn't lecture the designers who
+            already know the term. */}
+        <p className="max-w-[640px] px-6 pt-4 text-[13px] leading-relaxed sm:px-12" style={{ color: soft }}>
+          <strong style={{ color: ink, fontWeight: 600 }}>What&apos;s a token?</strong> A named slot in the
+          palette: <span className="font-mono-plex">{TOKENS[0]}</span> means &ldquo;this theme&apos;s accent
+          colour&rdquo; rather than one fixed hex. Name the slot once, swap the colour behind it later, and
+          everything using it follows.{" "}
+          {/* Counts are stated as what CopyTokensButton actually writes —
+              all seven colour roles plus the two font slots — not as the
+              five swatches shown below, which are only the ones worth
+              displaying as full-bleed tiles. */}
+          <strong style={{ color: ink, fontWeight: 600 }}>Copy tokens</strong> puts every one of this
+          theme&apos;s colour slots, plus its heading and body fonts, on your clipboard as CSS variables —
+          ready to paste straight into a stylesheet.
+        </p>
+
+        <div className="mt-5 grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
           {swatches.map((s) => (
             <div
               key={s.token}

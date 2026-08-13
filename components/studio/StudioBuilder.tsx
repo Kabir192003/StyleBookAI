@@ -29,7 +29,7 @@ import { PaletteTokens } from "@/lib/studio/exportCode";
 import { projectInputFromStudioState } from "@/lib/studio/projectFromState";
 import { applyStudioImport } from "@/lib/studio/applyImport";
 import { paletteFromAIColors } from "@/lib/studio/paletteFromAIColors";
-import { synthesizeDesignSystemFromPalettes } from "@/lib/studio/deriveThemeVariant";
+import { deriveDarkPaletteTokens, synthesizeDesignSystemFromPalettes } from "@/lib/studio/deriveThemeVariant";
 import {
   PrimitiveColor,
   ColorValue,
@@ -181,6 +181,12 @@ const DEFAULT_LIGHT: PaletteTokens = {
   muted: "#8A8477",
 };
 
+// The from-scratch dark default ONLY. This exact violet set is what QA found
+// shipping byte-identical across three unrelated AI-generated brands: nothing
+// was deriving a dark palette, so every brand fell through to these five
+// hexes. It is now unreachable from any branded path — anywhere a light
+// palette is known (URL seed, AI result, saved project), dark is derived from
+// it via deriveDarkPaletteTokens instead. Don't reintroduce it as a fallback.
 const DEFAULT_DARK: PaletteTokens = {
   accent: "#8B5CF6",
   support: "#22D3EE",
@@ -235,7 +241,13 @@ function seedFromParams(params: URLSearchParams): Partial<StudioState> {
   });
   if (Object.keys(seededPalette).length > 0) {
     const base = resolvedMode === "Dark" ? DEFAULT_DARK : DEFAULT_LIGHT;
-    seeded[resolvedMode === "Dark" ? "dark" : "light"] = { ...base, ...seededPalette };
+    const merged = { ...base, ...seededPalette };
+    seeded[resolvedMode === "Dark" ? "dark" : "light"] = merged;
+    // A deep link ("Open in Studio", "Apply this edition") only ever carries
+    // ONE palette — the light one. Without this, the brand's light palette
+    // landed next to the stock violet DEFAULT_DARK, so flipping to Dark threw
+    // away the brand entirely. Derive the counterpart from what we were given.
+    if (resolvedMode !== "Dark") seeded.dark = deriveDarkPaletteTokens(merged);
   }
 
   const head = params.get("head");
@@ -279,6 +291,18 @@ export function StudioBuilder() {
     // (e.g. a saved theme's "Apply this edition" link) — avoids leaking a
     // stale/unrelated AI result's design system into an unrelated deep link.
     const cameFromOtherSource = Boolean(searchParams.get("accent")) && searchParams.get("from") !== "ai";
+    // Hoisted so the dark fallback below can derive from the *resolved* light
+    // palette rather than from seeded.dark (which, absent a URL palette to
+    // seed from, is still the stock DEFAULT_DARK). Two values because a saved
+    // project's light palette may hold primitive references rather than
+    // literal hex: `aiLight` is what Studio edits, `aiLightHex` is the
+    // flattened form the colour maths needs.
+    const aiPrimitives = aiResult?.colorPrimitives ?? seeded.primitives;
+    const aiLight = aiResult
+      ? (aiResult.studioPaletteLinks?.light ??
+        paletteFromAIColors(aiResult.colors, resolvePalette(seeded.light, seeded.primitives)))
+      : null;
+    const aiLightHex = aiLight ? resolvePalette(aiLight, aiPrimitives) : null;
     const base =
       !aiResult || cameFromOtherSource
         ? seeded
@@ -305,14 +329,16 @@ export function StudioBuilder() {
             // guaranteed to agree with it (a confirmed data-fidelity bug:
             // the two could silently disagree, e.g. "Secondary" showing
             // one hex on the results page and a different one in Studio).
-            // Dark has no equivalent in aiResult.colors, so it's still the
-            // best available signal for dark mode specifically.
-            light:
-              aiResult.studioPaletteLinks?.light ??
-              paletteFromAIColors(aiResult.colors, resolvePalette(seeded.light, seeded.primitives)),
+            // Dark has no equivalent in aiResult.colors, so designSystem.dark
+            // is still the best available signal for dark mode specifically —
+            // but when it's absent the fallback derives from this brand's own
+            // light palette (deriveDarkPaletteTokens), never from seeded.dark.
+            // That fallback was the stock violet set, which is how three
+            // unrelated QA brands ended up sharing an identical dark palette.
+            light: aiLight!,
             dark:
               aiResult.studioPaletteLinks?.dark ??
-              paletteFromThemeVariant(aiResult.designSystem?.dark, resolvePalette(seeded.dark, seeded.primitives)),
+              paletteFromThemeVariant(aiResult.designSystem?.dark, deriveDarkPaletteTokens(aiLightHex!)),
           };
 
     const importPayload = useStudioImportStore.getState().consume();

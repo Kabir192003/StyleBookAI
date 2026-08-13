@@ -10,11 +10,17 @@
  * own minimal typographic system instead of borrowing the site's.
  */
 import { StudioExportTokens } from "@/lib/studio/exportCode";
+import { SEMANTIC_TYPE_ROLES, TYPE_SCALE_KEYS, shadowOverflowPx } from "@/lib/export/designTokens";
 import { getContrastRatio } from "@/lib/colors/colorUtils";
 
 const PAGE_WIDTH = 816;
 const PAGE_HEIGHT = 1056;
 const MARGIN = 64;
+// The footer sits absolutely at `bottom: MARGIN`, so flowed content has to
+// stop short of it. Without this the last block on a page could run under
+// the page number, and anything that paints outside its own box (a shadow
+// swatch) got clipped by the page's `overflow: hidden` at the raster edge.
+const FOOTER_RESERVE = 40;
 
 function onColor(hex: string): string {
   return getContrastRatio(hex, "#FFFFFF") >= getContrastRatio(hex, "#111111") ? "#FFFFFF" : "#111111";
@@ -28,6 +34,7 @@ function Page({ children }: { children: React.ReactNode }) {
         width: PAGE_WIDTH,
         height: PAGE_HEIGHT,
         padding: MARGIN,
+        paddingBottom: MARGIN + FOOTER_RESERVE,
         backgroundColor: "#ffffff",
         color: "#171310",
         fontFamily: "system-ui, -apple-system, sans-serif",
@@ -146,6 +153,60 @@ function ColorsPage({ s }: { s: StudioExportTokens }) {
   );
 }
 
+/**
+ * The actual numbers behind the type samples.
+ *
+ * QA defect this closes: the typography page showed what the faces look
+ * like but never stated a single pixel size, so a developer handed the PDF
+ * had nothing to build with — the app's own curated theme pages print
+ * "H1 4xl · H2 2xl · Body base · Caption xs" and the export didn't. Both
+ * the semantic mapping and the ladder come from lib/export/designTokens.ts,
+ * the same source the CSS/DTCG/markdown exports use, so the PDF can't
+ * disagree with the token files shipped next to it.
+ */
+function TypeScaleBlock({ s }: { s: StudioExportTokens }) {
+  const scale = s.typeScale!;
+  const semantic = SEMANTIC_TYPE_ROLES.filter(({ role }) => ["h1", "h2", "body", "caption"].includes(role));
+
+  return (
+    <div>
+      <div style={{ fontSize: 11, color: "#8A8477", marginBottom: 10 }}>
+        Type scale — base {scale.baseSize}px, {scale.ratioName} ({scale.ratio})
+      </div>
+
+      <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+        {semantic.map(({ role, size }) => (
+          <div
+            key={role}
+            style={{
+              flex: 1,
+              border: "1px solid rgba(0,0,0,0.08)",
+              borderRadius: 10,
+              padding: "10px 12px",
+              boxSizing: "border-box",
+            }}
+          >
+            <div style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "#8A8477" }}>
+              {role}
+            </div>
+            <div style={{ marginTop: 4, fontSize: 20, color: "#171310" }}>{Math.round(scale.sizes[size])}px</div>
+            <div style={{ marginTop: 2, fontSize: 10, color: "#B5AE9E" }}>{size}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 24px" }}>
+        {TYPE_SCALE_KEYS.map((key) => (
+          <div key={key} style={{ width: 140, display: "flex", justifyContent: "space-between", fontSize: 11 }}>
+            <span style={{ color: "#8A8477" }}>{key}</span>
+            <span style={{ color: "#3C3830" }}>{Math.round(scale.sizes[key])}px</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function TypographyPage({ s }: { s: StudioExportTokens }) {
   return (
     <Page>
@@ -174,13 +235,87 @@ function TypographyPage({ s }: { s: StudioExportTokens }) {
       </div>
 
       {s.accentFont && (
-        <div>
+        <div style={{ marginBottom: 36 }}>
           <div style={{ fontSize: 11, color: "#8A8477", marginBottom: 8 }}>Accent — {s.accentFont}</div>
           <div style={{ fontFamily: `'${s.accentFont}', sans-serif`, fontSize: 26 }}>Aa Bb Cc 123</div>
         </div>
       )}
+
+      {s.typeScale && <TypeScaleBlock s={s} />}
       <PageFooter label={s.name} index={3} />
     </Page>
+  );
+}
+
+/**
+ * Shadow swatches, each sitting inside a cell padded by the shadow's own
+ * measured reach.
+ *
+ * Confirmed defect this prevents (reproduced in 3/3 QA exports, including
+ * with "dramatic" pre-selected): the dramatic level is a 30px blur at an
+ * 8px Y offset, so it painted ~38px outside the 80px swatch it belonged
+ * to. The swatch used to sit flush in a bare flex row at the bottom of the
+ * page, so that spill ran past the card, past the page's content area, and
+ * was chopped by the page node's `overflow: hidden` when html-to-image
+ * rasterized it — a grey smudge trailing off into blank space.
+ *
+ * The padding is derived from the shadow values rather than hard-coded, so
+ * a future scale with a bigger blur can't silently reintroduce the clip.
+ * One shared inset across all three cells keeps the swatches on a common
+ * baseline instead of each drifting by its own blur.
+ */
+function ShadowRow({ s }: { s: StudioExportTokens }) {
+  const levels = s.shadows?.levels ?? [];
+  const reach = Math.max(0, ...levels.map((level) => shadowOverflowPx(level.value)));
+  // +6px of breathing room, and a ceiling so an absurd generated shadow
+  // can't push the row off the page while trying to contain it.
+  const inset = Math.min(56, Math.ceil(reach) + 6);
+
+  return (
+    <div>
+      <div style={{ fontSize: 11, color: "#8A8477", marginBottom: 10 }}>Shadows</div>
+      <div
+        style={{
+          display: "flex",
+          gap: 12,
+          // The tinted panel is what the shadows are cast onto, so
+          // "contained" is visible rather than implied.
+          backgroundColor: "#FAF8F4",
+          border: "1px solid rgba(0,0,0,0.05)",
+          borderRadius: 12,
+          padding: 12,
+          boxSizing: "border-box",
+        }}
+      >
+        {levels.map((level) => (
+          <div
+            key={level.name}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              padding: inset,
+              boxSizing: "border-box",
+            }}
+          >
+            <div
+              style={{
+                width: 80,
+                height: 80,
+                borderRadius: 10,
+                backgroundColor: "#ffffff",
+                border: "1px solid rgba(0,0,0,0.06)",
+                boxShadow: level.value,
+              }}
+            />
+            <div style={{ marginTop: 12, fontSize: 11, color: "#6E675C", textTransform: "capitalize" }}>
+              {level.name}
+              {level.name === s.shadows?.recommended ? " ✓" : ""}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -231,31 +366,7 @@ function TokensPage({ s }: { s: StudioExportTokens }) {
         </div>
       )}
 
-      {s.shadows && (
-        <div>
-          <div style={{ fontSize: 11, color: "#8A8477", marginBottom: 10 }}>Shadows</div>
-          <div style={{ display: "flex", gap: 20 }}>
-            {s.shadows.levels.map((level) => (
-              <div key={level.name} style={{ textAlign: "center" }}>
-                <div
-                  style={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: 10,
-                    backgroundColor: "#ffffff",
-                    border: "1px solid rgba(0,0,0,0.06)",
-                    boxShadow: level.value,
-                  }}
-                />
-                <div style={{ marginTop: 10, fontSize: 11, color: "#6E675C", textTransform: "capitalize" }}>
-                  {level.name}
-                  {level.name === s.shadows!.recommended ? " ✓" : ""}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {s.shadows && <ShadowRow s={s} />}
       <PageFooter label={s.name} index={4} />
     </Page>
   );

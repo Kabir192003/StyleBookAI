@@ -1,25 +1,55 @@
 /**
  * Supabase client factory.
  *
- * Two clients on purpose: `supabase` uses the anon key and is safe to
- * import in client components — RLS on the DB enforces access control.
- * `getSupabaseAdmin()` uses the service-role key and bypasses RLS entirely;
- * it must only ever be called from Server Components or API routes, never
- * from anything that ships to the browser.
+ * Two clients on purpose: `getSupabaseBrowserClient()` uses the anon key and
+ * is safe to call in client components — RLS on the DB enforces access
+ * control. `getSupabaseAdmin()` uses the service-role key and bypasses RLS
+ * entirely; it must only ever be called from Server Components or API
+ * routes, never from anything that ships to the browser.
+ *
+ * Both go through `requireEnv()` rather than the `!` non-null assertion this
+ * file used to carry. `createClient(undefined!, …)` throws "supabaseUrl is
+ * required" — a message that names no environment variable, no deployment,
+ * and no fix, and which surfaced to users as a generic 500. Since sign-up
+ * failing on the deployed site was reported three times while working
+ * locally, a missing env var was a prime suspect and had to stop being
+ * indistinguishable from every other fault. ConfigError carries the variable
+ * name so `classifyAuthFailure()` can tell the user (and the logs) exactly
+ * which setting is absent.
  */
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { ConfigError } from "@/lib/auth/authFailure";
+
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new ConfigError(
+      name,
+      `${name} is not set in this environment. Add it to .env.local locally, or to the project's ` +
+        `environment variables in Vercel and redeploy — see .env.local.example.`
+    );
+  }
+  return value;
+}
 
 // Browser-safe client — uses the anon key, respects Row Level Security.
-export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+// Built lazily rather than at module scope: this module is imported by every
+// auth/projects/favorites API route, and a module-scope createClient() call
+// throws during *import* if the URL is unset, taking down routes that never
+// wanted the browser client in the first place.
+let browserClient: SupabaseClient | null = null;
+export function getSupabaseBrowserClient(): SupabaseClient {
+  if (!browserClient) {
+    browserClient = createClient(
+      requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
+      requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY")
+    );
+  }
+  return browserClient;
+}
 
 // Server-only client — uses the service role key, bypasses RLS.
 // Never import this into a client component.
-export function getSupabaseAdmin() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+export function getSupabaseAdmin(): SupabaseClient {
+  return createClient(requireEnv("NEXT_PUBLIC_SUPABASE_URL"), requireEnv("SUPABASE_SERVICE_ROLE_KEY"));
 }

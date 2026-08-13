@@ -47,13 +47,23 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-black/[0.18] bg-[#F2EBE0]/[0.94] backdrop-blur-md">
       <div className="flex h-14 items-center justify-between gap-6 px-6 sm:px-12">
-        <Link
-          href="/"
-          className="flex shrink-0 items-center gap-2 font-editorial-serif text-[21px] font-semibold tracking-[-0.01em] text-[#211E18]"
-        >
-          <img src="/brand/stylebook-logo.svg" alt="" className="h-6 w-6" aria-hidden="true" />
-          StyleBook
-        </Link>
+        {/* Menu trigger sits at the far LEFT, before the wordmark. An
+            accessibility review raised it as a low-vision concern: someone
+            using magnification scans from the left edge, and a menu parked
+            in the top-right corner is off-screen at high zoom — they have
+            to pan across the whole viewport to find the only way into
+            Dashboard/Account/sign-out. It is also the first thing in DOM
+            order now, so tab order matches the visual order. */}
+        <div className="flex shrink-0 items-center gap-3">
+          <HamburgerTrigger onClick={() => setMenuOpen(true)} />
+          <Link
+            href="/"
+            className="flex shrink-0 items-center gap-2 font-editorial-serif text-[21px] font-semibold tracking-[-0.01em] text-[#211E18]"
+          >
+            <img src="/brand/stylebook-logo.svg" alt="" className="h-6 w-6" aria-hidden="true" />
+            StyleBook
+          </Link>
+        </div>
 
         <nav className="hidden items-center gap-8 sm:flex" aria-label="Primary">
           {NAV_LINKS.map((link) => {
@@ -66,16 +76,12 @@ export function SiteHeader() {
           })}
         </nav>
 
-        <div className="flex items-center gap-4">
-          <Link
-            href="/studio/ai"
-            className="rounded-full bg-[#222D52] px-[22px] py-2.5 text-[13px] tracking-[0.02em] text-[#F2EBE0] transition-transform hover:-translate-y-0.5"
-          >
-            Generate with AI
-          </Link>
-
-          <HamburgerTrigger onClick={() => setMenuOpen(true)} />
-        </div>
+        <Link
+          href="/studio/ai"
+          className="shrink-0 rounded-full bg-[#222D52] px-[22px] py-2.5 text-[13px] tracking-[0.02em] text-[#F2EBE0] transition-transform hover:-translate-y-0.5"
+        >
+          Generate with AI
+        </Link>
       </div>
 
       <HamburgerMenu open={menuOpen} onClose={() => setMenuOpen(false)} />

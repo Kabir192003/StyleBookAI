@@ -10,13 +10,30 @@ import { GeminiPaletteResponseSchema, GeminiPaletteResponse } from "./schema";
 import { generateTypeScale } from "@/lib/typeScale/generateTypeScale";
 import { generateSpacingScale } from "@/lib/designTokens/spacing";
 import { buildShadowScale } from "@/lib/designTokens/shadows";
-import { buildRadiusScale } from "@/lib/designTokens/radius";
+import { buildNamedRadiusScale, buildRadiusScaleFromBase, snapRadiusBase } from "./radiusScale";
 import { synthesizeColorFromHex } from "@/lib/colors/deriveColorMetadata";
+import { hexToRgb, rgbToHsl } from "@/lib/colors/colorUtils";
+import {
+  ensureActionablePrimary,
+  validateDesignSystem,
+  validatePaletteRoles,
+} from "./validateTokens";
+import { enforceFontRoles } from "./fontRoles";
+import { groundReasoning } from "./reasoning";
+import {
+  parsePromptConstraints,
+  reportMissingHexes,
+  reportPhotographyBan,
+  reportRadiusConstraint,
+} from "./constraints";
+import { brandPaletteFromThemeVariant, deriveDarkThemeVariantFromLight } from "@/lib/studio/deriveThemeVariant";
+import { darkPaletteIsUsable } from "@/lib/colors/deriveDarkPalette";
 import { allColors } from "@/data/colors";
 import { allFonts } from "@/data/fonts";
 import { moodboardImages } from "@/data/moodboards";
-import { AIGenerateRequest, AIGeneratedProject } from "@/types/ai";
+import { AIDeviation, AIGenerateRequest, AIGeneratedProject, ContrastReport } from "@/types/ai";
 import { AIReasoning } from "@/types/project";
+import { DesignSystem } from "@/types/designSystem";
 import { Color } from "@/types/color";
 import { Font } from "@/types/font";
 import { MoodboardImage } from "@/types/designTokens";
@@ -315,6 +332,44 @@ async function callGemini(prompt: string, options?: { maxOutputTokens?: number }
   return parsed.data;
 }
 
+/**
+ * A hex repaired by the contrast pass has to carry its precomputed rgb/hsl
+ * with it — `Color` stores both (see buildColor in lib/colors/colorUtils.ts)
+ * and every consumer reads them instead of re-deriving, so leaving them stale
+ * would show one swatch and export a different one.
+ */
+function withRepairedHex<T extends Color>(color: T, hex: string): T {
+  if (hex.toLowerCase() === color.hex.toLowerCase()) return color;
+  const rgb = hexToRgb(hex);
+  return { ...color, hex, rgb, hsl: rgbToHsl(rgb.r, rgb.g, rgb.b) };
+}
+
+/**
+ * Guarantees `designSystem.dark` exists and belongs to this brand.
+ *
+ * This is the code-side half of the highest-severity QA finding: dark mode was
+ * optional in the contract, so it was usually absent, so StudioBuilder's
+ * hardcoded DEFAULT_DARK (accent #8B5CF6 / surface #121022 / ink #E6E1F5 …)
+ * stood in — and three unrelated brands shipped byte-identical dark palettes.
+ * A model-authored dark variant is kept only if it passes the quality gate in
+ * lib/colors/deriveDarkPalette.ts (actually dark, ink readable, not the stock
+ * violet set, not just the light palette echoed back). Otherwise it is
+ * replaced by a derivation of this brand's own light tokens.
+ */
+function ensureDarkVariant(designSystem: DesignSystem): { designSystem: DesignSystem; derived: boolean } {
+  const lightPalette = brandPaletteFromThemeVariant(designSystem.light);
+  const modelDark = designSystem.dark;
+
+  if (modelDark && darkPaletteIsUsable(brandPaletteFromThemeVariant(modelDark), lightPalette)) {
+    return { designSystem, derived: false };
+  }
+
+  return {
+    designSystem: { ...designSystem, dark: deriveDarkThemeVariantFromLight(designSystem.light) },
+    derived: true,
+  };
+}
+
 export async function generateProjectFromPrompt(request: AIGenerateRequest): Promise<AIGeneratedProject> {
   const candidateColors = selectCandidateColors(request);
   const candidateFonts = selectCandidateFonts(request);
@@ -358,32 +413,151 @@ export async function generateProjectFromPrompt(request: AIGenerateRequest): Pro
     throw new AIGenerationError("Gemini returned an unknown font id");
   }
 
+  // ---------------------------------------------------------------------
+  // Post-generation pipeline. Everything below is deterministic: the model's
+  // raw answer is treated as a proposal, and the checks it demonstrably
+  // cannot do for itself (measuring contrast, honouring literal constraints,
+  // keeping dark mode per-brand, keeping prose truthful) are done in code.
+  // Each step names the QA defect it exists to prevent.
+  // ---------------------------------------------------------------------
+  const constraints = parsePromptConstraints(request.prompt);
+  const deviations: AIDeviation[] = [];
+
+  // 1. Fonts — a monospace/display face in the body slot is replaced and the
+  //    swap reported (lib/ai/fontRoles.ts; "Roboto Mono as the body font").
+  const fontResult = enforceFontRoles(
+    { primary: primaryFont, secondary: secondaryFont, accent: accentFont },
+    candidateFonts,
+    { banMonospace: constraints.banMonospace }
+  );
+  deviations.push(...fontResult.deviations);
+
+  // 2. Palette — the primary must be able to act as an action colour, and
+  //    text/muted must be readable on the palette's own background. This is
+  //    the path that shipped #f8fafc body text on a #f8f7f7 background (1.02:1).
+  const primaryResult = ensureActionablePrimary(resolvedColors);
+  const paletteResult = validatePaletteRoles(primaryResult.colors);
+  deviations.push(...primaryResult.deviations, ...paletteResult.deviations);
+  const finalColors = paletteResult.colors.map((color, index) =>
+    withRepairedHex(resolvedColors[index], color.hex)
+  );
+  const paletteChecks = [...primaryResult.checks, ...paletteResult.checks];
+
+  // 3. Design system — always gets a brand-derived dark variant, then every
+  //    meaningful pair in BOTH variants is measured and repaired.
+  let designSystem: DesignSystem | undefined;
+  let contrastReport: ContrastReport | undefined;
+  if (raw.designSystem) {
+    const normalized: DesignSystem = {
+      ...raw.designSystem,
+      accessibility: raw.designSystem.accessibility
+        ? { level: raw.designSystem.accessibility.level, notes: raw.designSystem.accessibility.notes ?? [] }
+        : undefined,
+    };
+    const withDark = ensureDarkVariant(normalized);
+    if (withDark.derived) {
+      deviations.push({
+        kind: "auto-correction",
+        subject: "designSystem.dark",
+        requested: normalized.dark ? "model-authored dark theme" : "no dark theme returned",
+        applied: "dark theme derived from this brand's light tokens",
+        reason: normalized.dark
+          ? "The returned dark theme wasn't usable (not actually dark, unreadable ink, or the light palette repeated), so it was rebuilt from the light palette's own hues."
+          : "Dark mode is always generated. It was derived from this brand's light palette — hues preserved, lightness remapped — rather than falling back to a stock dark theme.",
+      });
+    }
+
+    const validated = validateDesignSystem(withDark.designSystem);
+    designSystem = validated.designSystem;
+    contrastReport = {
+      ...validated.report,
+      checks: [...paletteChecks, ...validated.report.checks],
+    };
+    deviations.push(...validated.deviations);
+  } else if (paletteChecks.length > 0) {
+    // No design system requested — still report what was measured on the
+    // flat palette so a plain generation is never silently unverified.
+    const enforced = paletteChecks.filter((c) => !c.informational);
+    const failCount = enforced.filter((c) => !c.passes).length;
+    contrastReport = {
+      level: failCount > 0 ? "Fail" : enforced.every((c) => c.ratio >= 7) ? "AAA" : "AA",
+      checks: paletteChecks,
+      passCount: enforced.length - failCount,
+      failCount,
+      repairedCount: paletteChecks.filter((c) => c.repaired).length,
+      notes: enforced.map((c) => `${c.label}: ${c.ratio}:1 (minimum ${c.required}:1).`),
+    };
+  }
+
   const typeScale = generateTypeScale(raw.baseSize ?? 16, raw.typeScaleRatio);
   const spacing = generateSpacingScale(raw.spacingBase ?? 4);
   const shadows = buildShadowScale(raw.shadowLevel ?? "subtle");
-  const cornerRadius = buildRadiusScale(raw.cornerRadius ?? 8);
+
+  // 4. Radius — an explicit "0px corners" in the brief now beats the model's
+  //    taste outright (it used to be unrepresentable, so it silently became
+  //    4px), and the single flat value becomes a real sm/md/lg/pill ramp.
+  const modelRadius = snapRadiusBase(raw.cornerRadius, 8);
+  const appliedRadius = constraints.cornerRadius ? snapRadiusBase(constraints.cornerRadius.value) : modelRadius;
+  deviations.push(...reportRadiusConstraint(constraints, modelRadius, appliedRadius));
+  const cornerRadius = buildRadiusScaleFromBase(appliedRadius);
+  const radiusScale = buildNamedRadiusScale(appliedRadius);
 
   const moodboardById = new Map(candidateMoodboardImages.map((m) => [m.id, m]));
-  const moodboard = (raw.moodboardImageIds ?? [])
+  const selectedMoodboard = (raw.moodboardImageIds ?? [])
     .map((id) => moodboardById.get(id))
     .filter((image): image is MoodboardImage => Boolean(image));
 
-  const reasoning: AIReasoning = raw.reasoning;
+  // 5. Imagery — the moodboard library is Unsplash photography, so a brief
+  //    that bans stock imagery is honoured by dropping it, not by swapping in
+  //    different photos (QA asked for no lifestyle stock and got architecture).
+  const moodboard = constraints.banPhotography ? [] : selectedMoodboard;
+  deviations.push(...reportPhotographyBan(constraints, selectedMoodboard.length));
+
+  // 6. Explicit hexes the user typed must survive to the final palette.
+  deviations.push(...reportMissingHexes(constraints, finalColors.map((c) => c.hex)));
+
+  // 7. Reasoning — strip the model's unverifiable compliance claims and
+  //    append a factual summary of the tokens as actually shipped, so the
+  //    prose can no longer drift from (or lie about) the result.
+  const reasoning: AIReasoning = groundReasoning(raw.reasoning, {
+    brandName: raw.projectName,
+    colors: finalColors.map((c) => ({ role: c.role, name: c.name, hex: c.hex })),
+    fonts: {
+      heading: fontResult.roles.primary.family,
+      body: fontResult.roles.secondary.family,
+      accent: fontResult.roles.accent?.family,
+      headingCategory: fontResult.roles.primary.category,
+      bodyCategory: fontResult.roles.secondary.category,
+    },
+    typeScale: {
+      ratioName: raw.typeScaleRatio,
+      baseSize: raw.baseSize ?? 16,
+      steps: Object.keys(typeScale.sizes).length,
+    },
+    radius: { base: radiusScale.md, sm: radiusScale.sm, lg: radiusScale.lg },
+    spacingBase: raw.spacingBase ?? 4,
+    shadowLevel: raw.shadowLevel ?? "subtle",
+    report: contrastReport,
+    repairedCount: contrastReport?.repairedCount ?? 0,
+  });
 
   return {
     name: raw.projectName,
-    colors: resolvedColors,
-    fonts: { primary: primaryFont, secondary: secondaryFont, accent: accentFont },
+    colors: finalColors,
+    fonts: fontResult.roles,
     typeScale,
     spacing,
     shadows,
     cornerRadius,
+    radiusScale,
     moodboard: moodboard.length > 0 ? moodboard : undefined,
-    designSystem: raw.designSystem,
+    designSystem,
     context: raw.context ?? "generic",
     mockup: raw.mockup,
     aiGenerated: true,
     aiPrompt: request.prompt,
     aiReasoning: reasoning,
+    contrastReport,
+    deviations: deviations.length > 0 ? deviations : undefined,
   };
 }
