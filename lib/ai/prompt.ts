@@ -43,14 +43,30 @@ The user also wants a full design system, not just a palette. Include a
       "alert": ComponentTokenSet, "badge": ComponentTokenSet
     }
   },
-  "dark": { same shape as "light" — only include if the brief asks for a dark theme },
-  "accessibility": { "level": "AA" or "AAA", "notes": [ string, ... specific, e.g. "Primary button text on accent background passes WCAG AA (4.6:1)." ] },
+  "dark": { same shape as "light" — REQUIRED, always, whether or not the brief mentions dark mode },
+  "accessibility": { "level": "AA" or "AAA" — the target only, see the note below about not writing ratios },
   "iconStyle": { "style": "line" | "solid" | "duotone", "strokeWidth": number (optional, 0.5-4), "note": string },
   "grid": { "columns": integer 1-24, "gutter": number px, "maxWidth": number px },
   "breakpoints": { "sm": number px, "md": number px, "lg": number px, "xl": number px }
 }
 ComponentTokenSet shape: { "background": hex, "text": hex, "border": hex (optional), "states": { "hover": {background/text/border hex, all optional}, "active": {...}, "disabled": {...}, "focus": {...} } } — only include the states that meaningfully differ from the default.
-Every hex value in designSystem must be a real hex string like "#4B5FD1" — you may reuse hexes from your chosen palette or introduce complementary ones; you are not restricted to the candidate list for these.`;
+Every hex value in designSystem must be a real hex string like "#4B5FD1" — you may reuse hexes from your chosen palette or introduce complementary ones; you are not restricted to the candidate list for these.
+
+Rules for "dark", which are not optional:
+- It must be built from THIS brand's own hues. A generic near-black page with a
+  stock violet accent is a wrong answer. If the light surface is warm, the dark
+  surface must be a warm near-black; if the accent is teal, the dark accent must
+  still be teal, just re-lit so it reads on a dark page.
+- Never repeat a light-mode hex as its dark-mode counterpart. Every dark value
+  must differ from its light counterpart.
+- The dark background must actually be dark (lightness under ~15%) and the dark
+  text light enough to read on it.
+
+Do NOT write contrast ratios, WCAG claims, or any statement that something
+"passes AA/AAA" anywhere in your response — not in accessibility notes, not in
+the reasoning. The app measures every pair itself after you respond
+(lib/ai/validateTokens.ts), repairs what fails, and overwrites any claim you
+make with the real measured numbers. Claims you invent will be deleted.`;
 
 export function buildGeneratePrompt(
   request: AIGenerateRequest,
@@ -80,6 +96,26 @@ If the brand description names a specific typeface (e.g. "use Garamond" or
 "something like Futura"), pick the candidate whose family matches it, or the
 closest relative in the same category if no exact match exists. Otherwise
 weight your pick toward candidates whose mood/style match the brief.
+
+The three font slots are three different jobs — do not treat them as
+interchangeable:
+- primaryFontId is the DISPLAY/HEADING face. It may have personality: a
+  display, a high-contrast serif, a distinctive grotesk.
+- secondaryFontId is the UI/BODY face, and it sets every paragraph, label,
+  table cell and form field in the product. It must be a highly legible
+  text face — a sans-serif or a text serif. NEVER pick a monospace,
+  display, or handwriting face for this slot. Monospaced body copy is
+  materially harder to read at paragraph length.
+- accentFontId is optional and is the MONO/DATA face: prices, IDs, code,
+  logs, timestamps, tabular numerals. Use a monospace here, or omit it.
+(The app enforces this in code — see lib/ai/fontRoles.ts — and reports any
+swap it has to make, so a mono in the body slot will simply be replaced.)
+
+Honour explicit constraints in the brief literally. If the user states an
+exact corner radius ("hard 0px corners"), an exact hex, a banned material
+("no stock photography"), or a banned typeface class, that instruction
+outranks your own taste. Anything you can't honour will be reported to the
+user as a deviation, so there is no benefit in quietly substituting.
 
 If the brand description states an exact number of colors (e.g. "5-6 hex
 codes", "a palette of 3", "10 colors") or an exact number of fonts (up to 3:
@@ -124,7 +160,11 @@ ${candidateMoodboardImages.map(describeMoodboardImage).join("\n")}
 Valid type scale ratio names: ${ratioNames}
 Valid spacing bases: 4, 8
 Valid shadow levels: none, subtle, dramatic
-Valid corner radius values: 4, 8, 12, 20
+Valid corner radius base values: 0, 2, 4, 6, 8, 10, 12, 16, 20, 24
+  (0 is a real, allowed answer — pick it for brutalist/technical/editorial
+  brands and whenever the brief asks for hard or square corners. The app
+  derives a full small/medium/large/pill ramp from whichever base you pick,
+  see lib/ai/radiusScale.ts, so choose the value that fits a CARD.)
 
 Respond with JSON ONLY, matching exactly this shape:
 {
@@ -138,7 +178,7 @@ Respond with JSON ONLY, matching exactly this shape:
   "baseSize": number (optional, 12-24, defaults to 16 if omitted),
   "spacingBase": number (must be exactly 4 or 8 — pick 4 for a tighter/compact feel, 8 for a more spacious/airy feel),
   "shadowLevel": string (must be exactly one of the valid shadow levels — "none" for flat/brutalist brands, "subtle" for minimal/professional, "dramatic" for bold/luxury),
-  "cornerRadius": number (must be exactly one of the valid corner radius values — lower for sharp/serious brands, higher for soft/friendly brands),
+  "cornerRadius": number (an integer 0-24, ideally one of the valid base values above — 0 for sharp/brutalist/serious brands, higher for soft/friendly brands),
   "moodboardImageIds": [ string, string ] (2 to 3 of the candidate moodboard image ids above whose mood best matches the brand),
   ${request.includeDesignSystem ? `"designSystem": DesignSystem (see the detailed shape below — REQUIRED since the user asked for a full design system),` : ""}
   "mockup": {
@@ -161,6 +201,16 @@ Respond with JSON ONLY, matching exactly this shape:
     "overall": string (plain language, the overall design direction)
   }
 }
+
+Write the reasoning for THIS brand and no other. Name the brand (use the
+projectName you chose) and name the actual things you picked — the specific
+colours by name and the job each one does here, the specific typefaces and
+what about this business made them the right pair. Reasoning that would read
+identically for a law firm and a skate brand is a failure: a QA pass found
+the same paragraphs repeated verbatim across unrelated brands. No generic
+filler ("this palette conveys trust and modernity"), no ratios or
+accessibility claims (they are measured and appended by the app), 2-4
+sentences per field.
 ${request.includeDesignSystem ? DESIGN_SYSTEM_CONTRACT : ""}
 
 Do not include markdown formatting, code fences, or any text outside the JSON object.`;

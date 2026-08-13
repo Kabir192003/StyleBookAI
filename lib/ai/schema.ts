@@ -95,11 +95,26 @@ const themeVariantTokensSchema = z.object({
 // includeDesignSystem — keeps a plain "give me a palette" request small.
 const designSystemSchema = z.object({
   light: themeVariantTokensSchema,
+  // Dark is REQUIRED of the model by the contract in lib/ai/prompt.ts, but is
+  // parsed leniently here on purpose. It stays optional at this boundary only
+  // because rejecting a response for a missing dark variant would turn a
+  // fixable omission into a user-facing generation failure — and it is not
+  // fixable-by-retry anyway: lib/ai/generate.ts *always* ends up with a dark
+  // variant, deriving it from the brand's own light tokens via
+  // deriveDarkThemeVariantFromLight() (lib/studio/deriveThemeVariant.ts)
+  // whenever the model omits one or returns one that fails the quality gate
+  // in lib/colors/deriveDarkPalette.ts. That derivation — not this schema —
+  // is what guarantees dark mode is never again the stock violet DEFAULT_DARK
+  // palette three unrelated QA brands all shipped.
   dark: themeVariantTokensSchema.optional(),
   accessibility: z
     .object({
       level: z.enum(["AA", "AAA"]),
-      notes: z.array(z.string().min(1)).min(1).max(20),
+      // Notes are optional now because they are overwritten wholesale with
+      // measured ratios by lib/ai/validateTokens.ts — the model previously
+      // asserted "all text and interactive states exceed 4.5:1" over a button
+      // measuring 4.1:1, so its prose is no longer trusted or required here.
+      notes: z.array(z.string().min(1)).max(20).optional(),
     })
     .optional(),
   iconStyle: z
@@ -170,7 +185,13 @@ export const GeminiPaletteResponseSchema = z.object({
   baseSize: z.number().min(12).max(24).optional(),
   spacingBase: z.union([z.literal(4), z.literal(8)]).optional(),
   shadowLevel: z.enum(["none", "subtle", "dramatic"]).optional(),
-  cornerRadius: z.union([z.literal(4), z.literal(8), z.literal(12), z.literal(20)]).optional(),
+  // Widened from the literal union [4, 8, 12, 20]. That set made `0`
+  // unrepresentable, which is why a QA prompt demanding "hard 0px corners"
+  // silently shipped 4px — the model had no legal way to say what was asked
+  // for. Any integer 0-24 is accepted and snapped to the nearest supported
+  // base by snapRadiusBase() in lib/ai/radiusScale.ts, which then derives the
+  // full sm/md/lg/pill ramp.
+  cornerRadius: z.number().int().min(0).max(24).optional(),
   moodboardImageIds: z.array(z.string().min(1)).min(2).max(3).optional(),
   designSystem: designSystemSchema.optional(),
   mockup: mockupSchema,

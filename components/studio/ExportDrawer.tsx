@@ -1,7 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { EXPORT_FILES, EXPORT_TABS, ExportTab, generateExportCode, StudioExportTokens } from "@/lib/studio/exportCode";
+import { saveAs } from "file-saver";
+import {
+  EXPORT_HINTS,
+  EXPORT_MIME,
+  EXPORT_TABS,
+  ExportTab,
+  exportFileName,
+  generateExportCode,
+  StudioExportTokens,
+} from "@/lib/studio/exportCode";
 import { exportStyleGuidePdf } from "@/lib/export/pdfStyleGuide";
 import { cn } from "@/lib/utils";
 
@@ -11,6 +20,18 @@ export function ExportDrawer({ tokens, onClose }: { tokens: StudioExportTokens; 
   const [pdfState, setPdfState] = useState<"idle" | "generating" | "error">("idle");
 
   const code = generateExportCode(tab, tokens);
+  const filename = exportFileName(tab, tokens.name);
+
+  /**
+   * The drawer used to offer copy-to-clipboard only, so the "download the
+   * design tokens and import them into Figma" flow was impossible from the
+   * Studio — you had to paste into your own editor and save the file
+   * yourself, guessing the extension. The MIME type matters too: a
+   * `.tokens.json` served as text/plain is refused by some import dialogs.
+   */
+  function download() {
+    saveAs(new Blob([code], { type: EXPORT_MIME[tab] }), filename);
+  }
 
   async function copy() {
     try {
@@ -89,6 +110,10 @@ export function ExportDrawer({ tokens, onClose }: { tokens: StudioExportTokens; 
           ))}
         </div>
 
+        <p className="border-b border-black/[0.08] px-7 py-3 text-[12.5px] leading-[1.5] text-[#6E675C]">
+          {EXPORT_HINTS[tab]}
+        </p>
+
         <div className="flex-1 overflow-auto">
           <pre className="whitespace-pre-wrap break-words px-7 py-6 font-mono-plex text-[12.5px] leading-[1.7] text-[#2B2820]">
             {code}
@@ -96,16 +121,25 @@ export function ExportDrawer({ tokens, onClose }: { tokens: StudioExportTokens; 
         </div>
 
         <div className="flex items-center justify-between gap-3 border-t border-black/[0.16] px-7 py-[18px]">
-          <span className="font-mono-plex text-[10px] uppercase tracking-[0.14em] text-[#8A8477]">
-            {EXPORT_FILES[tab]}
+          <span className="truncate font-mono-plex text-[10px] uppercase tracking-[0.14em] text-[#8A8477]">
+            {filename}
           </span>
-          <button
-            type="button"
-            onClick={copy}
-            className="rounded-full bg-[#222D52] px-6 py-[11px] text-[13px] text-[#F2EBE0]"
-          >
-            {copied ? "Copied ✓" : `Copy ${tab}`}
-          </button>
+          <div className="flex shrink-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={download}
+              className="rounded-full border border-[#211E18]/[0.24] px-5 py-[11px] text-[13px] text-[#211E18]"
+            >
+              Download
+            </button>
+            <button
+              type="button"
+              onClick={copy}
+              className="rounded-full bg-[#222D52] px-6 py-[11px] text-[13px] text-[#F2EBE0]"
+            >
+              {copied ? "Copied ✓" : "Copy"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

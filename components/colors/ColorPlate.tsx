@@ -9,18 +9,24 @@ import { ClipboardButton } from "@/components/clipboard/ClipboardButton";
 
 // One "plate" on the /browse/colors salon wall — a full-bleed 200px swatch tile.
 export function ColorPlate({ color, index }: { color: Color; index: number }) {
-  const [copied, setCopied] = useState(false);
+  const [status, setStatus] = useState<"idle" | "copied" | "failed">("idle");
 
   async function copy() {
     try {
       await navigator.clipboard.writeText(color.hex);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1400);
+      setStatus("copied");
     } catch {
-      // Clipboard can fail (permissions, insecure context) — the label
-      // simply won't flip to "Copied ✓", no need to surface an error.
+      // Clipboard writes are refused outside a secure context and in some
+      // embedded/permission-restricted browsers. Silently doing nothing
+      // reads as a dead button — say so instead, since the hex is right
+      // there on screen to select by hand.
+      setStatus("failed");
     }
+    setTimeout(() => setStatus("idle"), 1800);
   }
+
+  const label =
+    status === "copied" ? `${color.hex} copied ✓` : status === "failed" ? "Copy blocked — select it" : color.hex;
 
   const overlay =
     getContrastRatio(color.hex, "#F6F0E5") >= getContrastRatio(color.hex, "#191611")
@@ -45,14 +51,21 @@ export function ColorPlate({ color, index }: { color: Color; index: number }) {
         className="flex h-[200px] items-end justify-between px-4 py-3.5"
         style={{ backgroundColor: color.hex }}
       >
+        {/* Feedback names *what* landed on the clipboard, not just that
+            something did. A first-time visitor clicking a colour band and
+            seeing a bare "Copied ✓" has no way to know whether they took
+            the hex, the colour's name, or the whole swatch — a UX review
+            flagged it as confusing in the first seconds of using the site.
+            role="status" also announces the same wording to a screen
+            reader, which previously got no confirmation at all. */}
         <button
           type="button"
           onClick={copy}
-          aria-label={`Copy hex value ${color.hex}`}
+          aria-label={`Copy hex value ${color.hex} to clipboard`}
           className="font-mono-plex text-[11px] tracking-[0.08em] underline-offset-2 hover:underline"
           style={{ color: overlay }}
         >
-          {copied ? "Copied ✓" : color.hex}
+          <span role="status">{label}</span>
         </button>
         <span className="font-mono-plex text-[10px] uppercase tracking-[0.18em]" style={{ color: overlay }}>
           {color.mood[0]}
