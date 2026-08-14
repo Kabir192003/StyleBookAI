@@ -240,6 +240,37 @@ export function parseBoxShadow(value: string): ShadowLayer[] {
 }
 
 /**
+ * Tokens Studio's own boxShadow field names — confirmed against its docs
+ * (docs.tokens.studio/manage-tokens/token-types/box-shadow): `x`/`y`, not
+ * DTCG's `offsetX`/`offsetY`, and a required `type: "dropShadow" |
+ * "innerShadow"` in place of DTCG's optional `inset` boolean. A shadow
+ * composite written with the DTCG field names is not a recognised
+ * Tokens Studio boxShadow value — this is why "Create Styles" produced no
+ * Effect Styles even though the token itself imported and looked complete.
+ * Values keep their `px` suffix; Tokens Studio's own docs describe shadow
+ * layer values as accepting either bare numbers or unit-suffixed strings.
+ */
+export type TokensStudioShadowLayer = {
+  color: string;
+  type: "dropShadow" | "innerShadow";
+  x: string;
+  y: string;
+  blur: string;
+  spread: string;
+};
+
+function toTokensStudioShadowLayer(layer: ShadowLayer): TokensStudioShadowLayer {
+  return {
+    color: layer.color,
+    type: layer.inset ? "innerShadow" : "dropShadow",
+    x: layer.offsetX,
+    y: layer.offsetY,
+    blur: layer.blur,
+    spread: layer.spread,
+  };
+}
+
+/**
  * How far a box-shadow paints outside the element that owns it, in px.
  * Used by the PDF style guide to reserve room around each shadow swatch —
  * without it the "dramatic" level (a 30px blur at an 8px Y offset) painted
@@ -608,6 +639,23 @@ export function toDtcgTokens(system: NormalizedSystem, options: DtcgOptions = {}
     // Composite typography tokens: a Figma import turns each of these into
     // one text style. Emitting only raw fontSize dimensions (what the old
     // Figma tab did) left the importer with numbers and no text styles.
+    //
+    // lineHeight/letterSpacing are written in two different dialects here,
+    // same split as fontFamily/fontWeight above and for the same reason —
+    // the plain DTCG spec allows a unitless lineHeight ratio (a multiplier,
+    // "1.1" meaning 110% of the font size) and any CSS length unit for
+    // letterSpacing, including `em`. Tokens Studio/Figma accept neither of
+    // those literally: a bare "1.1" is read as 1.1 *pixels*, not a 110%
+    // ratio, and Figma has no `em` unit at all (Tokens Studio's own docs
+    // give the conversion: 1em == 100%). Confirmed against
+    // docs.tokens.studio/manage-tokens/token-types/typography/letter-spacing
+    // — both fields want a percentage string for a ratio/em-relative value.
+    // The plain "Design Tokens" tab keeps the spec-literal unitless/`em`
+    // form; only `toTokensStudioJson` sets `tokensStudioTypography`.
+    const lineHeightRatio = { display: 1.1, body: 1.6 } as const;
+    const letterSpacingEm = { display: -0.02, body: 0 } as const;
+    const asPercent = (n: number) => `${Math.round(n * 1000) / 10}%`;
+
     tree.typography = {
       $type: "typography",
       ...Object.fromEntries(
@@ -618,8 +666,12 @@ export function toDtcgTokens(system: NormalizedSystem, options: DtcgOptions = {}
               fontFamily: options.tokensStudioTypography ? `{${fontFamilyKey}.${face}}` : system.fonts[face],
               fontSize: toDimension(scale.sizes[size]),
               fontWeight: options.tokensStudioTypography ? `{${fontWeightKey}.${weightTokenName(weight)}}` : weight,
-              lineHeight: face === "display" ? "1.1" : "1.6",
-              letterSpacing: face === "display" ? "-0.02em" : "0em",
+              lineHeight: options.tokensStudioTypography
+                ? asPercent(lineHeightRatio[face])
+                : String(lineHeightRatio[face]),
+              letterSpacing: options.tokensStudioTypography
+                ? asPercent(letterSpacingEm[face])
+                : `${letterSpacingEm[face]}em`,
             },
             $description: `${role} — scale step "${size}".`,
           },
@@ -663,12 +715,17 @@ export function toDtcgTokens(system: NormalizedSystem, options: DtcgOptions = {}
           // omitting it would make the exported set disagree with the CSS
           // export, which does emit `--shadow-none: none`. A fully
           // transparent zero-shadow is the importable spelling of "none".
-          const value =
-            layers.length === 0
-              ? { color: "#00000000", offsetX: "0px", offsetY: "0px", blur: "0px", spread: "0px" }
-              : layers.length === 1
-                ? layers[0]
-                : layers;
+          const zero: ShadowLayer = { color: "#00000000", offsetX: "0px", offsetY: "0px", blur: "0px", spread: "0px" };
+          const resolved = layers.length === 0 ? [zero] : layers;
+          // Multiple layers as an array is DTCG-legal and is what the plain
+          // "Design Tokens" tab always did — untouched here. Tokens Studio
+          // takes the same shape (its own composite tokens support multiple
+          // shadow layers too), so the single-vs-array collapse rule stays
+          // identical between the two dialects; only each layer's own field
+          // names change.
+          const toLayer = (l: ShadowLayer): ShadowLayer | TokensStudioShadowLayer =>
+            options.nativeValueTypes ? toTokensStudioShadowLayer(l) : l;
+          const value = resolved.length === 1 ? toLayer(resolved[0]) : resolved.map(toLayer);
           return [level.name, { $value: value }];
         })
       ),
