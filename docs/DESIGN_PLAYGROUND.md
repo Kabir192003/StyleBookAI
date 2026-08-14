@@ -129,17 +129,49 @@ surfaces come out.
   with genuinely different scoped tokens, and a real-interactive component
   library (21 `:hover`, 14 `:focus-visible`, 8 `:active`, 32 `:disabled` rules
   over 92 real buttons / 28 real inputs).
-- **P3 (controls) — nothing landed yet.** Still needs everything listed in the
-  P3 section below.
-- **P4 (apply) — persistence landed** (types, zod schema, the `projectMapper`
-  four-place allowlist). `ApplyToSystemButton` and
-  `lib/playground/applyToSystem.ts` did not land. Design unchanged: stage
-  through `useStudioImportStore`, navigate, let `StudioBuilder` fold it into
-  `StudioState` on mount so existing undo/redo covers it for free. **Do not
-  lift `StudioState` into Zustand** — the staging bridge already does this job
-  (Preview Lab uses it today). `applyStudioImport` must start honouring
-  `color.role` while keeping its positional fallback so Preview Lab keeps
-  working unchanged.
+- **Correction (2026-08-14, verified live in browser after a `.next` cache
+  wipe fixed a broken dev-server reload that made `/studio/playground` look
+  like it 404'd):** this section previously said P3 "nothing landed" and P4
+  "`ApplyToSystemButton` did not land." Both files exist in the repo (and
+  have since `09d324a`) — `components/playground/controls/{SwatchTray,
+  FontTray,CustomColorPicker}.tsx`, `components/playground/
+  ApplyToSystemButton.tsx`, `lib/playground/applyToSystem.ts` — fully coded,
+  `tsc`-clean, non-trivial (150–250 lines each). The doc was simply never
+  updated after they landed. **The real gap is narrower and more specific:
+  none of them are imported anywhere.** `grep -rl "SwatchTray\|FontTray\|
+  CustomColorPicker"` outside their own files returns nothing, and
+  `ExperimentCard.tsx` / `PlaygroundToolbar.tsx` / `PlaygroundCanvas.tsx`
+  import none of them. Confirmed live: `/studio/playground` renders two
+  experiment cards with the full real P2 component library, but there is no
+  colour picker, no font tray, no way to assign a colour/font to a role on a
+  card, no contrast readout, and no "Apply to design system" button anywhere
+  in the DOM.
+  - Still fully missing, not just unwired: a **role-assignment control**
+    (click a role on a card, pick from tray/custom — referenced in this doc's
+    prose and in `SwatchTray`'s own comment as "the role popovers inside each
+    experiment card," but no such component exists yet), the **contrast
+    readout** UI (`lib/playground/contrastPairs.ts` exists and is unused —
+    confirmed via the same grep pattern), and **`ClipboardImportDialog`**
+    (named directly in a comment in `lib/playground/clipboardParse.ts` as the
+    file that owns the async clipboard-read + dialog UI — that file does not
+    exist; `SwatchTray`'s "Paste" button (`onOpenImport` prop) has nothing to
+    call).
+  - Remaining wiring work, in order: (1) mount `SwatchTray` + `FontTray` in
+    `PlaygroundToolbar` (both are prop-free besides `SwatchTray`'s
+    `onOpenImport`); (2) build `ClipboardImportDialog` from
+    `clipboardParse.ts`'s pure functions (`parseClipboardText`,
+    `excludeExisting`) plus `useClipboardStore` for the in-app-clipboard half
+    and `navigator.clipboard.readText()` for the OS-paste half — detect →
+    preview (ticked/unticked per `suggested`) → select → add, never blind-add;
+    (3) build the role-assignment control and mount it per role per card,
+    wired to `setExperimentColor`/`setExperimentFont`; (4) mount
+    `ApplyToSystemButton` in `ExperimentCard`'s footer (self-contained, takes
+    only `experimentId`); (5) build the contrast readout off
+    `contrastPairs.ts`; (6) "Save playground" — persistence plumbing
+    (`playground` field) is already wired end-to-end in `types/project.ts`,
+    `lib/validation/project.ts`, `lib/db/projectMapper.ts`, confirmed by
+    reading all three — only the UI trigger and the load-time hydrate call
+    are missing.
 
 **Gotcha already paid for once:** `components/playground/components/styles.ts`
 holds the stylesheet as a template literal. Backticks inside its CSS comments
