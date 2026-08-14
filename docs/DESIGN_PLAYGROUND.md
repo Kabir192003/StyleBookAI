@@ -1,8 +1,46 @@
 # Design Playground — implementation spec
 
-Status: **in progress**. This file is the contract between the batches
-building the feature. If you are picking this work up cold, read this first,
-then `docs/TECHNICAL_ARCHITECTURE.md`, then `CLAUDE.md`.
+Status: **P1 + P2 done, P3 + P4 unfinished.** This file is the contract
+between the batches building the feature. If you are picking this work up
+cold, read this first, then `docs/TECHNICAL_ARCHITECTURE.md`, then `CLAUDE.md`.
+
+## WHERE THIS STANDS (updated 2026-08-13, commit `09d324a`)
+
+Working and verified in the browser at `/studio/playground`:
+- Two seeded experiments render side by side, each with all six component
+  groups, from one shared React library. `--pg-primary` `#222D52` vs `#C36B3E`
+  produces button backgrounds `rgb(34,45,82)` vs `rgb(195,107,62)` — the
+  scoped-token mechanism works, which is the feature's whole premise.
+- The component library is genuinely interactive: 21 `:hover`, 14
+  `:focus-visible`, 8 `:active`, 32 `:disabled` rules over 92 real `<button>`
+  and 28 real `<input>` elements.
+- Experiment add / duplicate / delete / reorder, the Studio sub-nav across all
+  four routes, and tablet stacking are all verified.
+- Playground persistence types, zod schema and the `projectMapper` four-place
+  allowlist are done (P4 got that far).
+
+**Still to build:**
+- **P3 (controls)** — barely started. Nothing landed. Needs: the colour picker
+  (hex/RGB/HSL + native, kept in sync via `colord`), swatch + font trays with
+  search over the ~1,950-font catalogue, per-card role assignment wired to the
+  store's `setExperimentColor`/`setExperimentFont`, the clipboard
+  detect→preview→select→add flow (`lib/playground/clipboardParse.ts`, reading
+  both `useClipboardStore` and `navigator.clipboard.readText()`), and the
+  contrast readout using `getContrastRatio`.
+- **P4 (apply)** — persistence landed; `ApplyToSystemButton` and
+  `lib/playground/applyToSystem.ts` did not. The agreed design: Apply stages
+  the resolved experiment through `useStudioImportStore` and navigates to
+  `/studio`, where `StudioBuilder` folds it into `StudioState` on mount — so
+  the existing undo/redo covers it for free. **Do not lift `StudioState` into
+  Zustand**; that is a large refactor of a working 1,200-line component and the
+  staging bridge already exists for exactly this (Preview Lab uses it).
+  `applyStudioImport` must start honouring `color.role` while keeping its
+  positional fallback so Preview Lab keeps working.
+- The `ExperimentCard` footer expects `<ApplyToSystemButton experimentId>`.
+
+**Gotcha already paid for once:** `components/playground/components/styles.ts`
+holds the stylesheet as a template literal. Backticks inside its CSS comments
+terminate the string — keep prose in there quoted, not backticked.
 
 ## What it is
 
