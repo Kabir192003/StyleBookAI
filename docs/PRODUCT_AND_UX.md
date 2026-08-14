@@ -32,7 +32,7 @@ with named ratios like "Golden Ratio," "Perfect Fourth," etc.), see it all
 rendered live. The Preview Lab is embedded inside this flow.
 
 **AI Generate** (`/studio/ai`) — text box: describe your brand, audience,
-mood. Claude returns a full palette + font pairing + type scale, plus a
+mood. Gemini returns a full palette + font pairing + type scale, plus a
 written reasoning panel explaining *why* each choice was made (this
 reasoning is a key trust-building UI element — show it prominently, not
 collapsed). User can regenerate with feedback ("more muted," "less
@@ -122,7 +122,7 @@ Motion's `useScroll` + `useTransform`, not a separate scroll library.
 
 4. **Horizontal section — "Describe it, get a system"** — sliding cards
    showing example prompts ("a calm wellness app," "a bold streetwear
-   brand") each paired with the palette/font/type-scale result Claude
+   brand") each paired with the palette/font/type-scale result Gemini
    would generate, plus a one-line excerpt of the reasoning text.
 
 5. **Closing (normal vertical scroll)** — a final CTA repeating the two
@@ -179,7 +179,7 @@ a blocking issue in PR review, the same as a missing `hex` value.
 
 **AI-generated reasoning (AI Generate mode).** Separate from the above —
 this is the `AIReasoning` object already defined on `Project`
-(`palette`, `fonts`, `typeScale`, `overall`), produced fresh by Claude for
+(`palette`, `fonts`, `typeScale`, `overall`), produced fresh by Gemini for
 each generation, explaining *why these specific items were chosen together
 for this specific prompt*. It's contextual and combinatorial, not
 per-item — it can reference how colors relate to each other, not just what

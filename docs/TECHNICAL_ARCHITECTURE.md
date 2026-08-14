@@ -13,12 +13,12 @@ separately as a deferred phase.
 | Styling | Tailwind CSS | Fast iteration, and the app's own color data is partly seeded from Tailwind's palette, so the design system and the product data share a vocabulary. |
 | Auth | Custom username/password (`bcryptjs` + `jose`) | Clerk was tried and removed; a simple self-hosted password + JWT-cookie session needs no external auth provider or webhook setup. |
 | Database | Supabase (Postgres) | Generous free tier, built-in row-level security, good enough for relational + JSONB project data. |
-| AI | Anthropic SDK (Claude) | Generates palette + font pairing + type scale + reasoning from a text prompt. |
-| State | Zustand | Studio/Preview Lab need shared client state (selected colors, fonts, roles) without prop-drilling; lighter than Redux. |
+| AI | Google Gemini (`@google/generative-ai`) | Generates palette + font pairing + type scale + reasoning + the generated UI structure from a text prompt. `gemini-flash-lite-latest`, `GEMINI_API_KEY`. Earlier revisions of this table said Anthropic; the code never did. |
+| State | Zustand | Cross-route hand-offs (AI result, Studio import, clipboard) without prop-drilling; lighter than Redux. Studio's own token state is local `useState` so undo/redo can snapshot it. |
 | Animation | Framer Motion | Used for micro-interactions everywhere and specifically for the scroll-driven landing page (`useScroll` + `useTransform`). |
 | Color math | chroma-js, colord | Contrast ratios, HSL conversions, palette manipulation. |
 | Search | Fuse.js | Fuzzy search across colors/fonts/themes by name/tag. |
-| Drag & drop | @dnd-kit | Reordering colors in the Preview Lab and Studio. |
+| Drag & drop | @dnd-kit | Reordering colors in the Preview Lab. |
 | Export | html-to-image, file-saver | Turn a project preview into a downloadable PNG/PDF. |
 | Icons | lucide-react | Consistent icon set. |
 | Validation | zod | Validate AI request/response shapes and API route inputs. |
@@ -62,7 +62,7 @@ app/
                                          and import from data/ directly in
                                          server components — see §5)
     auth/                        → signup/login/logout/me
-    ai/generate/                → Claude call
+    ai/generate/                → Gemini call
     projects/, projects/[id]/   → CRUD, Supabase-backed, gated behind auth
     favorites/                   → favorite/unfavorite colors, fonts, themes
     export/                     → bundle generation
@@ -84,7 +84,7 @@ lib/
   colors/    → colorUtils.ts (hex/rgb/hsl conversion, contrast calc), deriveColorMetadata.ts
   fonts/     → font pairing helpers
   typeScale/ → scale generation (ratio-based, e.g. 1.25 perfect fourth)
-  ai/        → Claude client + prompt templates
+  ai/        → Gemini client + prompt templates
   db/        → supabase.ts (client + admin), schema.sql, queries/
   export/    → CSS/SCSS/Tailwind/JSON/PDF generators
   auth/      → password hashing (bcryptjs) + JWT session cookies (jose)
@@ -101,6 +101,48 @@ store/        → Zustand stores (authStore, favoritesStore, aiResultStore,
 types/        → color.ts, font.ts, theme.ts, project.ts, user.ts, ai.ts, index.ts
 scripts/      → transformColors.ts (one-time data transform, see §4)
 ```
+
+## 3a. Studio: one canvas
+
+`/studio` has a single live canvas. The Design Playground (experiments,
+comparison cards, `/studio/playground`) has been removed; `/studio/ai` and
+`/studio/compare` remain as separate tools.
+
+```
+components/system/        the component library — real, interactive, token-driven
+components/studio/
+  StudioBuilder.tsx       sidebar (tokens) + canvas + inspector
+  StudioCanvas.tsx        the [data-sb-canvas] scope, CSS injection, click delegation
+  ShowcaseContent.tsx     default content: a realistic product page
+  GeneratedContent.tsx    AI content: renders uiStructure's sections
+  ComponentInspector.tsx  the panel a click opens
+  FontPicker.tsx          search across the full ~1,930-family catalogue
+lib/studio/
+  componentSelection.ts   clicked node -> ComponentName | type role
+  roleProperties.ts       the --pg-* semantic role layer + canvasCss()
+```
+
+**Token layering.** Three layers resolve inside the canvas scope:
+
+1. `generateExportCode("CSS", tokens, { scopeSelector })` writes `--color-*`,
+   `--font-*`, `--text-*`, `--space-*`, `--shadow-*`, `--radius` and, when a
+   design system exists, `--ds-<component>-<slot>`.
+2. `rolePropertyBlock()` writes the `--pg-*` semantic roles (border, muted,
+   success/warning/error, the readable `--pg-on-*` foregrounds, font stacks)
+   that the five-slot palette has no name for. Emitted for light and for
+   `[data-theme="dark"]`, mirroring what the token layer does.
+3. `components/system/styles.ts` collapses those into a private `--pgc-*`
+   alias layer that the component rules consume.
+
+The alias layer resolves `--pg-*` before `--ds-*`; the ten editable component
+rules deliberately invert that and read their own `--ds-*` first. See the file
+header in `styles.ts` — getting it backwards makes inspector edits silently
+do nothing.
+
+**Editing.** Clicking the canvas resolves to a `ComponentName` (writes
+`designSystem[variant].components[name]`, via the same `ComponentEditor` the
+AI results page uses) or a type role (writes `headFont`/`bodyFont`). Both go
+through `StudioState`, so the existing snapshot undo/redo covers them.
 
 ## 4. Data pipeline
 
@@ -125,7 +167,7 @@ import directly from `data/` in server components — there's no need for an
 `/api/colors` round-trip when the data is already local and static. Reserve
 `app/api/*` for things that need a server boundary:
 
-- `POST /api/ai/generate` — calls Claude, must run server-side (API key).
+- `POST /api/ai/generate` — calls Gemini, must run server-side (API key).
 - `GET/POST/PATCH/DELETE /api/projects` — Supabase reads/writes, needs auth
   context.
 - `POST /api/export` — generates a PDF/image bundle, heavier compute, fine
@@ -137,7 +179,7 @@ import directly from `data/` in server components — there's no need for an
 (`prompt`, optional `style[]`, `colorPreferences[]`, `avoid[]`). The route:
 
 1. Validates the body with zod.
-2. Builds a prompt instructing Claude to return **structured JSON only**
+2. Builds a prompt instructing Gemini to return **structured JSON only**
    matching a defined schema: 5-7 colors with hex + role, a heading font +
    body font pick (from the existing font library, by `id`, so results are
    always renderable — don't let the model invent fonts that don't exist in
@@ -147,6 +189,19 @@ import directly from `data/` in server components — there's no need for an
    parsing fails, retry once with a stricter instruction, then surface a
    clear error rather than returning malformed data to the client.
 4. Returns a shape ready to drop straight into the `Project` type.
+
+The response also carries `uiStructure` (`lib/ai/schema.ts`): an `appName`,
+`navItems`, and 4-7 `sections` chosen from a fixed vocabulary (hero,
+searchBar, statRow, itemGrid, recordTable, detailPanel, formPanel, schedule,
+mediaBar, progressList, feed, footer). Sections carry **content only** —
+headings, labels, rows, field names — never a colour, font, radius or spacing
+value; the Studio canvas paints them from the design system the same request
+produced. `parseSections()` validates each section independently rather than
+as one array, so one malformed section drops itself instead of failing the
+whole parse and discarding a good palette with it. `components/studio/
+GeneratedContent.tsx` renders the result through the same component library
+and the same click-to-edit inspector as the default Studio canvas (§3a) — a
+generated page has no editor of its own.
 
 ## 7. Database (Supabase)
 
