@@ -1,49 +1,46 @@
 /**
- * The single stylesheet behind every Design Playground component.
+ * The single stylesheet behind every StyleBook component.
  *
- * Why a stylesheet at all, when `lib/studio/livePreviewBlocks.ts` gets by
- * with inline `style` attributes: those blocks are static specimens, these
- * are real controls that must expose real `:hover` / `:focus-visible` /
- * `:active` / `:disabled` behaviour (docs/DESIGN_PLAYGROUND.md, P2). Pseudo-
- * classes cannot be expressed in an inline `style` attribute at all, and —
- * more importantly — an inline `style` wins on specificity over any rule a
- * stylesheet could write, so a hover rule would silently lose to the inline
- * base colour. Everything token-driven therefore lives here in classes; the
- * only inline styles left in the components are per-instance geometry
- * (a progress width, an avatar's initials tint) that no class can express.
+ * Why a stylesheet rather than inline `style` attributes: these are real
+ * controls that must expose real `:hover` / `:focus-visible` / `:active` /
+ * `:disabled` behaviour. Pseudo-classes cannot be expressed in an inline
+ * `style` attribute at all, and — more importantly — an inline `style` wins
+ * on specificity over any rule a stylesheet could write, so a hover rule
+ * would silently lose to the inline base colour. Everything token-driven
+ * therefore lives here in classes; the only inline styles left in the
+ * components are per-instance geometry (a progress width, an avatar's
+ * initials tint) that no class can express.
  *
  * Why it is still 100% token-driven: this string is *static text*. Every
  * colour, font, radius and spacing value is a `var(...)` chain, resolved at
- * paint time against whichever `[data-pg-exp="…"]` scope the markup happens
- * to sit inside. One stylesheet, N experiments, N different renderings — the
- * requirement-18 guarantee in docs/DESIGN_PLAYGROUND.md holds structurally
- * rather than by convention. Adding a per-experiment `<style>` of component
- * CSS would break exactly that guarantee, so don't.
+ * paint time against whichever token scope the markup happens to sit inside
+ * (`[data-sb-canvas]` in Studio). One stylesheet, any number of systems, and
+ * the default showcase and the AI-generated UI are styled by exactly the same
+ * mechanism — structurally, not by convention. Emitting a second `<style>` of
+ * component CSS per surface would break that guarantee, so don't.
  *
  * The `--pgc-*` layer at the top is a private alias namespace: it collapses
  * the long `var(--ds-x, var(--color-y, literal))` fallback chains into one
  * place instead of repeating them in ~200 declarations. It is deliberately
- * NOT `--pg-*`, which is the playground *state* layer's namespace (P1 emits
- * `--pg-success`, `--pg-warning`, `--pg-error`, `--pg-border`, `--pg-accent`
- * for the semantic roles the five-colour base palette has no slot for) —
- * colliding with those would have the component layer overwrite the values
- * it is supposed to be consuming.
+ * NOT `--pg-*`, which is the semantic *role* layer's namespace
+ * (lib/studio/roleProperties.ts emits `--pg-success`, `--pg-warning`,
+ * `--pg-error`, `--pg-border`, `--pg-accent` … for the roles the five-colour
+ * base palette has no slot for) — colliding with those would have the
+ * component layer overwrite the values it is supposed to be consuming.
  *
  * Fallback order for every alias is:
  *
  *   --pg-*  ->  --ds-*  ->  --color-* / --font-* / --radius  ->  literal
  *
- * `--pg-*` comes **first**, and that ordering is load-bearing. Per P1's
- * handoff, the `--pg-*` block is emitted after the token block at equal
- * specificity and every one of those properties is always defined inside a
- * scope (an unassigned role resolves to the base system). It is the layer
- * the user's role assignments actually land in. Resolving `--ds-button-bg`
- * first — as an earlier draft did — would mean a user reassigning the
- * primary role in an experiment changed nothing, because the synthesised
- * `--ds-*` value would keep winning. The `--ds-*` rung survives for the
- * cases `--pg-*` has no name for (per-component `-hover` / `-active` /
- * `-disabled` state colours) and so the library still resolves sensibly if
- * it is ever rendered outside a playground scope.
+ * `--pg-*` comes **first**, and that ordering is load-bearing. The role block
+ * is emitted after the token block at equal specificity, and every one of its
+ * properties is always defined inside the scope. Resolving `--ds-button-bg`
+ * first — as an earlier draft did — would mean the role layer could never win,
+ * because the synthesised `--ds-*` value would keep taking precedence. The
+ * `--ds-*` rung survives for the cases `--pg-*` has no name for (per-component
+ * `-hover` / `-active` / `-disabled` state colours, which is what the
+ * click-to-edit inspector writes) so the library still resolves sensibly
+ * outside a canvas scope.
  *
  * The trailing literal exists so the library renders standalone (an empty
  * scope, a manual non-AI system, a Storybook-style harness) rather than
@@ -52,9 +49,9 @@
  */
 
 /** Stable id so the injector can tell "already in the document" from "not yet". */
-export const PLAYGROUND_STYLE_ELEMENT_ID = "pg-components-stylesheet";
+export const SYSTEM_STYLE_ELEMENT_ID = "pg-components-stylesheet";
 
-export const PLAYGROUND_COMPONENT_CSS = `
+export const SYSTEM_COMPONENT_CSS = `
 /* ------------------------------------------------------------------ *
  * Alias layer + shell
  * ------------------------------------------------------------------ */
@@ -146,8 +143,8 @@ export const PLAYGROUND_COMPONENT_CSS = `
 .pg-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2, 10px); }
 .pg-grid { display: grid; gap: var(--space-3, 16px); grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
 /* Modal and toast are position:absolute against this, never position:fixed —
-   a fixed overlay would escape its experiment card and cover the whole
-   playground grid, which makes side-by-side comparison impossible. */
+   a fixed overlay would escape the canvas and cover the Studio chrome
+   (sidebar, inspector), which would make the app unusable until dismissed. */
 .pg-stage { position: relative; overflow: hidden; border-radius: var(--pgc-radius); }
 
 /* ------------------------------------------------------------------ *
@@ -895,6 +892,123 @@ export const PLAYGROUND_COMPONENT_CSS = `
 .pg-modal__title { font-family: var(--pgc-font-heading); font-size: var(--text-lg, 18px); font-weight: 700; margin: 0; }
 .pg-modal__text { font-size: var(--text-sm, 14px); line-height: 1.6; color: var(--pgc-muted); margin: 0; }
 .pg-modal__actions { display: flex; justify-content: flex-end; gap: var(--space-2, 10px); margin-top: var(--space-2, 8px); }
+
+/* ------------------------------------------------------------------ *
+ * Typography
+ *
+ * Size, weight and face here mirror SEMANTIC_TYPE_ROLES in
+ * lib/export/designTokens.ts one-for-one. That is the point: the showcase
+ * must not be able to render an "h2" that differs from the h2 every export
+ * format emits, which is exactly what happens the moment these values are
+ * chosen independently. The sizes come through as --text-* custom properties
+ * (generateExportCode emits --text-display/h1/h2/h3/body/caption aliases onto
+ * the raw scale steps), so a type-scale change in the sidebar moves them
+ * without touching this file.
+ * ------------------------------------------------------------------ */
+.pg-display,
+.pg-h1,
+.pg-h2,
+.pg-h3 {
+  font-family: var(--pgc-font-heading);
+  color: var(--pgc-ink);
+  margin: 0;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+.pg-display { font-size: var(--text-display, 60px); font-weight: 700; line-height: 1.02; letter-spacing: -0.03em; }
+.pg-h1 { font-size: var(--text-h1, 39px); font-weight: 700; }
+.pg-h2 { font-size: var(--text-h2, 25px); font-weight: 700; }
+.pg-h3 { font-size: var(--text-h3, 20px); font-weight: 600; letter-spacing: -0.01em; }
+.pg-body {
+  font-family: var(--pgc-font-body);
+  font-size: var(--text-body, 16px);
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--pgc-ink);
+  margin: 0;
+  text-wrap: pretty;
+}
+.pg-body--muted { color: var(--pgc-muted); }
+.pg-caption {
+  font-family: var(--pgc-font-caption);
+  font-size: var(--text-caption, 12px);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--pgc-muted);
+  margin: 0;
+}
+/* The measure a paragraph is actually read at. Without it a body specimen
+   spans the full canvas and tells you nothing about the font's real rhythm. */
+.pg-prose { max-width: 62ch; }
+
+/* ------------------------------------------------------------------ *
+ * Palette swatches
+ * ------------------------------------------------------------------ */
+.pg-swatches { display: grid; gap: var(--space-2, 10px); grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); }
+.pg-swatch {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--pgc-radius);
+  border: 1px solid var(--pgc-border);
+  overflow: hidden;
+  background: var(--pgc-surface);
+}
+/* Height, not aspect-ratio: these sit in a grid whose column count changes
+   with the canvas width, and an aspect-ratio chip would jump in height every
+   time the grid reflows. */
+.pg-swatch__chip { height: 56px; }
+.pg-swatch__meta { padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 2px; }
+.pg-swatch__name { font-family: var(--pgc-font-label); font-size: 11px; font-weight: 600; color: var(--pgc-ink); }
+.pg-swatch__hex { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--pgc-muted); }
+
+/* ------------------------------------------------------------------ *
+ * Table
+ * ------------------------------------------------------------------ */
+.pg-table-wrap {
+  border: 1px solid var(--pgc-border);
+  border-radius: var(--pgc-radius);
+  overflow: hidden;
+  background: var(--pgc-surface);
+}
+.pg-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm, 14px); }
+.pg-table th {
+  text-align: left;
+  font-family: var(--pgc-font-label);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ds-table-text, var(--pgc-muted));
+  background: var(--ds-table-bg, color-mix(in srgb, var(--pgc-ink) 4%, var(--pgc-surface)));
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--ds-table-border, var(--pgc-border));
+}
+.pg-table td {
+  padding: 12px 14px;
+  color: var(--pgc-ink);
+  border-bottom: 1px solid color-mix(in srgb, var(--pgc-border) 60%, transparent);
+}
+.pg-table tbody tr:last-child td { border-bottom: 0; }
+.pg-table tbody tr { transition: background-color var(--pgc-t); }
+.pg-table tbody tr:hover { background: color-mix(in srgb, var(--pgc-ink) 3%, transparent); }
+.pg-table__num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* A definition list rendered as rows — the "detail panel" shape (spec sheet,
+   patient record, transaction detail) that a table is wrong for because
+   there is exactly one record. */
+.pg-deflist { display: grid; gap: 0; }
+.pg-deflist__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3, 16px);
+  padding: 10px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--pgc-border) 60%, transparent);
+  font-size: var(--text-sm, 14px);
+}
+.pg-deflist__row:last-child { border-bottom: 0; }
+.pg-deflist__key { color: var(--pgc-muted); }
+.pg-deflist__val { color: var(--pgc-ink); font-weight: 500; text-align: right; }
 
 /* Screen-reader-only. Needed for the live regions that announce the toggle,
    toast and progress changes; visually-hidden, never display:none, or

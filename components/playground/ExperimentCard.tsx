@@ -19,7 +19,7 @@ import { memo, useMemo, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Copy, GripVertical, Trash2, Eraser } from "lucide-react";
-import { PLAYGROUND_COMPONENT_GROUPS } from "@/components/playground/components";
+import { SYSTEM_COMPONENT_GROUPS } from "@/components/system";
 import { experimentCss } from "@/lib/playground/resolveExperiment";
 import type { StudioExportTokens } from "@/lib/studio/exportCode";
 import { useExperiment, usePlaygroundStore } from "@/store/playgroundStore";
@@ -49,8 +49,8 @@ function ExperimentCardInner({ id, base }: { id: string; base: StudioExportToken
     (experiment.radius === undefined ? 0 : 1);
 
   const groups = experiment.visibleGroups?.length
-    ? PLAYGROUND_COMPONENT_GROUPS.filter((g) => experiment.visibleGroups!.includes(g.id))
-    : PLAYGROUND_COMPONENT_GROUPS;
+    ? SYSTEM_COMPONENT_GROUPS.filter((g) => experiment.visibleGroups!.includes(g.id))
+    : SYSTEM_COMPONENT_GROUPS;
 
   return (
     <div
