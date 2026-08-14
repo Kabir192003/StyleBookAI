@@ -18,8 +18,10 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Check, Loader2, Undo2, Redo2 } from "lucide-react";
 import { ExportDrawer } from "./ExportDrawer";
-import { LivePreviewSection } from "./LivePreviewSection";
-import { DesignSystemGallery } from "@/components/design-system/DesignSystemGallery";
+import { StudioCanvas } from "./StudioCanvas";
+import { ShowcaseContent } from "./ShowcaseContent";
+import { GeneratedContent } from "./GeneratedContent";
+import { ComponentInspector } from "./ComponentInspector";
 import { SpacingVisualization } from "@/components/design-system/SpacingVisualization";
 import { getContrastRatio } from "@/lib/colors/colorUtils";
 import { cn } from "@/lib/utils";
@@ -29,7 +31,11 @@ import { PaletteTokens } from "@/lib/studio/exportCode";
 import { projectInputFromStudioState } from "@/lib/studio/projectFromState";
 import { applyStudioImport } from "@/lib/studio/applyImport";
 import { paletteFromAIColors } from "@/lib/studio/paletteFromAIColors";
-import { deriveDarkPaletteTokens, synthesizeDesignSystemFromPalettes } from "@/lib/studio/deriveThemeVariant";
+import {
+  deriveDarkPaletteTokens,
+  deriveThemeVariantFromPalette,
+  synthesizeDesignSystemFromPalettes,
+} from "@/lib/studio/deriveThemeVariant";
 import {
   PrimitiveColor,
   ColorValue,
@@ -38,7 +44,8 @@ import {
   unlinkPrimitiveFromPalette,
   makePrimitiveId,
 } from "@/lib/studio/tokenGraph";
-import { PreviewLayoutItem, defaultPreviewLayout } from "@/lib/studio/livePreviewBlocks";
+import type { ComponentName, ComponentTokenSet } from "@/types/designSystem";
+import type { Selection } from "@/lib/studio/componentSelection";
 import { generateTypeScale, TYPE_SCALE_RATIOS } from "@/lib/typeScale/generateTypeScale";
 import { generateSpacingScale } from "@/lib/designTokens/spacing";
 import { buildShadowScale } from "@/lib/designTokens/shadows";
@@ -167,13 +174,9 @@ export type StudioState = {
   designSystem?: DesignSystem;
   moodboard?: MoodboardImage[];
   aiReasoning?: AIReasoning;
-  // Live Preview's arranged order/visibility/width per block — always
-  // present, defaulted to LIVE_PREVIEW_BLOCKS's own order, everything
-  // visible, full width.
-  previewLayout: PreviewLayoutItem[];
 };
 
-const DEFAULT_LIGHT: PaletteTokens = {
+export const DEFAULT_LIGHT: PaletteTokens = {
   accent: "#222D52",
   support: "#C36B3E",
   surface: "#F5F1E8",
@@ -209,7 +212,7 @@ const DEFAULT_PRIMITIVES: PrimitiveColor[] = [
   { id: "primitive-stone", name: "Stone", hex: DEFAULT_LIGHT.muted },
 ];
 
-const DEFAULT_STATE: StudioState = {
+export const DEFAULT_STATE: StudioState = {
   name: "Northwind",
   mode: "Light",
   light: DEFAULT_LIGHT,
@@ -222,7 +225,6 @@ const DEFAULT_STATE: StudioState = {
   typeScale: generateTypeScale(16, "Major Third"),
   spacing: generateSpacingScale(4),
   shadows: buildShadowScale("subtle"),
-  previewLayout: defaultPreviewLayout(),
 };
 
 function seedFromParams(params: URLSearchParams): Partial<StudioState> {
@@ -320,7 +322,6 @@ export function StudioBuilder() {
             // no prior Studio session falls back to the literal-hex
             // derivation below.
             primitives: aiResult.colorPrimitives ?? seeded.primitives,
-            previewLayout: aiResult.previewLayout ?? seeded.previewLayout,
             // Light always traces back to aiResult.colors — the same
             // canonical source the AI results page itself renders and
             // that "Open in Studio" already seeds via URL params (see
@@ -345,6 +346,15 @@ export function StudioBuilder() {
     return importPayload ? applyStudioImport(base, importPayload) : base;
   });
   const [exportOpen, setExportOpen] = useState(false);
+  // Which component the canvas has selected. Deliberately *not* part of
+  // StudioState: it is a view concern, and putting it there would make every
+  // click an undo step and mark the project dirty.
+  const [selected, setSelected] = useState<Selection | null>(null);
+  // The generated screen, when this session produced one. Switching back to
+  // the showcase is a view change only — it never discards the structure, so
+  // the toggle is safe to press.
+  const generatedStructure = aiResult?.uiStructure;
+  const [showGenerated, setShowGenerated] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [savedPing, setSavedPing] = useState(false);
@@ -472,8 +482,77 @@ export function StudioBuilder() {
     [resolvedActivePalette, state.headFont, state.bodyFont, state.radius, density]
   );
 
+  /**
+   * The selected component's tokens for the variant currently on screen.
+   * Falls back to the light variant when the system has no dark one, matching
+   * where `setComponentTokens` writes — the panel must never display one
+   * variant's values while edits land in another.
+   */
+  const activeComponentTokens = useMemo<ComponentTokenSet | null>(() => {
+    if (!selected || selected.kind !== "component" || !state.designSystem) return null;
+    const variant =
+      activeVariant === "dark" && state.designSystem.dark ? state.designSystem.dark : state.designSystem.light;
+    // An AI-authored design system is free to omit components — the schema
+    // marks every one optional — so a missing entry is normal data, not a
+    // bug. Deriving one from the palette on demand keeps every component in
+    // the canvas clickable; without it, clicking (say) a table on a system
+    // whose model never mentioned tables selects the element and then opens
+    // nothing, which reads as broken.
+    return (
+      variant.components[selected.name] ??
+      deriveThemeVariantFromPalette(activeVariant === "dark" ? resolvedDark : resolvedLight).components[selected.name] ??
+      null
+    );
+  }, [selected, state.designSystem, activeVariant, resolvedLight, resolvedDark]);
+
   function set<K extends keyof StudioState>(key: K, value: StudioState[K]) {
     setState((s) => ({ ...s, [key]: value }));
+  }
+
+  /**
+   * Opening the inspector on a system with no `designSystem` synthesises one
+   * first, rather than showing an empty panel or refusing the click. This is
+   * the same call the old "Enable component tokens" button made — a manual
+   * build simply has no per-component tokens until something needs them, and
+   * "I clicked a button" is a clearer trigger than a button labelled with an
+   * implementation detail.
+   */
+  function handleSelect(next: Selection | null) {
+    setSelected(next);
+    // Only a component selection needs component tokens to exist.
+    if (next === null || next.kind !== "component") return;
+    setState((s) =>
+      s.designSystem
+        ? s
+        : {
+            ...s,
+            designSystem: synthesizeDesignSystemFromPalettes(
+              resolvePalette(s.light, s.primitives),
+              resolvePalette(s.dark, s.primitives)
+            ),
+          }
+    );
+  }
+
+  function setComponentTokens(name: ComponentName, next: ComponentTokenSet) {
+    setState((s) => {
+      if (!s.designSystem) return s;
+      const variant = s.mode === "Dark" ? "dark" : "light";
+      // The dark variant is optional on the type. Editing in dark mode on a
+      // system that has none would otherwise write into `undefined` and be
+      // silently dropped, so fall back to patching light — the variant the
+      // inspector header names is then still the one that changed.
+      const target: "light" | "dark" = variant === "dark" && s.designSystem.dark ? "dark" : "light";
+      const current = s.designSystem[target];
+      if (!current) return s;
+      return {
+        ...s,
+        designSystem: {
+          ...s.designSystem,
+          [target]: { ...current, components: { ...current.components, [name]: next } },
+        },
+      };
+    });
   }
 
   function setToken<K extends keyof EditablePaletteTokens>(key: K, value: ColorValue) {
@@ -638,7 +717,16 @@ export function StudioBuilder() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-[376px_1fr]">
+      {/* Three columns while something is selected, two otherwise — the
+          inspector is a sibling of the sidebar and the canvas, so without the
+          extra track it lands on a new grid row underneath the canvas instead
+          of beside it. */}
+      <div
+        className={cn(
+          "grid grid-cols-1",
+          selected ? "lg:grid-cols-[376px_1fr_288px]" : "lg:grid-cols-[376px_1fr]"
+        )}
+      >
         <aside className="flex flex-col gap-[30px] border-b border-black/[0.18] bg-[#F2EBE0] px-6 py-6 lg:sticky lg:top-[105px] lg:max-h-[calc(100vh-105px)] lg:overflow-y-auto lg:border-b-0 lg:border-r">
           <div>
             <div className="font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#8A8477]">The Studio</div>
@@ -970,290 +1058,109 @@ export function StudioBuilder() {
           </div>
 
           <div className="px-6 pb-10 sm:px-8">
-            <div
-              style={previewVars}
-              className="overflow-hidden rounded-[14px] border border-black/[0.08] shadow-[0_30px_70px_-30px_rgba(20,17,12,0.5)]"
-            >
-              <div
-                className="flex items-center gap-[7px] border-b px-4 py-3"
-                style={{
-                  backgroundColor: "color-mix(in srgb, var(--ink) 5%, var(--surface))",
-                  borderColor: "color-mix(in srgb, var(--ink) 10%, transparent)",
-                }}
-              >
-                {[0, 1, 2].map((i) => (
-                  <span
-                    key={i}
-                    className="h-[11px] w-[11px] rounded-full"
-                    style={{ backgroundColor: "color-mix(in srgb, var(--ink) 22%, transparent)" }}
-                  />
+            <div className="mb-4 flex flex-wrap items-center gap-3">
+              <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Shadow</div>
+              <div className="flex gap-2">
+                {(["none", "subtle", "dramatic"] as const).map((level) => (
+                  <button
+                    key={level}
+                    type="button"
+                    onClick={() => setState((s) => ({ ...s, shadows: { ...s.shadows, recommended: level } }))}
+                    className={cn(
+                      "rounded-lg border px-3.5 py-[7px] font-mono-plex text-[10px] uppercase tracking-[0.1em]",
+                      state.shadows.recommended === level
+                        ? "border-[#211E18] bg-[#211E18] text-[#F2EBE0]"
+                        : "border-black/[0.16] bg-white text-[#6E675C]"
+                    )}
+                  >
+                    {level}
+                  </button>
                 ))}
-                <span
-                  className="ml-3 text-[11px]"
-                  style={{ fontFamily: "var(--body)", color: "color-mix(in srgb, var(--ink) 55%, transparent)" }}
-                >
-                  {domain}
-                </span>
               </div>
 
-              <nav
-                className="flex items-center justify-between"
-                style={{ backgroundColor: "var(--surface)", color: "var(--ink)", padding: "20px var(--pad)" }}
-              >
-                <span style={{ fontFamily: "var(--head)", fontWeight: 700, fontSize: 22, letterSpacing: "-0.01em" }}>
-                  {state.name}
-                </span>
-                <div className="flex items-center gap-[22px]" style={{ fontFamily: "var(--body)", fontSize: 13 }}>
-                  <span style={{ opacity: 0.7 }}>Product</span>
-                  <span style={{ opacity: 0.7 }}>Docs</span>
-                  <span style={{ opacity: 0.7 }}>About</span>
-                  <span
-                    style={{
-                      backgroundColor: "var(--accent)",
-                      color: "var(--on-accent)",
-                      padding: "9px 18px",
-                      borderRadius: "var(--r)",
-                      fontWeight: 600,
-                    }}
-                  >
-                    Get started
-                  </span>
-                </div>
-              </nav>
-
-              <section
-                className="flex flex-col items-center gap-5 text-center"
-                style={{ backgroundColor: "var(--surface)", color: "var(--ink)", padding: "calc(var(--pad) + 14px) var(--pad)" }}
-              >
-                <span
-                  className="rounded-full text-[11px] uppercase tracking-[0.16em]"
-                  style={{
-                    fontFamily: "var(--body)",
-                    color: "var(--support)",
-                    border: "1px solid color-mix(in srgb, var(--support) 45%, transparent)",
-                    padding: "6px 14px",
-                  }}
-                >
-                  Now in early access
-                </span>
-                <h2
-                  className="text-balance"
-                  style={{
-                    fontFamily: "var(--head)",
-                    fontWeight: 700,
-                    fontSize: "clamp(38px,4.6vw,64px)",
-                    lineHeight: 1.02,
-                    letterSpacing: "-0.025em",
-                    margin: 0,
-                    maxWidth: "14ch",
-                  }}
-                >
-                  Design that ships <span style={{ color: "var(--accent)" }}>itself</span>.
-                </h2>
-                <p
-                  className="text-pretty"
-                  style={{
-                    fontFamily: "var(--body)",
-                    fontSize: 16,
-                    lineHeight: 1.6,
-                    margin: 0,
-                    maxWidth: "48ch",
-                    color: "color-mix(in srgb, var(--ink) 72%, transparent)",
-                  }}
-                >
-                  One source of truth for colour, type and shape — exported to every surface your team builds on.
-                </p>
-                <div className="flex flex-wrap justify-center gap-3">
-                  <span
-                    style={{
-                      backgroundColor: "var(--accent)",
-                      color: "var(--on-accent)",
-                      padding: "13px 26px",
-                      borderRadius: "var(--r)",
-                      fontFamily: "var(--body)",
-                      fontWeight: 600,
-                      fontSize: 15,
-                    }}
-                  >
-                    Start building
-                  </span>
-                  <span
-                    style={{
-                      border: "1px solid color-mix(in srgb, var(--ink) 30%, transparent)",
-                      color: "var(--ink)",
-                      padding: "12px 24px",
-                      borderRadius: "var(--r)",
-                      fontFamily: "var(--body)",
-                      fontSize: 15,
-                    }}
-                  >
-                    Watch demo
-                  </span>
-                </div>
-              </section>
-
-              <section
-                className="grid grid-cols-1 sm:grid-cols-3"
-                style={{ backgroundColor: "var(--surface)", padding: "var(--pad)", paddingTop: 8, gap: "var(--gap)" }}
-              >
-                {FEATURES.map((f) => (
-                  <div
-                    key={f.mark}
-                    style={{
-                      backgroundColor: "color-mix(in srgb, var(--ink) 4%, var(--surface))",
-                      border: "1px solid color-mix(in srgb, var(--ink) 9%, transparent)",
-                      borderRadius: "var(--r)",
-                      padding: 22,
-                      color: "var(--ink)",
-                    }}
-                  >
-                    <span
-                      className="inline-flex items-center justify-center"
-                      style={{
-                        width: 34,
-                        height: 34,
-                        borderRadius: "calc(var(--r) * 0.7)",
-                        backgroundColor: "color-mix(in srgb, var(--accent) 16%, transparent)",
-                        color: "var(--accent)",
-                        fontFamily: "var(--head)",
-                        fontWeight: 700,
-                        fontSize: 16,
-                      }}
-                    >
-                      {f.mark}
-                    </span>
-                    <div style={{ fontFamily: "var(--head)", fontWeight: 600, fontSize: 18, margin: "14px 0 6px", letterSpacing: "-0.01em" }}>
-                      {f.title}
-                    </div>
-                    <p style={{ fontFamily: "var(--body)", fontSize: 13, lineHeight: 1.55, margin: 0, color: "color-mix(in srgb, var(--ink) 65%, transparent)" }}>
-                      {f.body}
-                    </p>
-                  </div>
-                ))}
-              </section>
-
-              <section
-                className="flex flex-wrap items-center justify-between gap-6"
-                style={{
-                  margin: "0 var(--pad) var(--pad)",
-                  backgroundColor: "var(--ink)",
-                  color: "var(--surface)",
-                  borderRadius: "var(--r)",
-                  padding: 26,
-                }}
-              >
-                {STATS.map((s) => (
-                  <div key={s.l} className="flex flex-col gap-0.5">
-                    <span style={{ fontFamily: "var(--head)", fontWeight: 700, fontSize: 40, lineHeight: 1, color: "var(--support)" }}>
-                      {s.n}
-                    </span>
-                    <span style={{ fontFamily: "var(--body)", fontSize: 12, opacity: 0.7 }}>{s.l}</span>
-                  </div>
-                ))}
-                <div className="flex min-w-[240px] flex-1 items-center gap-2">
-                  <input
-                    placeholder="you@studio.com"
-                    style={{
-                      flex: 1,
-                      border: "1px solid color-mix(in srgb, var(--surface) 30%, transparent)",
-                      backgroundColor: "color-mix(in srgb, var(--surface) 8%, transparent)",
-                      borderRadius: "var(--r)",
-                      padding: "12px 14px",
-                      fontFamily: "var(--body)",
-                      fontSize: 14,
-                      color: "var(--surface)",
-                    }}
-                  />
-                  <span
-                    className="whitespace-nowrap"
-                    style={{
-                      backgroundColor: "var(--accent)",
-                      color: "var(--on-accent)",
-                      padding: "12px 20px",
-                      borderRadius: "var(--r)",
-                      fontFamily: "var(--body)",
-                      fontWeight: 600,
-                      fontSize: 14,
-                    }}
-                  >
-                    Join →
-                  </span>
-                </div>
-              </section>
-            </div>
-
-            <div className="px-6 pb-10 sm:px-8">
-              <LivePreviewSection
-                tokens={resolvedState}
-                theme={activeVariant}
-                onThemeChange={(t) => set("mode", t === "dark" ? "Dark" : "Light")}
-                layout={state.previewLayout}
-                onLayoutChange={(l) => set("previewLayout", l)}
-              />
-            </div>
-
-            <div className="px-6 pb-10 sm:px-8">
-              <div className="mb-4 flex items-center gap-3 rounded-2xl border border-black/[0.14] bg-white/60 p-4">
-                <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Shadow</div>
-                <div className="flex gap-2">
-                  {(["none", "subtle", "dramatic"] as const).map((level) => (
+              {generatedStructure && (
+                <div className="flex items-center overflow-hidden rounded-full border border-black/[0.2]">
+                  {([
+                    ["Generated", true],
+                    ["Showcase", false],
+                  ] as const).map(([label, wantsGenerated]) => (
                     <button
-                      key={level}
+                      key={label}
                       type="button"
-                      onClick={() =>
-                        setState((s) => ({ ...s, shadows: { ...s.shadows, recommended: level } }))
-                      }
+                      onClick={() => setShowGenerated(wantsGenerated)}
                       className={cn(
-                        "rounded-lg border px-3.5 py-[7px] font-mono-plex text-[10px] uppercase tracking-[0.1em]",
-                        state.shadows.recommended === level
-                          ? "border-[#211E18] bg-[#211E18] text-[#F2EBE0]"
-                          : "border-black/[0.16] bg-white text-[#6E675C]"
+                        "px-3.5 py-1.5 font-mono-plex text-[10px] uppercase tracking-[0.12em]",
+                        showGenerated === wantsGenerated ? "bg-[#222D52] text-[#F2EBE0]" : "text-[#6E675C]"
                       )}
                     >
-                      {level}
+                      {label}
                     </button>
                   ))}
                 </div>
-              </div>
-              {state.designSystem ? (
-                <DesignSystemGallery
-                  designSystem={state.designSystem}
-                  spacing={state.spacing}
-                  editable
-                  variant={activeVariant}
-                  onVariantChange={(v) => set("mode", v === "dark" ? "Dark" : "Light")}
-                  onChange={(ds) => setState((s) => ({ ...s, designSystem: ds }))}
-                  onSpacingChange={(sp) => setState((s) => ({ ...s, spacing: sp }))}
-                />
-              ) : (
-                <div className="flex flex-col gap-4">
-                  <div className="rounded-2xl border border-black/[0.14] bg-white/60 p-4">
-                    <SpacingVisualization
-                      spacing={state.spacing}
-                      editable
-                      onChange={(sp) => setState((s) => ({ ...s, spacing: sp }))}
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setState((s) => ({
-                        ...s,
-                        designSystem: synthesizeDesignSystemFromPalettes(
-                          resolvePalette(s.light, s.primitives),
-                          resolvePalette(s.dark, s.primitives)
-                        ),
-                      }))
-                    }
-                    className="self-start rounded-full border border-black/30 px-4 py-2 font-mono-plex text-[11px] uppercase tracking-[0.12em] text-[#211E18]"
-                  >
-                    Enable component tokens
-                  </button>
-                </div>
               )}
+
+              <div className="ml-auto flex items-center overflow-hidden rounded-full border border-black/[0.2]">
+                {(["Light", "Dark"] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => set("mode", mode)}
+                    className={cn(
+                      "px-3.5 py-1.5 font-mono-plex text-[10px] uppercase tracking-[0.12em]",
+                      state.mode === mode ? "bg-[#211E18] text-[#F2EBE0]" : "text-[#6E675C]"
+                    )}
+                  >
+                    {mode}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <StudioCanvas
+              tokens={resolvedState}
+              theme={activeVariant}
+              selected={selected}
+              onSelect={handleSelect}
+            >
+              {showGenerated && generatedStructure ? (
+                <GeneratedContent structure={generatedStructure} />
+              ) : (
+                <ShowcaseContent systemName={state.name} />
+              )}
+            </StudioCanvas>
+
+            <div className="mt-6 rounded-2xl border border-black/[0.14] bg-white/60 p-4">
+              <SpacingVisualization
+                spacing={state.spacing}
+                editable
+                onChange={(sp) => setState((s) => ({ ...s, spacing: sp }))}
+              />
             </div>
           </div>
         </main>
+
+        {/* Mounted only while something is selected, so the canvas gets the
+            full width the rest of the time. `activeComponentTokens` is null
+            until the synthesise-on-first-click in handleSelect has landed. */}
+        {selected && (
+          <ComponentInspector
+            selection={selected}
+            variant={activeVariant}
+            tokens={activeComponentTokens}
+            radius={state.radius}
+            headFont={state.headFont}
+            bodyFont={state.bodyFont}
+            typeScale={state.typeScale}
+            onTokensChange={(next) => {
+              if (selected.kind === "component") setComponentTokens(selected.name, next);
+            }}
+            onRadiusChange={(r) => set("radius", r)}
+            onHeadFontChange={(f) => set("headFont", f)}
+            onBodyFontChange={(f) => set("bodyFont", f)}
+            onBaseSizeChange={(size) => set("typeScale", generateTypeScale(size, state.typeScale.ratioName))}
+            onClose={() => setSelected(null)}
+          />
+        )}
       </div>
 
       {exportOpen && <ExportDrawer tokens={resolvedState} onClose={() => setExportOpen(false)} />}

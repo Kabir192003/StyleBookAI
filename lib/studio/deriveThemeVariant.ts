@@ -59,18 +59,45 @@ function mix(baseHex: string, mixHex: string, amount: number): string {
   return `#${((1 << 24) + (r << 16) + (g << 8) + bch).toString(16).slice(1)}`;
 }
 
+/**
+ * Every `ComponentName` gets a token set, not just the two buttons.
+ *
+ * The two-entry version this replaces was enough while the only consumer was
+ * a static gallery that skipped what it did not find, but it is not enough for
+ * a canvas whose inspector opens on whatever the user clicks: eight of the ten
+ * components would select and then have nothing to edit. A design system that
+ * declares tokens for 20% of its components is also just an incomplete design
+ * system — the exports were emitting the same two.
+ *
+ * The neutral components (input, card, table, modal, dropdown, navigation)
+ * derive from surface/ink/border rather than the brand colours, because that
+ * is what they actually are; the dark-variant derivation downstream keys off
+ * exactly that distinction (see BRAND_FILL_SATURATION below) to decide which
+ * fills keep their hue into dark mode.
+ */
 export function deriveThemeVariantFromPalette(palette: PaletteTokens): ThemeVariantTokens {
+  const border = mix(palette.surface, palette.ink, 0.12);
+  const neutral = { background: palette.surface, text: palette.ink, border };
+
   return {
     colorRoles: {
       background: palette.surface,
       surface: palette.surface,
       text: palette.ink,
       textMuted: palette.muted,
-      border: mix(palette.surface, palette.ink, 0.12),
+      border,
     },
     components: {
       button: { background: palette.accent, text: onColor(palette.accent) },
       buttonSecondary: { background: palette.support, text: onColor(palette.support) },
+      input: neutral,
+      dropdown: neutral,
+      card: neutral,
+      modal: neutral,
+      navigation: neutral,
+      table: { background: mix(palette.surface, palette.ink, 0.04), text: palette.ink, border },
+      alert: { background: mix(palette.surface, palette.support, 0.12), text: palette.ink, border },
+      badge: { background: palette.support, text: onColor(palette.support) },
     },
   };
 }

@@ -215,14 +215,6 @@ const EditablePaletteTokensSchema = z.object({
   muted: ColorValueSchema,
 });
 
-// A block's arranged position/size in the Studio live-preview canvas.
-// Mirrors lib/studio/livePreviewBlocks.ts's PreviewLayoutItem.
-const PreviewLayoutItemSchema = z.object({
-  id: z.string(),
-  visible: z.boolean(),
-  width: z.number().nullable(),
-});
-
 export const ProjectInputSchema = z.object({
   name: z.string().trim().min(1).max(100),
   description: z.string().max(500).optional(),
@@ -242,7 +234,6 @@ export const ProjectInputSchema = z.object({
   studioPaletteLinks: z
     .object({ light: EditablePaletteTokensSchema, dark: EditablePaletteTokensSchema })
     .optional(),
-  previewLayout: z.array(PreviewLayoutItemSchema).optional(),
   context: z.enum(["saas", "ecommerce", "government", "editorial", "generic"]).optional(),
   theme: z
     .object({ id: z.string(), slug: z.string(), name: z.string() })

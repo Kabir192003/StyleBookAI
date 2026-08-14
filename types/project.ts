@@ -13,7 +13,6 @@ import { Theme, TypeScale } from "./theme";
 import { SpacingScale, ShadowScale, CornerRadiusScale, MoodboardImage } from "./designTokens";
 import { DesignSystem } from "./designSystem";
 import { PrimitiveColor, ColorValue } from "@/lib/studio/tokenGraph";
-import { PreviewLayoutItem } from "@/lib/studio/livePreviewBlocks";
 
 export type AIReasoning = {
   palette: string;
@@ -53,9 +52,6 @@ export type Project = {
     light: { accent: ColorValue; support: ColorValue; surface: ColorValue; ink: ColorValue; muted: ColorValue };
     dark: { accent: ColorValue; support: ColorValue; surface: ColorValue; ink: ColorValue; muted: ColorValue };
   };
-  // The live-preview canvas's arranged order/visibility/width per block —
-  // also optional/additive, same reasoning as colorPrimitives above.
-  previewLayout?: PreviewLayoutItem[];
   context?: AIContext;
   theme?: Pick<Theme, "id" | "slug" | "name">;
   aiGenerated: boolean;

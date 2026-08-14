@@ -116,7 +116,6 @@ export function projectInputFromStudioState(state: StudioState): ProjectInput {
     // the resolved hex above (which is all `colors`/`designSystem` need).
     colorPrimitives: state.primitives,
     studioPaletteLinks: { light: state.light, dark: state.dark },
-    previewLayout: state.previewLayout,
     aiGenerated: Boolean(state.aiReasoning),
     aiReasoning: state.aiReasoning,
   };
