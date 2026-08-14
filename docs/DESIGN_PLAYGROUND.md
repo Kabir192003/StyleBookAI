@@ -1,42 +1,119 @@
 # Design Playground — implementation spec
 
-Status: **P1 + P2 done, P3 + P4 unfinished.** This file is the contract
-between the batches building the feature. If you are picking this work up
-cold, read this first, then `docs/TECHNICAL_ARCHITECTURE.md`, then `CLAUDE.md`.
+Status: **architecture pivot decided 2026-08-14, not yet built.** Read this
+whole "WHERE THIS STANDS" section first — it supersedes some of the original
+spec below, which is kept for its still-accurate reference material (token
+mechanism, reuse table, data model). If you are picking this up cold, read
+this, then `docs/TECHNICAL_ARCHITECTURE.md`, then `CLAUDE.md`.
 
-## WHERE THIS STANDS (updated 2026-08-13, commit `09d324a`)
+## WHERE THIS STANDS (updated 2026-08-14)
 
-Working and verified in the browser at `/studio/playground`:
-- Two seeded experiments render side by side, each with all six component
-  groups, from one shared React library. `--pg-primary` `#222D52` vs `#C36B3E`
-  produces button backgrounds `rgb(34,45,82)` vs `rgb(195,107,62)` — the
-  scoped-token mechanism works, which is the feature's whole premise.
-- The component library is genuinely interactive: 21 `:hover`, 14
-  `:focus-visible`, 8 `:active`, 32 `:disabled` rules over 92 real `<button>`
-  and 28 real `<input>` elements.
-- Experiment add / duplicate / delete / reorder, the Studio sub-nav across all
-  four routes, and tablet stacking are all verified.
-- Playground persistence types, zod schema and the `projectMapper` four-place
-  allowlist are done (P4 got that far).
+### The decision: fold Playground into Studio. One page, not two.
 
-**Still to build:**
-- **P3 (controls)** — barely started. Nothing landed. Needs: the colour picker
-  (hex/RGB/HSL + native, kept in sync via `colord`), swatch + font trays with
-  search over the ~1,950-font catalogue, per-card role assignment wired to the
-  store's `setExperimentColor`/`setExperimentFont`, the clipboard
-  detect→preview→select→add flow (`lib/playground/clipboardParse.ts`, reading
-  both `useClipboardStore` and `navigator.clipboard.readText()`), and the
-  contrast readout using `getContrastRatio`.
-- **P4 (apply)** — persistence landed; `ApplyToSystemButton` and
-  `lib/playground/applyToSystem.ts` did not. The agreed design: Apply stages
-  the resolved experiment through `useStudioImportStore` and navigates to
-  `/studio`, where `StudioBuilder` folds it into `StudioState` on mount — so
-  the existing undo/redo covers it for free. **Do not lift `StudioState` into
-  Zustand**; that is a large refactor of a working 1,200-line component and the
-  staging bridge already exists for exactly this (Preview Lab uses it).
-  `applyStudioImport` must start honouring `color.role` while keeping its
-  positional fallback so Preview Lab keeps working.
-- The `ExperimentCard` footer expects `<ApplyToSystemButton experimentId>`.
+Studio's `/studio` right-hand side currently does three overlapping jobs — a
+static mock landing page, `LivePreviewSection`'s arrangeable block canvas, and
+`DesignSystemGallery`'s token-editor-dressed-as-preview. Playground's component
+library (P2, done) is a strict upgrade on all three: real, interactive
+components instead of static HTML or hex-field lists. Keeping both surfaces
+means maintaining two "preview my system" experiences that will drift apart.
+**Decision: there is one Studio page. `/studio/playground` as a separate route
+goes away once the merge lands.**
+
+### What "merge" means concretely
+
+`StudioBuilder`'s **sidebar stays exactly as-is** (Identity, Palette,
+Typography, Shape & density) — that's the global token editor, untouched.
+
+The right-hand side becomes two architecturally distinct things, not one
+undifferentiated grid:
+
+1. **The Live Preview** — one card, bound live and two-way to `StudioState`.
+   Editing anything here (a role's colour, a role's font, per-component
+   overrides) writes straight into `StudioState`, same as editing the sidebar
+   does — there is no "Apply" step for this card, because it *is* the current
+   system, not an experiment. This is the card that owns **clipboard-paste and
+   full font/colour-library access** — drag a clipped colour or font from
+   `useClipboardStore` onto a role, or open the full picker (hex/RGB/HSL +
+   the ~1,950-font catalogue with search), and the live preview updates
+   immediately. Per-component inline editing lives here too: an "Edit" affordance
+   beside each rendered component (button, card, input, …) opens the same
+   role-assignment control the comparison cards use, scoped to that one
+   component's tokens.
+2. **Comparison cards** — the existing Playground `Experiment` model, unchanged
+   in spirit: sandboxed overrides, side by side, explicit **Apply to Design
+   System** (stages through `useStudioImportStore`, same as today's plan) to
+   promote one into the Live Preview / `StudioState`.
+
+**This is the point the user asked to preserve explicitly: keep the Live
+Preview (colour/font pasting, per-component editing) architecturally separate
+from the comparison-card experiments — don't collapse everything into "just
+another experiment card."** The Live Preview is privileged: it's the system;
+comparison cards are proposals.
+
+**Export** becomes one `ExportDrawer`, scoped to whichever card is
+active/focused (the Live Preview by default, or a comparison card if the user
+is focused on one) — `generateExportCode` already takes any
+`StudioExportTokens`, so this needs no new export logic, just wiring the
+drawer to the currently-focused card's resolved tokens instead of always
+`state` directly.
+
+### What gets deleted, not just deprecated
+
+The static mock landing page in `StudioBuilder`, `LivePreviewSection`'s
+arrangeable block canvas, `SpacingVisualization`'s standalone card, and
+`DesignSystemGallery`'s usage *inside Studio* (its `/studio/ai` read-only usage
+— showing what the AI produced before any editing — stays; that's a different
+job). This is real code coming out. Good for maintenance, but it's a deletion
+pass, not purely additive — treat it with the same care as any removal (check
+nothing else imports these, don't just orphan them).
+
+### The AI-generation coverage gap (user's concern, resolved architecturally)
+
+`designSystem.components` (AI-authored) only names 10 component types (button,
+buttonSecondary, input, dropdown, card, navigation, table, modal, alert,
+badge). Playground's 6 groups cover ~20 individual components — toggle,
+tooltip, avatar, progress, skeleton, tabs, breadcrumbs, toast have no
+AI-authored token slot. **This is fine, not a blocker**: P1 already built the
+`--pg-*` semantic-role layer specifically so every component falls back to a
+role token when there's no bespoke AI token (`var(--ds-x, var(--pg-y))`
+chains). The only real requirement: every Playground component's fallback
+chain must terminate in something the AI *does* generate — audit this during
+the merge, don't assume it. Add a subtle visual marker distinguishing
+"AI-authored token" from "derived from role tokens" (same principle as the
+"Verified, not claimed" panel already shipped for AI generation) so nothing
+overclaims curation it didn't do.
+
+### Sequencing — minimize thrown-away work
+
+P3 (controls: colour picker, font tray, clipboard import, contrast readout,
+role assignment) and P4 (apply logic) were already specced as reusable,
+route-agnostic modules. **Build them first, exactly as originally planned**,
+then do the Studio-page merge as a separate pass that mounts those modules in
+both places (Live Preview card + comparison cards) instead of only
+`/studio/playground`. Almost nothing already planned gets thrown away — it
+just ends up mounted differently. Do not start the deletion pass until P3/P4
+are solid; merge risk compounds if the replacement isn't ready when the old
+surfaces come out.
+
+### Still true from before
+
+- **P1 + P2 are done and verified** — see the git log
+  (`Add Design Playground foundation, component library and persistence`,
+  commit `09d324a`) for the evidence: two experiments rendering side by side
+  with genuinely different scoped tokens, and a real-interactive component
+  library (21 `:hover`, 14 `:focus-visible`, 8 `:active`, 32 `:disabled` rules
+  over 92 real buttons / 28 real inputs).
+- **P3 (controls) — nothing landed yet.** Still needs everything listed in the
+  P3 section below.
+- **P4 (apply) — persistence landed** (types, zod schema, the `projectMapper`
+  four-place allowlist). `ApplyToSystemButton` and
+  `lib/playground/applyToSystem.ts` did not land. Design unchanged: stage
+  through `useStudioImportStore`, navigate, let `StudioBuilder` fold it into
+  `StudioState` on mount so existing undo/redo covers it for free. **Do not
+  lift `StudioState` into Zustand** — the staging bridge already does this job
+  (Preview Lab uses it today). `applyStudioImport` must start honouring
+  `color.role` while keeping its positional fallback so Preview Lab keeps
+  working unchanged.
 
 **Gotcha already paid for once:** `components/playground/components/styles.ts`
 holds the stylesheet as a template literal. Backticks inside its CSS comments
