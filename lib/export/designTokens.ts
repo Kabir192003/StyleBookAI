@@ -264,20 +264,85 @@ export function shadowOverflowPx(value: string): number {
 
 type TokenNode = Record<string, unknown>;
 
-function colorToken(hex: string, description?: string): TokenNode {
-  return { $value: toHexColor(hex), ...(description ? { $description: description } : {}) };
+/**
+ * `explicitType` exists because of a real Tokens Studio import bug, found by
+ * testing an actual export in Tokens Studio v2.11.12: every colour token
+ * came in as a broken `?` swatch, even the flat top-level ones. The DTCG
+ * spec says a group's `$type` is inherited by every descendant that doesn't
+ * set its own — and that is exactly what `toDtcgJson`'s plain output relies
+ * on, one `$type: "color"` on the outer `color` group covering `palette.*`,
+ * `role.*`, and `component.<name>.<state>.*` several levels down. Tokens
+ * Studio's importer does not walk that far: it resolves `$type` from a
+ * group only for its *direct* children, so `color.palette.accent` (two
+ * levels down) and `color.component.button.hover.background` (four levels
+ * down) never see it and get treated as untyped, unresolvable values.
+ *
+ * The fix is to stamp `$type: "color"` on every leaf instead of relying on
+ * inheritance — legal per spec either way, and it can't go wrong regardless
+ * of how deep an importer is willing to look. Scoped to a flag rather than
+ * made the default so `toDtcgJson` (generic DTCG importers, which do
+ * implement the inheritance rule) stays byte-for-byte unchanged; only
+ * `toTokensStudioJson` sets it.
+ */
+function colorToken(hex: string, description?: string, explicitType = false): TokenNode {
+  return {
+    ...(explicitType ? { $type: "color" as const } : {}),
+    $value: toHexColor(hex),
+    ...(description ? { $description: description } : {}),
+  };
+}
+
+/**
+ * Same as `colorToken`, but first checks whether this exact colour was
+ * already emitted earlier in the same token set — if so, it points at that
+ * token with a `{group.token}` reference instead of repeating the literal
+ * hex.
+ *
+ * This is intentionally an exact-match check, not a "closest" one. A
+ * component colour is frequently a WCAG-contrast-adjusted variant of a
+ * primitive — hue preserved, lightness moved — and referencing the
+ * unadjusted primitive in that case would make Tokens Studio resolve the
+ * component back to a colour that no longer passes the ratio it was
+ * corrected for. Only a byte-identical hex is safe to collapse into a
+ * reference; everything else stays a literal, which is already correct.
+ */
+function colorTokenOrRef(
+  hex: string,
+  candidates: Map<string, string>,
+  description?: string,
+  explicitType = false
+): TokenNode {
+  const resolved = toHexColor(hex);
+  // Gated on the same flag as the $type stamp, not just reusing whatever
+  // `candidates` happens to hold: this function is called unconditionally
+  // from componentGroup/variantColorGroup, including from the plain
+  // `toDtcgJson` path where `explicitType` is false. Without this guard the
+  // plain "Design Tokens" tab would start emitting `{role.surface}`-style
+  // references too — exactly the kind of change to the normal export this
+  // fix must not make.
+  const ref = explicitType ? candidates.get(resolved.toLowerCase()) : undefined;
+  return {
+    ...(explicitType ? { $type: "color" as const } : {}),
+    $value: ref ? `{${ref}}` : resolved,
+    ...(description ? { $description: description } : {}),
+  };
 }
 
 function dimensionToken(value: number | string, description?: string): TokenNode {
   return { $value: toDimension(value), ...(description ? { $description: description } : {}) };
 }
 
-function componentGroup(name: ComponentName, tokens: ComponentTokenSet): TokenNode {
+function componentGroup(
+  name: ComponentName,
+  tokens: ComponentTokenSet,
+  candidates: Map<string, string>,
+  explicitType: boolean
+): TokenNode {
   const group: TokenNode = {
-    background: colorToken(tokens.background),
-    text: colorToken(tokens.text),
+    background: colorTokenOrRef(tokens.background, candidates, undefined, explicitType),
+    text: colorTokenOrRef(tokens.text, candidates, undefined, explicitType),
   };
-  if (tokens.border) group.border = colorToken(tokens.border);
+  if (tokens.border) group.border = colorTokenOrRef(tokens.border, candidates, undefined, explicitType);
 
   // Every interaction state the generator produced gets its own subgroup.
   // These used to survive only in CSS/Tailwind and were dropped from every
@@ -287,34 +352,52 @@ function componentGroup(name: ComponentName, tokens: ComponentTokenSet): TokenNo
     const override = tokens.states?.[state];
     if (!override) continue;
     const stateGroup: TokenNode = {};
-    if (override.background) stateGroup.background = colorToken(override.background);
-    if (override.text) stateGroup.text = colorToken(override.text);
-    if (override.border) stateGroup.border = colorToken(override.border);
+    if (override.background) stateGroup.background = colorTokenOrRef(override.background, candidates, undefined, explicitType);
+    if (override.text) stateGroup.text = colorTokenOrRef(override.text, candidates, undefined, explicitType);
+    if (override.border) stateGroup.border = colorTokenOrRef(override.border, candidates, undefined, explicitType);
     if (Object.keys(stateGroup).length > 0) group[state] = stateGroup;
   }
 
   return group;
 }
 
-function variantColorGroup(variant: ThemeVariantTokens, palette: NamedColor[]): TokenNode {
+function variantColorGroup(variant: ThemeVariantTokens, palette: NamedColor[], explicitType = false): TokenNode {
   const group: TokenNode = {};
+  // hex (lowercase) -> the reference path a later token in this same set can
+  // point at, e.g. "palette.accent" or "role.surface". Populated as each
+  // group is built, so `component` (built last) can reference anything
+  // `palette` or `role` (built first) already defined — never the reverse,
+  // which is what keeps this a DAG instead of something that could cycle.
+  const candidates = new Map<string, string>();
 
   if (palette.length > 0) {
-    group.palette = Object.fromEntries(palette.map((c) => [c.name, colorToken(c.hex, c.description)]));
+    group.palette = {};
+    for (const c of palette) {
+      (group.palette as TokenNode)[c.name] = colorToken(c.hex, c.description, explicitType);
+      candidates.set(toHexColor(c.hex).toLowerCase(), `palette.${c.name}`);
+    }
   }
 
-  group.role = {
-    background: colorToken(variant.colorRoles.background),
-    surface: colorToken(variant.colorRoles.surface),
-    text: colorToken(variant.colorRoles.text),
-    "text-muted": colorToken(variant.colorRoles.textMuted),
-    border: colorToken(variant.colorRoles.border),
-  };
+  const roleEntries: Array<[string, string]> = [
+    ["background", variant.colorRoles.background],
+    ["surface", variant.colorRoles.surface],
+    ["text", variant.colorRoles.text],
+    ["text-muted", variant.colorRoles.textMuted],
+    ["border", variant.colorRoles.border],
+  ];
+  group.role = {};
+  for (const [key, hex] of roleEntries) {
+    (group.role as TokenNode)[key] = colorTokenOrRef(hex, candidates, undefined, explicitType);
+    // Registered even when this role itself just resolved to a reference —
+    // a component matching "role.surface" should still point at "role.surface"
+    // by name, not have to know it secretly aliases "palette.surface" too.
+    if (!candidates.has(toHexColor(hex).toLowerCase())) candidates.set(toHexColor(hex).toLowerCase(), `role.${key}`);
+  }
 
   const components: TokenNode = {};
   for (const name of COMPONENT_ORDER) {
     const tokens = variant.components[name];
-    if (tokens) components[slugify(name)] = componentGroup(name, tokens);
+    if (tokens) components[slugify(name)] = componentGroup(name, tokens, candidates, explicitType);
   }
   if (Object.keys(components).length > 0) group.component = components;
 
@@ -322,8 +405,10 @@ function variantColorGroup(variant: ThemeVariantTokens, palette: NamedColor[]): 
 }
 
 /** A mode group built from a bare palette, for systems with no designSystem. */
-function paletteOnlyGroup(palette: NamedColor[]): TokenNode {
-  return { palette: Object.fromEntries(palette.map((c) => [c.name, colorToken(c.hex, c.description)])) };
+function paletteOnlyGroup(palette: NamedColor[], explicitType = false): TokenNode {
+  return {
+    palette: Object.fromEntries(palette.map((c) => [c.name, colorToken(c.hex, c.description, explicitType)])),
+  };
 }
 
 export type DtcgOptions = {
@@ -349,6 +434,17 @@ export type DtcgOptions = {
    * generic DTCG importers rather than Tokens Studio specifically.
    */
   tokensStudioTypography?: boolean;
+  /**
+   * Stamp `$type: "color"` on every colour leaf instead of relying on the
+   * outer `color` group's `$type` to cascade down through `palette.*`,
+   * `role.*` and `component.*.*` — see the comment on `colorToken` for why
+   * that cascade doesn't survive Tokens Studio's importer. Also turns on
+   * reference-over-duplicate for `role`/`component` colours that exactly
+   * match an already-emitted primitive (see `colorTokenOrRef`). Only
+   * `toTokensStudioJson` sets this, for the same reason as
+   * `tokensStudioTypography` above.
+   */
+  explicitColorType?: boolean;
 };
 
 /**
@@ -412,11 +508,11 @@ function validateTypographyReferences(tree: TokenNode, fontFamilyKey: string, fo
   }
 }
 
-function modeColorGroup(system: NormalizedSystem, mode: "light" | "dark"): TokenNode | null {
+function modeColorGroup(system: NormalizedSystem, mode: "light" | "dark", explicitType = false): TokenNode | null {
   const variant = mode === "light" ? system.designSystem?.light : system.designSystem?.dark;
   const palette = mode === "light" ? system.light : system.dark;
-  if (variant) return variantColorGroup(variant, palette);
-  if (palette.length > 0) return paletteOnlyGroup(palette);
+  if (variant) return variantColorGroup(variant, palette, explicitType);
+  if (palette.length > 0) return paletteOnlyGroup(palette, explicitType);
   return null;
 }
 
@@ -433,16 +529,20 @@ export function toDtcgTokens(system: NormalizedSystem, options: DtcgOptions = {}
   /* ---------- colour ---------- */
   const color: TokenNode = { $type: "color" };
 
+  const explicitColorType = Boolean(options.explicitColorType);
+
   if (options.mode) {
-    const modeGroup = modeColorGroup(system, options.mode);
+    const modeGroup = modeColorGroup(system, options.mode, explicitColorType);
     if (modeGroup) Object.assign(color, modeGroup);
   } else {
     if (system.brand.length > 0) {
-      color.brand = Object.fromEntries(system.brand.map((c) => [c.name, colorToken(c.hex, c.description)]));
+      color.brand = Object.fromEntries(
+        system.brand.map((c) => [c.name, colorToken(c.hex, c.description, explicitColorType)])
+      );
     }
-    const light = modeColorGroup(system, "light");
+    const light = modeColorGroup(system, "light", explicitColorType);
     if (light) color.light = light;
-    const dark = modeColorGroup(system, "dark");
+    const dark = modeColorGroup(system, "dark", explicitColorType);
     if (dark) color.dark = dark;
   }
 
@@ -627,7 +727,7 @@ export function toDtcgJson(system: NormalizedSystem): string {
 export function toTokensStudioJson(system: NormalizedSystem): string {
   const hasDark = system.dark.length > 0 || Boolean(system.designSystem?.dark);
 
-  const global = toDtcgTokens(system, { tokensStudioTypography: true });
+  const global = toDtcgTokens(system, { tokensStudioTypography: true, explicitColorType: true });
   // The mode-specific colour tokens live in their own sets, so strip them
   // from `global` — leaving them in would give every colour two competing
   // definitions and the plugin resolves the duplicate unpredictably.
@@ -635,16 +735,18 @@ export function toTokensStudioJson(system: NormalizedSystem): string {
   if (system.brand.length > 0) {
     global.color = {
       $type: "color",
-      brand: Object.fromEntries(system.brand.map((c) => [c.name, colorToken(c.hex, c.description)])),
+      brand: Object.fromEntries(
+        system.brand.map((c) => [c.name, colorToken(c.hex, c.description, true)])
+      ),
     };
   }
 
   const file: TokenNode = { global };
 
-  const lightSet = toDtcgTokens(system, { mode: "light", colorsOnly: true });
+  const lightSet = toDtcgTokens(system, { mode: "light", colorsOnly: true, explicitColorType: true });
   if (lightSet.color) file.light = lightSet;
   if (hasDark) {
-    const darkSet = toDtcgTokens(system, { mode: "dark", colorsOnly: true });
+    const darkSet = toDtcgTokens(system, { mode: "dark", colorsOnly: true, explicitColorType: true });
     if (darkSet.color) file.dark = darkSet;
   }
 
