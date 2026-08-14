@@ -20,7 +20,6 @@
 
 import { cloneElement, useCallback, useEffect, useId, useRef, useState, type ReactElement } from "react";
 import { ChevronDown, HelpCircle, Minus, Plus } from "lucide-react";
-import { GroupShell, Specimen } from "./primitives";
 
 export function CheckboxSet() {
   const id = useId();
@@ -327,109 +326,5 @@ export function ModalDemo({ inline = false }: { inline?: boolean }) {
     >
       {body}
     </div>
-  );
-}
-
-export function ControlsGroup() {
-  return (
-    <GroupShell>
-      <Specimen label="Checkbox">
-        <CheckboxSet />
-      </Specimen>
-
-      <Specimen label="Radio">
-        <RadioSet />
-      </Specimen>
-
-      <Specimen label="Toggle">
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <Switch label="Auto-derive dark mode" desc="Recompute the dark palette whenever light changes." defaultOn />
-          <Switch label="Share with workspace" desc="Anyone with the link can read this system." />
-          <Switch label="Enterprise SSO" desc="Available on the Business plan." disabled />
-        </div>
-      </Specimen>
-
-      <Specimen label="Dropdown">
-        <SelectField />
-      </Specimen>
-
-      <Specimen label="Tooltip — hover or Tab to the button">
-        <div className="pg-row">
-          <Tooltip tip="Measured against WCAG 2.2 AA">
-            <button type="button" className="pg-btn pg-btn--outline pg-btn--icon" aria-label="About contrast scoring">
-              <HelpCircle size={16} aria-hidden="true" />
-            </button>
-          </Tooltip>
-          <Tooltip tip="Overwrites the canonical tokens">
-            <button type="button" className="pg-btn pg-btn--secondary">
-              Apply to design system
-            </button>
-          </Tooltip>
-        </div>
-      </Specimen>
-
-      <Specimen label="Avatar">
-        <div className="pg-row" style={{ gap: 16 }}>
-          <span className="pg-avatar-wrap">
-            <span className="pg-avatar pg-avatar--lg pg-avatar--accent" aria-hidden="true">
-              RK
-            </span>
-            <span className="pg-avatar__status" aria-hidden="true" />
-          </span>
-          <span className="pg-avatar" aria-hidden="true">
-            TS
-          </span>
-          <span className="pg-avatar pg-avatar--sm" aria-hidden="true">
-            AB
-          </span>
-          <span className="pg-avatar-group" role="img" aria-label="Ruth, Tomas, Aya and 4 others">
-            <span className="pg-avatar pg-avatar--sm" aria-hidden="true">
-              RK
-            </span>
-            <span className="pg-avatar pg-avatar--sm" aria-hidden="true">
-              TS
-            </span>
-            <span className="pg-avatar pg-avatar--sm" aria-hidden="true">
-              AY
-            </span>
-            <span className="pg-avatar pg-avatar--sm pg-avatar--accent" aria-hidden="true">
-              +4
-            </span>
-          </span>
-        </div>
-      </Specimen>
-
-      <Specimen label="Progress">
-        <ProgressDemo />
-      </Specimen>
-
-      <Specimen label="Skeleton">
-        {/* aria-hidden + aria-busy: a loading placeholder announced as content
-            would read out as a run of empty boxes. */}
-        <div
-          className="pg-card"
-          style={{ maxWidth: 340, padding: "var(--space-4, 18px)", gap: 12 }}
-          aria-hidden="true"
-          aria-busy="true"
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div className="pg-skeleton pg-skeleton--circle" style={{ width: 40, height: 40, flex: "none" }} />
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 7 }}>
-              <div className="pg-skeleton" style={{ height: 10, width: "58%" }} />
-              <div className="pg-skeleton" style={{ height: 9, width: "34%" }} />
-            </div>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 7, marginTop: 12 }}>
-            <div className="pg-skeleton" style={{ height: 9, width: "100%" }} />
-            <div className="pg-skeleton" style={{ height: 9, width: "92%" }} />
-            <div className="pg-skeleton" style={{ height: 9, width: "64%" }} />
-          </div>
-        </div>
-      </Specimen>
-
-      <Specimen label="Modal — opens, closes, Escape works">
-        <ModalDemo />
-      </Specimen>
-    </GroupShell>
   );
 }

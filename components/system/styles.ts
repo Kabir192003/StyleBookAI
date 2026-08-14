@@ -84,7 +84,7 @@ export const SYSTEM_COMPONENT_CSS = `
 
   /* Brand roles. "primary" is what a filled button uses; "accent" is the
      highlight role (focus rings, active tabs, links). They are separate
-     roles in lib/playground/types.ts and a user can point them at
+     roles in lib/studio/roleProperties.ts and a system can point them at
      different hues, so the library must not conflate them. */
   --pgc-primary: var(--pg-primary, var(--ds-button-bg, var(--color-accent, #2f4bd8)));
   --pgc-on-primary: var(--pg-on-primary, var(--ds-button-text, var(--color-surface, #ffffff)));
@@ -142,20 +142,8 @@ export const SYSTEM_COMPONENT_CSS = `
 }
 
 /* ------------------------------------------------------------------ *
- * Specimen scaffolding — the neutral chrome each group is laid out in.
- * Kept token-driven too: a specimen caption printed in a colour the
- * experiment never chose would misrepresent the palette being judged.
+ * Layout scaffolding
  * ------------------------------------------------------------------ */
-.pg-stack { display: flex; flex-direction: column; gap: var(--space-5, 26px); }
-.pg-specimen { display: flex; flex-direction: column; gap: var(--space-2, 10px); }
-.pg-specimen__label {
-  font-family: var(--pgc-font-label);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--pgc-muted);
-}
 .pg-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2, 10px); }
 .pg-grid { display: grid; gap: var(--space-3, 16px); grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
 /* Modal and toast are position:absolute against this, never position:fixed —

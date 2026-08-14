@@ -13,7 +13,6 @@ import { Theme, TypeScale } from "./theme";
 import { SpacingScale, ShadowScale, CornerRadiusScale, MoodboardImage } from "./designTokens";
 import { DesignSystem } from "./designSystem";
 import { PrimitiveColor, ColorValue } from "@/lib/studio/tokenGraph";
-import { PlaygroundState } from "@/lib/playground/types";
 
 export type AIReasoning = {
   palette: string;
@@ -53,17 +52,6 @@ export type Project = {
     light: { accent: ColorValue; support: ColorValue; surface: ColorValue; ink: ColorValue; muted: ColorValue };
     dark: { accent: ColorValue; support: ColorValue; surface: ColorValue; ink: ColorValue; muted: ColorValue };
   };
-  // The Design Playground's board: the experiment cards plus the swatch and
-  // font trays (docs/DESIGN_PLAYGROUND.md §16). Optional/additive like the
-  // two fields above — a project saved before the playground existed simply
-  // has none and opens with the seed experiments.
-  //
-  // Written only by an explicit "Save playground", never automatically: the
-  // playground is a scratch surface, and silently persisting every throwaway
-  // experiment would resurrect abandoned work on the next visit (see the
-  // header of store/playgroundStore.ts, which is deliberately unpersisted for
-  // the same reason).
-  playground?: PlaygroundState;
   context?: AIContext;
   theme?: Pick<Theme, "id" | "slug" | "name">;
   aiGenerated: boolean;

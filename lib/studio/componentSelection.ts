@@ -61,7 +61,7 @@ const SELECTORS: Array<{ selector: string; name: ComponentName }> = [
 const TYPE_SELECTORS: Array<{ selector: string; role: TypeRole }> = [
   { selector: ".pg-display", role: "display" },
   { selector: ".pg-h1, .pg-h2, .pg-h3, .pg-modal__title, .pg-navbar__brand", role: "heading" },
-  { selector: ".pg-body, .pg-caption, .pg-specimen__label", role: "body" },
+  { selector: ".pg-body, .pg-caption", role: "body" },
 ];
 
 /** The three faces the system actually has. Deliberately not one per heading

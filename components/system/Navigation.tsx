@@ -9,7 +9,7 @@
  * tying each tab to its panel. Requirement: "the tabs must be keyboard-
  * operable" (docs/DESIGN_PLAYGROUND.md, P2).
  *
- * All ids come from `useId()` because the playground canvas renders this
+ * All ids come from `useId()` because the canvas can render this
  * component once per experiment — hard-coded ids would collide across cards
  * and `aria-controls` would resolve to the wrong panel in every card but the
  * first.
@@ -18,7 +18,6 @@
 
 import { useId, useRef, useState } from "react";
 import { Bell, ChevronRight, Layers, Menu, Search } from "lucide-react";
-import { GroupShell, Specimen } from "./primitives";
 
 const NAV_ITEMS = ["Overview", "Library", "Studio", "Team"];
 
@@ -154,21 +153,5 @@ export function Breadcrumbs() {
         </li>
       </ol>
     </nav>
-  );
-}
-
-export function NavigationGroup() {
-  return (
-    <GroupShell>
-      <Specimen label="Navbar">
-        <Navbar />
-      </Specimen>
-      <Specimen label="Tabs — arrow keys, Home and End all work">
-        <Tabs />
-      </Specimen>
-      <Specimen label="Breadcrumbs">
-        <Breadcrumbs />
-      </Specimen>
-    </GroupShell>
   );
 }

@@ -78,7 +78,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     "designSystem",
     "colorPrimitives",
     "studioPaletteLinks",
-    "playground",
     "context",
     "theme",
     "aiReasoning",

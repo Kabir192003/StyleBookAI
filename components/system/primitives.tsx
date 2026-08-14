@@ -1,12 +1,11 @@
 /**
  * Shared scaffolding for the StyleBook component library: the stylesheet
- * injector and the two layout wrappers every group is built out of. Nothing
- * here is token-aware beyond passing the `pg-scope` class along — the tokens
- * are resolved by the CSS in ./styles.ts.
+ * injector. Nothing here is token-aware — the tokens are resolved by the CSS
+ * in ./styles.ts against whichever scope the markup sits in.
  */
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect } from "react";
 import { SYSTEM_COMPONENT_CSS, SYSTEM_STYLE_ELEMENT_ID } from "./styles";
 
 /**
@@ -43,32 +42,4 @@ export function useSystemStyles(): void {
     el.textContent = SYSTEM_COMPONENT_CSS;
     document.head.appendChild(el);
   }, []);
-}
-
-/**
- * Root of every group. `pg-scope` is where the `--pgc-*` alias layer is
- * declared, so it must wrap the markup — a component rendered outside it
- * resolves every alias to nothing and paints unstyled.
- */
-export function GroupShell({ children }: { children: ReactNode }) {
-  useSystemStyles();
-  return (
-    <div className="pg-scope">
-      <div className="pg-stack">{children}</div>
-    </div>
-  );
-}
-
-/**
- * One labelled specimen. The caption is part of the token scope on purpose:
- * a label printed in a colour the experiment never chose would sit next to
- * the components being judged and misrepresent the palette.
- */
-export function Specimen({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <section className="pg-specimen">
-      <h4 className="pg-specimen__label">{label}</h4>
-      {children}
-    </section>
-  );
 }

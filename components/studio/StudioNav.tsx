@@ -1,9 +1,8 @@
 /**
- * Shared sub-nav across Studio's four sections. Studio's IA has always been
- * route-based (/studio, /studio/ai, /studio/compare, and now
- * /studio/playground), but nothing on any of those pages linked to the
- * others — you could only reach the Preview Lab by typing the URL, which is
- * how the playground would have shipped invisible too.
+ * Shared sub-nav across Studio's three sections. Studio's IA is route-based
+ * (/studio, /studio/ai, /studio/compare) and nothing on any of those pages
+ * linked to the others — you could only reach the Preview Lab by typing the
+ * URL.
  *
  * Deliberately a thin strip mounted *above* each page's own content rather
  * than a layout wrapper: /studio/compare renders its own <main> with its own
@@ -13,7 +12,7 @@
  *
  * Styled in the site's editorial language — #EDE6DA page, #F2EBE0 card,
  * #211E18 ink, #6E675C muted, #222D52 accent, font-mono-plex uppercase
- * labels — the same values StudioBuilder and LivePreviewSection use inline.
+ * labels — the same values StudioBuilder uses inline.
  */
 "use client";
 
@@ -25,7 +24,6 @@ const SECTIONS = [
   { href: "/studio", label: "Builder", hint: "Tokens by hand" },
   { href: "/studio/ai", label: "AI Generate", hint: "From a brief" },
   { href: "/studio/compare", label: "Preview Lab", hint: "Colour + type" },
-  { href: "/studio/playground", label: "Playground", hint: "Experiments" },
 ] as const;
 
 export function StudioNav() {

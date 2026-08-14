@@ -19,7 +19,6 @@
 
 import { useId, useState } from "react";
 import { AlertCircle, CheckCircle2, Search } from "lucide-react";
-import { GroupShell, Specimen } from "./primitives";
 
 /** Deliberately loose: this validates for the demo, not for a signup form. */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -97,73 +96,5 @@ export function SearchField() {
       </div>
       <p className="pg-hint">{query ? `Searching for “${query}”` : "Colours, fonts and saved themes."}</p>
     </div>
-  );
-}
-
-export function InputsGroup() {
-  const id = useId();
-  return (
-    <GroupShell>
-      <Specimen label="Default & filled">
-        <div className="pg-grid">
-          <div className="pg-field">
-            <label className="pg-label" htmlFor={`${id}-name`}>
-              Project name
-            </label>
-            <input id={`${id}-name`} className="pg-input" placeholder="Untitled project" />
-            <p className="pg-hint">Shown on the dashboard and in exports.</p>
-          </div>
-          <div className="pg-field">
-            <label className="pg-label" htmlFor={`${id}-filled`}>
-              Subdomain
-            </label>
-            {/* defaultValue, not value — this specimen is meant to be edited,
-                so it owns its own state rather than being locked by React. */}
-            <input id={`${id}-filled`} className="pg-input" data-state="filled" defaultValue="northwind-studio" />
-            <p className="pg-hint">northwind-studio.stylebook.app</p>
-          </div>
-        </div>
-      </Specimen>
-
-      <Specimen label="Validation">
-        <div className="pg-grid">
-          <ValidatedEmailField />
-          <SearchField />
-        </div>
-      </Specimen>
-
-      <Specimen label="Disabled & read-only">
-        <div className="pg-grid">
-          <div className="pg-field">
-            <label className="pg-label" htmlFor={`${id}-plan`}>
-              Plan
-            </label>
-            <input id={`${id}-plan`} className="pg-input" defaultValue="Team — 12 seats" disabled />
-            <p className="pg-hint">Contact your workspace owner to change this.</p>
-          </div>
-          <div className="pg-field">
-            <label className="pg-label" htmlFor={`${id}-key`}>
-              API key
-            </label>
-            <input id={`${id}-key`} className="pg-input" defaultValue="sk_live_8f21…c904" readOnly />
-            <p className="pg-hint">Read-only. Rotate it from Settings → Security.</p>
-          </div>
-        </div>
-      </Specimen>
-
-      <Specimen label="Multi-line">
-        <div className="pg-field">
-          <label className="pg-label" htmlFor={`${id}-brief`}>
-            Brand brief
-          </label>
-          <textarea
-            id={`${id}-brief`}
-            className="pg-textarea"
-            defaultValue="An independent coffee roaster in Lisbon. Warm, unfussy, a little editorial — closer to a good magazine than a café chain."
-          />
-          <p className="pg-hint">The generator reads this to pick a palette and a type pairing.</p>
-        </div>
-      </Specimen>
-    </GroupShell>
   );
 }

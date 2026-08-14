@@ -11,7 +11,7 @@
  * `Pick<>`, (2) `rowToProject`, (3) `projectInputToRow`, and (4) `mergeProjectData`
  * — which is what PUT /api/projects/[id] uses to fold a partial update into an
  * existing row. See `colorPrimitives` / `studioPaletteLinks`
- * for the precedent, and `playground` for the newest one.
+ * for the precedent.
  */
 import { Project } from "@/types/project";
 import { ProjectInput } from "@/lib/validation/project";
@@ -28,7 +28,6 @@ export type ProjectData = Pick<
   | "designSystem"
   | "colorPrimitives"
   | "studioPaletteLinks"
-  | "playground"
   | "context"
   | "theme"
   | "aiReasoning"
@@ -62,7 +61,6 @@ export function rowToProject(row: ProjectRow, clerkUserId: string): Project {
     designSystem: row.data.designSystem,
     colorPrimitives: row.data.colorPrimitives,
     studioPaletteLinks: row.data.studioPaletteLinks,
-    playground: row.data.playground,
     context: row.data.context,
     theme: row.data.theme,
     aiGenerated: row.ai_generated,
@@ -97,7 +95,6 @@ export function mergeProjectData(existing: ProjectData, patch: Partial<ProjectIn
     designSystem: patch.designSystem ?? existing.designSystem,
     colorPrimitives: patch.colorPrimitives ?? existing.colorPrimitives,
     studioPaletteLinks: patch.studioPaletteLinks ?? existing.studioPaletteLinks,
-    playground: patch.playground ?? existing.playground,
     context: patch.context ?? existing.context,
     theme: patch.theme ?? existing.theme,
     aiReasoning: patch.aiReasoning ?? existing.aiReasoning,
@@ -116,7 +113,6 @@ export function projectInputToRow(input: ProjectInput) {
     designSystem: input.designSystem,
     colorPrimitives: input.colorPrimitives,
     studioPaletteLinks: input.studioPaletteLinks,
-    playground: input.playground,
     context: input.context,
     theme: input.theme,
     aiReasoning: input.aiReasoning,

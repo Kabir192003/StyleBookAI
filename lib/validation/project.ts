@@ -215,57 +215,6 @@ const EditablePaletteTokensSchema = z.object({
   muted: ColorValueSchema,
 });
 
-// Mirrors lib/playground/types.ts. The role maps are validated as partial
-// records keyed by the literal role names rather than as a free-form
-// `z.record(z.string(), …)`: a typo'd role would otherwise validate happily,
-// save, and then resolve to nothing on reload — a failure with no error
-// message anywhere, which is exactly the class of bug this schema exists to
-// catch at the API boundary.
-const PlaygroundRoleSchema = z.enum([
-  "background",
-  "surface",
-  "primary",
-  "secondary",
-  "accent",
-  "text",
-  "muted",
-  "border",
-  "success",
-  "warning",
-  "error",
-]);
-
-const PlaygroundTypeRoleSchema = z.enum([
-  "display",
-  "heading",
-  "subheading",
-  "body",
-  "label",
-  "button",
-  "caption",
-]);
-
-const PlaygroundOriginSchema = z.enum(["system", "clipboard", "custom", "pasted"]);
-
-const ExperimentSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  colors: z.record(PlaygroundRoleSchema, hexSchema),
-  fonts: z.record(PlaygroundTypeRoleSchema, z.string()),
-  radius: z.number().optional(),
-  visibleGroups: z.array(z.string()).optional(),
-});
-
-const PlaygroundStateSchema = z.object({
-  experiments: z.array(ExperimentSchema),
-  swatches: z.array(
-    z.object({ id: z.string(), hex: hexSchema, name: z.string(), origin: PlaygroundOriginSchema })
-  ),
-  fonts: z.array(
-    z.object({ id: z.string(), family: z.string(), category: z.string(), origin: PlaygroundOriginSchema })
-  ),
-});
-
 export const ProjectInputSchema = z.object({
   name: z.string().trim().min(1).max(100),
   description: z.string().max(500).optional(),
@@ -285,7 +234,6 @@ export const ProjectInputSchema = z.object({
   studioPaletteLinks: z
     .object({ light: EditablePaletteTokensSchema, dark: EditablePaletteTokensSchema })
     .optional(),
-  playground: PlaygroundStateSchema.optional(),
   context: z.enum(["saas", "ecommerce", "government", "editorial", "generic"]).optional(),
   theme: z
     .object({ id: z.string(), slug: z.string(), name: z.string() })

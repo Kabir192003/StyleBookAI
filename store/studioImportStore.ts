@@ -18,7 +18,7 @@ import type { DesignSystem } from "@/types/designSystem";
  * The five Studio palette slots a colour may name. `role` was always in this
  * shape but nothing read it (lib/studio/applyImport.ts assigned positionally),
  * so Browse/Preview Lab/clipboard senders — which genuinely have no roles —
- * keep working untouched while the playground's "Apply to design system",
+ * keep working untouched while other senders,
  * which knows exactly which slot each hex belongs in, can say so.
  */
 export type StudioImportPaletteRole = "accent" | "support" | "surface" | "ink" | "muted";
@@ -33,11 +33,11 @@ export type StudioImportPayload = {
   radius?: number;
   /**
    * Component-level tokens (colorRoles + per-component background/text/border)
-   * for senders that have them. The playground needs this because four of its
-   * eleven roles — background, surface, border, and the text/muted pair as
-   * component tokens — have no home in the 5-slot palette at all, so a payload
-   * limited to `colors` would silently drop a user's explicit override. Senders
-   * without component tokens (Preview Lab, the clipboard) simply omit it, and
+   * for senders that have them. A sender working in semantic roles needs this
+   * because several of them — background, surface, border, and the text/muted
+   * pair as component tokens — have no home in the 5-slot palette at all, so a
+   * payload limited to `colors` would silently drop an explicit override.
+   * Senders without component tokens (Preview Lab, the clipboard) omit it, and
    * Studio's own save re-derives one from the palette exactly as before.
    */
   designSystem?: DesignSystem;

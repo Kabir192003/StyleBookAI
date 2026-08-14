@@ -2,7 +2,7 @@
  * Applies a staged StudioImportPayload (see store/studioImportStore.ts)
  * onto a StudioState — the actual merge logic shared by Preview Lab's
  * "Send to Studio", the clipboard tray's "Import into Studio" and the
- * Design Playground's "Apply to design system", all of which just stage a
+ * the clipboard tray's "Import into Studio", all of which just stage a
  * payload and navigate; StudioBuilder consumes it once and folds it in.
  *
  * Two colour-assignment modes, deliberately:
@@ -14,7 +14,7 @@
  *    is the original behaviour and both existing callers still hit it,
  *    because neither sets `role`.
  *
- *  - **Explicit role** (the playground). An experiment assigns colours to
+ *  - **Explicit role**. A sender assigns colours to
  *    named roles, so guessing from array order would be strictly worse than
  *    the information we already have: a user who put a hex on `secondary`
  *    would watch it land on `accent` purely because it came first in the
@@ -64,11 +64,11 @@ export function applyStudioImport(base: StudioState, payload: StudioImportPayloa
   if (payload.secondaryFont) next = { ...next, bodyFont: payload.secondaryFont };
   if (payload.accentFont) next = { ...next, accentFont: payload.accentFont };
   if (payload.radius !== undefined) next = { ...next, radius: payload.radius };
-  // Replaced wholesale rather than deep-merged: the only sender of this field
-  // (lib/playground/applyToSystem.ts) builds it by cloning Studio's *current*
-  // design system and patching it, so it is already the merged result. Merging
-  // again here would be a second, differently-shaped merge of the same data —
-  // and would make it impossible to ever clear a component token.
+  // Replaced wholesale rather than deep-merged: a sender of this field builds
+  // it by cloning Studio's *current* design system and patching it, so it is
+  // already the merged result. Merging again here would be a second,
+  // differently-shaped merge of the same data — and would make it impossible
+  // to ever clear a component token.
   if (payload.designSystem) next = { ...next, designSystem: payload.designSystem };
 
   return next;

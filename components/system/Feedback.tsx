@@ -17,7 +17,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AlertTriangle, CheckCircle2, Info, Undo2, XCircle, X } from "lucide-react";
-import { GroupShell, Specimen } from "./primitives";
 
 type Tone = "success" | "warning" | "error" | "info";
 
@@ -99,9 +98,8 @@ function Alerts() {
 /**
  * A real toast: triggered by a real click, auto-dismisses on a real timer,
  * and is positioned `absolute` inside `.pg-stage` rather than `fixed`. The
- * fixed version would escape its experiment card and float over the whole
- * playground grid, which makes two experiments impossible to compare — see
- * the `.pg-stage` comment in styles.ts.
+ * fixed version would escape the canvas and float over Studio's own chrome —
+ * see the `.pg-stage` comment in styles.ts.
  */
 export function ToastDemo() {
   const [open, setOpen] = useState(false);
@@ -141,33 +139,5 @@ export function ToastDemo() {
         </div>
       )}
     </div>
-  );
-}
-
-export function FeedbackGroup() {
-  return (
-    <GroupShell>
-      <Specimen label="Alerts — dismissible">
-        <Alerts />
-      </Specimen>
-
-      <Specimen label="Badges">
-        <div className="pg-row">
-          <span className="pg-badge">Pro</span>
-          <span className="pg-badge pg-badge--soft">Draft</span>
-          <span className="pg-badge pg-badge--success">
-            <span className="pg-badge__dot" aria-hidden="true" />
-            Live
-          </span>
-          <span className="pg-badge pg-badge--warning">Review</span>
-          <span className="pg-badge pg-badge--error">Failing</span>
-          <span className="pg-badge pg-badge--outline">v3.1.0</span>
-        </div>
-      </Specimen>
-
-      <Specimen label="Toast — click to trigger, auto-dismisses">
-        <ToastDemo />
-      </Specimen>
-    </GroupShell>
   );
 }
