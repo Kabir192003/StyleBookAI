@@ -445,6 +445,26 @@ export type DtcgOptions = {
    * `tokensStudioTypography` above.
    */
   explicitColorType?: boolean;
+  /**
+   * Tokens Studio's UI groups every token under a left-hand category
+   * ("Color", "Font Family", "Font Weight", "Font Size", "Typography",
+   * "Sizing"/"Spacing", "Border Radius", "Box Shadow", …), and that grouping
+   * is keyed off the token's own `$type` string using the plugin's *native*
+   * vocabulary — not the generic DTCG spec type this file otherwise targets.
+   * `dimension` (the spec-correct type for every length in DTCG) doesn't
+   * match any of those categories, so with this off, a real import proved
+   * the font-size, spacing, radius and shadow tokens land in the tree with
+   * working values but don't surface under any of the named categories —
+   * distinct from the earlier "?" broken-value bug, but the same root
+   * pattern: spec-legal DTCG that Tokens Studio's own UI doesn't key off of.
+   * Turning this on renames only the group-level `$type` for those four
+   * groups (fontSize -> "fontSizes", spacing -> "spacing", radius ->
+   * "borderRadius", shadow -> "boxShadow"); token names, values and
+   * references are untouched. `color` has its own flag above because it
+   * needed a different fix (leaf-level, not a renamed group). Only
+   * `toTokensStudioJson` sets this.
+   */
+  nativeValueTypes?: boolean;
 };
 
 /**
@@ -580,7 +600,7 @@ export function toDtcgTokens(system: NormalizedSystem, options: DtcgOptions = {}
   if (system.typeScale) {
     const scale = system.typeScale;
     tree.fontSize = {
-      $type: "dimension",
+      $type: options.nativeValueTypes ? "fontSizes" : "dimension",
       $description: `Modular scale — base ${scale.baseSize}px, ratio ${scale.ratioName} (${scale.ratio}).`,
       ...Object.fromEntries(TYPE_SCALE_KEYS.map((key) => [key, dimensionToken(scale.sizes[key])])),
     };
@@ -618,14 +638,14 @@ export function toDtcgTokens(system: NormalizedSystem, options: DtcgOptions = {}
   /* ---------- space & shape ---------- */
   if (system.spacing) {
     tree.spacing = {
-      $type: "dimension",
+      $type: options.nativeValueTypes ? "spacing" : "dimension",
       $description: `Spacing scale on a ${system.spacing.base}px base unit.`,
       ...Object.fromEntries(system.spacing.steps.map((step, i) => [String(i + 1), dimensionToken(step)])),
     };
   }
 
   tree.radius = {
-    $type: "dimension",
+    $type: options.nativeValueTypes ? "borderRadius" : "dimension",
     base: dimensionToken(system.radius, "The recommended corner radius for this system."),
     ...(system.radiusOptions
       ? Object.fromEntries(system.radiusOptions.map((option) => [`step-${option}`, dimensionToken(option)]))
@@ -634,7 +654,7 @@ export function toDtcgTokens(system: NormalizedSystem, options: DtcgOptions = {}
 
   if (system.shadows) {
     tree.shadow = {
-      $type: "shadow",
+      $type: options.nativeValueTypes ? "boxShadow" : "shadow",
       $description: `Recommended level: ${system.shadows.recommended}.`,
       ...Object.fromEntries(
         system.shadows.levels.map((level) => {
@@ -727,7 +747,11 @@ export function toDtcgJson(system: NormalizedSystem): string {
 export function toTokensStudioJson(system: NormalizedSystem): string {
   const hasDark = system.dark.length > 0 || Boolean(system.designSystem?.dark);
 
-  const global = toDtcgTokens(system, { tokensStudioTypography: true, explicitColorType: true });
+  const global = toDtcgTokens(system, {
+    tokensStudioTypography: true,
+    explicitColorType: true,
+    nativeValueTypes: true,
+  });
   // The mode-specific colour tokens live in their own sets, so strip them
   // from `global` — leaving them in would give every colour two competing
   // definitions and the plugin resolves the duplicate unpredictably.
