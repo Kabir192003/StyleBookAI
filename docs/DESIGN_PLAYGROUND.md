@@ -6,6 +6,32 @@ spec below, which is kept for its still-accurate reference material (token
 mechanism, reuse table, data model). If you are picking this up cold, read
 this, then `docs/TECHNICAL_ARCHITECTURE.md`, then `CLAUDE.md`.
 
+## Unrelated fix landed alongside this (2026-08-14): Tokens Studio typography
+
+Not part of the Playground work, but done in the same session while resuming
+it — noted here since this is the active plan doc. The Figma exporter's DTCG
+structure was already correct and untouched; the bug was narrower: the
+**Tokens Studio compatibility layer** (`toTokensStudioJson` in
+`lib/export/designTokens.ts`) emitted `fontFamily`/`fontWeight` (DTCG's
+singular spec types) with typography composites embedding literal values,
+when Tokens Studio expects its own plural `fontFamilies`/`fontWeights` types
+with the typography composite *referencing* them via `{group.token}` — and
+the old two-entry weight map (`display: 700, body: 400`) had no token at all
+for `h3`'s actual weight of 600, so any reference to it would have been
+`{fontWeights.h3}` pointing at nothing.
+
+Fixed via a `tokensStudioTypography` flag on `DtcgOptions`, set only by
+`toTokensStudioJson` — `toDtcgJson` (the plain "Design Tokens" tab) is
+byte-for-byte unchanged, verified via the real `/api/export` route, not just
+the unit-level function. Weight tokens are now derived from whichever numeric
+weights `SEMANTIC_TYPE_ROLES` actually uses (`regular`/`semibold`/`bold`),
+not a generic 100–900 ladder, so a token always exists for every weight a
+role needs — that's what makes a dangling reference structurally hard to
+reintroduce, not just currently absent. A `validateTypographyReferences`
+guard also throws at generation time if a reference ever fails to resolve,
+verified directly (passes on a valid tree, throws with the exact bad
+reference and the list of what *is* available on a broken one).
+
 ## WHERE THIS STANDS (updated 2026-08-14)
 
 ### The decision: fold Playground into Studio. One page, not two.

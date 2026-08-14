@@ -337,7 +337,80 @@ export type DtcgOptions = {
   mode?: "light" | "dark";
   /** Drop the non-colour token groups (they live in the shared `global` set). */
   colorsOnly?: boolean;
+  /**
+   * Tokens Studio speaks a different typography dialect than plain DTCG:
+   * font family/weight tokens use the plugin's own `fontFamilies`/
+   * `fontWeights` types (not the spec's singular `fontFamily`/`fontWeight`),
+   * and a `typography` composite is expected to *reference* those tokens
+   * with `{group.token}` syntax rather than repeat their values inline —
+   * that's what lets editing "Body" in the Fonts panel move every text
+   * style that uses it. Only `toTokensStudioJson` sets this; the plain
+   * `toDtcgJson` output stays spec-literal, since that's the file aimed at
+   * generic DTCG importers rather than Tokens Studio specifically.
+   */
+  tokensStudioTypography?: boolean;
 };
+
+/**
+ * Named weight tokens, derived from whichever numeric weights
+ * SEMANTIC_TYPE_ROLES actually uses — not a generic 100–900 ladder. A
+ * fixed ladder would define nine tokens and use three of them, and (worse)
+ * if a role's weight ever changed to a value the ladder didn't cover, a
+ * typography token would reference a name that doesn't exist. Deriving the
+ * set from the roles themselves makes that class of bug structurally
+ * impossible: every weight a role needs has a token, because the token was
+ * created *from* that need.
+ */
+const FONT_WEIGHT_NAMES: Record<number, string> = {
+  100: "thin",
+  200: "extralight",
+  300: "light",
+  400: "regular",
+  500: "medium",
+  600: "semibold",
+  700: "bold",
+  800: "extrabold",
+  900: "black",
+};
+
+function weightTokenName(weight: number): string {
+  return FONT_WEIGHT_NAMES[weight] ?? `w${weight}`;
+}
+
+/**
+ * Confirms every `{group.token}` reference the typography composite just
+ * wrote actually resolves inside the tree we're about to emit. Throws
+ * rather than emitting — a dangling reference is a bug in this file, not a
+ * recoverable input problem, and the whole point of asking is that nobody
+ * wants to find out from an import that silently shows "{fontFamilies.
+ * heading}" as literal text instead of the font name.
+ */
+function validateTypographyReferences(tree: TokenNode, fontFamilyKey: string, fontWeightKey: string): void {
+  const typography = tree.typography as TokenNode | undefined;
+  if (!typography) return;
+  const families = tree[fontFamilyKey] as TokenNode | undefined;
+  const weights = tree[fontWeightKey] as TokenNode | undefined;
+  const refPattern = /^\{([^.]+)\.([^}]+)\}$/;
+
+  for (const [role, node] of Object.entries(typography)) {
+    if (role.startsWith("$")) continue;
+    const value = (node as TokenNode).$value as TokenNode;
+    for (const field of ["fontFamily", "fontWeight"] as const) {
+      const raw = value[field];
+      if (typeof raw !== "string" || !raw.startsWith("{")) continue;
+      const match = refPattern.exec(raw);
+      if (!match) throw new Error(`Typography token "${role}" has a malformed reference: "${raw}".`);
+      const [, group, token] = match;
+      const groupNode = group === fontFamilyKey ? families : group === fontWeightKey ? weights : undefined;
+      if (!groupNode || !(token in groupNode)) {
+        throw new Error(
+          `Typography token "${role}" references "${raw}", which does not exist in "${group}". ` +
+            `Available: ${groupNode ? Object.keys(groupNode).join(", ") : "(group not found)"}.`
+        );
+      }
+    }
+  }
+}
 
 function modeColorGroup(system: NormalizedSystem, mode: "light" | "dark"): TokenNode | null {
   const variant = mode === "light" ? system.designSystem?.light : system.designSystem?.dark;
@@ -377,21 +450,31 @@ export function toDtcgTokens(system: NormalizedSystem, options: DtcgOptions = {}
   if (options.colorsOnly) return tree;
 
   /* ---------- type ---------- */
-  tree.font = {
-    $type: "fontFamily",
+  // Tokens Studio wants `fontFamilies`/`fontWeights` (its own plural types)
+  // with the typography composite *referencing* them via `{group.token}`,
+  // so editing a font in the Fonts panel moves every text style built on it.
+  // Plain DTCG importers expect the spec's singular `fontFamily`/`fontWeight`
+  // with literal values instead — two different dialects, picked by
+  // `options.tokensStudioTypography` rather than by which function was
+  // called, since both still share every other group in this tree.
+  const fontFamilyKey = options.tokensStudioTypography ? "fontFamilies" : "font";
+  const fontWeightKey = options.tokensStudioTypography ? "fontWeights" : "fontWeight";
+
+  tree[fontFamilyKey] = {
+    $type: options.tokensStudioTypography ? "fontFamilies" : "fontFamily",
     display: { $value: system.fonts.display },
     body: { $value: system.fonts.body },
     ...(system.fonts.accent ? { accent: { $value: system.fonts.accent } } : {}),
   };
 
-  // Real weights, not a generic 100–900 ladder: these are the weights the
-  // app itself renders display and body copy at (see the style-guide PDF
-  // and the curated theme pages), so an importer gets a system that
-  // matches the previews the user just approved.
-  tree.fontWeight = {
-    $type: "fontWeight",
-    display: { $value: 700, $description: "Weight used for display and heading faces." },
-    body: { $value: 400, $description: "Weight used for body copy." },
+  // Named by the weight itself (see weightTokenName above), and only for
+  // weights a role in SEMANTIC_TYPE_ROLES actually uses — h3 renders at 600,
+  // distinct from display/h1/h2's 700, so a two-entry display/body map (the
+  // old shape) had no token 600 could point to at all.
+  const weightsUsed = Array.from(new Set(SEMANTIC_TYPE_ROLES.map((r) => r.weight))).sort((a, b) => a - b);
+  tree[fontWeightKey] = {
+    $type: options.tokensStudioTypography ? "fontWeights" : "fontWeight",
+    ...Object.fromEntries(weightsUsed.map((weight) => [weightTokenName(weight), { $value: weight }])),
   };
 
   if (system.typeScale) {
@@ -412,9 +495,9 @@ export function toDtcgTokens(system: NormalizedSystem, options: DtcgOptions = {}
           role,
           {
             $value: {
-              fontFamily: face === "display" ? system.fonts.display : system.fonts.body,
+              fontFamily: options.tokensStudioTypography ? `{${fontFamilyKey}.${face}}` : system.fonts[face],
               fontSize: toDimension(scale.sizes[size]),
-              fontWeight: weight,
+              fontWeight: options.tokensStudioTypography ? `{${fontWeightKey}.${weightTokenName(weight)}}` : weight,
               lineHeight: face === "display" ? "1.1" : "1.6",
               letterSpacing: face === "display" ? "-0.02em" : "0em",
             },
@@ -423,6 +506,13 @@ export function toDtcgTokens(system: NormalizedSystem, options: DtcgOptions = {}
         ])
       ),
     };
+
+    // A reference the composite just built has to resolve, or Tokens Studio
+    // either drops the text style or renders it with a literal "{…}" string
+    // as the font name — a failure a human only notices by opening Figma.
+    // Checked here, at generation time, so a bad reference is an export-time
+    // error instead of an import-time mystery.
+    if (options.tokensStudioTypography) validateTypographyReferences(tree, fontFamilyKey, fontWeightKey);
   }
 
   /* ---------- space & shape ---------- */
@@ -537,7 +627,7 @@ export function toDtcgJson(system: NormalizedSystem): string {
 export function toTokensStudioJson(system: NormalizedSystem): string {
   const hasDark = system.dark.length > 0 || Boolean(system.designSystem?.dark);
 
-  const global = toDtcgTokens(system);
+  const global = toDtcgTokens(system, { tokensStudioTypography: true });
   // The mode-specific colour tokens live in their own sets, so strip them
   // from `global` — leaving them in would give every colour two competing
   // definitions and the plugin resolves the duplicate unpredictably.
