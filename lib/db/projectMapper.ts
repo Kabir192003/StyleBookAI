@@ -3,11 +3,20 @@
  * `data` JSONB holds everything not already a column (colors, fonts,
  * typeScale, spacing, shadows, cornerRadius, moodboard, theme, aiReasoning)
  * — see lib/db/schema.sql.
+ *
+ * **Adding a field to `Project` is a four-place change, not one.** `ProjectData`
+ * below is an explicit `Pick<>` allowlist and both directions copy field by
+ * field by name, so a new field that types cleanly and passes zod validation
+ * still vanishes on save with no error anywhere. It must be added to (1) the
+ * `Pick<>`, (2) `rowToProject`, (3) `projectInputToRow`, and (4) `mergeProjectData`
+ * — which is what PUT /api/projects/[id] uses to fold a partial update into an
+ * existing row. See `colorPrimitives` / `studioPaletteLinks` / `previewLayout`
+ * for the precedent, and `playground` for the newest one.
  */
 import { Project } from "@/types/project";
 import { ProjectInput } from "@/lib/validation/project";
 
-type ProjectData = Pick<
+export type ProjectData = Pick<
   Project,
   | "colors"
   | "fonts"
@@ -20,6 +29,7 @@ type ProjectData = Pick<
   | "colorPrimitives"
   | "studioPaletteLinks"
   | "previewLayout"
+  | "playground"
   | "context"
   | "theme"
   | "aiReasoning"
@@ -54,6 +64,7 @@ export function rowToProject(row: ProjectRow, clerkUserId: string): Project {
     colorPrimitives: row.data.colorPrimitives,
     studioPaletteLinks: row.data.studioPaletteLinks,
     previewLayout: row.data.previewLayout,
+    playground: row.data.playground,
     context: row.data.context,
     theme: row.data.theme,
     aiGenerated: row.ai_generated,
@@ -61,6 +72,38 @@ export function rowToProject(row: ProjectRow, clerkUserId: string): Project {
     aiReasoning: row.data.aiReasoning,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+  };
+}
+
+/**
+ * Folds a partial update (PUT /api/projects/[id]) into an existing row's
+ * `data`, keeping any key the caller didn't send.
+ *
+ * This lives here rather than in the route because it is the same by-name
+ * allowlist as the two functions around it, and keeping the four copies in
+ * one file is the only thing that makes them reviewable together. The route
+ * previously inlined its own shorter list, which silently dropped
+ * `colorPrimitives`, `studioPaletteLinks` and `previewLayout` on every
+ * update — so saving an existing project from Studio destroyed its primitive
+ * links and its arranged preview layout, with no error.
+ */
+export function mergeProjectData(existing: ProjectData, patch: Partial<ProjectInput>): ProjectData {
+  return {
+    colors: patch.colors ?? existing.colors,
+    fonts: patch.fonts ?? existing.fonts,
+    typeScale: patch.typeScale ?? existing.typeScale,
+    spacing: patch.spacing ?? existing.spacing,
+    shadows: patch.shadows ?? existing.shadows,
+    cornerRadius: patch.cornerRadius ?? existing.cornerRadius,
+    moodboard: patch.moodboard ?? existing.moodboard,
+    designSystem: patch.designSystem ?? existing.designSystem,
+    colorPrimitives: patch.colorPrimitives ?? existing.colorPrimitives,
+    studioPaletteLinks: patch.studioPaletteLinks ?? existing.studioPaletteLinks,
+    previewLayout: patch.previewLayout ?? existing.previewLayout,
+    playground: patch.playground ?? existing.playground,
+    context: patch.context ?? existing.context,
+    theme: patch.theme ?? existing.theme,
+    aiReasoning: patch.aiReasoning ?? existing.aiReasoning,
   };
 }
 
@@ -77,6 +120,7 @@ export function projectInputToRow(input: ProjectInput) {
     colorPrimitives: input.colorPrimitives,
     studioPaletteLinks: input.studioPaletteLinks,
     previewLayout: input.previewLayout,
+    playground: input.playground,
     context: input.context,
     theme: input.theme,
     aiReasoning: input.aiReasoning,

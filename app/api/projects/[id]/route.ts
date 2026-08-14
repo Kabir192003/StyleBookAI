@@ -10,7 +10,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/db/supabase";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { ProjectUpdateSchema } from "@/lib/validation/project";
-import { rowToProject, ProjectRow } from "@/lib/db/projectMapper";
+import { mergeProjectData, rowToProject, ProjectRow } from "@/lib/db/projectMapper";
 
 async function loadOwnedProject(id: string, ownerId: string): Promise<ProjectRow | null> {
   const admin = getSupabaseAdmin();
@@ -60,33 +60,35 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   if (parsed.data.aiGenerated !== undefined) updates.ai_generated = parsed.data.aiGenerated;
   if (parsed.data.aiPrompt !== undefined) updates.ai_prompt = parsed.data.aiPrompt;
 
-  const touchesData =
-    parsed.data.colors !== undefined ||
-    parsed.data.fonts !== undefined ||
-    parsed.data.typeScale !== undefined ||
-    parsed.data.spacing !== undefined ||
-    parsed.data.shadows !== undefined ||
-    parsed.data.cornerRadius !== undefined ||
-    parsed.data.moodboard !== undefined ||
-    parsed.data.designSystem !== undefined ||
-    parsed.data.context !== undefined ||
-    parsed.data.theme !== undefined ||
-    parsed.data.aiReasoning !== undefined;
+  // Any `data` key present means the JSONB column has to be rewritten. This
+  // list is deliberately derived from the shape rather than hand-written per
+  // field: the previous inline version omitted colorPrimitives,
+  // studioPaletteLinks and previewLayout, so an update carrying them wrote
+  // nothing (and, worse, the rewrite below dropped whatever the row already
+  // held). Merging is now lib/db/projectMapper.ts's job, next to the two other
+  // by-name copies of this allowlist.
+  const DATA_KEYS = [
+    "colors",
+    "fonts",
+    "typeScale",
+    "spacing",
+    "shadows",
+    "cornerRadius",
+    "moodboard",
+    "designSystem",
+    "colorPrimitives",
+    "studioPaletteLinks",
+    "previewLayout",
+    "playground",
+    "context",
+    "theme",
+    "aiReasoning",
+  ] as const;
+
+  const touchesData = DATA_KEYS.some((key) => parsed.data[key] !== undefined);
 
   if (touchesData) {
-    updates.data = {
-      colors: parsed.data.colors ?? existing.data.colors,
-      fonts: parsed.data.fonts ?? existing.data.fonts,
-      typeScale: parsed.data.typeScale ?? existing.data.typeScale,
-      spacing: parsed.data.spacing ?? existing.data.spacing,
-      shadows: parsed.data.shadows ?? existing.data.shadows,
-      cornerRadius: parsed.data.cornerRadius ?? existing.data.cornerRadius,
-      moodboard: parsed.data.moodboard ?? existing.data.moodboard,
-      designSystem: parsed.data.designSystem ?? existing.data.designSystem,
-      context: parsed.data.context ?? existing.data.context,
-      theme: parsed.data.theme ?? existing.data.theme,
-      aiReasoning: parsed.data.aiReasoning ?? existing.data.aiReasoning,
-    };
+    updates.data = mergeProjectData(existing.data, parsed.data);
   }
 
   const admin = getSupabaseAdmin();

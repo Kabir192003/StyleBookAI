@@ -14,6 +14,7 @@ import { SpacingScale, ShadowScale, CornerRadiusScale, MoodboardImage } from "./
 import { DesignSystem } from "./designSystem";
 import { PrimitiveColor, ColorValue } from "@/lib/studio/tokenGraph";
 import { PreviewLayoutItem } from "@/lib/studio/livePreviewBlocks";
+import { PlaygroundState } from "@/lib/playground/types";
 
 export type AIReasoning = {
   palette: string;
@@ -56,6 +57,17 @@ export type Project = {
   // The live-preview canvas's arranged order/visibility/width per block —
   // also optional/additive, same reasoning as colorPrimitives above.
   previewLayout?: PreviewLayoutItem[];
+  // The Design Playground's board: the experiment cards plus the swatch and
+  // font trays (docs/DESIGN_PLAYGROUND.md §16). Optional/additive like the
+  // two fields above — a project saved before the playground existed simply
+  // has none and opens with the seed experiments.
+  //
+  // Written only by an explicit "Save playground", never automatically: the
+  // playground is a scratch surface, and silently persisting every throwaway
+  // experiment would resurrect abandoned work on the next visit (see the
+  // header of store/playgroundStore.ts, which is deliberately unpersisted for
+  // the same reason).
+  playground?: PlaygroundState;
   context?: AIContext;
   theme?: Pick<Theme, "id" | "slug" | "name">;
   aiGenerated: boolean;

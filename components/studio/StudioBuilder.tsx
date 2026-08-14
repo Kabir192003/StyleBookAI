@@ -173,7 +173,7 @@ export type StudioState = {
   previewLayout: PreviewLayoutItem[];
 };
 
-const DEFAULT_LIGHT: PaletteTokens = {
+export const DEFAULT_LIGHT: PaletteTokens = {
   accent: "#222D52",
   support: "#C36B3E",
   surface: "#F5F1E8",
@@ -209,7 +209,7 @@ const DEFAULT_PRIMITIVES: PrimitiveColor[] = [
   { id: "primitive-stone", name: "Stone", hex: DEFAULT_LIGHT.muted },
 ];
 
-const DEFAULT_STATE: StudioState = {
+export const DEFAULT_STATE: StudioState = {
   name: "Northwind",
   mode: "Light",
   light: DEFAULT_LIGHT,
