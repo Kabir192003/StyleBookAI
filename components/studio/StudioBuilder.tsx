@@ -20,6 +20,7 @@ import { Check, Loader2, Undo2, Redo2 } from "lucide-react";
 import { ExportDrawer } from "./ExportDrawer";
 import { StudioCanvas } from "./StudioCanvas";
 import { ShowcaseContent } from "./ShowcaseContent";
+import { GeneratedContent } from "./GeneratedContent";
 import { ComponentInspector } from "./ComponentInspector";
 import { SpacingVisualization } from "@/components/design-system/SpacingVisualization";
 import { getContrastRatio } from "@/lib/colors/colorUtils";
@@ -44,6 +45,7 @@ import {
   makePrimitiveId,
 } from "@/lib/studio/tokenGraph";
 import type { ComponentName, ComponentTokenSet } from "@/types/designSystem";
+import type { Selection } from "@/lib/studio/componentSelection";
 import { generateTypeScale, TYPE_SCALE_RATIOS } from "@/lib/typeScale/generateTypeScale";
 import { generateSpacingScale } from "@/lib/designTokens/spacing";
 import { buildShadowScale } from "@/lib/designTokens/shadows";
@@ -347,7 +349,12 @@ export function StudioBuilder() {
   // Which component the canvas has selected. Deliberately *not* part of
   // StudioState: it is a view concern, and putting it there would make every
   // click an undo step and mark the project dirty.
-  const [selected, setSelected] = useState<ComponentName | null>(null);
+  const [selected, setSelected] = useState<Selection | null>(null);
+  // The generated screen, when this session produced one. Switching back to
+  // the showcase is a view change only — it never discards the structure, so
+  // the toggle is safe to press.
+  const generatedStructure = aiResult?.uiStructure;
+  const [showGenerated, setShowGenerated] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [savedPing, setSavedPing] = useState(false);
@@ -482,7 +489,7 @@ export function StudioBuilder() {
    * variant's values while edits land in another.
    */
   const activeComponentTokens = useMemo<ComponentTokenSet | null>(() => {
-    if (!selected || !state.designSystem) return null;
+    if (!selected || selected.kind !== "component" || !state.designSystem) return null;
     const variant =
       activeVariant === "dark" && state.designSystem.dark ? state.designSystem.dark : state.designSystem.light;
     // An AI-authored design system is free to omit components — the schema
@@ -492,8 +499,8 @@ export function StudioBuilder() {
     // whose model never mentioned tables selects the element and then opens
     // nothing, which reads as broken.
     return (
-      variant.components[selected] ??
-      deriveThemeVariantFromPalette(activeVariant === "dark" ? resolvedDark : resolvedLight).components[selected] ??
+      variant.components[selected.name] ??
+      deriveThemeVariantFromPalette(activeVariant === "dark" ? resolvedDark : resolvedLight).components[selected.name] ??
       null
     );
   }, [selected, state.designSystem, activeVariant, resolvedLight, resolvedDark]);
@@ -510,9 +517,10 @@ export function StudioBuilder() {
    * "I clicked a button" is a clearer trigger than a button labelled with an
    * implementation detail.
    */
-  function handleSelect(name: ComponentName | null) {
-    setSelected(name);
-    if (name === null) return;
+  function handleSelect(next: Selection | null) {
+    setSelected(next);
+    // Only a component selection needs component tokens to exist.
+    if (next === null || next.kind !== "component") return;
     setState((s) =>
       s.designSystem
         ? s
@@ -1061,6 +1069,27 @@ export function StudioBuilder() {
                 ))}
               </div>
 
+              {generatedStructure && (
+                <div className="flex items-center overflow-hidden rounded-full border border-black/[0.2]">
+                  {([
+                    ["Generated", true],
+                    ["Showcase", false],
+                  ] as const).map(([label, wantsGenerated]) => (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() => setShowGenerated(wantsGenerated)}
+                      className={cn(
+                        "px-3.5 py-1.5 font-mono-plex text-[10px] uppercase tracking-[0.12em]",
+                        showGenerated === wantsGenerated ? "bg-[#222D52] text-[#F2EBE0]" : "text-[#6E675C]"
+                      )}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
               <div className="ml-auto flex items-center overflow-hidden rounded-full border border-black/[0.2]">
                 {(["Light", "Dark"] as const).map((mode) => (
                   <button
@@ -1084,7 +1113,11 @@ export function StudioBuilder() {
               selected={selected}
               onSelect={handleSelect}
             >
-              <ShowcaseContent systemName={state.name} />
+              {showGenerated && generatedStructure ? (
+                <GeneratedContent structure={generatedStructure} />
+              ) : (
+                <ShowcaseContent systemName={state.name} />
+              )}
             </StudioCanvas>
 
             <div className="mt-6 rounded-2xl border border-black/[0.14] bg-white/60 p-4">
@@ -1100,19 +1133,22 @@ export function StudioBuilder() {
         {/* Mounted only while something is selected, so the canvas gets the
             full width the rest of the time. `activeComponentTokens` is null
             until the synthesise-on-first-click in handleSelect has landed. */}
-        {selected && activeComponentTokens && (
+        {selected && (
           <ComponentInspector
-            name={selected}
+            selection={selected}
             variant={activeVariant}
             tokens={activeComponentTokens}
             radius={state.radius}
             headFont={state.headFont}
             bodyFont={state.bodyFont}
-            fontOptions={headFontOptions}
-            onTokensChange={(next) => setComponentTokens(selected, next)}
+            typeScale={state.typeScale}
+            onTokensChange={(next) => {
+              if (selected.kind === "component") setComponentTokens(selected.name, next);
+            }}
             onRadiusChange={(r) => set("radius", r)}
             onHeadFontChange={(f) => set("headFont", f)}
             onBodyFontChange={(f) => set("bodyFont", f)}
+            onBaseSizeChange={(size) => set("typeScale", generateTypeScale(size, state.typeScale.ratioName))}
             onClose={() => setSelected(null)}
           />
         )}

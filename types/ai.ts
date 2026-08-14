@@ -7,6 +7,7 @@
  * schema in app/api/ai/generate/route.ts.
  */
 import { ColorStyle } from "./color";
+import type { AIUiStructure } from "@/lib/ai/schema";
 import { Project } from "./project";
 
 // Content for the live mock preview on /studio/ai — written by the model
@@ -138,6 +139,16 @@ export type NamedRadiusScale = {
 
 export type AIGeneratedProject = Omit<Project, "id" | "userId" | "createdAt" | "updatedAt"> & {
   mockup?: MockupSpec;
+  /**
+   * The generated screen: an ordered list of sections from the fixed
+   * vocabulary in lib/ai/schema.ts, filled with content for this brand. The
+   * Studio canvas renders it through the same component library and the same
+   * tokens as the default showcase, so it is editable in exactly the same way.
+   *
+   * Display-only for the same reason as `mockup` — it is regenerated per
+   * prompt and would go stale the moment a user edits a token.
+   */
+  uiStructure?: AIUiStructure;
   // Display-only, like `mockup`: ProjectInputSchema (lib/validation/project.ts)
   // doesn't know these keys, so they're dropped if this object is POSTed to
   // /api/projects — correct, since they're re-derived on every generation and

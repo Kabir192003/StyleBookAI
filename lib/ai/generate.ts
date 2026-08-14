@@ -6,7 +6,7 @@
  */
 import { getGeminiJsonModel } from "./gemini";
 import { buildGeneratePrompt } from "./prompt";
-import { GeminiPaletteResponseSchema, GeminiPaletteResponse } from "./schema";
+import { GeminiPaletteResponseSchema, GeminiPaletteResponse, parseSections } from "./schema";
 import { generateTypeScale } from "@/lib/typeScale/generateTypeScale";
 import { generateSpacingScale } from "@/lib/designTokens/spacing";
 import { buildShadowScale } from "@/lib/designTokens/shadows";
@@ -554,6 +554,12 @@ export async function generateProjectFromPrompt(request: AIGenerateRequest): Pro
     designSystem,
     context: raw.context ?? "generic",
     mockup: raw.mockup,
+    // Sections are validated one at a time rather than as an array, so a
+    // single malformed entry drops itself instead of failing the whole
+    // generation and taking a good palette down with it.
+    uiStructure: raw.uiStructure
+      ? { ...raw.uiStructure, sections: parseSections(raw.uiStructure.sections) }
+      : undefined,
     aiGenerated: true,
     aiPrompt: request.prompt,
     aiReasoning: reasoning,

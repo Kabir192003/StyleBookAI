@@ -168,6 +168,203 @@ const mockupSchema = z.object({
   footerNote: z.string().max(80).optional(),
 });
 
+/* ---------------------------------------------------------------------- *
+ * UI structure — what the generated mockup is actually made of.
+ *
+ * The model picks an ordered list of *sections* from a fixed vocabulary and
+ * fills each with content. It never emits a colour, font, radius, spacing or
+ * shadow: those come from the design system the same request produced, so a
+ * generated page is guaranteed to be on-token by construction rather than by
+ * asking the model nicely.
+ *
+ * A fixed vocabulary is what makes "any reasonable context" work without a
+ * hard-coded list of contexts. The variety comes from *composition* — a
+ * fintech dashboard is statRow + recordTable + progressList, a music app is
+ * itemGrid + mediaBar + feed, a university portal is schedule + progressList
+ * + feed — not from inventing new primitives per industry.
+ * ---------------------------------------------------------------------- */
+
+const ctaSchema = z.string().min(1).max(30);
+const shortText = z.string().min(1).max(60);
+
+const sectionSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("hero"),
+    eyebrow: z.string().max(40).optional(),
+    headline: z.string().min(1).max(90),
+    subheadline: z.string().min(1).max(180),
+    primaryCta: ctaSchema,
+    secondaryCta: z.string().max(30).optional(),
+  }),
+  z.object({
+    type: z.literal("searchBar"),
+    title: z.string().max(60).optional(),
+    placeholder: z.string().min(1).max(60),
+    filters: z.array(shortText).max(6).optional(),
+    submitLabel: ctaSchema,
+  }),
+  z.object({
+    type: z.literal("statRow"),
+    title: z.string().max(60).optional(),
+    items: z.array(z.object({ value: z.string().min(1).max(16), label: shortText })).min(2).max(4),
+  }),
+  z.object({
+    type: z.literal("itemGrid"),
+    title: z.string().max(60).optional(),
+    lead: z.string().max(160).optional(),
+    items: z
+      .array(
+        z.object({
+          title: z.string().min(1).max(60),
+          subtitle: z.string().max(90).optional(),
+          meta: z.string().max(40).optional(),
+          badge: z.string().max(20).optional(),
+          cta: z.string().max(30).optional(),
+        })
+      )
+      .min(2)
+      .max(6),
+  }),
+  z.object({
+    type: z.literal("recordTable"),
+    title: z.string().max(60).optional(),
+    columns: z.array(shortText).min(2).max(5),
+    rows: z.array(z.array(z.string().max(40)).min(2).max(5)).min(2).max(6),
+    rowAction: z.string().max(20).optional(),
+  }),
+  z.object({
+    type: z.literal("detailPanel"),
+    title: z.string().min(1).max(60),
+    subtitle: z.string().max(90).optional(),
+    fields: z.array(z.object({ key: shortText, value: z.string().min(1).max(60) })).min(2).max(8),
+    primaryCta: ctaSchema.optional(),
+  }),
+  z.object({
+    type: z.literal("formPanel"),
+    title: z.string().min(1).max(60),
+    lead: z.string().max(160).optional(),
+    fields: z
+      .array(
+        z.object({
+          label: shortText,
+          // Deliberately a small set: every one maps to a real component in
+          // components/system. A free-form type would let the model ask for
+          // inputs the library cannot render.
+          kind: z.enum(["text", "email", "textarea", "select", "checkbox", "radio", "toggle"]),
+          placeholder: z.string().max(60).optional(),
+          options: z.array(shortText).max(5).optional(),
+        })
+      )
+      .min(2)
+      .max(6),
+    submitLabel: ctaSchema,
+  }),
+  z.object({
+    type: z.literal("schedule"),
+    title: z.string().max(60).optional(),
+    slots: z
+      .array(
+        z.object({
+          time: z.string().min(1).max(24),
+          title: z.string().min(1).max(60),
+          meta: z.string().max(40).optional(),
+          status: z.string().max(20).optional(),
+        })
+      )
+      .min(2)
+      .max(6),
+  }),
+  z.object({
+    type: z.literal("mediaBar"),
+    title: z.string().min(1).max(60),
+    subtitle: z.string().max(60).optional(),
+    meta: z.string().max(30).optional(),
+    primaryAction: ctaSchema.optional(),
+  }),
+  z.object({
+    type: z.literal("progressList"),
+    title: z.string().max(60).optional(),
+    items: z
+      .array(
+        z.object({
+          label: shortText,
+          percent: z.number().int().min(0).max(100),
+          caption: z.string().max(40).optional(),
+        })
+      )
+      .min(2)
+      .max(5),
+  }),
+  z.object({
+    type: z.literal("feed"),
+    title: z.string().max(60).optional(),
+    items: z
+      .array(
+        z.object({
+          title: z.string().min(1).max(70),
+          body: z.string().max(160).optional(),
+          meta: z.string().max(40).optional(),
+          tone: z.enum(["info", "success", "warning", "error"]).optional(),
+        })
+      )
+      .min(2)
+      .max(5),
+  }),
+  z.object({
+    type: z.literal("footer"),
+    note: z.string().max(90).optional(),
+    links: z.array(shortText).max(6).optional(),
+  }),
+]);
+
+export type AISection = z.infer<typeof sectionSchema>;
+export type AISectionType = AISection["type"];
+
+export const AI_SECTION_TYPES: AISectionType[] = [
+  "hero",
+  "searchBar",
+  "statRow",
+  "itemGrid",
+  "recordTable",
+  "detailPanel",
+  "formPanel",
+  "schedule",
+  "mediaBar",
+  "progressList",
+  "feed",
+  "footer",
+];
+
+/**
+ * `sections` is intentionally `unknown[]` here and validated per-entry by
+ * `parseSections` below.
+ *
+ * The reason is blunt: this object rides along with the palette, the fonts,
+ * the type scale and the whole design system in a single model response. If
+ * one section came back with a 61-character title, a strict array would fail
+ * the entire parse and throw away a perfectly good design system with it.
+ * Dropping the one bad section and rendering the rest is the behaviour that
+ * matches what the user asked for.
+ */
+const uiStructureSchema = z.object({
+  appName: z.string().min(1).max(40),
+  tagline: z.string().max(90).optional(),
+  navItems: z.array(z.string().min(1).max(24)).min(3).max(6),
+  sections: z.array(z.unknown()).min(1).max(8),
+});
+
+export type AIUiStructure = Omit<z.infer<typeof uiStructureSchema>, "sections"> & { sections: AISection[] };
+
+/** Validates each section on its own, silently dropping the ones that fail. */
+export function parseSections(raw: unknown[]): AISection[] {
+  const out: AISection[] = [];
+  for (const entry of raw) {
+    const parsed = sectionSchema.safeParse(entry);
+    if (parsed.success) out.push(parsed.data);
+  }
+  return out;
+}
+
 export const GeminiPaletteResponseSchema = z.object({
   projectName: z.string().min(1).max(60),
   // Drives which mock preview layout the AI results page renders — see
@@ -195,6 +392,10 @@ export const GeminiPaletteResponseSchema = z.object({
   moodboardImageIds: z.array(z.string().min(1)).min(2).max(3).optional(),
   designSystem: designSystemSchema.optional(),
   mockup: mockupSchema,
+  // Optional so a response from the older prompt (or a retry that drops it)
+  // still yields a usable design system; the canvas falls back to the default
+  // showcase when it is absent.
+  uiStructure: uiStructureSchema.optional(),
   reasoning: z.object({
     palette: z.string().min(1),
     fonts: z.string().min(1),

@@ -49,28 +49,64 @@ const SELECTORS: Array<{ selector: string; name: ComponentName }> = [
   { selector: ".pg-card", name: "card" },
 ];
 
-export type ComponentHit = { name: ComponentName; element: HTMLElement };
+/**
+ * Text is selectable too, and maps to a *type role* rather than a component:
+ * headings and body copy have no `ComponentTokenSet`, they have a typeface.
+ * Clicking a headline therefore opens the font controls, not a background
+ * colour picker — which is what a designer means when they click a heading.
+ *
+ * Tested before the component selectors so a heading *inside* a card selects
+ * the heading; a click anywhere else in the card still selects the card.
+ */
+const TYPE_SELECTORS: Array<{ selector: string; role: TypeRole }> = [
+  { selector: ".pg-display", role: "display" },
+  { selector: ".pg-h1, .pg-h2, .pg-h3, .pg-modal__title, .pg-navbar__brand", role: "heading" },
+  { selector: ".pg-body, .pg-caption, .pg-specimen__label", role: "body" },
+];
+
+/** The three faces the system actually has. Deliberately not one per heading
+ *  level: `StudioState` carries a display face and a body face (plus an
+ *  optional accent), and offering seven would promise distinctions no export
+ *  could reproduce. */
+export type TypeRole = "display" | "heading" | "body";
+
+export type Selection =
+  | { kind: "component"; name: ComponentName }
+  | { kind: "type"; role: TypeRole };
+
+export type SelectionHit = { selection: Selection; element: HTMLElement };
 
 /**
- * The nearest selectable component at or above `target`, or null if the click
- * landed on canvas chrome (a specimen label, a heading, empty space).
+ * The nearest selectable thing at or above `target`, or null if the click
+ * landed on canvas background.
  *
- * Returns the element as well as the name so the caller can mark it selected;
+ * Returns the element as well as the selection so the caller can mark it;
  * finding it twice with a second query would risk marking a *different*
  * instance than the one clicked.
  */
-export function findComponentAt(target: EventTarget | null, root: HTMLElement): ComponentHit | null {
+export function findComponentAt(target: EventTarget | null, root: HTMLElement): SelectionHit | null {
   if (!(target instanceof Element)) return null;
+
+  for (const { selector, role } of TYPE_SELECTORS) {
+    const match = target.closest<HTMLElement>(selector);
+    if (match && root.contains(match)) return { selection: { kind: "type", role }, element: match };
+  }
 
   for (const { selector, name } of SELECTORS) {
     const match = target.closest<HTMLElement>(selector);
     // The containment check matters: `closest()` is happy to walk out of the
     // canvas entirely and match Studio's own chrome if it ever grows a
     // colliding class name.
-    if (match && root.contains(match)) return { name, element: match };
+    if (match && root.contains(match)) return { selection: { kind: "component", name }, element: match };
   }
   return null;
 }
+
+export const TYPE_ROLE_LABELS: Record<TypeRole, string> = {
+  display: "Display text",
+  heading: "Heading",
+  body: "Body text",
+};
 
 /** Human labels for the inspector header. Separate from
  *  DesignSystemGallery's COMPONENT_LABELS only because that file's copy is

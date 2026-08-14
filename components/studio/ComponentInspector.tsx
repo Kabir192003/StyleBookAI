@@ -1,74 +1,95 @@
 /**
- * The panel that opens when a component in the canvas is clicked.
+ * The panel that opens when something in the canvas is clicked.
  *
- * Two clearly separated halves, and the separation is the whole design:
+ * It has two shapes, because the canvas contains two genuinely different
+ * kinds of thing and pretending otherwise would mean showing a background
+ * colour picker for a headline:
  *
- *   1. **This component** — its `ComponentTokenSet` (background / text /
- *      border, plus the four state overrides), edited through the exact same
- *      `ComponentEditor` the AI results page uses. Writes to
- *      `designSystem[variant].components[name]`.
- *   2. **The whole system** — radius and the two font families. These are
- *      `StudioState` fields, so changing them here moves every component in
- *      the canvas, not just the selected one.
+ *   - **A component** (button, card, input, …) has a `ComponentTokenSet`:
+ *     background, text, border, and overrides for its hover / active /
+ *     disabled / focus states. Edited through the same `ComponentEditor` the
+ *     AI results page uses, and written to
+ *     `designSystem[variant].components[name]`.
+ *   - **A type role** (display, heading, body) has a typeface. Edited by
+ *     picking from the whole font catalogue, and written to
+ *     `StudioState.headFont` / `.bodyFont`.
  *
- * Half 2 is labelled as system-wide rather than quietly mixed in with half 1.
- * A user who edits "radius" from inside a panel headed "Primary button" and
- * watches every card and input change shape too has been misled by the UI,
- * and the fix for that is honest labelling, not hiding the control — the
- * radius genuinely is one system token, and pretending each component owns
- * its own would mean inventing tokens the export has no slot for.
+ * Both then share a "whole system" block — radius and the type scale — which
+ * is labelled as system-wide rather than quietly mixed in. A user who edits
+ * "radius" from inside a panel headed "Primary button" and watches every card
+ * and input change shape too has been misled by the UI; the honest fix is the
+ * label, not hiding the control, because the radius genuinely is one token and
+ * inventing a per-component one would mean emitting tokens no export has a
+ * slot for.
  *
- * Everything here writes through the callbacks it is given, so undo/redo and
- * dirty-tracking stay entirely `StudioBuilder`'s concern.
+ * Everything writes through callbacks, so undo/redo and dirty-tracking stay
+ * entirely `StudioBuilder`'s concern.
  */
 "use client";
 
 import { X } from "lucide-react";
 import { ComponentEditor } from "@/components/design-system/ComponentEditor";
-import { COMPONENT_LABELS } from "@/lib/studio/componentSelection";
-import type { ComponentName, ComponentTokenSet } from "@/types/designSystem";
+import { FontPicker } from "./FontPicker";
+import { COMPONENT_LABELS, TYPE_ROLE_LABELS, type Selection } from "@/lib/studio/componentSelection";
+import type { ComponentTokenSet } from "@/types/designSystem";
+import type { TypeScale } from "@/types/theme";
 
 export function ComponentInspector({
-  name,
+  selection,
   variant,
   tokens,
   radius,
   headFont,
   bodyFont,
-  fontOptions,
+  typeScale,
   onTokensChange,
   onRadiusChange,
   onHeadFontChange,
   onBodyFontChange,
+  onBaseSizeChange,
   onClose,
 }: {
-  name: ComponentName;
+  selection: Selection;
   variant: "light" | "dark";
-  tokens: ComponentTokenSet;
+  /** Null while the selection is a type role, which has no component tokens. */
+  tokens: ComponentTokenSet | null;
   radius: number;
   headFont: string;
   bodyFont: string;
-  fontOptions: string[];
+  typeScale: TypeScale;
   onTokensChange: (next: ComponentTokenSet) => void;
   onRadiusChange: (next: number) => void;
   onHeadFontChange: (next: string) => void;
   onBodyFontChange: (next: string) => void;
+  onBaseSizeChange: (next: number) => void;
   onClose: () => void;
 }) {
+  const isType = selection.kind === "type";
+  const title = isType ? TYPE_ROLE_LABELS[selection.role] : COMPONENT_LABELS[selection.name];
+  // Display and heading share the display face — the system has two faces,
+  // not seven, and the picker must write to the one actually in use.
+  const usesBodyFace = isType && selection.role === "body";
+
   return (
     <aside
-      className="flex w-[268px] flex-none flex-col gap-4 overflow-y-auto border-l border-black/[0.18] bg-[#F2EBE0] px-4 py-4"
-      aria-label={`${COMPONENT_LABELS[name]} settings`}
+      className="flex w-[288px] flex-none flex-col gap-4 overflow-y-auto border-l border-black/[0.18] bg-[#F2EBE0] px-4 py-4"
+      aria-label={`${title} settings`}
     >
       <header className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="font-mono-plex text-[10px] uppercase tracking-[0.18em] text-[#222D52]">Selected</p>
-          <h2 className="mt-0.5 truncate text-[15px] font-medium text-[#211E18]">{COMPONENT_LABELS[name]}</h2>
-          {/* Which theme variant is being written is not cosmetic — editing
-              in Dark and expecting Light to change is an easy and silent
-              mistake, so the panel says so rather than leaving it implied by
-              the toggle at the other end of the page. */}
-          <p className="mt-0.5 text-[11px] text-[#8A8477]">Editing the {variant} variant</p>
+          <h2 className="mt-0.5 truncate text-[15px] font-medium text-[#211E18]">{title}</h2>
+          <p className="mt-0.5 text-[11px] text-[#8A8477]">
+            {isType
+              ? usesBodyFace
+                ? "Uses the body typeface"
+                : "Uses the display typeface"
+              : // Which theme variant is being written is not cosmetic —
+                // editing in Dark and expecting Light to change is an easy and
+                // silent mistake, so the panel says so rather than leaving it
+                // implied by a toggle at the other end of the page.
+                `Editing the ${variant} variant`}
+          </p>
         </div>
         <button
           type="button"
@@ -80,19 +101,32 @@ export function ComponentInspector({
         </button>
       </header>
 
-      <section>
-        <h3 className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">This component</h3>
-        <ComponentEditor tokens={tokens} onChange={onTokensChange} />
-      </section>
+      {isType ? (
+        <section>
+          <h3 className="font-mono-plex mb-2 text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">Typeface</h3>
+          {usesBodyFace ? (
+            <FontPicker label="Body font" value={bodyFont} onChange={onBodyFontChange} />
+          ) : (
+            <FontPicker label="Display font" value={headFont} onChange={onHeadFontChange} />
+          )}
+        </section>
+      ) : (
+        tokens && (
+          <section>
+            <h3 className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">This component</h3>
+            <ComponentEditor tokens={tokens} onChange={onTokensChange} />
+          </section>
+        )
+      )}
 
       <section className="border-t border-black/[0.1] pt-3">
         <h3 className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">Whole system</h3>
         <p className="mt-1 text-[10px] leading-snug text-[#B4AD9E]">
-          These are single system tokens. Changing one moves every component that uses it, not just this one.
+          Single system tokens. Changing one moves every component that uses it, not just this one.
         </p>
 
         <label className="mt-3 flex items-center justify-between gap-2 text-[11px] text-[#6E675C]">
-          <span>Radius</span>
+          <span>Corner radius</span>
           <span className="font-mono-plex text-[10px] text-[#8A8477]">{radius}px</span>
         </label>
         <input
@@ -105,35 +139,29 @@ export function ComponentInspector({
           aria-label="Corner radius"
         />
 
-        <label className="mt-3 block text-[11px] text-[#6E675C]">
-          Display font
-          <select
-            value={headFont}
-            onChange={(e) => onHeadFontChange(e.target.value)}
-            className="mt-1 w-full rounded-md border border-black/[0.16] bg-white px-2 py-1.5 text-[12px] text-[#211E18]"
-          >
-            {fontOptions.map((font) => (
-              <option key={font} value={font}>
-                {font}
-              </option>
-            ))}
-          </select>
+        <label className="mt-3 flex items-center justify-between gap-2 text-[11px] text-[#6E675C]">
+          <span>Base text size</span>
+          <span className="font-mono-plex text-[10px] text-[#8A8477]">{typeScale.baseSize}px</span>
         </label>
+        <input
+          type="range"
+          min={12}
+          max={24}
+          value={typeScale.baseSize}
+          onChange={(e) => onBaseSizeChange(Number(e.target.value))}
+          className="mt-1 w-full accent-[#222D52]"
+          aria-label="Base text size"
+        />
 
-        <label className="mt-2.5 block text-[11px] text-[#6E675C]">
-          Body font
-          <select
-            value={bodyFont}
-            onChange={(e) => onBodyFontChange(e.target.value)}
-            className="mt-1 w-full rounded-md border border-black/[0.16] bg-white px-2 py-1.5 text-[12px] text-[#211E18]"
-          >
-            {fontOptions.map((font) => (
-              <option key={font} value={font}>
-                {font}
-              </option>
-            ))}
-          </select>
-        </label>
+        {/* The other face is still reachable from here, so a user who clicked a
+            button rather than a heading is not sent back to the canvas to find
+            one before they can change a typeface. */}
+        {!isType && (
+          <div className="mt-3 flex flex-col gap-3">
+            <FontPicker label="Display font" value={headFont} onChange={onHeadFontChange} />
+            <FontPicker label="Body font" value={bodyFont} onChange={onBodyFontChange} />
+          </div>
+        )}
       </section>
     </aside>
   );

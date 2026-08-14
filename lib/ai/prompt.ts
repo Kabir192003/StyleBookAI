@@ -143,6 +143,46 @@ mockup someone could mistake for a real early sketch of that specific
 business's site, not a reskinned template. Keep every string short enough
 to read as UI copy, not paragraphs.
 
+You must ALSO design the interface itself — a "uiStructure" object that says
+what screen this product would actually have. This is the part that makes the
+preview that brand's product rather than a reskinned landing page.
+
+Choose an ordered list of 4-7 sections from this fixed vocabulary, picking the
+ones this specific product genuinely needs and leaving out the ones it does
+not. Two different briefs should produce two different *compositions*, not the
+same sections with different words in them:
+
+  hero          a headline, a subheadline and one or two calls to action
+  searchBar     a query field plus filter chips (search-led products)
+  statRow       2-4 headline numbers (dashboards, portals, analytics)
+  itemGrid      2-6 cards: listings, products, albums, destinations, courses
+  recordTable   a table of records: transactions, bookings, orders, results
+  detailPanel   one record's attributes as key/value rows (a spec sheet)
+  formPanel     a real form: booking, checkout, enquiry, application
+  schedule      time-slotted rows: timetable, appointments, departures
+  mediaBar      a now-playing / currently-active bar with an action
+  progressList  labelled progress bars: goals, budgets, course completion
+  feed          announcements, alerts, activity or notifications
+  footer        a closing note and a few links
+
+Worked examples of *composition* (do not copy the content):
+  travel booking      -> hero, searchBar, itemGrid, detailPanel, footer
+  fintech dashboard   -> statRow, recordTable, progressList, feed
+  music streaming     -> itemGrid, mediaBar, feed, footer
+  university portal   -> schedule, progressList, feed, recordTable
+  healthcare booking  -> searchBar, itemGrid, schedule, formPanel
+  restaurant ordering -> itemGrid, detailPanel, formPanel, footer
+
+Fill every section with concrete, plausible content for this exact business —
+real-sounding names, prices, times, figures and labels. Never "Item 1",
+"Lorem ipsum" or "Product name". Keep each string short enough to read as UI
+copy rather than prose.
+
+Do NOT put any colour, font, size, radius, spacing or shadow value anywhere in
+uiStructure. The interface is painted with the design tokens you already chose
+above; a style value here would be ignored at best and would fight the system
+at worst.
+
 Brand description: "${request.prompt}"
 ${request.style?.length ? `Preferred style keywords: ${request.style.join(", ")}` : ""}
 ${request.colorPreferences?.length ? `Color preferences: ${request.colorPreferences.join(", ")}` : ""}
@@ -194,6 +234,12 @@ Respond with JSON ONLY, matching exactly this shape:
     "cards": [ { "title": string (<= 60 chars), "subtitle": string (<= 80 chars), "meta": string (optional, <= 40 chars — a price/date/location/stat), "cta": string (<= 30 chars) }, ... 2 to 4 entries, concrete and specific to the business, see the instructions above ],
     "footerNote": string (optional, <= 80 chars)
   },
+  "uiStructure": {
+    "appName": string (<= 40 chars, what this product is called in its own UI),
+    "tagline": string (optional, <= 90 chars),
+    "navItems": [ string, ... ] (3 to 6 short nav labels this product would really have),
+    "sections": [ ... 4 to 7 section objects, in the order they appear on screen, each exactly one of the shapes below ]
+  },
   "reasoning": {
     "palette": string (plain language, why these colors together),
     "fonts": string (plain language, why this pairing),
@@ -201,6 +247,22 @@ Respond with JSON ONLY, matching exactly this shape:
     "overall": string (plain language, the overall design direction)
   }
 }
+
+Section shapes for "uiStructure.sections" — every object needs its "type",
+and every other field must be a plain string or number, never an object of
+style values:
+{ "type": "hero", "eyebrow"?: string(<=40), "headline": string(<=90), "subheadline": string(<=180), "primaryCta": string(<=30), "secondaryCta"?: string(<=30) }
+{ "type": "searchBar", "title"?: string(<=60), "placeholder": string(<=60), "filters"?: [string(<=60), ... up to 6], "submitLabel": string(<=30) }
+{ "type": "statRow", "title"?: string(<=60), "items": [ { "value": string(<=16), "label": string(<=60) }, ... 2 to 4 ] }
+{ "type": "itemGrid", "title"?: string(<=60), "lead"?: string(<=160), "items": [ { "title": string(<=60), "subtitle"?: string(<=90), "meta"?: string(<=40), "badge"?: string(<=20), "cta"?: string(<=30) }, ... 2 to 6 ] }
+{ "type": "recordTable", "title"?: string(<=60), "columns": [string(<=60), ... 2 to 5], "rows": [ [string(<=40), ...same length as columns], ... 2 to 6 ], "rowAction"?: string(<=20) }
+{ "type": "detailPanel", "title": string(<=60), "subtitle"?: string(<=90), "fields": [ { "key": string(<=60), "value": string(<=60) }, ... 2 to 8 ], "primaryCta"?: string(<=30) }
+{ "type": "formPanel", "title": string(<=60), "lead"?: string(<=160), "fields": [ { "label": string(<=60), "kind": one of "text"|"email"|"textarea"|"select"|"checkbox"|"radio"|"toggle", "placeholder"?: string(<=60), "options"?: [string(<=60), ... up to 5, only for select/radio] }, ... 2 to 6 ], "submitLabel": string(<=30) }
+{ "type": "schedule", "title"?: string(<=60), "slots": [ { "time": string(<=24), "title": string(<=60), "meta"?: string(<=40), "status"?: string(<=20) }, ... 2 to 6 ] }
+{ "type": "mediaBar", "title": string(<=60), "subtitle"?: string(<=60), "meta"?: string(<=30), "primaryAction"?: string(<=30) }
+{ "type": "progressList", "title"?: string(<=60), "items": [ { "label": string(<=60), "percent": integer 0-100, "caption"?: string(<=40) }, ... 2 to 5 ] }
+{ "type": "feed", "title"?: string(<=60), "items": [ { "title": string(<=70), "body"?: string(<=160), "meta"?: string(<=40), "tone"?: one of "info"|"success"|"warning"|"error" }, ... 2 to 5 ] }
+{ "type": "footer", "note"?: string(<=90), "links"?: [string(<=60), ... up to 6] }
 
 Write the reasoning for THIS brand and no other. Name the brand (use the
 projectName you chose) and name the actual things you picked — the specific

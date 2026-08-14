@@ -23,7 +23,7 @@ import { useEffect, useMemo, useRef, type ReactNode } from "react";
 import { canvasCss } from "@/lib/studio/roleProperties";
 import { findComponentAt } from "@/lib/studio/componentSelection";
 import type { StudioExportTokens } from "@/lib/studio/exportCode";
-import type { ComponentName } from "@/types/designSystem";
+import type { Selection } from "@/lib/studio/componentSelection";
 
 const SCOPE_ATTR = "data-sb-canvas";
 const SCOPE_SELECTOR = `[${SCOPE_ATTR}]`;
@@ -49,8 +49,8 @@ export function StudioCanvas({
 }: {
   tokens: StudioExportTokens;
   theme: "light" | "dark";
-  selected: ComponentName | null;
-  onSelect: (name: ComponentName | null) => void;
+  selected: Selection | null;
+  onSelect: (selection: Selection | null) => void;
   children: ReactNode;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -92,7 +92,7 @@ export function StudioCanvas({
       return;
     }
     hit.element.setAttribute(SELECTED_ATTR, "true");
-    onSelect(hit.name);
+    onSelect(hit.selection);
   }
 
   return (
