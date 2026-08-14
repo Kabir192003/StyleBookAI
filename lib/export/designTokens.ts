@@ -793,6 +793,68 @@ export function toDtcgJson(system: NormalizedSystem): string {
   return JSON.stringify(toDtcgTokens(system), null, 2);
 }
 
+const TOKEN_METADATA_KEYS = new Set(["$value", "$type", "$description", "$extensions"]);
+
+/**
+ * The actual root cause of a real, confirmed failure: importing the file
+ * this function used to produce showed the right token *categories* in
+ * Tokens Studio's UI, but switching to a set's own JSON view showed
+ * `global`/`light`/`dark` resolving to `{}` — the tokens simply weren't
+ * there as far as Tokens Studio's own set model was concerned.
+ *
+ * The reason is a second, orthogonal format split on top of the
+ * fontFamilies/boxShadow one already handled above: Tokens Studio's own
+ * token *sets* — the top-level `global`/`light`/`dark` structure this file
+ * builds — predate the DTCG spec and are not a DTCG concept at all. Tokens
+ * Studio can read a set's tokens in either of two dialects, chosen by a
+ * project-level "Token Format" setting (Legacy vs. W3C DTCG,
+ * docs.tokens.studio/manage-settings/token-format) that this exporter has
+ * no way to see or control:
+ *
+ *   - **Legacy** (Tokens Studio's own, older, still-default-in-many-projects
+ *     format): every token needs literal `value`/`type` keys, and — unlike
+ *     DTCG — a group's `type` never cascades to its children. A tree built
+ *     only from `$value`/`$type` has no `value` key anywhere, so Legacy mode
+ *     finds nothing it recognises as a token in the set at all: hence `{}`.
+ *   - **DTCG**: reads `$value`/`$type` with group inheritance, which is
+ *     everything this file already produces.
+ *
+ * Rather than guess which one a given user's project is set to, every token
+ * gets both. `$value`/`$type` stay exactly as generated (still fully valid,
+ * inheritance-aware DTCG); `value`/`type` are added as siblings, with `type`
+ * resolved by walking the same group-inheritance rule DTCG itself already
+ * defines — so it lands on the identical answer a DTCG-aware reader would
+ * already be computing for that token, just written out explicitly at the
+ * leaf where Legacy mode requires it to live. Nothing is removed or
+ * simplified; this only adds keys a reader in either mode can use.
+ */
+function withNativeTokenAliases(node: TokenNode, inheritedType?: unknown): TokenNode {
+  const type = "$type" in node ? node.$type : inheritedType;
+  const out: TokenNode = {};
+
+  for (const [key, value] of Object.entries(node)) {
+    if (TOKEN_METADATA_KEYS.has(key)) {
+      // Copied verbatim, never walked: `$value` is the token's actual
+      // content (a composite's inner fields — fontFamily, x/y/blur/spread,
+      // …) and must reach the output exactly as generated, not have alias
+      // keys spliced into it as if its fields were themselves tokens.
+      out[key] = value;
+      continue;
+    }
+    out[key] =
+      value && typeof value === "object" && !Array.isArray(value)
+        ? withNativeTokenAliases(value as TokenNode, type)
+        : value;
+  }
+
+  if ("$value" in node) {
+    out.value = node.$value;
+    if (type !== undefined) out.type = type;
+  }
+
+  return out;
+}
+
 /**
  * Tokens Studio single-file shape: one top-level key per *token set*, plus
  * `$metadata.tokenSetOrder` and a `$themes` array wiring the sets into
@@ -822,13 +884,13 @@ export function toTokensStudioJson(system: NormalizedSystem): string {
     };
   }
 
-  const file: TokenNode = { global };
+  const file: TokenNode = { global: withNativeTokenAliases(global) };
 
   const lightSet = toDtcgTokens(system, { mode: "light", colorsOnly: true, explicitColorType: true });
-  if (lightSet.color) file.light = lightSet;
+  if (lightSet.color) file.light = withNativeTokenAliases(lightSet);
   if (hasDark) {
     const darkSet = toDtcgTokens(system, { mode: "dark", colorsOnly: true, explicitColorType: true });
-    if (darkSet.color) file.dark = darkSet;
+    if (darkSet.color) file.dark = withNativeTokenAliases(darkSet);
   }
 
   const setOrder = Object.keys(file);
