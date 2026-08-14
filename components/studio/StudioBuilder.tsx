@@ -717,7 +717,16 @@ export function StudioBuilder() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-[376px_1fr]">
+      {/* Three columns while something is selected, two otherwise — the
+          inspector is a sibling of the sidebar and the canvas, so without the
+          extra track it lands on a new grid row underneath the canvas instead
+          of beside it. */}
+      <div
+        className={cn(
+          "grid grid-cols-1",
+          selected ? "lg:grid-cols-[376px_1fr_288px]" : "lg:grid-cols-[376px_1fr]"
+        )}
+      >
         <aside className="flex flex-col gap-[30px] border-b border-black/[0.18] bg-[#F2EBE0] px-6 py-6 lg:sticky lg:top-[105px] lg:max-h-[calc(100vh-105px)] lg:overflow-y-auto lg:border-b-0 lg:border-r">
           <div>
             <div className="font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#8A8477]">The Studio</div>

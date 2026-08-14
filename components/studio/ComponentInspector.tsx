@@ -72,7 +72,7 @@ export function ComponentInspector({
 
   return (
     <aside
-      className="flex w-[288px] flex-none flex-col gap-4 overflow-y-auto border-l border-black/[0.18] bg-[#F2EBE0] px-4 py-4"
+      className="flex flex-col gap-4 border-t border-black/[0.18] bg-[#F2EBE0] px-4 py-4 lg:sticky lg:top-[105px] lg:max-h-[calc(100vh-105px)] lg:overflow-y-auto lg:border-l lg:border-t-0"
       aria-label={`${title} settings`}
     >
       <header className="flex items-start justify-between gap-2">
