@@ -22,7 +22,7 @@ import { cloneElement, useCallback, useEffect, useId, useRef, useState, type Rea
 import { ChevronDown, HelpCircle, Minus, Plus } from "lucide-react";
 import { GroupShell, Specimen } from "./primitives";
 
-function CheckboxSet() {
+export function CheckboxSet() {
   const id = useId();
   const [checked, setChecked] = useState({ weekly: true, product: false, research: false });
   const allRef = useRef<HTMLInputElement | null>(null);
@@ -88,7 +88,7 @@ function CheckboxSet() {
   );
 }
 
-function RadioSet() {
+export function RadioSet() {
   const id = useId();
   const [plan, setPlan] = useState("team");
   return (
@@ -126,7 +126,7 @@ function RadioSet() {
   );
 }
 
-function Switch({ label, desc, defaultOn = false, disabled = false }: { label: string; desc: string; defaultOn?: boolean; disabled?: boolean }) {
+export function Switch({ label, desc, defaultOn = false, disabled = false }: { label: string; desc: string; defaultOn?: boolean; disabled?: boolean }) {
   const id = useId();
   const [on, setOn] = useState(defaultOn);
   return (
@@ -151,7 +151,7 @@ function Switch({ label, desc, defaultOn = false, disabled = false }: { label: s
   );
 }
 
-function SelectField() {
+export function SelectField() {
   const id = useId();
   const [value, setValue] = useState("perfect-fourth");
   return (
@@ -178,7 +178,7 @@ function SelectField() {
   );
 }
 
-function ProgressDemo() {
+export function ProgressDemo() {
   const id = useId();
   const [value, setValue] = useState(45);
   const step = (delta: number) => setValue((v) => Math.min(100, Math.max(0, v + delta)));
@@ -222,7 +222,7 @@ function ProgressDemo() {
  * because the canvas renders this group once per experiment and duplicate
  * ids would point every trigger at the first card's bubble.
  */
-function Tooltip({ tip, children }: { tip: string; children: ReactElement }) {
+export function Tooltip({ tip, children }: { tip: string; children: ReactElement }) {
   const id = useId();
   return (
     <span className="pg-tooltip">
@@ -241,7 +241,14 @@ function Tooltip({ tip, children }: { tip: string; children: ReactElement }) {
  * a portalled modal would also leave the `[data-pg-exp]` scope and lose
  * every token it is supposed to be demonstrating.
  */
-function ModalDemo() {
+/**
+ * `inline` drops the dashed specimen stage so the trigger can sit in a real
+ * page next to other buttons. The backdrop is `position: absolute`, so inline
+ * mode relies on an ancestor establishing a containing block — the Studio
+ * canvas sets `position: relative` for exactly this, which also keeps the
+ * overlay inside the mockup instead of covering the app's own chrome.
+ */
+export function ModalDemo({ inline = false }: { inline?: boolean }) {
   const [open, setOpen] = useState(false);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -266,17 +273,8 @@ function ModalDemo() {
     return () => document.removeEventListener("keydown", onKey);
   }, [open, close]);
 
-  return (
-    <div
-      className="pg-stage"
-      style={{
-        minHeight: 210,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        border: "1px dashed var(--pgc-border)",
-      }}
-    >
+  const body = (
+    <>
       <button ref={triggerRef} type="button" className="pg-btn pg-btn--danger" onClick={() => setOpen(true)}>
         Delete design system
       </button>
@@ -311,6 +309,23 @@ function ModalDemo() {
           </div>
         </div>
       )}
+    </>
+  );
+
+  if (inline) return body;
+
+  return (
+    <div
+      className="pg-stage"
+      style={{
+        minHeight: 210,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        border: "1px dashed var(--pgc-border)",
+      }}
+    >
+      {body}
     </div>
   );
 }

@@ -13,7 +13,6 @@ import { Theme, TypeScale } from "./theme";
 import { SpacingScale, ShadowScale, CornerRadiusScale, MoodboardImage } from "./designTokens";
 import { DesignSystem } from "./designSystem";
 import { PrimitiveColor, ColorValue } from "@/lib/studio/tokenGraph";
-import { PreviewLayoutItem } from "@/lib/studio/livePreviewBlocks";
 import { PlaygroundState } from "@/lib/playground/types";
 
 export type AIReasoning = {
@@ -54,9 +53,6 @@ export type Project = {
     light: { accent: ColorValue; support: ColorValue; surface: ColorValue; ink: ColorValue; muted: ColorValue };
     dark: { accent: ColorValue; support: ColorValue; surface: ColorValue; ink: ColorValue; muted: ColorValue };
   };
-  // The live-preview canvas's arranged order/visibility/width per block —
-  // also optional/additive, same reasoning as colorPrimitives above.
-  previewLayout?: PreviewLayoutItem[];
   // The Design Playground's board: the experiment cards plus the swatch and
   // font trays (docs/DESIGN_PLAYGROUND.md §16). Optional/additive like the
   // two fields above — a project saved before the playground existed simply

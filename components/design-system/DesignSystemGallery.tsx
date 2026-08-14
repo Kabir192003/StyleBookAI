@@ -28,6 +28,7 @@ import { useState } from "react";
 import { DesignSystem, ComponentName, ComponentTokenSet, ThemeVariantTokens } from "@/types/designSystem";
 import { getContrastRatio } from "@/lib/colors/colorUtils";
 import { ContrastBadge } from "@/components/ui/ContrastBadge";
+import { ComponentEditor, NON_DEFAULT_STATES } from "./ComponentEditor";
 import { SpacingVisualization } from "./SpacingVisualization";
 import { SpacingScale } from "@/types/designTokens";
 import { cn } from "@/lib/utils";
@@ -73,8 +74,6 @@ const COMPONENT_LABELS: Record<ComponentName, string> = {
   alert: "Alert",
   badge: "Badge",
 };
-
-const NON_DEFAULT_STATES = ["hover", "active", "disabled", "focus"] as const;
 
 function nonDefaultSwatches(tokens: ComponentTokenSet) {
   return NON_DEFAULT_STATES.map((state) => {
@@ -228,106 +227,6 @@ function ComponentShape({ name, tokens }: { name: ComponentName; tokens: Compone
   }
 }
 
-function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (hex: string) => void }) {
-  return (
-    <label className="flex items-center justify-between gap-2 text-[11px] text-[#6E675C]">
-      <span className="capitalize">{label}</span>
-      <span className="flex items-center gap-1.5">
-        <input
-          type="color"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="h-5 w-5 cursor-pointer rounded border border-black/[0.15] bg-transparent p-0"
-        />
-        <span className="font-mono-plex text-[10px] text-[#8A8477]">{value}</span>
-      </span>
-    </label>
-  );
-}
-
-function ComponentEditor({
-  tokens,
-  onChange,
-}: {
-  tokens: ComponentTokenSet;
-  onChange: (next: ComponentTokenSet) => void;
-}) {
-  const [statesOpen, setStatesOpen] = useState(false);
-
-  return (
-    <div className="mt-3 space-y-1.5 border-t border-black/[0.08] pt-3">
-      <ColorField label="background" value={tokens.background} onChange={(hex) => onChange({ ...tokens, background: hex })} />
-      <ColorField label="text" value={tokens.text} onChange={(hex) => onChange({ ...tokens, text: hex })} />
-      <ColorField
-        label="border"
-        value={tokens.border ?? tokens.background}
-        onChange={(hex) => onChange({ ...tokens, border: hex })}
-      />
-
-      <button
-        type="button"
-        onClick={() => setStatesOpen((v) => !v)}
-        className="mt-2 font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]"
-      >
-        {statesOpen ? "▾" : "▸"} States
-      </button>
-      {statesOpen && (
-        <div className="mt-1.5 space-y-2.5">
-          {NON_DEFAULT_STATES.map((state) => {
-            const enabled = Boolean(tokens.states?.[state]);
-            const override = tokens.states?.[state];
-            return (
-              <div key={state} className="rounded-md bg-black/[0.03] p-2">
-                <label className="flex items-center gap-1.5 text-[10px] capitalize text-[#6E675C]">
-                  <input
-                    type="checkbox"
-                    checked={enabled}
-                    onChange={(e) => {
-                      const nextStates = { ...tokens.states };
-                      if (e.target.checked) {
-                        nextStates[state] = { background: tokens.background, text: tokens.text, border: tokens.border };
-                      } else {
-                        delete nextStates[state];
-                      }
-                      onChange({ ...tokens, states: nextStates });
-                    }}
-                    className="h-3 w-3 accent-[#222D52]"
-                  />
-                  {state}
-                </label>
-                {enabled && override && (
-                  <div className="mt-1.5 space-y-1">
-                    <ColorField
-                      label="background"
-                      value={override.background ?? tokens.background}
-                      onChange={(hex) =>
-                        onChange({ ...tokens, states: { ...tokens.states, [state]: { ...override, background: hex } } })
-                      }
-                    />
-                    <ColorField
-                      label="text"
-                      value={override.text ?? tokens.text}
-                      onChange={(hex) =>
-                        onChange({ ...tokens, states: { ...tokens.states, [state]: { ...override, text: hex } } })
-                      }
-                    />
-                    <ColorField
-                      label="border"
-                      value={override.border ?? tokens.border ?? tokens.background}
-                      onChange={(hex) =>
-                        onChange({ ...tokens, states: { ...tokens.states, [state]: { ...override, border: hex } } })
-                      }
-                    />
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
 
 export function DesignSystemGallery({
   designSystem,

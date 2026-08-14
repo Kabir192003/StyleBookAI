@@ -22,7 +22,7 @@ import { GroupShell, Specimen } from "./primitives";
 
 const NAV_ITEMS = ["Overview", "Library", "Studio", "Team"];
 
-function Navbar() {
+export function Navbar() {
   const [active, setActive] = useState("Library");
   return (
     <nav className="pg-navbar" aria-label="Primary">
@@ -72,7 +72,7 @@ const TABS = [
   { label: "Export", body: "CSS custom properties, a Tailwind config, DTCG tokens, SwiftUI and Flutter." },
 ];
 
-function Tabs() {
+export function Tabs() {
   const id = useId();
   const [selected, setSelected] = useState(0);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -131,7 +131,7 @@ function Tabs() {
   );
 }
 
-function Breadcrumbs() {
+export function Breadcrumbs() {
   return (
     <nav aria-label="Breadcrumb">
       <ol className="pg-crumbs" style={{ listStyle: "none", margin: 0, padding: 0 }}>

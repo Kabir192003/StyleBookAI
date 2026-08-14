@@ -24,7 +24,7 @@ import { GroupShell, Specimen } from "./primitives";
 /** Deliberately loose: this validates for the demo, not for a signup form. */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-function ValidatedEmailField() {
+export function ValidatedEmailField() {
   const id = useId();
   const [value, setValue] = useState("dana@");
   const status = value.length === 0 ? "empty" : EMAIL_RE.test(value) ? "valid" : "invalid";
@@ -74,7 +74,7 @@ function ValidatedEmailField() {
   );
 }
 
-function SearchField() {
+export function SearchField() {
   const id = useId();
   const [query, setQuery] = useState("");
   return (

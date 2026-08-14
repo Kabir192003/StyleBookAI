@@ -215,14 +215,6 @@ const EditablePaletteTokensSchema = z.object({
   muted: ColorValueSchema,
 });
 
-// A block's arranged position/size in the Studio live-preview canvas.
-// Mirrors lib/studio/livePreviewBlocks.ts's PreviewLayoutItem.
-const PreviewLayoutItemSchema = z.object({
-  id: z.string(),
-  visible: z.boolean(),
-  width: z.number().nullable(),
-});
-
 // Mirrors lib/playground/types.ts. The role maps are validated as partial
 // records keyed by the literal role names rather than as a free-form
 // `z.record(z.string(), …)`: a typo'd role would otherwise validate happily,
@@ -293,7 +285,6 @@ export const ProjectInputSchema = z.object({
   studioPaletteLinks: z
     .object({ light: EditablePaletteTokensSchema, dark: EditablePaletteTokensSchema })
     .optional(),
-  previewLayout: z.array(PreviewLayoutItemSchema).optional(),
   playground: PlaygroundStateSchema.optional(),
   context: z.enum(["saas", "ecommerce", "government", "editorial", "generic"]).optional(),
   theme: z

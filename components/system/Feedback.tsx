@@ -103,7 +103,7 @@ function Alerts() {
  * playground grid, which makes two experiments impossible to compare — see
  * the `.pg-stage` comment in styles.ts.
  */
-function ToastDemo() {
+export function ToastDemo() {
   const [open, setOpen] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 

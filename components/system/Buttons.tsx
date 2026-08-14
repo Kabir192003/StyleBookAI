@@ -26,7 +26,7 @@ import { GroupShell, Specimen } from "./primitives";
  * live React and not markup — a reviewer clicks it and watches three
  * distinct renders.
  */
-function SaveButton() {
+export function SaveButton() {
   const [phase, setPhase] = useState<"idle" | "saving" | "saved">("idle");
   // Timers are torn down on unmount because the playground canvas mounts and
   // unmounts these freely as experiments are added, reordered and deleted;
@@ -61,7 +61,7 @@ function SaveButton() {
 }
 
 /** A real toggle button — `aria-pressed` flips, so it is not a fake state. */
-function LikeButton() {
+export function LikeButton() {
   const [liked, setLiked] = useState(false);
   return (
     <button

@@ -21,7 +21,7 @@ import { useState } from "react";
 import { Image as ImageIcon, MessageSquare, ShoppingBag, Star } from "lucide-react";
 import { GroupShell, Specimen } from "./primitives";
 
-function FollowButton() {
+export function FollowButton() {
   const [following, setFollowing] = useState(false);
   return (
     <button

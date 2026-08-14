@@ -28,19 +28,35 @@
  * base palette has no slot for) — colliding with those would have the
  * component layer overwrite the values it is supposed to be consuming.
  *
- * Fallback order for every alias is:
+ * Fallback order inside the alias layer is:
  *
  *   --pg-*  ->  --ds-*  ->  --color-* / --font-* / --radius  ->  literal
  *
- * `--pg-*` comes **first**, and that ordering is load-bearing. The role block
- * is emitted after the token block at equal specificity, and every one of its
- * properties is always defined inside the scope. Resolving `--ds-button-bg`
- * first — as an earlier draft did — would mean the role layer could never win,
- * because the synthesised `--ds-*` value would keep taking precedence. The
- * `--ds-*` rung survives for the cases `--pg-*` has no name for (per-component
- * `-hover` / `-active` / `-disabled` state colours, which is what the
- * click-to-edit inspector writes) so the library still resolves sensibly
- * outside a canvas scope.
+ * **but the component rules below deliberately invert that for the ten
+ * editable component types**, resolving `--ds-<component>-<slot>` *before*
+ * the `--pgc-*` alias:
+ *
+ *   background: var(--ds-button-bg, var(--pgc-primary));
+ *
+ * Both orderings are load-bearing, for different things, and the distinction
+ * is the whole reason there are two layers:
+ *
+ *   - `--pg-*` is the *derived* semantic-role layer
+ *     (lib/studio/roleProperties.ts) — always defined, computed from the
+ *     five-colour palette. It must beat the raw `--color-*` export inside the
+ *     alias layer so that roles the palette has no slot for still resolve.
+ *   - `--ds-*` is the *explicit per-component* token the click-to-edit
+ *     inspector writes. It is the more specific statement of intent, so for
+ *     the component that owns it, it has to win.
+ *
+ * Getting this backwards is not a subtle bug: because `--pg-primary` is
+ * unconditionally defined, an alias-first `.pg-btn--primary` means editing a
+ * button's background in the inspector changes the stored token, re-renders,
+ * and visibly does nothing at all.
+ *
+ * Only the ten `ComponentName`s take part. Everything else (focus rings,
+ * progress fills, avatars, the soft badge variants) keeps resolving through
+ * `--pgc-*`, so editing the button does not drag unrelated components with it.
  *
  * The trailing literal exists so the library renders standalone (an empty
  * scope, a manual non-AI system, a Storybook-style harness) rather than
@@ -181,8 +197,8 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-btn--block { width: 100%; }
 
 .pg-btn--primary {
-  background: var(--pgc-primary);
-  color: var(--pgc-on-primary);
+  background: var(--ds-button-bg, var(--pgc-primary));
+  color: var(--ds-button-text, var(--pgc-on-primary));
   border-color: var(--ds-button-border, transparent);
   box-shadow: var(--pgc-shadow);
 }
@@ -278,9 +294,9 @@ export const SYSTEM_COMPONENT_CSS = `
   line-height: 1.4;
   padding: 10px 12px;
   border-radius: var(--pgc-radius);
-  background: var(--pgc-surface);
-  color: var(--pgc-ink);
-  border: 1px solid var(--pgc-border);
+  background: var(--ds-input-bg, var(--pgc-surface));
+  color: var(--ds-input-text, var(--pgc-ink));
+  border: 1px solid var(--ds-input-border, var(--pgc-border));
   transition: border-color var(--pgc-t), box-shadow var(--pgc-t), background-color var(--pgc-t);
   -webkit-appearance: none;
   appearance: none;
@@ -345,9 +361,9 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-card {
   display: flex;
   flex-direction: column;
-  background: var(--pgc-surface);
-  color: var(--pgc-ink);
-  border: 1px solid var(--pgc-border);
+  background: var(--ds-card-bg, var(--pgc-surface));
+  color: var(--ds-card-text, var(--pgc-ink));
+  border: 1px solid var(--ds-card-border, var(--pgc-border));
   border-radius: var(--pgc-radius);
   overflow: hidden;
   transition: border-color var(--pgc-t), box-shadow var(--pgc-t), transform var(--pgc-t);
@@ -426,9 +442,9 @@ export const SYSTEM_COMPONENT_CSS = `
   gap: var(--space-3, 16px);
   padding: var(--space-3, 12px) var(--space-4, 18px);
   border-radius: var(--pgc-radius);
-  background: var(--pgc-surface);
-  color: var(--pgc-ink);
-  border: 1px solid var(--pgc-border);
+  background: var(--ds-navigation-bg, var(--pgc-surface));
+  color: var(--ds-navigation-text, var(--pgc-ink));
+  border: 1px solid var(--ds-navigation-border, var(--pgc-border));
 }
 .pg-navbar__brand {
   display: inline-flex;
@@ -540,9 +556,13 @@ export const SYSTEM_COMPONENT_CSS = `
   gap: var(--space-2, 10px);
   padding: var(--space-3, 13px) var(--space-3, 14px);
   border-radius: var(--pgc-radius);
-  border: 1px solid var(--pgc-tone-border);
-  background: var(--pgc-tone-bg);
-  color: var(--pgc-ink);
+  /* The four tone variants below are semantic (info/success/warning/error)
+     and derive their own fills, so --ds-alert-* applies to the *neutral*
+     base only — an edited alert token that recoloured the error alert green
+     would be actively misleading. */
+  border: 1px solid var(--ds-alert-border, var(--pgc-tone-border));
+  background: var(--ds-alert-bg, var(--pgc-tone-bg));
+  color: var(--ds-alert-text, var(--pgc-ink));
   font-size: var(--text-sm, 14px);
   line-height: 1.55;
 }
@@ -556,6 +576,17 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-alert {
   --pgc-tone-bg: color-mix(in srgb, var(--pgc-tone) 12%, var(--pgc-surface));
   --pgc-tone-border: color-mix(in srgb, var(--pgc-tone) 42%, var(--pgc-surface));
+}
+/* Re-asserted *after* the base rule so the tone wins over --ds-alert-*.
+   Without this, a system carrying an alert token would paint the error and
+   success alerts the same colour, since the modifiers only rebind --pgc-tone
+   and never set a background of their own. */
+.pg-alert--info,
+.pg-alert--success,
+.pg-alert--warning,
+.pg-alert--error {
+  background: var(--pgc-tone-bg);
+  border-color: var(--pgc-tone-border);
 }
 .pg-alert__icon { display: inline-flex; flex: none; margin-top: 1px; color: var(--pgc-tone); }
 .pg-alert__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
@@ -588,8 +619,8 @@ export const SYSTEM_COMPONENT_CSS = `
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
-  background: var(--pgc-accent);
-  color: var(--pgc-on-accent);
+  background: var(--ds-badge-bg, var(--pgc-accent));
+  color: var(--ds-badge-text, var(--pgc-on-accent));
   border: 1px solid var(--ds-badge-border, transparent);
 }
 /* The soft variants deliberately ignore --ds-badge-* : those tokens describe
@@ -752,7 +783,15 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-switch:disabled { cursor: not-allowed; opacity: 0.5; }
 
 .pg-select-wrap { position: relative; display: flex; align-items: center; }
-.pg-select { padding-right: 34px; cursor: pointer; }
+/* The dropdown is a distinct ComponentName with its own editable tokens, so
+   it overrides the shared input rule rather than inheriting input's. */
+.pg-select {
+  padding-right: 34px;
+  cursor: pointer;
+  background: var(--ds-dropdown-bg, var(--ds-input-bg, var(--pgc-surface)));
+  color: var(--ds-dropdown-text, var(--ds-input-text, var(--pgc-ink)));
+  border-color: var(--ds-dropdown-border, var(--ds-input-border, var(--pgc-border)));
+}
 .pg-select-wrap__chevron { position: absolute; right: 12px; display: inline-flex; color: var(--pgc-muted); pointer-events: none; }
 
 /* Tooltip. Hover *and* focus-within, so it is reachable by keyboard — a
@@ -881,9 +920,9 @@ export const SYSTEM_COMPONENT_CSS = `
   gap: var(--space-2, 10px);
   padding: var(--space-4, 20px);
   border-radius: var(--pgc-radius);
-  background: var(--pgc-surface);
-  color: var(--pgc-ink);
-  border: 1px solid var(--pgc-border);
+  background: var(--ds-modal-bg, var(--pgc-surface));
+  color: var(--ds-modal-text, var(--pgc-ink));
+  border: 1px solid var(--ds-modal-border, var(--pgc-border));
   box-shadow: var(--pgc-shadow-lift);
   animation: pg-modal-in 200ms cubic-bezier(0.2, 0.8, 0.3, 1);
 }

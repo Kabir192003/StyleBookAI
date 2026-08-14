@@ -63,7 +63,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   // Any `data` key present means the JSONB column has to be rewritten. This
   // list is deliberately derived from the shape rather than hand-written per
   // field: the previous inline version omitted colorPrimitives,
-  // studioPaletteLinks and previewLayout, so an update carrying them wrote
+  // studioPaletteLinks, so an update carrying them wrote
   // nothing (and, worse, the rewrite below dropped whatever the row already
   // held). Merging is now lib/db/projectMapper.ts's job, next to the two other
   // by-name copies of this allowlist.
@@ -78,7 +78,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     "designSystem",
     "colorPrimitives",
     "studioPaletteLinks",
-    "previewLayout",
     "playground",
     "context",
     "theme",

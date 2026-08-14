@@ -10,7 +10,7 @@
  * still vanishes on save with no error anywhere. It must be added to (1) the
  * `Pick<>`, (2) `rowToProject`, (3) `projectInputToRow`, and (4) `mergeProjectData`
  * — which is what PUT /api/projects/[id] uses to fold a partial update into an
- * existing row. See `colorPrimitives` / `studioPaletteLinks` / `previewLayout`
+ * existing row. See `colorPrimitives` / `studioPaletteLinks`
  * for the precedent, and `playground` for the newest one.
  */
 import { Project } from "@/types/project";
@@ -28,7 +28,6 @@ export type ProjectData = Pick<
   | "designSystem"
   | "colorPrimitives"
   | "studioPaletteLinks"
-  | "previewLayout"
   | "playground"
   | "context"
   | "theme"
@@ -63,7 +62,6 @@ export function rowToProject(row: ProjectRow, clerkUserId: string): Project {
     designSystem: row.data.designSystem,
     colorPrimitives: row.data.colorPrimitives,
     studioPaletteLinks: row.data.studioPaletteLinks,
-    previewLayout: row.data.previewLayout,
     playground: row.data.playground,
     context: row.data.context,
     theme: row.data.theme,
@@ -83,7 +81,7 @@ export function rowToProject(row: ProjectRow, clerkUserId: string): Project {
  * allowlist as the two functions around it, and keeping the four copies in
  * one file is the only thing that makes them reviewable together. The route
  * previously inlined its own shorter list, which silently dropped
- * `colorPrimitives`, `studioPaletteLinks` and `previewLayout` on every
+ * `colorPrimitives` and `studioPaletteLinks` on every
  * update — so saving an existing project from Studio destroyed its primitive
  * links and its arranged preview layout, with no error.
  */
@@ -99,7 +97,6 @@ export function mergeProjectData(existing: ProjectData, patch: Partial<ProjectIn
     designSystem: patch.designSystem ?? existing.designSystem,
     colorPrimitives: patch.colorPrimitives ?? existing.colorPrimitives,
     studioPaletteLinks: patch.studioPaletteLinks ?? existing.studioPaletteLinks,
-    previewLayout: patch.previewLayout ?? existing.previewLayout,
     playground: patch.playground ?? existing.playground,
     context: patch.context ?? existing.context,
     theme: patch.theme ?? existing.theme,
@@ -119,7 +116,6 @@ export function projectInputToRow(input: ProjectInput) {
     designSystem: input.designSystem,
     colorPrimitives: input.colorPrimitives,
     studioPaletteLinks: input.studioPaletteLinks,
-    previewLayout: input.previewLayout,
     playground: input.playground,
     context: input.context,
     theme: input.theme,
