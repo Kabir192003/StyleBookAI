@@ -744,7 +744,14 @@ export function toDtcgTokens(system: NormalizedSystem, options: DtcgOptions = {}
   /* ---------- space & shape ---------- */
   if (system.spacing) {
     tree.spacing = {
-      $type: options.nativeValueTypes ? "spacing" : "dimension",
+      // Tokens Studio's own "spacing" type string was expected to key its UI
+      // category the same way "borderRadius"/"boxShadow" do — but a real
+      // import test showed spacing tokens typed "spacing" don't surface as
+      // Number Variables at all. "dimension" (the same type radius/breakpoint
+      // groups already use) is what Tokens Studio actually recognises for a
+      // spacing value. Confirmed against a known-working reference export
+      // whose spacing tokens use "dimension", not "spacing".
+      $type: "dimension",
       $description: `Spacing scale on a ${system.spacing.base}px base unit.`,
       ...Object.fromEntries(system.spacing.steps.map((step, i) => [String(i + 1), dimensionToken(step)])),
     };
