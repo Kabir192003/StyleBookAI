@@ -14,6 +14,7 @@
  */
 import { SpacingScale, ShadowScale } from "@/types/designTokens";
 import { DesignSystem } from "@/types/designSystem";
+import { RADIUS_OPTIONS } from "@/lib/designTokens/radius";
 import { TypeScale } from "@/types/theme";
 import {
   COMPONENT_ORDER,
@@ -69,6 +70,13 @@ export function toNormalizedSystem(s: StudioExportTokens): NormalizedSystem {
     dark: asNamed(s.dark),
     fonts: { display: s.headFont, body: s.bodyFont, accent: s.accentFont },
     radius: s.radius,
+    // Studio's own radius control is a single live slider — there's no
+    // ladder in StudioState to read. The Tokens Studio/Figma export still
+    // wants a real, multi-value radius scale (not just the one currently
+    // applied value), so this offers the same fixed ladder
+    // lib/export/generators.ts derives from a saved project's cornerRadius,
+    // plus the live value itself so a custom radius still appears.
+    radiusOptions: Array.from(new Set([...RADIUS_OPTIONS, s.radius])).sort((a, b) => a - b),
     typeScale: s.typeScale,
     spacing: s.spacing,
     shadows: s.shadows,

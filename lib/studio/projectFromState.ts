@@ -19,6 +19,7 @@
  */
 import { allFonts } from "@/data/fonts";
 import { synthesizeColorFromHex } from "@/lib/colors/deriveColorMetadata";
+import { RADIUS_OPTIONS } from "@/lib/designTokens/radius";
 import { deriveThemeVariantFromPalette } from "./deriveThemeVariant";
 import { resolvePalette } from "./tokenGraph";
 import type { ProjectInput } from "@/lib/validation/project";
@@ -108,7 +109,20 @@ export function projectInputFromStudioState(state: StudioState): ProjectInput {
     typeScale: state.typeScale,
     spacing: state.spacing,
     shadows: state.shadows,
-    cornerRadius: { options: [state.radius], recommended: state.radius },
+    // `recommended` stays the user's actual live radius, even if it isn't
+    // one of the fixed ladder steps (the slider allows any value) — snapping
+    // it would silently change what's currently applied throughout Studio.
+    // `options` used to be just `[state.radius]`, which collapsed the Figma/
+    // Tokens Studio export's radius picker down to a single "base" value on
+    // every Studio save, even for projects that started with a real
+    // multi-step ladder from AI generation (buildRadiusScaleFromBase).
+    // Restoring the fixed ladder here (plus the live value, so a custom
+    // radius still round-trips) is what lets radiusOptions in
+    // lib/export/designTokens.ts emit more than one radius token again.
+    cornerRadius: {
+      options: Array.from(new Set([...RADIUS_OPTIONS, state.radius])).sort((a, b) => a - b),
+      recommended: state.radius,
+    },
     moodboard: state.moodboard,
     designSystem: buildDesignSystem(state, resolvedLight, resolvedDark),
     // Raw (possibly-linked) palette + the named primitives it references —
