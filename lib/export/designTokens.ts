@@ -916,62 +916,33 @@ function toNativeTokenSet(node: TokenNode, inheritedType?: unknown, isRoot = fal
 }
 
 /**
- * Tokens Studio single-file shape: one top-level key per *token set*, plus
- * `$metadata.tokenSetOrder` and a `$themes` array wiring the sets into
- * selectable themes. This is what makes light/dark import as real, swappable
- * modes rather than two unrelated colour groups — the plain DTCG tree above
- * can only nest them, which the plugin reads as `color.light.*` literal
- * names.
+ * Tokens Studio single-file shape, matched field-for-field against a known-
+ * working reference export (independently generated, confirmed to import as
+ * 8 real token sets and produce 24 real Figma variables): a *flat* object
+ * whose top-level keys are the token groups themselves — `color`, `font`,
+ * `fontWeight`, `fontSize`, `typography`, `spacing`, `radius`, `shadow` —
+ * with native `value`/`type`/`description` tokens throughout.
+ *
+ * An earlier version of this function wrapped that same tree inside
+ * `global`/`light`/`dark` keys plus a `$metadata.tokenSetOrder` and `$themes`
+ * array — a legitimate Tokens Studio multi-set concept, but a real import
+ * test showed only the colours inside that wrapper came through; every other
+ * category (font, fontWeight, fontSize, typography, spacing, radius, shadow)
+ * produced no variables at all. The reference file has none of that
+ * wrapping — just the token groups directly at the JSON root — so this
+ * reproduces that exact shape instead of the multi-set one. `toDtcgTokens`
+ * already builds `color` as a single nested tree (`brand`/`light`/`dark`)
+ * rather than as separate per-mode sets, which is what keeps this a flat,
+ * single-object file with no top-level `light`/`dark` keys of its own.
  */
 export function toTokensStudioJson(system: NormalizedSystem): string {
-  const hasDark = system.dark.length > 0 || Boolean(system.designSystem?.dark);
-
-  const global = toDtcgTokens(system, {
+  const tree = toDtcgTokens(system, {
     tokensStudioTypography: true,
     explicitColorType: true,
     nativeValueTypes: true,
   });
-  // The mode-specific colour tokens live in their own sets, so strip them
-  // from `global` — leaving them in would give every colour two competing
-  // definitions and the plugin resolves the duplicate unpredictably.
-  delete (global as TokenNode).color;
-  if (system.brand.length > 0) {
-    global.color = {
-      $type: "color",
-      brand: Object.fromEntries(
-        system.brand.map((c) => [c.name, colorToken(c.hex, c.description, true)])
-      ),
-    };
-  }
 
-  const file: TokenNode = { global: toNativeTokenSet(global, undefined, true) };
-
-  const lightSet = toDtcgTokens(system, { mode: "light", colorsOnly: true, explicitColorType: true });
-  if (lightSet.color) file.light = toNativeTokenSet(lightSet, undefined, true);
-  if (hasDark) {
-    const darkSet = toDtcgTokens(system, { mode: "dark", colorsOnly: true, explicitColorType: true });
-    if (darkSet.color) file.dark = toNativeTokenSet(darkSet, undefined, true);
-  }
-
-  const setOrder = Object.keys(file);
-  const themes = (["light", "dark"] as const)
-    .filter((mode) => setOrder.includes(mode))
-    .map((mode) => ({
-      id: `${slugify(system.name)}-${mode}`,
-      name: mode === "light" ? "Light" : "Dark",
-      group: slugify(system.name),
-      selectedTokenSets: {
-        global: "source",
-        [mode]: "enabled",
-      },
-      $figmaStyleReferences: {},
-      $figmaVariableReferences: {},
-    }));
-
-  file.$metadata = { tokenSetOrder: setOrder };
-  file.$themes = themes;
-
-  return JSON.stringify(file, null, 2);
+  return JSON.stringify(toNativeTokenSet(tree, undefined, true), null, 2);
 }
 
 /**
