@@ -45,10 +45,10 @@ export type ProjectRow = {
   updated_at: string;
 };
 
-export function rowToProject(row: ProjectRow, clerkUserId: string): Project {
+export function rowToProject(row: ProjectRow, userId: string): Project {
   return {
     id: row.id,
-    userId: clerkUserId,
+    userId,
     name: row.name,
     description: row.description ?? undefined,
     colors: row.data.colors,
