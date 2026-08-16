@@ -24,6 +24,8 @@ import { canvasCss } from "@/lib/studio/roleProperties";
 import { findComponentAt } from "@/lib/studio/componentSelection";
 import type { StudioExportTokens } from "@/lib/studio/exportCode";
 import type { Selection } from "@/lib/studio/componentSelection";
+import type { ComponentTokenSet } from "@/types/designSystem";
+import type { NonDefaultState } from "@/components/design-system/ComponentEditor";
 
 const SCOPE_ATTR = "data-sb-canvas";
 const SCOPE_SELECTOR = `[${SCOPE_ATTR}]`;
@@ -45,12 +47,19 @@ export function StudioCanvas({
   theme,
   selected,
   onSelect,
+  previewState,
+  previewTokens,
   children,
 }: {
   tokens: StudioExportTokens;
   theme: "light" | "dark";
   selected: Selection | null;
   onSelect: (selection: Selection | null) => void;
+  /** Which non-default state the inspector wants forced onto the selected
+   *  instance right now, and that instance's own token set to read the
+   *  override from. Null/null means "show it normally." */
+  previewState?: NonDefaultState | null;
+  previewTokens?: ComponentTokenSet | null;
   children: ReactNode;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -78,6 +87,39 @@ export function StudioCanvas({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [selected, onSelect]);
+
+  // Forces the previewed state's colours directly onto the selected
+  // instance via inline styles, which win over every CSS rule — including
+  // the real `:hover`/`:focus`/`:disabled` selectors — regardless of
+  // whether components/system/styles.ts happens to wire that particular
+  // component/slot/state to a `--ds-*` var. That sidesteps needing to hand-
+  // edit ten components' worth of pseudo-class rules just to make an edit
+  // *visible while editing it*; the real interactive states are a separate,
+  // larger concern from "let me see what I just set."
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const el = root.querySelector<HTMLElement>(`[${SELECTED_ATTR}]`);
+    if (!el) return;
+
+    if (!previewState || !previewTokens || selected?.kind !== "component") {
+      el.style.removeProperty("background");
+      el.style.removeProperty("color");
+      el.style.removeProperty("border-color");
+      return;
+    }
+
+    const override = previewTokens.states?.[previewState];
+    el.style.setProperty("background", override?.background ?? previewTokens.background);
+    el.style.setProperty("color", override?.text ?? previewTokens.text);
+    el.style.setProperty("border-color", override?.border ?? previewTokens.border ?? previewTokens.background);
+
+    return () => {
+      el.style.removeProperty("background");
+      el.style.removeProperty("color");
+      el.style.removeProperty("border-color");
+    };
+  }, [selected, previewState, previewTokens]);
 
   function handleClick(e: React.MouseEvent<HTMLDivElement>) {
     const root = rootRef.current;

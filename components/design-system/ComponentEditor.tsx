@@ -16,12 +16,14 @@
 "use client";
 
 import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { ComponentTokenSet } from "@/types/designSystem";
 
 /** The states a component can override. "default" is the token set itself, so
  *  it is deliberately absent here. Mirrors COMPONENT_STATES in
  *  lib/export/designTokens.ts — the export writes exactly these four. */
 export const NON_DEFAULT_STATES = ["hover", "active", "disabled", "focus"] as const;
+export type NonDefaultState = (typeof NON_DEFAULT_STATES)[number];
 
 export function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (hex: string) => void }) {
   return (
@@ -43,9 +45,18 @@ export function ColorField({ label, value, onChange }: { label: string; value: s
 export function ComponentEditor({
   tokens,
   onChange,
+  previewState,
+  onPreviewStateChange,
 }: {
   tokens: ComponentTokenSet;
   onChange: (next: ComponentTokenSet) => void;
+  /** Which state's colours the canvas is currently forcing onto the selected
+   *  instance, so a hover/active/disabled/focus edit is visible without
+   *  actually having to hover, click-and-hold, or tab to it. Only the Studio
+   *  inspector passes this — DesignSystemGallery has no live canvas to
+   *  preview against, so the button is simply absent there. */
+  previewState?: NonDefaultState | null;
+  onPreviewStateChange?: (state: NonDefaultState | null) => void;
 }) {
   const [statesOpen, setStatesOpen] = useState(false);
 
@@ -71,25 +82,42 @@ export function ComponentEditor({
           {NON_DEFAULT_STATES.map((state) => {
             const enabled = Boolean(tokens.states?.[state]);
             const override = tokens.states?.[state];
+            const previewing = previewState === state;
             return (
               <div key={state} className="rounded-md bg-black/[0.03] p-2">
-                <label className="flex items-center gap-1.5 text-[10px] capitalize text-[#6E675C]">
-                  <input
-                    type="checkbox"
-                    checked={enabled}
-                    onChange={(e) => {
-                      const nextStates = { ...tokens.states };
-                      if (e.target.checked) {
-                        nextStates[state] = { background: tokens.background, text: tokens.text, border: tokens.border };
-                      } else {
-                        delete nextStates[state];
-                      }
-                      onChange({ ...tokens, states: nextStates });
-                    }}
-                    className="h-3 w-3 accent-[#222D52]"
-                  />
-                  {state}
-                </label>
+                <div className="flex items-center justify-between gap-2">
+                  <label className="flex items-center gap-1.5 text-[10px] capitalize text-[#6E675C]">
+                    <input
+                      type="checkbox"
+                      checked={enabled}
+                      onChange={(e) => {
+                        const nextStates = { ...tokens.states };
+                        if (e.target.checked) {
+                          nextStates[state] = { background: tokens.background, text: tokens.text, border: tokens.border };
+                        } else {
+                          delete nextStates[state];
+                        }
+                        onChange({ ...tokens, states: nextStates });
+                      }}
+                      className="h-3 w-3 accent-[#222D52]"
+                    />
+                    {state}
+                  </label>
+                  {onPreviewStateChange && (
+                    <button
+                      type="button"
+                      onClick={() => onPreviewStateChange(previewing ? null : state)}
+                      aria-pressed={previewing}
+                      title={previewing ? `Stop previewing ${state}` : `Preview ${state} on the canvas`}
+                      className={`flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] uppercase tracking-[0.08em] ${
+                        previewing ? "bg-[#222D52] text-[#F2EBE0]" : "text-[#B4AD9E] hover:text-[#6E675C]"
+                      }`}
+                    >
+                      {previewing ? <Eye className="h-3 w-3" aria-hidden="true" /> : <EyeOff className="h-3 w-3" aria-hidden="true" />}
+                      {previewing ? "Previewing" : "Preview"}
+                    </button>
+                  )}
+                </div>
                 {enabled && override && (
                   <div className="mt-1.5 space-y-1">
                     <ColorField
