@@ -21,11 +21,13 @@ import { GoogleFontsLoader } from "@/components/fonts/GoogleFontsLoader";
 import { DesignSystemGallery } from "@/components/design-system/DesignSystemGallery";
 import { SpacingVisualization } from "@/components/design-system/SpacingVisualization";
 import { LivePreviewMock } from "@/components/ai/LivePreviewMock";
+import { ExportDrawer } from "@/components/studio/ExportDrawer";
 import { useAIResultStore } from "@/store";
 import { AIDeviation, AIGeneratedProject, ContrastReport } from "@/types/ai";
 import { getContrastRatio } from "@/lib/colors/colorUtils";
 import { paletteFromAIColors } from "@/lib/studio/paletteFromAIColors";
-import { PaletteTokens } from "@/lib/studio/exportCode";
+import { deriveDarkPaletteTokens } from "@/lib/studio/deriveThemeVariant";
+import { PaletteTokens, StudioExportTokens } from "@/lib/studio/exportCode";
 
 const starterPrompts = [
   "Minimal SaaS for a calm B2B brand",
@@ -182,6 +184,12 @@ export function PromptInput() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AIGeneratedProject | null>(null);
   const [sentToStudio, setSentToStudio] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  // What "Regenerate" without feedback can't do: nudge a result instead of
+  // replacing it outright. Kept separate from `prompt` (the original brief,
+  // shown in the textarea) so re-opening this page later still shows what
+  // the user actually typed, not a growing chain of refinement notes.
+  const [refinement, setRefinement] = useState("");
   const saveAIResult = useAIResultStore((s) => s.setResult);
 
   // Hydrate from the last generation (sessionStorage-backed) instead of
@@ -199,8 +207,13 @@ export function PromptInput() {
     }
   }, []);
 
-  async function handleGenerate() {
-    if (!prompt.trim()) return;
+  // `promptOverride` lets a refinement request send the brief *plus* the
+  // feedback to the model without touching what's shown in the textarea —
+  // the store still saves the plain `prompt`, so reopening this page later
+  // shows the original brief, not an ever-growing chain of refinement notes.
+  async function handleGenerate(promptOverride?: string) {
+    const effectivePrompt = promptOverride ?? prompt;
+    if (!effectivePrompt.trim()) return;
 
     setIsLoading(true);
     setError(null);
@@ -210,7 +223,7 @@ export function PromptInput() {
       const response = await fetch("/api/ai/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, includeDesignSystem }),
+        body: JSON.stringify({ prompt: effectivePrompt, includeDesignSystem }),
       });
 
       const data = await response.json();
@@ -227,6 +240,11 @@ export function PromptInput() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  function regenerateWithFeedback() {
+    if (!refinement.trim()) return;
+    handleGenerate(`${prompt}\n\nRefinement: ${refinement.trim()}`);
   }
 
   function openInStudio() {
@@ -248,6 +266,32 @@ export function PromptInput() {
       ...(result.cornerRadius ? { radius: String(result.cornerRadius.recommended) } : {}),
     });
     router.push(`/studio?${params.toString()}`);
+  }
+
+  /**
+   * Lets someone export straight off this page without a detour through
+   * Studio, for the case where the AI result is already what they want.
+   * Built the same way `openInStudio()` derives a palette (light from the
+   * generated colours, dark by the same rule Studio itself uses when a
+   * project has no explicit dark palette) rather than duplicating Studio's
+   * full state-seeding logic — this only needs read-only export tokens, not
+   * a live-editable StudioState.
+   */
+  function studioExportTokensFromAIResult(project: AIGeneratedProject): StudioExportTokens {
+    const light = paletteFromAIColors(project.colors, DEFAULT_PREVIEW_PALETTE);
+    return {
+      name: project.name,
+      light,
+      dark: deriveDarkPaletteTokens(light),
+      headFont: project.fonts.primary.family,
+      bodyFont: project.fonts.secondary.family,
+      accentFont: project.fonts.accent?.family,
+      radius: project.cornerRadius?.recommended ?? 8,
+      typeScale: project.typeScale,
+      spacing: project.spacing,
+      shadows: project.shadows,
+      designSystem: project.designSystem,
+    };
   }
 
   const palette = result ? paletteFromAIColors(result.colors, DEFAULT_PREVIEW_PALETTE) : DEFAULT_PREVIEW_PALETTE;
@@ -303,7 +347,7 @@ export function PromptInput() {
             </div>
             <button
               type="button"
-              onClick={handleGenerate}
+              onClick={() => handleGenerate()}
               disabled={!prompt.trim() || isLoading}
               className="whitespace-nowrap rounded-full bg-[#222D52] px-7 py-[13px] text-[15px] font-semibold text-[#F2EBE0] disabled:cursor-not-allowed disabled:opacity-50"
             >
@@ -355,10 +399,17 @@ export function PromptInput() {
             <div className="flex flex-wrap gap-2.5">
               <button
                 type="button"
-                onClick={handleGenerate}
+                onClick={() => handleGenerate()}
                 className="rounded-full border border-black/[0.24] bg-transparent px-[22px] py-3 text-sm text-[#211E18]"
               >
                 ↻ Regenerate
+              </button>
+              <button
+                type="button"
+                onClick={() => setExportOpen(true)}
+                className="rounded-full border border-black/[0.24] bg-transparent px-[22px] py-3 text-sm text-[#211E18]"
+              >
+                Export ↓
               </button>
               <button
                 type="button"
@@ -369,6 +420,29 @@ export function PromptInput() {
                 Open in Studio →
               </button>
             </div>
+          </div>
+
+          <div className="mb-5 flex flex-wrap items-center gap-2.5 rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-4">
+            <span className="font-mono-plex shrink-0 text-[10px] uppercase tracking-[0.16em] text-[#8A8477]">
+              Not quite?
+            </span>
+            <input
+              value={refinement}
+              onChange={(e) => setRefinement(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") regenerateWithFeedback();
+              }}
+              placeholder="e.g. make the accent more vibrant, try a serif pairing…"
+              className="min-w-[220px] flex-1 rounded-full border border-black/[0.16] bg-white px-4 py-2 text-sm text-[#211E18] outline-none placeholder:text-[#B4AD9E]"
+            />
+            <button
+              type="button"
+              onClick={regenerateWithFeedback}
+              disabled={!refinement.trim() || isLoading}
+              className="shrink-0 rounded-full bg-[#211E18] px-5 py-2 text-sm font-semibold text-[#F2EBE0] disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Regenerate with this →
+            </button>
           </div>
 
           {result.aiReasoning && (
@@ -485,6 +559,10 @@ export function PromptInput() {
 
           {result.designSystem && <DesignSystemGallery designSystem={result.designSystem} />}
         </section>
+      )}
+
+      {exportOpen && result && (
+        <ExportDrawer tokens={studioExportTokensFromAIResult(result)} onClose={() => setExportOpen(false)} />
       )}
     </div>
   );
