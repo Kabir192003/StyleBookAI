@@ -44,8 +44,10 @@ function onColor(hex: string): string {
 // Blends `mixHex` into `baseHex` at `amount` (0-1) — a plain hex mix, the
 // data-side equivalent of the CSS `color-mix()` calls used elsewhere in
 // Studio's live preview (border tones, muted overlays), since a saved
-// design-system value has to be a real hex, not a CSS function.
-function mix(baseHex: string, mixHex: string, amount: number): string {
+// design-system value has to be a real hex, not a CSS function. Exported so
+// roleProperties.ts can derive a border the same way, live, without a second
+// implementation of the same blend.
+export function mix(baseHex: string, mixHex: string, amount: number): string {
   const b = parseInt(baseHex.replace("#", ""), 16);
   const m = parseInt(mixHex.replace("#", ""), 16);
   const channel = (shift: number) => {
