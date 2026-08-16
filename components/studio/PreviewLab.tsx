@@ -1,80 +1,30 @@
 /**
- * PreviewLab — the actual three-view UI described in
- * docs/PRODUCT_AND_UX.md §3. This is the single most important component
- * in the app; take the time to read the spec fully before building.
+ * PreviewLab — the Canvas: a large drag-and-drop surface for testing color
+ * and font pairings pulled in from the Clipboard. Colors stack top-to-bottom,
+ * filling the canvas equally as they're added (max 5); any font can be
+ * dropped onto a color band to pair them, with a live WCAG contrast readout.
  *
  * Owner: Qi
  */
 "use client";
 
-import { DndContext, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
-import { SortableContext, arrayMove, horizontalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
+import {
+  DndContext,
+  closestCenter,
+  useDraggable,
+  useDroppable,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  type DragEndEvent,
+} from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { colord } from "colord";
+import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { usePreviewLabStore } from "@/store/previewLabStore";
 import { useStudioImportStore } from "@/store/studioImportStore";
-import { Color } from "@/types/color";
-import { Font } from "@/types/font";
-
-const fontOptions: Font[] = [
-  {
-    id: "inter",
-    family: "Inter, sans-serif",
-    category: "sans-serif",
-    variants: ["400", "500", "600", "700"],
-    mood: ["clean"],
-    style: ["modern"],
-    era: "modern",
-    useCase: ["heading"],
-    googleFontsId: "Inter",
-    isPro: false,
-    pairsWith: ["manrope"],
-    note: "Inter is crisp and editorial, ideal for headlines.",
-  },
-  {
-    id: "manrope",
-    family: "Manrope, sans-serif",
-    category: "sans-serif",
-    variants: ["400", "500", "600", "700"],
-    mood: ["friendly"],
-    style: ["modern"],
-    era: "modern",
-    useCase: ["body"],
-    googleFontsId: "Manrope",
-    isPro: false,
-    pairsWith: ["inter"],
-    note: "Manrope is approachable and balanced for body copy.",
-  },
-  {
-    id: "playfair-display",
-    family: "Playfair Display, serif",
-    category: "serif",
-    variants: ["400", "500", "600", "700"],
-    mood: ["luxurious"],
-    style: ["elegant"],
-    era: "classic",
-    useCase: ["heading"],
-    googleFontsId: "Playfair Display",
-    isPro: false,
-    pairsWith: ["source-sans-pro"],
-    note: "Playfair Display is refined and high-contrast for premium storytelling.",
-  },
-  {
-    id: "source-sans-pro",
-    family: "Source Sans Pro, sans-serif",
-    category: "sans-serif",
-    variants: ["400", "500", "600", "700"],
-    mood: ["practical"],
-    style: ["modern"],
-    era: "modern",
-    useCase: ["body"],
-    googleFontsId: "Source Sans Pro",
-    isPro: false,
-    pairsWith: ["playfair-display"],
-    note: "Source Sans Pro stays elegant and readable across dense content.",
-  },
-];
+import { ClipboardColorItem, ClipboardFontItem } from "@/store/clipboardStore";
 
 function getRelativeLuminance(color: string) {
   const parsed = colord(color);
@@ -118,268 +68,240 @@ function getReadableTextColor(background: string) {
   return colord(background).isDark() ? "#f8fafc" : "#0f172a";
 }
 
-type SortableSwatchProps = {
-  color: Color;
-  previousColor?: Color;
-};
+type DragItemData =
+  | { kind: "sidebar-color"; item: ClipboardColorItem }
+  | { kind: "sidebar-font"; item: ClipboardFontItem };
 
-function SortableSwatch({ color, previousColor }: SortableSwatchProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: color.id });
-
-  const contrast = previousColor ? getContrastInfo(previousColor.hex, color.hex) : null;
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.7 : 1,
-  };
+function DraggableColorChip({ item }: { item: ClipboardColorItem }) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: `sidebar-color-${item.id}`,
+    data: { kind: "sidebar-color", item } satisfies DragItemData,
+  });
 
   return (
-    <div ref={setNodeRef} style={style} className="w-full max-w-[220px] rounded-2xl border border-neutral-200 bg-white p-3 shadow-sm">
-      <div className="flex items-center justify-between gap-2">
-        <div>
-          <p className="text-sm font-semibold text-neutral-800">{color.name}</p>
-          <p className="text-xs uppercase tracking-[0.2em] text-neutral-500">{color.hex.toUpperCase()}</p>
-        </div>
+    <div
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      style={{
+        transform: CSS.Translate.toString(transform),
+        opacity: isDragging ? 0.6 : 1,
+        zIndex: isDragging ? 10 : "auto",
+        position: "relative",
+      }}
+      className="flex cursor-grab items-center gap-2.5 rounded-xl border border-neutral-200 bg-white px-3 py-2 active:cursor-grabbing"
+    >
+      <span className="h-6 w-6 shrink-0 rounded-full border border-black/10" style={{ backgroundColor: item.hex }} />
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-xs font-medium text-neutral-800">{item.name}</p>
+        <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-neutral-400">{item.hex}</p>
+      </div>
+    </div>
+  );
+}
+
+function DraggableFontChip({ item }: { item: ClipboardFontItem }) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: `sidebar-font-${item.id}`,
+    data: { kind: "sidebar-font", item } satisfies DragItemData,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      style={{
+        transform: CSS.Translate.toString(transform),
+        opacity: isDragging ? 0.6 : 1,
+        zIndex: isDragging ? 10 : "auto",
+        position: "relative",
+      }}
+      className="flex cursor-grab items-center gap-2.5 rounded-xl border border-neutral-200 bg-white px-3 py-2 active:cursor-grabbing"
+    >
+      <span
+        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-neutral-200 text-[12px]"
+        style={{ fontFamily: item.family }}
+      >
+        Aa
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-xs font-medium text-neutral-800" style={{ fontFamily: item.family }}>
+          {item.family}
+        </p>
+        <p className="text-[10px] uppercase tracking-[0.08em] text-neutral-400">{item.category}</p>
+      </div>
+    </div>
+  );
+}
+
+function CanvasBand({
+  band,
+  onRemove,
+}: {
+  band: { id: string; hex: string; name: string; font?: { family: string; category: string } };
+  onRemove: () => void;
+}) {
+  const { setNodeRef, isOver } = useDroppable({ id: `band-${band.id}`, data: { kind: "band", bandId: band.id } });
+  const textColor = getReadableTextColor(band.hex);
+  const contrast = getContrastInfo(band.hex, textColor);
+
+  return (
+    <div
+      ref={setNodeRef}
+      className="relative flex flex-1 items-center justify-between px-6 py-4 transition-shadow"
+      style={{
+        backgroundColor: band.hex,
+        boxShadow: isOver ? `inset 0 0 0 2px ${textColor}` : "none",
+      }}
+    >
+      <div className="min-w-0">
+        <p className="text-[11px] uppercase tracking-[0.2em]" style={{ color: textColor, opacity: 0.65 }}>
+          {band.name}
+        </p>
+        <p
+          className="mt-1 truncate text-lg font-medium"
+          style={{ color: textColor, fontFamily: band.font?.family, opacity: band.font ? 1 : 0.5 }}
+        >
+          {band.font ? band.font.family : "Drop a font here"}
+        </p>
+      </div>
+      <div className="flex shrink-0 items-center gap-3">
+        <span
+          className="rounded-full px-2.5 py-1 text-[11px] font-medium"
+          style={{ color: textColor, backgroundColor: `${textColor}22` }}
+        >
+          {contrast.label} · {contrast.ratio.toFixed(1)}:1
+        </span>
         <button
           type="button"
-          className="rounded-full border border-neutral-200 bg-neutral-50 p-2 text-neutral-500"
-          {...attributes}
-          {...listeners}
-          aria-label={`Reorder ${color.name}`}
+          onClick={onRemove}
+          aria-label={`Remove ${band.name} from canvas`}
+          className="rounded-full p-1.5 transition-colors hover:bg-black/10"
+          style={{ color: textColor }}
         >
-          ⋮⋮
+          <X className="h-3.5 w-3.5" />
         </button>
       </div>
-      <div className="mt-3 h-16 rounded-xl border border-black/5" style={{ backgroundColor: color.hex }} />
-      {contrast && (
-        <div className="mt-3 flex items-center justify-between text-xs">
-          <span className="text-neutral-500">Pair contrast</span>
-          <span className={`rounded-full px-2.5 py-1 font-medium ${contrast.pass ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"}`}>
-            {contrast.label} · {contrast.ratio.toFixed(1)}:1
-          </span>
+    </div>
+  );
+}
+
+function CanvasDropZone({
+  canvasBands,
+  removeColorFromCanvas,
+}: {
+  canvasBands: { id: string; hex: string; name: string; font?: { family: string; category: string } }[];
+  removeColorFromCanvas: (bandId: string) => void;
+}) {
+  const { setNodeRef, isOver } = useDroppable({ id: "canvas-drop" });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className="flex min-h-[560px] flex-col overflow-hidden rounded-2xl"
+      style={{
+        boxShadow: isOver && canvasBands.length < 5 ? "inset 0 0 0 2px #a3a3a3" : "inset 0 0 0 1px #e5e5e5",
+      }}
+    >
+      {canvasBands.length === 0 ? (
+        <div className="flex flex-1 items-center justify-center text-sm text-neutral-400">
+          Drag up to 5 colors here to build the canvas
         </div>
+      ) : (
+        canvasBands.map((band) => <CanvasBand key={band.id} band={band} onRemove={() => removeColorFromCanvas(band.id)} />)
       )}
     </div>
   );
 }
 
 export function PreviewLab() {
-  const {
-    selectedColors,
-    activeView,
-    setActiveView,
-    reorderColors,
-    headingFont,
-    bodyFont,
-    setHeadingFont,
-    setBodyFont,
-  } = usePreviewLabStore();
+  const sidebarColors = usePreviewLabStore((s) => s.sidebarColors);
+  const sidebarFonts = usePreviewLabStore((s) => s.sidebarFonts);
+  const canvasBands = usePreviewLabStore((s) => s.canvasBands);
+  const addColorToCanvas = usePreviewLabStore((s) => s.addColorToCanvas);
+  const removeColorFromCanvas = usePreviewLabStore((s) => s.removeColorFromCanvas);
+  const assignFontToBand = usePreviewLabStore((s) => s.assignFontToBand);
   const router = useRouter();
   const stageStudioImport = useStudioImportStore((s) => s.stage);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
+    if (!over) return;
+    const data = active.data.current as DragItemData | undefined;
+    if (!data) return;
 
-    if (over && active.id !== over.id) {
-      reorderColors(String(active.id), String(over.id));
+    if (data.kind === "sidebar-color") {
+      addColorToCanvas(data.item);
+      return;
     }
-  };
 
-  const backgroundColor = selectedColors[0]?.hex ?? "#f8fafc";
-  const accentColor = selectedColors[1]?.hex ?? "#111827";
-  const surfaceColor = selectedColors[2]?.hex ?? "#ffffff";
-  const textColor = selectedColors[3]?.hex ?? "#0f172a";
-  const bodyTextColor = getReadableTextColor(backgroundColor);
+    if (data.kind === "sidebar-font" && String(over.id).startsWith("band-")) {
+      assignFontToBand(String(over.id).slice("band-".length), data.item);
+    }
+  }
+
+  function handleSendToStudio() {
+    const bandFonts = canvasBands.map((b) => b.font).filter((f): f is NonNullable<typeof f> => Boolean(f));
+    stageStudioImport({
+      colors: canvasBands.map((band) => ({ hex: band.hex })),
+      primaryFont: bandFonts[0]?.family,
+      secondaryFont: bandFonts[1]?.family,
+    });
+    router.push("/studio");
+  }
 
   return (
     <div className="mt-6 rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-neutral-500">Preview Lab</p>
-          <h2 className="mt-1 text-xl font-semibold text-neutral-900">Compare color stories in three ways</h2>
+          <h2 className="mt-1 text-xl font-semibold text-neutral-900">Build a color and type canvas</h2>
         </div>
         <button
           type="button"
-          onClick={() => {
-            stageStudioImport({
-              colors: selectedColors.map((color) => ({ hex: color.hex })),
-              primaryFont: headingFont?.family,
-              secondaryFont: bodyFont?.family,
-            });
-            router.push("/studio");
-          }}
-          className="rounded-full border border-neutral-200 bg-neutral-900 px-4 py-2 text-sm font-medium text-white"
+          onClick={handleSendToStudio}
+          disabled={canvasBands.length === 0}
+          className="rounded-full border border-neutral-200 bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
         >
           Send to Studio
         </button>
       </div>
 
-      <div className="mt-6 flex flex-wrap gap-2">
-        {[
-          { key: "swatches", label: "Swatches" },
-          { key: "mockup", label: "Mockup" },
-          { key: "fontOnColor", label: "Font on Color" },
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            type="button"
-            onClick={() => setActiveView(tab.key as "swatches" | "mockup" | "fontOnColor")}
-            className={`rounded-full px-3 py-2 text-sm font-medium transition ${activeView === tab.key ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-600"}`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {activeView === "swatches" && (
-        <div className="mt-6 space-y-4">
-          <div className="flex items-center justify-between text-sm text-neutral-500">
-            <p>Drag the swatches to reorder the palette.</p>
-            <p>{selectedColors.length} selected</p>
-          </div>
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext items={selectedColors.map((color) => color.id)} strategy={horizontalListSortingStrategy}>
-              <div className="flex flex-wrap gap-3">
-                {selectedColors.map((color, index) => (
-                  <SortableSwatch key={color.id} color={color} previousColor={index > 0 ? selectedColors[index - 1] : undefined} />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
-        </div>
-      )}
-
-      {activeView === "mockup" && (
-        <div className="mt-6 rounded-[2rem] border border-neutral-200 p-6" style={{ backgroundColor: backgroundColor }}>
-          <div className="rounded-[1.5rem] border border-white/40 bg-white/90 p-6 shadow-lg backdrop-blur">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="max-w-xl">
-                <p className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: accentColor }}>
-                  Mood mockup
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <div className="mt-6 grid gap-4 md:grid-cols-[240px_1fr]">
+          <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-3">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500">Colors</p>
+            <div className="flex max-h-[280px] flex-col gap-2 overflow-y-auto">
+              {sidebarColors.length === 0 && (
+                <p className="text-xs leading-relaxed text-neutral-400">
+                  Clip colors and use &ldquo;Import to Live Preview&rdquo; from the clipboard tray.
                 </p>
-                <h3 className="mt-2 text-3xl font-semibold" style={{ color: textColor }}>
-                  A palette that feels considered in context
-                </h3>
-                <p className="mt-3 text-sm leading-7" style={{ color: bodyTextColor }}>
-                  This card shows how the colors behave as background, text, accent, and surface rather than as isolated swatches.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-neutral-200 p-4" style={{ backgroundColor: surfaceColor }}>
-                <p className="text-xs uppercase tracking-[0.2em]" style={{ color: accentColor }}>
-                  Status
-                </p>
-                <p className="mt-2 text-sm font-semibold" style={{ color: textColor }}>
-                  Ready to review
-                </p>
-              </div>
+              )}
+              {sidebarColors.map((c) => (
+                <DraggableColorChip key={c.id} item={c} />
+              ))}
             </div>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-[1.3fr_0.7fr]">
-              <div className="rounded-3xl border border-neutral-200 p-5" style={{ backgroundColor: surfaceColor }}>
-                <p className="text-sm font-medium" style={{ color: textColor }}>
-                  Design brief
-                </p>
-                <p className="mt-2 text-sm leading-7" style={{ color: bodyTextColor }}>
-                  Bold accents should anchor key moments, while the background and surface stay quiet enough for content to breathe.
-                </p>
-                <div className="mt-4 flex flex-wrap gap-3">
-                  <button type="button" className="rounded-full px-4 py-2 text-sm font-medium text-white" style={{ backgroundColor: accentColor }}>
-                    Launch experience
-                  </button>
-                  <button type="button" className="rounded-full border px-4 py-2 text-sm font-medium" style={{ borderColor: accentColor, color: accentColor }}>
-                    Explore details
-                  </button>
-                </div>
-              </div>
-              <div className="rounded-3xl border border-neutral-200 p-5" style={{ backgroundColor: surfaceColor }}>
-                <label className="text-xs uppercase tracking-[0.2em]" style={{ color: accentColor }}>
-                  Input field
-                </label>
-                <input
-                  className="mt-3 w-full rounded-2xl border border-neutral-200 px-3 py-2 text-sm outline-none"
-                  placeholder="Describe the mood"
-                  style={{ color: textColor }}
-                />
-              </div>
+            <p className="mb-2 mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500">Fonts</p>
+            <div className="flex max-h-[280px] flex-col gap-2 overflow-y-auto">
+              {sidebarFonts.length === 0 && (
+                <p className="text-xs leading-relaxed text-neutral-400">Clipped fonts will show up here.</p>
+              )}
+              {sidebarFonts.map((f) => (
+                <DraggableFontChip key={f.id} item={f} />
+              ))}
             </div>
           </div>
-        </div>
-      )}
 
-      {activeView === "fontOnColor" && (
-        <div className="mt-6 space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <label className="text-sm text-neutral-600">
-              <span className="mb-2 block font-medium text-neutral-700">Heading font</span>
-              <select
-                value={headingFont?.id ?? "inter"}
-                onChange={(event) => {
-                  const nextFont = fontOptions.find((font) => font.id === event.target.value);
-                  if (nextFont) {
-                    setHeadingFont(nextFont);
-                  }
-                }}
-                className="w-full rounded-2xl border border-neutral-200 bg-white px-3 py-2"
-              >
-                {fontOptions.map((font) => (
-                  <option key={font.id} value={font.id}>
-                    {font.family}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="text-sm text-neutral-600">
-              <span className="mb-2 block font-medium text-neutral-700">Body font</span>
-              <select
-                value={bodyFont?.id ?? "manrope"}
-                onChange={(event) => {
-                  const nextFont = fontOptions.find((font) => font.id === event.target.value);
-                  if (nextFont) {
-                    setBodyFont(nextFont);
-                  }
-                }}
-                className="w-full rounded-2xl border border-neutral-200 bg-white px-3 py-2"
-              >
-                {fontOptions.map((font) => (
-                  <option key={font.id} value={font.id}>
-                    {font.family}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-
-          <div className="rounded-[2rem] border border-neutral-200 p-6" style={{ backgroundColor: backgroundColor }}>
-            <div className="rounded-[1.5rem] border border-white/40 bg-white/90 p-6 shadow-lg backdrop-blur">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: accentColor }}>
-                Font on color
-              </p>
-              <h3
-                className="mt-2 text-3xl font-semibold"
-                style={{ color: textColor, fontFamily: headingFont?.family ?? "Inter, sans-serif" }}
-              >
-                A refined headline with the right backdrop
-              </h3>
-              <p
-                className="mt-3 max-w-2xl text-sm leading-7"
-                style={{ color: bodyTextColor, fontFamily: bodyFont?.family ?? "Manrope, sans-serif" }}
-              >
-                The same sample card now carries a real type pairing so you can judge if the mood, contrast, and rhythm feel coherent together.
-              </p>
-              <div className="mt-4 flex flex-wrap gap-3">
-                <button type="button" className="rounded-full px-4 py-2 text-sm font-medium text-white" style={{ backgroundColor: accentColor }}>
-                  Save pair
-                </button>
-                <button type="button" className="rounded-full border px-4 py-2 text-sm font-medium" style={{ borderColor: accentColor, color: accentColor }}>
-                  Compare again
-                </button>
-              </div>
-            </div>
-          </div>
+          <CanvasDropZone canvasBands={canvasBands} removeColorFromCanvas={removeColorFromCanvas} />
         </div>
-      )}
+      </DndContext>
+      <p className="mt-2 text-xs text-neutral-400">
+        {canvasBands.length}/5 colors on canvas · drag a font from the sidebar onto any color to pair it and check live WCAG contrast.
+      </p>
     </div>
   );
 }

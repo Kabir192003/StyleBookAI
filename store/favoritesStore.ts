@@ -30,26 +30,43 @@ function emptyItems(): Record<FavoriteType, Set<string>> {
   return { color: new Set(), font: new Set(), theme: new Set() };
 }
 
+// Every color/font tile on a browse page mounts its own FavoriteButton,
+// and each one calls load() on mount — with dozens of tiles rendered at
+// once, that used to fire dozens of identical concurrent GETs before the
+// first resolved and flipped `loaded`. Caching the in-flight promise here
+// (outside React state, so it doesn't trigger re-renders) means every
+// caller in that window shares the same request.
+let inFlightLoad: Promise<void> | null = null;
+
 export const useFavoritesStore = create<FavoritesState>()((set, get) => ({
   loaded: false,
   items: emptyItems(),
   sessionExpired: false,
-  async load() {
-    try {
-      const res = await fetch("/api/favorites");
-      if (!res.ok) {
+  load() {
+    if (get().loaded) return Promise.resolve();
+    if (inFlightLoad) return inFlightLoad;
+
+    inFlightLoad = (async () => {
+      try {
+        const res = await fetch("/api/favorites");
+        if (!res.ok) {
+          set({ loaded: true, items: emptyItems() });
+          return;
+        }
+        const data = await res.json();
+        const items = emptyItems();
+        for (const f of data.favorites as Array<{ itemType: FavoriteType; itemId: string }>) {
+          items[f.itemType].add(f.itemId);
+        }
+        set({ loaded: true, items });
+      } catch {
         set({ loaded: true, items: emptyItems() });
-        return;
+      } finally {
+        inFlightLoad = null;
       }
-      const data = await res.json();
-      const items = emptyItems();
-      for (const f of data.favorites as Array<{ itemType: FavoriteType; itemId: string }>) {
-        items[f.itemType].add(f.itemId);
-      }
-      set({ loaded: true, items });
-    } catch {
-      set({ loaded: true, items: emptyItems() });
-    }
+    })();
+
+    return inFlightLoad;
   },
   isFavorited(type, id) {
     return get().items[type].has(id);
