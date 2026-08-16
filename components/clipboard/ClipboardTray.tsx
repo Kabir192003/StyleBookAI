@@ -20,6 +20,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { ClipboardList, X, ArrowUpRight, Trash2 } from "lucide-react";
 import { useClipboardStore } from "@/store/clipboardStore";
 import { useStudioImportStore } from "@/store/studioImportStore";
+import { usePreviewLabStore } from "@/store/previewLabStore";
 
 export function ClipboardTray() {
   const [hydrated, setHydrated] = useState(false);
@@ -32,6 +33,7 @@ export function ClipboardTray() {
   const removeFont = useClipboardStore((s) => s.removeFont);
   const clear = useClipboardStore((s) => s.clear);
   const stageStudioImport = useStudioImportStore((s) => s.stage);
+  const addSidebarItems = usePreviewLabStore((s) => s.addSidebarItems);
 
   useEffect(() => setHydrated(true), []);
   // Studio consumes the staged payload once on its own mount — closing the
@@ -51,6 +53,13 @@ export function ClipboardTray() {
     });
     setOpen(false);
     router.push("/studio");
+  }
+
+  function handleImportToLivePreview() {
+    if (count === 0) return;
+    addSidebarItems(colors, fonts);
+    setOpen(false);
+    router.push("/studio/compare");
   }
 
   return (
@@ -124,21 +133,30 @@ export function ClipboardTray() {
           </div>
 
           {count > 0 && (
-            <div className="flex items-center gap-2 border-t border-black/[0.12] px-4 py-3">
+            <div className="flex flex-col gap-2 border-t border-black/[0.12] px-4 py-3">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleImport}
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[#222D52] px-3 py-2 text-[12px] font-medium text-[#F5F1E8] transition-colors hover:bg-[#1A2340]"
+                >
+                  Import into Studio <ArrowUpRight className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={clear}
+                  aria-label="Clear clipboard"
+                  className="rounded-full border border-black/[0.14] p-2 text-[#6E675C] hover:bg-black/[0.06] hover:text-[#211E18]"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
               <button
                 type="button"
-                onClick={handleImport}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[#222D52] px-3 py-2 text-[12px] font-medium text-[#F5F1E8] transition-colors hover:bg-[#1A2340]"
+                onClick={handleImportToLivePreview}
+                className="flex items-center justify-center gap-1.5 rounded-full border border-[#222D52]/30 px-3 py-2 text-[12px] font-medium text-[#222D52] transition-colors hover:bg-[#222D52]/[0.06]"
               >
-                Import into Studio <ArrowUpRight className="h-3.5 w-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={clear}
-                aria-label="Clear clipboard"
-                className="rounded-full border border-black/[0.14] p-2 text-[#6E675C] hover:bg-black/[0.06] hover:text-[#211E18]"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
+                Import to Live Preview <ArrowUpRight className="h-3.5 w-3.5" />
               </button>
             </div>
           )}

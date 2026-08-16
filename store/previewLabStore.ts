@@ -1,81 +1,56 @@
 /**
- * Zustand store for the Preview Lab — persists color/font selections as
- * the user flips between the swatches/mockup/font-on-color tabs (§3 of
- * docs/PRODUCT_AND_UX.md). Separate from studioStore so the Lab can be
- * used standalone or embedded inside the Studio without state collisions.
+ * Zustand store for the Preview Lab's Canvas — the single drag-and-drop
+ * surface for testing color/font pairings (§3 of docs/PRODUCT_AND_UX.md).
+ * Separate from studioStore so the Lab can be used standalone or embedded
+ * inside the Studio without state collisions.
  *
  * Owner: Qi
  */
-import { arrayMove } from "@dnd-kit/sortable";
 import { create } from "zustand";
-import { allColors } from "@/data/colors";
-import { Color } from "@/types/color";
-import { Font } from "@/types/font";
+import { ClipboardColorItem, ClipboardFontItem } from "@/store/clipboardStore";
 
-const defaultColors = allColors.slice(0, 4);
-
-const defaultHeadingFont: Font = {
-  id: "inter",
-  family: "Inter, sans-serif",
-  category: "sans-serif",
-  variants: ["400", "500", "600", "700"],
-  mood: ["clean"],
-  style: ["modern"],
-  era: "modern",
-  useCase: ["heading"],
-  googleFontsId: "Inter",
-  isPro: false,
-  pairsWith: ["manrope"],
-  note: "Inter keeps the interface crisp and editorial without feeling overly technical.",
-};
-
-const defaultBodyFont: Font = {
-  id: "manrope",
-  family: "Manrope, sans-serif",
-  category: "sans-serif",
-  variants: ["400", "500", "600", "700"],
-  mood: ["friendly"],
-  style: ["modern"],
-  era: "modern",
-  useCase: ["body"],
-  googleFontsId: "Manrope",
-  isPro: false,
-  pairsWith: ["inter"],
-  note: "Manrope feels approachable and balanced, which makes it a strong body text choice.",
-};
+export type CanvasBandFont = { family: string; category: string };
+export type CanvasColorBand = { id: string; hex: string; name: string; font?: CanvasBandFont };
 
 type PreviewLabState = {
-  selectedColors: Color[];
-  headingFont?: Font;
-  bodyFont?: Font;
-  activeView: "swatches" | "mockup" | "fontOnColor";
-  setSelectedColors: (colors: Color[]) => void;
-  setActiveView: (view: PreviewLabState["activeView"]) => void;
-  reorderColors: (activeId: string, overId: string) => void;
-  setHeadingFont: (font: Font) => void;
-  setBodyFont: (font: Font) => void;
+  // Sidebar pools are unlimited (fed by "Import to Live Preview" from the
+  // Clipboard); the canvas itself caps at 5 color bands, each stackable
+  // with one dragged-in font.
+  sidebarColors: ClipboardColorItem[];
+  sidebarFonts: ClipboardFontItem[];
+  canvasBands: CanvasColorBand[];
+  addSidebarItems: (colors: ClipboardColorItem[], fonts: ClipboardFontItem[]) => void;
+  addColorToCanvas: (color: ClipboardColorItem) => void;
+  removeColorFromCanvas: (bandId: string) => void;
+  assignFontToBand: (bandId: string, font: ClipboardFontItem) => void;
 };
 
 export const usePreviewLabStore = create<PreviewLabState>((set) => ({
-  selectedColors: defaultColors,
-  headingFont: defaultHeadingFont,
-  bodyFont: defaultBodyFont,
-  activeView: "swatches",
-  setSelectedColors: (colors) => set({ selectedColors: colors }),
-  setActiveView: (view) => set({ activeView: view }),
-  reorderColors: (activeId, overId) =>
+  sidebarColors: [],
+  sidebarFonts: [],
+  canvasBands: [],
+  addSidebarItems: (colors, fonts) =>
     set((state) => {
-      const oldIndex = state.selectedColors.findIndex((color) => color.id === activeId);
-      const newIndex = state.selectedColors.findIndex((color) => color.id === overId);
-
-      if (oldIndex === -1 || newIndex === -1) {
-        return state;
-      }
-
+      const existingColorIds = new Set(state.sidebarColors.map((c) => c.id));
+      const existingFontIds = new Set(state.sidebarFonts.map((f) => f.id));
       return {
-        selectedColors: arrayMove(state.selectedColors, oldIndex, newIndex),
+        sidebarColors: [...state.sidebarColors, ...colors.filter((c) => !existingColorIds.has(c.id))],
+        sidebarFonts: [...state.sidebarFonts, ...fonts.filter((f) => !existingFontIds.has(f.id))],
       };
     }),
-  setHeadingFont: (font) => set({ headingFont: font }),
-  setBodyFont: (font) => set({ bodyFont: font }),
+  addColorToCanvas: (color) =>
+    set((state) => {
+      if (state.canvasBands.length >= 5) return state;
+      return {
+        canvasBands: [...state.canvasBands, { id: `${color.id}-${Date.now()}`, hex: color.hex, name: color.name }],
+      };
+    }),
+  removeColorFromCanvas: (bandId) =>
+    set((state) => ({ canvasBands: state.canvasBands.filter((band) => band.id !== bandId) })),
+  assignFontToBand: (bandId, font) =>
+    set((state) => ({
+      canvasBands: state.canvasBands.map((band) =>
+        band.id === bandId ? { ...band, font: { family: font.family, category: font.category } } : band
+      ),
+    })),
 }));
