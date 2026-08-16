@@ -534,17 +534,33 @@ export function StudioBuilder() {
     setPreviewState(null);
     // Only a component selection needs component tokens to exist.
     if (next === null || next.kind !== "component") return;
-    setState((s) =>
-      s.designSystem
-        ? s
-        : {
-            ...s,
-            designSystem: synthesizeDesignSystemFromPalettes(
-              resolvePalette(s.light, s.primitives),
-              resolvePalette(s.dark, s.primitives)
-            ),
-          }
-    );
+    setState((s) => {
+      if (s.designSystem) return s;
+      const synthesized = synthesizeDesignSystemFromPalettes(
+        resolvePalette(s.light, s.primitives),
+        resolvePalette(s.dark, s.primitives)
+      );
+      // `components` starts empty rather than pre-filled with every
+      // component's derived default. A pre-filled entry is a *frozen* hex —
+      // it can never react to a later palette or primitive edit, which is
+      // the whole "primitives don't reflect in the canvas" bug. Leaving a
+      // component absent lets the canvas's own `var(--ds-*-bg, var(--pgc-*))`
+      // fallback resolve it live, straight from the palette, until the
+      // moment someone actually clicks that component and edits it — at
+      // which point setComponentTokens() writes a real, intentionally
+      // sticky entry. The inspector still shows a sensible starting colour
+      // for an unedited component (see activeComponentTokens' own fallback
+      // to deriveThemeVariantFromPalette below), so nothing about editing
+      // changes — only what happens *before* a component is ever touched.
+      return {
+        ...s,
+        designSystem: {
+          ...synthesized,
+          light: { ...synthesized.light, components: {} },
+          dark: synthesized.dark ? { ...synthesized.dark, components: {} } : synthesized.dark,
+        },
+      };
+    });
   }
 
   function setComponentTokens(name: ComponentName, next: ComponentTokenSet) {
@@ -583,18 +599,27 @@ export function StudioBuilder() {
    * confirmed, explicit action rather than something that happens on every
    * keystroke. Undo still recovers from it, same as any other edit.
    */
+  /**
+   * Clears every component's stored colour rather than re-populating them
+   * from the palette — an emptied component isn't frozen at a new snapshot,
+   * it falls through to the canvas's own `var(--ds-*, var(--pgc-*))`
+   * fallback and stays live from that point on (same mechanism a
+   * newly-created design system already starts in, see handleSelect). This
+   * is a "discard my per-component edits and go back to following the
+   * palette" action, not a one-time sync.
+   */
   function resyncDesignSystemFromPalette() {
     if (!state.designSystem) return;
     const proceed = window.confirm(
-      "Resync every component's colours from the current palette? This overwrites any per-component colour edits made by clicking components on the canvas."
+      "Clear every component's individual colour and follow the palette live again? This discards any per-component colour edits made by clicking components on the canvas."
     );
     if (!proceed) return;
     setState((s) => ({
       ...s,
       designSystem: {
         ...s.designSystem!,
-        light: deriveThemeVariantFromPalette(resolvedLight),
-        dark: s.designSystem!.dark ? deriveThemeVariantFromPalette(resolvedDark) : s.designSystem!.dark,
+        light: { ...s.designSystem!.light, components: {} },
+        dark: s.designSystem!.dark ? { ...s.designSystem!.dark, components: {} } : s.designSystem!.dark,
       },
     }));
   }
@@ -813,16 +838,18 @@ export function StudioBuilder() {
                 Editing {state.mode}
               </div>
             </div>
-            {state.designSystem && (
-              <button
-                type="button"
-                onClick={resyncDesignSystemFromPalette}
-                className="flex items-center gap-1.5 self-start font-mono-plex text-[9px] uppercase tracking-[0.1em] text-[#222D52] hover:underline"
-                title="Every component already has its own colour once you've clicked one to edit it — palette edits stop reaching the canvas at that point. This re-derives every component's colour from the palette above."
-              >
-                ↻ Resync components from palette
-              </button>
-            )}
+            {state.designSystem &&
+              (Object.keys(state.designSystem.light.components).length > 0 ||
+                Object.keys(state.designSystem.dark?.components ?? {}).length > 0) && (
+                <button
+                  type="button"
+                  onClick={resyncDesignSystemFromPalette}
+                  className="flex items-center gap-1.5 self-start font-mono-plex text-[9px] uppercase tracking-[0.1em] text-[#222D52] hover:underline"
+                  title="Some components have their own colour from being clicked and edited directly, so they no longer follow the palette. This clears those overrides so every component follows the palette live again."
+                >
+                  ↻ Reset components to follow palette
+                </button>
+              )}
             {ROLES.map((r) => {
               const raw = activePalette[r.key];
               const linked = isColorRef(raw);

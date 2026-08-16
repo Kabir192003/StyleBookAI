@@ -12,9 +12,13 @@
  * a border, a muted-text colour, or the success/warning/error trio, and a real
  * component library needs all of them. Rather than widen the palette — which
  * would change every export format and every saved project — the roles are
- * *derived* here: from the design system's own `colorRoles` where it has them,
- * from the palette where it does not, and from a small default set for the
- * status colours no design system in this app authors.
+ * *derived* here, always live from `palette`, and never from a stored
+ * `designSystem.colorRoles` snapshot: nothing in the UI lets a user edit a
+ * role independently of the palette, so a frozen colorRoles value can only
+ * ever go stale the moment a primitive or palette colour changes after
+ * creation — which is exactly the bug this rewrite fixes. Status colours
+ * (success/warning/error) still come from a small default set, since no
+ * design system in this app authors those at all.
  *
  * Every property is unconditionally present, so a component can write
  * `var(--pg-primary)` and rely on it. The fallbacks in styles.ts exist for the
@@ -23,6 +27,7 @@
 import { getContrastRatio } from "@/lib/colors/colorUtils";
 import type { StudioExportTokens } from "@/lib/studio/exportCode";
 import { generateExportCode } from "@/lib/studio/exportCode";
+import { mix } from "@/lib/studio/deriveThemeVariant";
 
 /**
  * Status colours have no slot anywhere in the token system — not in the
@@ -53,8 +58,8 @@ function fontStack(family: string, generic: string): string {
  *
  * `variant` picks which half of the system the roles come from. It is a real
  * parameter rather than always-light because the canvas has a working dark
- * mode: reading `designSystem.light.colorRoles` while the canvas renders dark
- * is how you get dark-mode text at light-mode contrast.
+ * mode: reading `tokens.dark` while the canvas renders dark is how you get
+ * dark-mode text at light-mode contrast.
  */
 export function rolePropertyBlock(
   selector: string,
@@ -62,22 +67,21 @@ export function rolePropertyBlock(
   variant: "light" | "dark" = "light"
 ): string {
   const palette = variant === "dark" ? tokens.dark : tokens.light;
-  const roles =
-    variant === "dark"
-      ? (tokens.designSystem?.dark ?? tokens.designSystem?.light)?.colorRoles
-      : tokens.designSystem?.light.colorRoles;
 
-  const background = roles?.background ?? palette.surface;
-  const surface = roles?.surface ?? palette.surface;
+  const background = palette.surface;
+  const surface = palette.surface;
   const primary = palette.accent;
   const secondary = palette.support;
   // No palette slot of its own — falls back to `support` so a component using
   // --pg-accent for a highlight still reads as part of the brand rather than
   // disappearing into the surface.
   const accent = palette.support;
-  const text = roles?.text ?? palette.ink;
-  const muted = roles?.textMuted ?? palette.muted;
-  const border = roles?.border ?? palette.muted;
+  const text = palette.ink;
+  const muted = palette.muted;
+  // Same blend deriveThemeVariantFromPalette uses when it first sets up a
+  // design system's colorRoles.border — computed here instead of read from
+  // that (possibly stale) stored value, so it stays live.
+  const border = mix(palette.surface, palette.ink, 0.12);
   const { success, warning, error } = STATUS_DEFAULTS;
 
   const display = tokens.headFont;
