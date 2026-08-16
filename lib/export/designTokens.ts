@@ -924,23 +924,41 @@ function toNativeTokenSet(node: TokenNode, inheritedType?: unknown, isRoot = fal
 
 /**
  * Tokens Studio single-file shape, matched field-for-field against a known-
- * working reference export (independently generated, confirmed to import as
- * 8 real token sets and produce 24 real Figma variables): a *flat* object
- * whose top-level keys are the token groups themselves — `color`, `font`,
- * `fontWeight`, `fontSize`, `typography`, `spacing`, `radius`, `shadow` —
- * with native `value`/`type`/`description` tokens throughout.
+ * working reference export: a *flat* object whose top-level keys are the
+ * token groups themselves — `color`, `font`, `fontWeight`, `fontSize`,
+ * `typography`, `spacing`, `radius`, `shadow`, `breakpoint`, `grid`, `icon` —
+ * no `global`/`light`/`dark` wrapper, no `$metadata`/`$themes`.
  *
- * An earlier version of this function wrapped that same tree inside
- * `global`/`light`/`dark` keys plus a `$metadata.tokenSetOrder` and `$themes`
- * array — a legitimate Tokens Studio multi-set concept, but a real import
- * test showed only the colours inside that wrapper came through; every other
- * category (font, fontWeight, fontSize, typography, spacing, radius, shadow)
- * produced no variables at all. The reference file has none of that
- * wrapping — just the token groups directly at the JSON root — so this
- * reproduces that exact shape instead of the multi-set one. `toDtcgTokens`
- * already builds `color` as a single nested tree (`brand`/`light`/`dark`)
- * rather than as separate per-mode sets, which is what keeps this a flat,
- * single-object file with no top-level `light`/`dark` keys of its own.
+ * Unlike the previous version of this function, the reference is *not*
+ * uniformly native `value`/`type` throughout. Its own dialect splits by
+ * group: `color`, `font`, `typography`, `radius`, `breakpoint` and `grid`
+ * stay native `value`/`type` (no `$`); `fontWeight`, `fontSize`, `spacing`,
+ * `shadow` and `icon` keep `$value`/`$type`. Matched exactly rather than
+ * normalised, per explicit instruction to replicate this file's format as
+ * closely as possible rather than apply the native-only rule the previous
+ * version of this function used everywhere.
+ *
+ * Two more shape changes specific to this reference, both confined to this
+ * function:
+ *  - `fontWeight` here is a *separate* numeric token (`$value: 700,
+ *    $type: "number"`) rather than the Figma style-name string
+ *    ("Bold") — that string still lives inline on each `typography`
+ *    composite's own `fontWeight` field, which Figma's Text Style creation
+ *    actually reads to match a font. This lets `fontWeight` double as a
+ *    plain Number Variable while typography keeps working.
+ *  - Each `typography` composite's `fontSize` is now the *resolved pixel
+ *    number* (e.g. `57.22`, not `"57.22px"` and not `{fontSize.6xl}`), with
+ *    a sibling `fontSizeToken` field (`"fontSize.6xl"`, no braces) recording
+ *    which `fontSize` entry it came from. `toDtcgTokens`'s own
+ *    `{fontSize.<step>}` reference syntax is Tokens Studio's *alias*
+ *    convention; `fontSizeToken` is a plain lookup string for external
+ *    tooling, not a Tokens Studio alias.
+ *
+ * All groups are still built from `toDtcgTokens`'s shared logic — this
+ * function only decides, group by group, whether to native-convert
+ * (`toNativeTokenSet`) or keep the `$`-prefixed shape it already produces,
+ * and rewrites the two typography fields above. `toDtcgTokens` itself and
+ * `toDtcgJson`'s output are untouched.
  */
 export function toTokensStudioJson(system: NormalizedSystem): string {
   const tree = toDtcgTokens(system, {
@@ -948,8 +966,76 @@ export function toTokensStudioJson(system: NormalizedSystem): string {
     explicitColorType: true,
     nativeValueTypes: true,
   });
+  const ds = system.designSystem;
 
-  return JSON.stringify(toNativeTokenSet(tree, undefined, true), null, 2);
+  // fontWeight: a plain Number Variable, decoupled from the Figma style-name
+  // string typography still uses inline (see the comment above).
+  const weightsUsed = Array.from(new Set(SEMANTIC_TYPE_ROLES.map((r) => r.weight))).sort((a, b) => a - b);
+  const dollarFontWeight: TokenNode = Object.fromEntries(
+    weightsUsed.map((weight) => [weightTokenName(weight), { $value: weight, $type: "number" }])
+  );
+
+  // fontSize: same values `toDtcgTokens` already computed, kept $-prefixed.
+  const dollarFontSize: TokenNode = system.typeScale
+    ? Object.fromEntries(
+        TYPE_SCALE_KEYS.map((key) => [key, { $value: toDimension(system.typeScale!.sizes[key]), $type: "dimension" }])
+      )
+    : {};
+
+  // typography: rewrite fontSize from a `{fontSize.step}` alias to the
+  // resolved pixel number, plus the sibling `fontSizeToken` lookup string.
+  if (tree.typography && system.typeScale) {
+    for (const semantic of SEMANTIC_TYPE_ROLES) {
+      const entry = (tree.typography as TokenNode)[semantic.role] as TokenNode | undefined;
+      if (!entry) continue;
+      const value = entry.$value as TokenNode;
+      value.fontSize = system.typeScale.sizes[semantic.size];
+      value.fontSizeToken = `fontSize.${semantic.size}`;
+    }
+  }
+
+  // spacing: same values `toDtcgTokens` already computed, kept $-prefixed.
+  const dollarSpacing: TokenNode = system.spacing
+    ? Object.fromEntries(system.spacing.steps.map((step, i) => [String(i + 1), { $value: toDimension(step), $type: "dimension" }]))
+    : {};
+
+  // shadow: single-vs-array collapse reverts to the plain-DTCG rule (bare
+  // object for one layer, array for two or more) for this dialect, kept
+  // $-prefixed with Tokens Studio's own x/y/blur/spread field names.
+  const dollarShadow: TokenNode = {};
+  if (system.shadows) {
+    const zero: ShadowLayer = { color: "#00000000", offsetX: "0px", offsetY: "0px", blur: "0px", spread: "0px" };
+    for (const level of system.shadows.levels) {
+      const layers = parseBoxShadow(level.value);
+      const resolved = (layers.length === 0 ? [zero] : layers).map(toTokensStudioShadowLayer);
+      dollarShadow[level.name] = { $value: resolved.length === 1 ? resolved[0] : resolved, $type: "boxShadow" };
+    }
+  }
+
+  // icon: adds a `style` token (Tokens Studio "string" type) alongside the
+  // stroke width, camelCased to `strokeWidth` rather than `stroke-width`.
+  const dollarIcon: TokenNode = {};
+  if (ds?.iconStyle) {
+    dollarIcon.style = { $value: ds.iconStyle.style, $type: "string" };
+    if (ds.iconStyle.strokeWidth !== undefined) {
+      dollarIcon.strokeWidth = { $value: toDimension(ds.iconStyle.strokeWidth), $type: "dimension" };
+    }
+  }
+
+  const file: TokenNode = {};
+  if (tree.color) file.color = toNativeTokenSet(tree.color as TokenNode, undefined, true);
+  if (tree.font) file.font = toNativeTokenSet(tree.font as TokenNode, undefined, true);
+  if (Object.keys(dollarFontWeight).length > 0) file.fontWeight = dollarFontWeight;
+  if (Object.keys(dollarFontSize).length > 0) file.fontSize = dollarFontSize;
+  if (tree.typography) file.typography = toNativeTokenSet(tree.typography as TokenNode, undefined, true);
+  if (Object.keys(dollarSpacing).length > 0) file.spacing = dollarSpacing;
+  if (tree.radius) file.radius = toNativeTokenSet(tree.radius as TokenNode, undefined, true);
+  if (Object.keys(dollarShadow).length > 0) file.shadow = dollarShadow;
+  if (tree.breakpoint) file.breakpoint = toNativeTokenSet(tree.breakpoint as TokenNode, undefined, true);
+  if (tree.grid) file.grid = toNativeTokenSet(tree.grid as TokenNode, undefined, true);
+  if (Object.keys(dollarIcon).length > 0) file.icon = dollarIcon;
+
+  return JSON.stringify(file, null, 2);
 }
 
 /**
