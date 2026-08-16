@@ -31,7 +31,7 @@ import { useStudioImportStore } from "@/store/studioImportStore";
 import { PaletteTokens } from "@/lib/studio/exportCode";
 import { projectInputFromStudioState } from "@/lib/studio/projectFromState";
 import { applyStudioImport } from "@/lib/studio/applyImport";
-import { paletteFromAIColors } from "@/lib/studio/paletteFromAIColors";
+import { paletteFromAIColors, primitivesFromAIColors } from "@/lib/studio/paletteFromAIColors";
 import {
   deriveDarkPaletteTokens,
   deriveThemeVariantFromPalette,
@@ -294,16 +294,34 @@ export function StudioBuilder() {
     // (e.g. a saved theme's "Apply this edition" link) — avoids leaking a
     // stale/unrelated AI result's design system into an unrelated deep link.
     const cameFromOtherSource = Boolean(searchParams.get("accent")) && searchParams.get("from") !== "ai";
+    // A project that already went through Studio once (Save) carries its own
+    // primitives + role→primitive links forward as-is — re-deriving from
+    // aiResult.colors on every load would silently drop manual edits (a
+    // renamed/re-hexed primitive, a role relinked to a different one).
+    // Only a result with no prior Studio session derives fresh primitives.
+    const hasSavedPrimitiveLinks = Boolean(aiResult?.colorPrimitives && aiResult?.studioPaletteLinks?.light);
+    // One Primitive per AI-generated color, with the Palette's 5 roles
+    // linked to them via ColorRef — see lib/studio/paletteFromAIColors.ts.
+    // Without this, `state.primitives` fell through to the hardcoded
+    // DEFAULT_PRIMITIVES while the Palette (and export) correctly showed
+    // the AI's own colors: two unrelated palettes on screen at once.
+    const freshDerivation =
+      aiResult && !hasSavedPrimitiveLinks
+        ? primitivesFromAIColors(aiResult.colors, resolvePalette(seeded.light, seeded.primitives))
+        : null;
     // Hoisted so the dark fallback below can derive from the *resolved* light
     // palette rather than from seeded.dark (which, absent a URL palette to
     // seed from, is still the stock DEFAULT_DARK). Two values because a saved
     // project's light palette may hold primitive references rather than
     // literal hex: `aiLight` is what Studio edits, `aiLightHex` is the
     // flattened form the colour maths needs.
-    const aiPrimitives = aiResult?.colorPrimitives ?? seeded.primitives;
+    const aiPrimitives = hasSavedPrimitiveLinks
+      ? aiResult!.colorPrimitives!
+      : (freshDerivation?.primitives ?? seeded.primitives);
     const aiLight = aiResult
-      ? (aiResult.studioPaletteLinks?.light ??
-        paletteFromAIColors(aiResult.colors, resolvePalette(seeded.light, seeded.primitives)))
+      ? hasSavedPrimitiveLinks
+        ? aiResult!.studioPaletteLinks!.light!
+        : freshDerivation!.palette
       : null;
     const aiLightHex = aiLight ? resolvePalette(aiLight, aiPrimitives) : null;
     const base =
@@ -317,12 +335,10 @@ export function StudioBuilder() {
             designSystem: aiResult.designSystem,
             moodboard: aiResult.moodboard,
             aiReasoning: aiResult.aiReasoning,
-            // A saved project that already went through Studio once carries
-            // its own primitives/links forward as-is — re-deriving from
-            // aiResult.colors would silently drop them. Only a result with
-            // no prior Studio session falls back to the literal-hex
-            // derivation below.
-            primitives: aiResult.colorPrimitives ?? seeded.primitives,
+            // See hasSavedPrimitiveLinks/freshDerivation above — saved
+            // primitives/links pass through untouched; a fresh result gets
+            // primitives synthesized from its own colors.
+            primitives: aiPrimitives,
             // Light always traces back to aiResult.colors — the same
             // canonical source the AI results page itself renders and
             // that "Open in Studio" already seeds via URL params (see
