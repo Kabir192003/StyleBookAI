@@ -568,6 +568,37 @@ export function StudioBuilder() {
     });
   }
 
+  /**
+   * `designSystem.colorRoles` and `designSystem.components` are only ever
+   * derived from the palette once, at creation time (either here or in
+   * `synthesizeDesignSystemFromPalettes`/AI generation) — nothing recomputes
+   * them when the palette or a primitive changes afterwards, which is why an
+   * edit there can look like it does nothing: every component already has
+   * its own frozen `--ds-*` token that wins over the derived one. This
+   * re-runs the same derivation on demand, from the *current* resolved
+   * palette, so those tokens catch up.
+   *
+   * Deliberately a full re-derive, not a merge — it overwrites any
+   * per-component customisation made via click-to-edit, which is why it's a
+   * confirmed, explicit action rather than something that happens on every
+   * keystroke. Undo still recovers from it, same as any other edit.
+   */
+  function resyncDesignSystemFromPalette() {
+    if (!state.designSystem) return;
+    const proceed = window.confirm(
+      "Resync every component's colours from the current palette? This overwrites any per-component colour edits made by clicking components on the canvas."
+    );
+    if (!proceed) return;
+    setState((s) => ({
+      ...s,
+      designSystem: {
+        ...s.designSystem!,
+        light: deriveThemeVariantFromPalette(resolvedLight),
+        dark: s.designSystem!.dark ? deriveThemeVariantFromPalette(resolvedDark) : s.designSystem!.dark,
+      },
+    }));
+  }
+
   function setToken<K extends keyof EditablePaletteTokens>(key: K, value: ColorValue) {
     setState((s) => {
       const variant = s.mode === "Dark" ? "dark" : "light";
@@ -782,6 +813,16 @@ export function StudioBuilder() {
                 Editing {state.mode}
               </div>
             </div>
+            {state.designSystem && (
+              <button
+                type="button"
+                onClick={resyncDesignSystemFromPalette}
+                className="flex items-center gap-1.5 self-start font-mono-plex text-[9px] uppercase tracking-[0.1em] text-[#222D52] hover:underline"
+                title="Every component already has its own colour once you've clicked one to edit it — palette edits stop reaching the canvas at that point. This re-derives every component's colour from the palette above."
+              >
+                ↻ Resync components from palette
+              </button>
+            )}
             {ROLES.map((r) => {
               const raw = activePalette[r.key];
               const linked = isColorRef(raw);
