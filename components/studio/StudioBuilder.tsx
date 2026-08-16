@@ -23,6 +23,7 @@ import { ShowcaseContent } from "./ShowcaseContent";
 import { GeneratedContent } from "./GeneratedContent";
 import { ComponentInspector } from "./ComponentInspector";
 import { SpacingVisualization } from "@/components/design-system/SpacingVisualization";
+import type { NonDefaultState } from "@/components/design-system/ComponentEditor";
 import { getContrastRatio } from "@/lib/colors/colorUtils";
 import { cn } from "@/lib/utils";
 import { useAIResultStore, useAuthStore } from "@/store";
@@ -350,6 +351,10 @@ export function StudioBuilder() {
   // StudioState: it is a view concern, and putting it there would make every
   // click an undo step and mark the project dirty.
   const [selected, setSelected] = useState<Selection | null>(null);
+  // Which non-default state the canvas is forcing onto the selected
+  // instance for preview. Reset on every new selection so switching
+  // components never leaves a stale state forced onto the new one.
+  const [previewState, setPreviewState] = useState<NonDefaultState | null>(null);
   // The generated screen, when this session produced one. Switching back to
   // the showcase is a view change only — it never discards the structure, so
   // the toggle is safe to press.
@@ -519,6 +524,7 @@ export function StudioBuilder() {
    */
   function handleSelect(next: Selection | null) {
     setSelected(next);
+    setPreviewState(null);
     // Only a component selection needs component tokens to exist.
     if (next === null || next.kind !== "component") return;
     setState((s) =>
@@ -1121,6 +1127,8 @@ export function StudioBuilder() {
               theme={activeVariant}
               selected={selected}
               onSelect={handleSelect}
+              previewState={previewState}
+              previewTokens={activeComponentTokens}
             >
               {showGenerated && generatedStructure ? (
                 <GeneratedContent structure={generatedStructure} />
@@ -1151,6 +1159,8 @@ export function StudioBuilder() {
             headFont={state.headFont}
             bodyFont={state.bodyFont}
             typeScale={state.typeScale}
+            previewState={previewState}
+            onPreviewStateChange={setPreviewState}
             onTokensChange={(next) => {
               if (selected.kind === "component") setComponentTokens(selected.name, next);
             }}
@@ -1158,7 +1168,10 @@ export function StudioBuilder() {
             onHeadFontChange={(f) => set("headFont", f)}
             onBodyFontChange={(f) => set("bodyFont", f)}
             onBaseSizeChange={(size) => set("typeScale", generateTypeScale(size, state.typeScale.ratioName))}
-            onClose={() => setSelected(null)}
+            onClose={() => {
+              setSelected(null);
+              setPreviewState(null);
+            }}
           />
         )}
       </div>

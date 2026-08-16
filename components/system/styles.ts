@@ -1013,7 +1013,7 @@ export const SYSTEM_COMPONENT_CSS = `
 }
 .pg-table td {
   padding: 12px 14px;
-  color: var(--pgc-ink);
+  color: var(--ds-table-text, var(--pgc-ink));
   border-bottom: 1px solid color-mix(in srgb, var(--pgc-border) 60%, transparent);
 }
 .pg-table tbody tr:last-child td { border-bottom: 0; }

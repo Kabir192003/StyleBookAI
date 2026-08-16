@@ -28,7 +28,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { ComponentEditor } from "@/components/design-system/ComponentEditor";
+import { ComponentEditor, type NonDefaultState } from "@/components/design-system/ComponentEditor";
 import { FontPicker } from "./FontPicker";
 import { COMPONENT_LABELS, TYPE_ROLE_LABELS, type Selection } from "@/lib/studio/componentSelection";
 import type { ComponentTokenSet } from "@/types/designSystem";
@@ -42,6 +42,8 @@ export function ComponentInspector({
   headFont,
   bodyFont,
   typeScale,
+  previewState,
+  onPreviewStateChange,
   onTokensChange,
   onRadiusChange,
   onHeadFontChange,
@@ -57,6 +59,9 @@ export function ComponentInspector({
   headFont: string;
   bodyFont: string;
   typeScale: TypeScale;
+  /** Which state the canvas is currently forcing onto the selected instance. */
+  previewState: NonDefaultState | null;
+  onPreviewStateChange: (state: NonDefaultState | null) => void;
   onTokensChange: (next: ComponentTokenSet) => void;
   onRadiusChange: (next: number) => void;
   onHeadFontChange: (next: string) => void;
@@ -114,7 +119,12 @@ export function ComponentInspector({
         tokens && (
           <section>
             <h3 className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">This component</h3>
-            <ComponentEditor tokens={tokens} onChange={onTokensChange} />
+            <ComponentEditor
+              tokens={tokens}
+              onChange={onTokensChange}
+              previewState={previewState}
+              onPreviewStateChange={onPreviewStateChange}
+            />
           </section>
         )
       )}
