@@ -19,7 +19,7 @@
  */
 "use client";
 
-import { useEffect, useMemo, useRef, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { canvasCss } from "@/lib/studio/roleProperties";
 import { findComponentAt } from "@/lib/studio/componentSelection";
 import type { StudioExportTokens } from "@/lib/studio/exportCode";
@@ -32,6 +32,13 @@ const SCOPE_SELECTOR = `[${SCOPE_ATTR}]`;
 /** Set on the selected element so the outline can be drawn without React
  *  having to own a ref to a node it did not render. */
 const SELECTED_ATTR = "data-sb-selected";
+
+/** Click-to-edit is the canvas's whole premise, but nothing about a button or
+ *  a heading visually signals "this is clickable" — a first-time visitor has
+ *  no way to discover it except by accident. Shown once per browser (not
+ *  once per session) and dismissed for good the moment someone actually
+ *  selects something, so it never nags a user who already gets it. */
+const HINT_DISMISSED_KEY = "sb-studio-canvas-hint-dismissed";
 
 /** Scoped to the canvas so the outline cannot leak onto Studio's own chrome,
  *  and `outline` rather than `border` so it never shifts layout. */
@@ -63,6 +70,21 @@ export function StudioCanvas({
   children: ReactNode;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const [showHint, setShowHint] = useState(false);
+
+  // Read from localStorage in an effect, not the useState initializer —
+  // the initializer runs during the server render too, where localStorage
+  // doesn't exist, and reading it there would hydrate ahead of the server
+  // and trip a hydration-mismatch warning (same pattern as PromptInput's
+  // sessionStorage hydration).
+  useEffect(() => {
+    setShowHint(localStorage.getItem(HINT_DISMISSED_KEY) !== "1");
+  }, []);
+
+  function dismissHint() {
+    localStorage.setItem(HINT_DISMISSED_KEY, "1");
+    setShowHint(false);
+  }
 
   // Regenerated only when the tokens change — the CSS string is the expensive
   // part of a canvas render and is fully determined by them.
@@ -135,6 +157,7 @@ export function StudioCanvas({
     }
     hit.element.setAttribute(SELECTED_ATTR, "true");
     onSelect(hit.selection);
+    if (showHint) dismissHint();
   }
 
   return (
@@ -156,6 +179,20 @@ export function StudioCanvas({
         style={{ background: "var(--pg-background)", color: "var(--pg-text)", fontFamily: "var(--pg-font-body)" }}
       >
         {children}
+        {showHint && (
+          <div className="pointer-events-none absolute left-1/2 top-3 z-10 flex -translate-x-1/2 items-center gap-2 rounded-full bg-[#211E18] px-4 py-2 text-[12px] text-[#F2EBE0] shadow-[0_10px_30px_-10px_rgba(20,17,12,0.6)]">
+            <span aria-hidden="true">✦</span>
+            <span>Click anything below to edit it</span>
+            <button
+              type="button"
+              onClick={dismissHint}
+              aria-label="Dismiss hint"
+              className="pointer-events-auto ml-1 text-[#F2EBE0]/70 hover:text-[#F2EBE0]"
+            >
+              ✕
+            </button>
+          </div>
+        )}
       </div>
     </>
   );

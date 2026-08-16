@@ -146,6 +146,19 @@ export const EXPORT_HINTS: Record<ExportTab, string> = {
   "Style Guide": "Markdown documentation of every token, for a README or handoff doc.",
 };
 
+/**
+ * Groups the flat tab list by "what are you exporting for," so the drawer
+ * can show a designer and a developer two different, shorter shelves
+ * instead of one undifferentiated row of eight equal-weight buttons — a
+ * developer never needs to scan past "Figma" to find "React."
+ */
+export const EXPORT_CATEGORIES: Array<{ label: string; tabs: ExportTab[] }> = [
+  { label: "Design tools", tabs: ["Figma", "Design Tokens", "Style Guide"] },
+  { label: "Web", tabs: ["CSS", "Tailwind", "React"] },
+  { label: "Native apps", tabs: ["SwiftUI", "Flutter"] },
+  { label: "Data", tabs: ["JSON"] },
+];
+
 export function exportFileName(tab: ExportTab, systemName: string): string {
   const slug = slugify(systemName) || "stylebook";
   switch (tab) {
