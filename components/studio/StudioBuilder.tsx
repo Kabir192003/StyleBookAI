@@ -363,6 +363,13 @@ export function StudioBuilder() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [savedPing, setSavedPing] = useState(false);
+  // Primitives and the type-scale ratio math are the two sidebar sections a
+  // first-time user is least likely to need on their first visit — everyone
+  // wants to change the palette or fonts immediately, few people arrive
+  // already wanting to link a role to a named swatch or pick a modular
+  // scale ratio. Collapsed by default so the sidebar's first screenful is
+  // "palette, typography" rather than six equally-weighted sections.
+  const [advancedOpen, setAdvancedOpen] = useState(false);
 
   // Debounced snapshot history — a snapshot is only pushed once edits
   // settle for 500ms, so dragging a color/slider doesn't spam undo with
@@ -864,51 +871,6 @@ export function StudioBuilder() {
           </div>
 
           <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Primitives</div>
-              <button
-                type="button"
-                onClick={addPrimitive}
-                className="font-mono-plex text-[9px] uppercase tracking-[0.12em] text-[#222D52]"
-              >
-                + Add
-              </button>
-            </div>
-            <p className="text-[12px] leading-relaxed text-[#6E675C]">
-              Named swatches a palette role can link to instead of holding its own hex — edit one here and every
-              linked role, in both modes, updates with it.
-            </p>
-            {state.primitives.map((p) => (
-              <div key={p.id} className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={p.hex}
-                  onChange={(e) => updatePrimitive(p.id, { hex: e.target.value })}
-                  className="studio-color-input h-9 w-9 flex-none rounded-lg shadow-[0_0_0_1px_rgba(33,30,24,0.14)]"
-                />
-                <input
-                  value={p.name}
-                  onChange={(e) => updatePrimitive(p.id, { name: e.target.value })}
-                  className="min-w-0 flex-1 rounded-md border border-black/[0.16] bg-white px-2 py-1.5 text-[13px] text-[#211E18]"
-                />
-                <span className="font-mono-plex text-[11px] uppercase text-[#8A8477]">{p.hex}</span>
-                <button
-                  type="button"
-                  onClick={() => removePrimitive(p.id)}
-                  className="font-mono-plex text-[13px] text-[#B4AD9E]"
-                  aria-label={`Remove ${p.name}`}
-                  title={`Remove ${p.name}`}
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-            {state.primitives.length === 0 && (
-              <p className="font-mono-plex text-[11px] uppercase text-[#B4AD9E]">No primitives yet.</p>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-3">
             <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Typography</div>
             <label className="flex flex-col gap-1.5">
               <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#B4AD9E]">Display</span>
@@ -1003,49 +965,112 @@ export function StudioBuilder() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3">
-            <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Type scale</div>
-            <label className="flex flex-col gap-1.5">
-              <span className="flex justify-between text-xs text-[#6E675C]">
-                <span>Base size</span>
-                <span className="font-mono-plex text-[#211E18]">{state.typeScale.baseSize}px</span>
-              </span>
-              <input
-                type="range"
-                min={12}
-                max={22}
-                step={1}
-                value={state.typeScale.baseSize}
-                onChange={(e) => set("typeScale", generateTypeScale(Number(e.target.value), state.typeScale.ratioName))}
-                className="studio-range w-full"
-              />
-            </label>
-            <label className="flex flex-col gap-1.5">
-              <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#B4AD9E]">Ratio</span>
-              <select
-                value={state.typeScale.ratioName}
-                onChange={(e) => set("typeScale", generateTypeScale(state.typeScale.baseSize, e.target.value))}
-                className="rounded-lg border border-black/20 bg-white px-3 py-2.5 text-sm text-[#211E18]"
-              >
-                {Object.keys(TYPE_SCALE_RATIOS).map((name) => (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <div className="flex items-end gap-2 rounded-lg border border-black/[0.12] bg-white px-3 py-3">
-              {(["sm", "base", "lg", "xl", "2xl", "3xl"] as const).map((k) => (
-                <span
-                  key={k}
-                  className="font-editorial-serif leading-none text-[#211E18]"
-                  style={{ fontSize: Math.min(state.typeScale.sizes[k], 34) }}
-                  title={`${k}: ${state.typeScale.sizes[k]}px`}
-                >
-                  Aa
-                </span>
-              ))}
-            </div>
+          <div className="flex flex-col gap-3 border-t border-black/[0.1] pt-4">
+            <button
+              type="button"
+              onClick={() => setAdvancedOpen((v) => !v)}
+              className="flex items-center justify-between font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]"
+            >
+              <span>Advanced</span>
+              <span>{advancedOpen ? "▾" : "▸"}</span>
+            </button>
+            {!advancedOpen && (
+              <p className="text-[12px] leading-relaxed text-[#B4AD9E]">Named swatches and the type-scale ratio.</p>
+            )}
+
+            {advancedOpen && (
+              <>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Primitives</div>
+                    <button
+                      type="button"
+                      onClick={addPrimitive}
+                      className="font-mono-plex text-[9px] uppercase tracking-[0.12em] text-[#222D52]"
+                    >
+                      + Add
+                    </button>
+                  </div>
+                  <p className="text-[12px] leading-relaxed text-[#6E675C]">
+                    Named swatches a palette role can link to instead of holding its own hex — edit one here and every
+                    linked role, in both modes, updates with it.
+                  </p>
+                  {state.primitives.map((p) => (
+                    <div key={p.id} className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={p.hex}
+                        onChange={(e) => updatePrimitive(p.id, { hex: e.target.value })}
+                        className="studio-color-input h-9 w-9 flex-none rounded-lg shadow-[0_0_0_1px_rgba(33,30,24,0.14)]"
+                      />
+                      <input
+                        value={p.name}
+                        onChange={(e) => updatePrimitive(p.id, { name: e.target.value })}
+                        className="min-w-0 flex-1 rounded-md border border-black/[0.16] bg-white px-2 py-1.5 text-[13px] text-[#211E18]"
+                      />
+                      <span className="font-mono-plex text-[11px] uppercase text-[#8A8477]">{p.hex}</span>
+                      <button
+                        type="button"
+                        onClick={() => removePrimitive(p.id)}
+                        className="font-mono-plex text-[13px] text-[#B4AD9E]"
+                        aria-label={`Remove ${p.name}`}
+                        title={`Remove ${p.name}`}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  {state.primitives.length === 0 && (
+                    <p className="font-mono-plex text-[11px] uppercase text-[#B4AD9E]">No primitives yet.</p>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Type scale</div>
+                  <label className="flex flex-col gap-1.5">
+                    <span className="flex justify-between text-xs text-[#6E675C]">
+                      <span>Base size</span>
+                      <span className="font-mono-plex text-[#211E18]">{state.typeScale.baseSize}px</span>
+                    </span>
+                    <input
+                      type="range"
+                      min={12}
+                      max={22}
+                      step={1}
+                      value={state.typeScale.baseSize}
+                      onChange={(e) => set("typeScale", generateTypeScale(Number(e.target.value), state.typeScale.ratioName))}
+                      className="studio-range w-full"
+                    />
+                  </label>
+                  <label className="flex flex-col gap-1.5">
+                    <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#B4AD9E]">Ratio</span>
+                    <select
+                      value={state.typeScale.ratioName}
+                      onChange={(e) => set("typeScale", generateTypeScale(state.typeScale.baseSize, e.target.value))}
+                      className="rounded-lg border border-black/20 bg-white px-3 py-2.5 text-sm text-[#211E18]"
+                    >
+                      {Object.keys(TYPE_SCALE_RATIOS).map((name) => (
+                        <option key={name} value={name}>
+                          {name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <div className="flex items-end gap-2 rounded-lg border border-black/[0.12] bg-white px-3 py-3">
+                    {(["sm", "base", "lg", "xl", "2xl", "3xl"] as const).map((k) => (
+                      <span
+                        key={k}
+                        className="font-editorial-serif leading-none text-[#211E18]"
+                        style={{ fontSize: Math.min(state.typeScale.sizes[k], 34) }}
+                        title={`${k}: ${state.typeScale.sizes[k]}px`}
+                      >
+                        Aa
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </aside>
 
