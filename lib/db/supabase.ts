@@ -50,6 +50,22 @@ export function getSupabaseBrowserClient(): SupabaseClient {
 
 // Server-only client — uses the service role key, bypasses RLS.
 // Never import this into a client component.
+//
+// `global.fetch` is overridden with `cache: "no-store"` because supabase-js
+// calls the plain global `fetch()` under the hood, which Next.js patches to
+// participate in its own Data Cache — a GET request issued through this
+// client can otherwise come back from Next's cache instead of hitting
+// Postgres, even in a route marked `dynamic = "force-dynamic"`. Confirmed
+// concretely by /api/figma-export/[code]: a one-shot redemption endpoint
+// (select row, delete it, return it) served the same deleted row's payload
+// on a second identical request — the delete itself demonstrably ran
+// (verified directly against Supabase, outside Next entirely), so the only
+// explanation left was the *read* being answered from cache. An admin
+// client reading live application state should never be cache-eligible
+// regardless of which route calls it, so this is fixed at the client
+// factory rather than per-route.
 export function getSupabaseAdmin(): SupabaseClient {
-  return createClient(requireEnv("NEXT_PUBLIC_SUPABASE_URL"), requireEnv("SUPABASE_SERVICE_ROLE_KEY"));
+  return createClient(requireEnv("NEXT_PUBLIC_SUPABASE_URL"), requireEnv("SUPABASE_SERVICE_ROLE_KEY"), {
+    global: { fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }) },
+  });
 }

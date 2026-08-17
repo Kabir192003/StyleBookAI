@@ -8,6 +8,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/db/supabase";
 
+// Without this, Next.js treats a GET route handler that touches no dynamic
+// API (cookies/headers) as static and caches its response — which for a
+// one-shot redemption endpoint means a second identical request would
+// silently replay the already-deleted payload instead of 404ing.
+export const dynamic = "force-dynamic";
+
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
   const admin = getSupabaseAdmin();

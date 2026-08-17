@@ -53,7 +53,12 @@ figma.ui.onmessage = async (msg: { type: string; code?: string }) => {
 };
 
 async function fetchPayload(code: string): Promise<FigmaExportPayload> {
-  const base = figma.root.getPluginData("stylebookApiBase") || "https://YOUR-STYLEBOOK-DOMAIN";
+  // Defaults to the deployed StyleBook site, matching manifest.json's
+  // allowedDomains. Override for local dev by setting `stylebookApiBase` in
+  // the file's plugin data (figma.root.setPluginData("stylebookApiBase",
+  // "http://localhost:3000")) — manifest.json's devAllowedDomains already
+  // permits that origin when testing an unpublished dev build.
+  const base = figma.root.getPluginData("stylebookApiBase") || "https://style-book-ai.vercel.app";
   const res = await fetch(`${base}/api/figma-export/${code}`);
   const data = await res.json();
   if (!res.ok) throw new Error(data.error ?? "Import failed — check the code and try again.");
