@@ -47,9 +47,21 @@ describe("serializeFigmaExport", () => {
     expect(card.states.map((s) => s.state)).toEqual(["Default"]);
   });
 
-  it("builds a canvas frame with a navbar and hero", () => {
+  it("builds a canvas frame with every Showcase section, not just navbar and hero", () => {
     const payload = serializeFigmaExport(tokens, { componentLibrary: false, canvas: true });
-    expect(payload.canvas?.children?.map((c) => c.name)).toEqual(["Navbar", "Hero"]);
+    expect(payload.canvas?.children?.map((c) => c.name)).toEqual([
+      "Navbar",
+      "Hero",
+      "Notice",
+      "Stats",
+      "Features",
+      "Tabs",
+      "Pricing",
+      "Form",
+      "Rollout",
+      "Danger zone",
+      "Footer",
+    ]);
   });
 
   it("gives every non-default button state a visually distinct fill or ring when nothing was hand-customized", () => {
