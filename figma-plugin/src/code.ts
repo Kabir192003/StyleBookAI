@@ -178,6 +178,20 @@ async function buildFrame(node: FigmaFrameNode, vars: FigmaVariables, colorVars:
     frame.layoutMode = "NONE";
   }
 
+  // node.width/node.height were declared on the type but never actually
+  // applied — every fixed-size node (the rollout section's progress bar and
+  // its fill, footer swatches) silently kept Figma's default new-frame size
+  // (100x100) instead. A 100x100 frame with a "full" (9999px) corner radius
+  // renders as a large circle, which is exactly what the progress bar
+  // looked like instead of a thin bar.
+  if (node.width !== undefined && node.height !== undefined) {
+    if (frame.layoutMode !== "NONE") {
+      frame.primaryAxisSizingMode = "FIXED";
+      frame.counterAxisSizingMode = "FIXED";
+    }
+    frame.resize(node.width, node.height);
+  }
+
   if (typeof node.radius === "number") frame.cornerRadius = node.radius;
   else if (node.radius) {
     const v = colorVars[`radius-${node.radius.variable}`];
@@ -283,10 +297,14 @@ async function buildComponentLibrary(sets: FigmaComponentSet[], vars: FigmaVaria
 
     // Wrap into a new row rather than one unbounded strip 20 component sets
     // wide — each set's own width varies (a table's is much wider than a
-    // badge's), so wrapping is width-based, not count-based.
+    // badge's), so wrapping is width-based, not count-based. The vertical
+    // gap between rows needs real headroom, not just visual breathing room:
+    // Figma draws each node's name label floating above its top edge, and a
+    // tight gap let the next row's labels visually collide with the row
+    // above it.
     if (x > 0 && x + combined.width > LIBRARY_ROW_MAX_WIDTH) {
       x = 0;
-      y += rowHeight + 48;
+      y += rowHeight + 100;
       rowHeight = 0;
     }
     combined.x = x;
