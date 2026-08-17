@@ -39,7 +39,12 @@ export const LAYOUT_MAP: Record<string, LayoutSpec> = {
   "pg-btn--lg": { direction: "HORIZONTAL", padding: [{ px: 14 }, { px: 24 }, { px: 14 }, { px: 24 }] },
   "pg-field": { direction: "VERTICAL", gap: { px: 6 } },
   "pg-input": { direction: "HORIZONTAL", padding: [{ px: 10 }, { px: 12 }, { px: 10 }, { px: 12 }], radius: "md" },
-  "pg-card": { direction: "VERTICAL", radius: "md" },
+  // pg-card itself carries no padding in styles.ts — only its .pg-card__body
+  // child does. The component-library export renders one flat frame per
+  // component rather than modeling the card/card__body split, so this entry
+  // borrows __body's padding directly; without it the card frame hugs its
+  // content with zero inset and doesn't read as a card at all.
+  "pg-card": { direction: "VERTICAL", gap: { space: 2 }, padding: [{ space: 4 }, { space: 4 }, { space: 4 }, { space: 4 }], radius: "md" },
   "pg-card__body": { direction: "VERTICAL", gap: { space: 2 }, padding: [{ space: 4 }, { space: 4 }, { space: 4 }, { space: 4 }] },
   "pg-card__footer": {
     direction: "HORIZONTAL",
