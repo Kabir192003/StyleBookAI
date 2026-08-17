@@ -1,43 +1,44 @@
 /**
- * POST /api/figma-export — builds a FigmaExportPayload from the current
- * Studio tokens and stores it under a short random code the user pastes
- * into the StyleBook Figma plugin (which redeems it via
+ * POST /api/figma-export — stores a FigmaExportPayload under a short random
+ * code the user pastes into the StyleBook Figma plugin (which redeems it via
  * GET /api/figma-export/[code] — see that route). No auth required: the
  * payload is design tokens/geometry, not account data, same trust level as
  * the existing inline-project path in /api/export.
+ *
+ * The payload is *built on the client* (lib/figmaExport/captureCanvas.ts),
+ * not here, because it is a serialization of the live canvas DOM — computed
+ * styles and measured rects exist only in the browser. This route is
+ * therefore a validated store-and-hand-back, not a generator.
  */
 import { NextRequest, NextResponse } from "next/server";
 import { randomBytes } from "crypto";
 import { z } from "zod";
 import { getSupabaseAdmin } from "@/lib/db/supabase";
-import { serializeFigmaExport } from "@/lib/figmaExport/serializePayload";
 
-const HEX = /^#[0-9a-fA-F]{6,8}$/;
-const hex = z.string().regex(HEX);
-
-const PaletteSchema = z.object({ accent: hex, support: hex, surface: hex, ink: hex, muted: hex });
-
-const StudioExportTokensSchema = z.object({
-  name: z.string().min(1),
-  light: PaletteSchema,
-  dark: PaletteSchema,
-  headFont: z.string().min(1),
-  bodyFont: z.string().min(1),
-  accentFont: z.string().optional(),
-  radius: z.number(),
-  typeScale: z.any().optional(),
-  spacing: z.any().optional(),
-  shadows: z.any().optional(),
-  designSystem: z.any().optional(),
+/** Structural only. The node tree is large, deeply recursive, and produced
+ *  by our own serializer rather than by user input, so validating every leaf
+ *  would cost more than it protects; the fields the plugin actually branches
+ *  on are checked and the rest is carried through. */
+const PayloadSchema = z.object({
+  schemaVersion: z.literal(2),
+  meta: z.object({ name: z.string().min(1), generatedAt: z.string() }),
+  variables: z.object({
+    color: z.record(z.object({ light: z.string(), dark: z.string().optional() })),
+    spacing: z.array(z.number()),
+    radius: z.object({ base: z.number(), sm: z.number(), md: z.number(), lg: z.number(), full: z.number() }),
+    typeSize: z.record(z.number()),
+  }),
+  componentLibrary: z.array(z.any()).optional(),
+  canvas: z.any().optional(),
 });
 
-const RequestSchema = z.object({
-  tokens: StudioExportTokensSchema,
-  componentLibrary: z.boolean().default(false),
-  canvas: z.boolean().default(false),
-});
+const RequestSchema = z.object({ payload: PayloadSchema });
 
 const CODE_TTL_MS = 30 * 60 * 1000;
+/** Roughly the practical ceiling for a canvas tree; a payload larger than
+ *  this means the walker ran away rather than that the page is genuinely
+ *  that big, and would fail deeper in with a much worse message. */
+const MAX_PAYLOAD_BYTES = 12 * 1024 * 1024;
 
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I — easy to type/paste by hand
 
@@ -54,14 +55,15 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid export request", details: parsed.error.flatten() }, { status: 400 });
   }
-  if (!parsed.data.componentLibrary && !parsed.data.canvas) {
-    return NextResponse.json({ error: "Select at least one of Component Library or Current Canvas" }, { status: 400 });
-  }
 
-  const payload = serializeFigmaExport(parsed.data.tokens, {
-    componentLibrary: parsed.data.componentLibrary,
-    canvas: parsed.data.canvas,
-  });
+  const { payload } = parsed.data;
+  if (!payload.canvas && !payload.componentLibrary?.length) {
+    return NextResponse.json({ error: "Nothing to export — select at least one option." }, { status: 400 });
+  }
+  const size = JSON.stringify(payload).length;
+  if (size > MAX_PAYLOAD_BYTES) {
+    return NextResponse.json({ error: "This canvas is too large to export in one go." }, { status: 413 });
+  }
 
   const admin = getSupabaseAdmin();
   const code = generateCode();

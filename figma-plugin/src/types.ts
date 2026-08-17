@@ -27,24 +27,55 @@ export type FigmaLayout = {
   primaryAlign?: FigmaAlign;
   counterAlign?: "MIN" | "MAX" | "CENTER" | "BASELINE";
   wrap?: boolean;
-  fillContainer?: boolean;
 };
 
-export type FigmaPaint = { variable: string } | { hex: string };
+export type FigmaColor = { r: number; g: number; b: number; a: number };
+
+export type FigmaStroke = {
+  color: FigmaColor;
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+};
+
+export type FigmaShadow = {
+  color: FigmaColor;
+  offsetX: number;
+  offsetY: number;
+  blur: number;
+  spread: number;
+  inset: boolean;
+};
+
+export type FigmaTextStyle = {
+  characters: string;
+  fontFamily: string;
+  fontWeight: number;
+  italic: boolean;
+  fontSize: number;
+  lineHeight: number | null;
+  letterSpacing: number;
+  color: FigmaColor;
+  align: "LEFT" | "CENTER" | "RIGHT" | "JUSTIFIED";
+  transformed: boolean;
+  decoration: "NONE" | "UNDERLINE" | "STRIKETHROUGH";
+};
 
 export type FigmaFrameNode = {
   kind: "frame" | "text" | "vector";
   name: string;
+  rect: { x: number; y: number; width: number; height: number };
   layout?: FigmaLayout;
-  width?: number;
-  height?: number;
-  radius?: number | { variable: string };
-  fill?: FigmaPaint;
-  stroke?: { paint: FigmaPaint; width: number };
+  absolute?: boolean;
+  radius?: { tl: number; tr: number; br: number; bl: number };
+  fill?: FigmaColor;
+  stroke?: FigmaStroke;
+  shadows?: FigmaShadow[];
   opacity?: number;
-  text?: { characters: string; sizeVar?: string; size?: number; weight: number; fontFamily: string; fillVar?: string; fillHex?: string };
+  clipsContent?: boolean;
+  text?: FigmaTextStyle;
   iconSvg?: string;
-  absolute?: { x: number; y: number };
   children?: FigmaFrameNode[];
 };
 
@@ -52,12 +83,13 @@ export type FigmaComponentState = "Default" | "Hover" | "Active" | "Disabled" | 
 
 export type FigmaComponentSet = {
   componentName: string;
+  label: string;
   variant: "light" | "dark";
   states: Array<{ state: FigmaComponentState; node: FigmaFrameNode }>;
 };
 
 export type FigmaExportPayload = {
-  schemaVersion: 1;
+  schemaVersion: 2;
   meta: { name: string; generatedAt: string };
   variables: FigmaVariables;
   componentLibrary?: FigmaComponentSet[];

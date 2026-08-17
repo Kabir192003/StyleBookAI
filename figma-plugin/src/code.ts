@@ -1,18 +1,28 @@
 /**
- * Main thread (has Plugin API access, no DOM). Receives a redemption code
- * from ui.ts, fetches the payload from StyleBook (allow-listed in
- * manifest.json), builds one Variable Collection, then walks
- * componentLibrary/canvas building real Auto Layout frames bound to those
- * variables.
+ * Main thread (has Plugin API access, no DOM). Fetches a payload from
+ * StyleBook and rebuilds it as real Figma layers.
  *
- * Written defensively per node/text/icon — one bad node (unsupported font,
- * malformed SVG) is skipped with a console warning rather than aborting the
- * whole import, so a partial payload still produces a partial, useful
- * result (see the plan's error/edge-case section).
+ * The payload is a serialization of StyleBook's live canvas DOM, so this
+ * side is a fairly mechanical translator: measured rect → size/position,
+ * computed CSS → fills/strokes/effects/text style. It deliberately does not
+ * re-derive or re-guess anything — every "smart" reconstruction attempt
+ * (rebuilding layouts from token values, inferring component shapes) is what
+ * made earlier versions drift from what the browser actually painted.
+ *
+ * Defensive per node: one bad node (an unavailable font, a malformed SVG)
+ * is skipped with a warning rather than aborting the whole import.
  */
-import type { FigmaComponentSet, FigmaExportPayload, FigmaFrameNode, FigmaPaint, FigmaVariables } from "./types";
+import type {
+  FigmaColor,
+  FigmaComponentSet,
+  FigmaExportPayload,
+  FigmaFrameNode,
+  FigmaShadow,
+  FigmaTextStyle,
+  FigmaVariables,
+} from "./types";
 
-figma.showUI(__html__, { width: 360, height: 280 });
+figma.showUI(__html__, { width: 360, height: 300 });
 
 type Warning = string;
 
@@ -21,47 +31,48 @@ figma.ui.onmessage = async (msg: { type: string; code?: string }) => {
 
   try {
     const payload = await fetchPayload(msg.code.trim().toUpperCase());
-    if (payload.schemaVersion !== 1) {
-      figma.ui.postMessage({ type: "error", message: "This export was made with a newer StyleBook — update the plugin." });
+    if (payload.schemaVersion !== 2) {
+      figma.ui.postMessage({
+        type: "error",
+        message: "This export came from a different StyleBook version — rebuild the plugin (npm run build) and retry.",
+      });
       return;
     }
 
     const warnings: Warning[] = [];
-    const colorVars = await buildVariables(payload.variables, warnings);
+    await buildVariables(payload.variables);
 
-    // Canvas goes first and anchors at the origin; the component library
-    // (if also requested) starts well below it rather than also at (0,0) —
-    // placing everything at the same origin was stacking the canvas root
-    // and every component set directly on top of each other.
-    let created = 0;
+    const placed: SceneNode[] = [];
     let libraryStartY = 0;
+
     if (payload.canvas) {
-      const root = await buildFrameTree(payload.canvas, payload.variables, colorVars, warnings);
+      const root = await buildNode(payload.canvas, warnings);
       if (root) {
         figma.currentPage.appendChild(root);
         root.x = 0;
         root.y = 0;
+        placed.push(root);
         libraryStartY = root.height + 200;
       }
-      created += 1;
     }
-    if (payload.componentLibrary?.length) {
-      await buildComponentLibrary(payload.componentLibrary, payload.variables, colorVars, warnings, libraryStartY);
-      created += payload.componentLibrary.length;
+    if (payload.componentLibrary && payload.componentLibrary.length > 0) {
+      const sets = await buildComponentLibrary(payload.componentLibrary, warnings, libraryStartY);
+      placed.push(...sets);
     }
 
-    figma.ui.postMessage({ type: "done", created, warnings });
-    figma.notify(`Imported ${payload.meta.name} from StyleBook`);
+    if (placed.length > 0) {
+      figma.currentPage.selection = placed;
+      figma.viewport.scrollAndZoomIntoView(placed);
+    }
+
+    figma.ui.postMessage({ type: "done", warnings });
+    figma.notify(`Imported ${payload.meta.name}${warnings.length ? ` (${warnings.length} warnings)` : ""}`);
   } catch (err) {
-    // Always log the raw error to the plugin console (Plugins > Development
-    // > Open Console) even though the UI panel only has room for a short
-    // message — a bare "Import failed" with no detail is undebuggable both
-    // for a user and for whoever gets asked to fix it after the fact.
     console.error("StyleBook Import failed:", err);
     const message =
       err instanceof Error
         ? err.message
-        : `Import failed: ${typeof err === "string" ? err : JSON.stringify(err)} — see Plugins > Development > Open Console for detail.`;
+        : `Import failed: ${typeof err === "string" ? err : JSON.stringify(err)} — see Plugins > Development > Open Console.`;
     figma.ui.postMessage({ type: "error", message });
   }
 };
@@ -69,9 +80,8 @@ figma.ui.onmessage = async (msg: { type: string; code?: string }) => {
 async function fetchPayload(code: string): Promise<FigmaExportPayload> {
   // Defaults to the deployed StyleBook site, matching manifest.json's
   // allowedDomains. Override for local dev by setting `stylebookApiBase` in
-  // the file's plugin data (figma.root.setPluginData("stylebookApiBase",
-  // "http://localhost:3000")) — manifest.json's devAllowedDomains already
-  // permits that origin when testing an unpublished dev build.
+  // the file's plugin data — manifest.json's devAllowedDomains already
+  // permits localhost when testing an unpublished dev build.
   const base = figma.root.getPluginData("stylebookApiBase") || "https://style-book-ai.vercel.app";
   const res = await fetch(`${base}/api/figma-export/${code}`);
   const data = await res.json();
@@ -80,40 +90,51 @@ async function fetchPayload(code: string): Promise<FigmaExportPayload> {
 }
 
 // ---------------------------------------------------------------------------
+// Paint helpers
+
+function toRgb(c: FigmaColor): RGB {
+  return { r: c.r / 255, g: c.g / 255, b: c.b / 255 };
+}
+
+function solid(c: FigmaColor): SolidPaint {
+  return { type: "SOLID", color: toRgb(c), opacity: c.a };
+}
+
+// ---------------------------------------------------------------------------
 // Variables
+//
+// The imported page is a flat snapshot of one theme; the Variable Collection
+// is what makes it re-themeable afterwards, which is the whole reason to
+// keep emitting it alongside the DOM capture.
 
-type ColorVarMap = Record<string, Variable>;
-
-async function buildVariables(vars: FigmaVariables, warnings: Warning[]): Promise<ColorVarMap> {
+async function buildVariables(vars: FigmaVariables): Promise<void> {
   const collection = figma.variables.createVariableCollection("StyleBook Tokens");
   const lightModeId = collection.modes[0].modeId;
   collection.renameMode(lightModeId, "Light");
   const darkModeId = collection.addMode("Dark");
 
-  const colorVars: ColorVarMap = {};
-  for (const [name, value] of Object.entries(vars.color)) {
+  for (const name of Object.keys(vars.color)) {
+    const value = vars.color[name];
     const v = figma.variables.createVariable(`color/${name}`, collection, "COLOR");
     v.setValueForMode(lightModeId, hexToRgba(value.light));
-    v.setValueForMode(darkModeId, hexToRgba(value.dark ?? value.light));
-    colorVars[name] = v;
+    v.setValueForMode(darkModeId, hexToRgba(value.dark || value.light));
   }
-
   vars.spacing.forEach((px, i) => {
     const v = figma.variables.createVariable(`spacing/${i + 1}`, collection, "FLOAT");
     v.setValueForMode(lightModeId, px);
     v.setValueForMode(darkModeId, px);
-    colorVars[`spacing-${i + 1}`] = v; // stored alongside colors for lookup convenience in buildFrameTree
   });
-
-  for (const [key, px] of Object.entries(vars.radius)) {
+  for (const key of Object.keys(vars.radius)) {
+    const px = (vars.radius as unknown as Record<string, number>)[key];
     const v = figma.variables.createVariable(`radius/${key}`, collection, "FLOAT");
     v.setValueForMode(lightModeId, px);
     v.setValueForMode(darkModeId, px);
-    colorVars[`radius-${key}`] = v;
   }
-
-  void warnings;
-  return colorVars;
+  for (const key of Object.keys(vars.typeSize)) {
+    const v = figma.variables.createVariable(`fontSize/${key}`, collection, "FLOAT");
+    v.setValueForMode(lightModeId, vars.typeSize[key]);
+    v.setValueForMode(darkModeId, vars.typeSize[key]);
+  }
 }
 
 function hexToRgba(hex: string): RGBA {
@@ -125,191 +146,292 @@ function hexToRgba(hex: string): RGBA {
   return { r, g, b, a };
 }
 
-function resolvePaint(paint: FigmaPaint | undefined, colorVars: ColorVarMap): Paint | undefined {
-  if (!paint) return undefined;
-  if ("hex" in paint) return figma.util.solidPaint(paint.hex);
-  const variable = colorVars[paint.variable];
-  const base = figma.util.solidPaint(hexToFallback(paint.variable));
-  return variable ? figma.variables.setBoundVariableForPaint(base, "color", variable) : base;
+// ---------------------------------------------------------------------------
+// Fonts
+
+/** Figma names weights as styles, and families disagree about the exact
+ *  spelling ("SemiBold" vs "Semi Bold"), so each weight carries candidates
+ *  and the first that loads wins. */
+const WEIGHT_STYLES: Record<number, string[]> = {
+  100: ["Thin", "Hairline"],
+  200: ["ExtraLight", "Extra Light", "UltraLight"],
+  300: ["Light"],
+  400: ["Regular", "Normal", "Book"],
+  500: ["Medium"],
+  600: ["SemiBold", "Semi Bold", "DemiBold", "Demi Bold"],
+  700: ["Bold"],
+  800: ["ExtraBold", "Extra Bold", "UltraBold"],
+  900: ["Black", "Heavy"],
+};
+
+const fontCache = new Map<string, FontName | null>();
+
+function nearestWeight(weight: number): number {
+  const steps = [100, 200, 300, 400, 500, 600, 700, 800, 900];
+  let best = 400;
+  let bestDelta = Infinity;
+  for (const step of steps) {
+    const delta = Math.abs(step - weight);
+    if (delta < bestDelta) {
+      bestDelta = delta;
+      best = step;
+    }
+  }
+  return best;
 }
 
-function hexToFallback(name: string): string {
-  // Only reached if a referenced variable name doesn't exist in this
-  // export's variables (schema drift) — a visible neutral rather than a
-  // thrown error.
-  void name;
-  return "#8A8477";
+async function resolveFont(family: string, weight: number, italic: boolean): Promise<FontName> {
+  const key = `${family}|${weight}|${italic}`;
+  const cached = fontCache.get(key);
+  if (cached) return cached;
+
+  const candidates: FontName[] = [];
+  const push = (fam: string, style: string) => candidates.push({ family: fam, style });
+
+  const styles = WEIGHT_STYLES[nearestWeight(weight)] || ["Regular"];
+  for (const style of styles) {
+    if (italic) push(family, `${style} Italic`);
+    push(family, style);
+  }
+  // Same family at a normal weight, then the app's own fallback face, so a
+  // missing weight degrades within the brand before leaving it entirely.
+  if (italic) push(family, "Italic");
+  push(family, "Regular");
+  for (const style of styles) push("Inter", style);
+  push("Inter", "Regular");
+
+  for (const candidate of candidates) {
+    try {
+      await figma.loadFontAsync(candidate);
+      fontCache.set(key, candidate);
+      return candidate;
+    } catch {
+      // try the next candidate
+    }
+  }
+  const fallback: FontName = { family: "Inter", style: "Regular" };
+  await figma.loadFontAsync(fallback);
+  fontCache.set(key, fallback);
+  return fallback;
 }
 
 // ---------------------------------------------------------------------------
-// Frame tree
+// Node building
 
-async function buildFrameTree(node: FigmaFrameNode, vars: FigmaVariables, colorVars: ColorVarMap, warnings: Warning[]): Promise<SceneNode | null> {
+async function buildNode(node: FigmaFrameNode, warnings: Warning[]): Promise<SceneNode | null> {
   try {
-    if (node.kind === "text") return await buildText(node, colorVars, warnings);
     if (node.kind === "vector") return buildVector(node, warnings);
-    return await buildFrame(node, vars, colorVars, warnings);
+    if (node.kind === "text") return await buildText(node, warnings);
+    return await buildFrame(node, warnings);
   } catch (err) {
     warnings.push(`Skipped "${node.name}": ${err instanceof Error ? err.message : String(err)}`);
     return null;
   }
 }
 
-async function buildFrame(node: FigmaFrameNode, vars: FigmaVariables, colorVars: ColorVarMap, warnings: Warning[]): Promise<FrameNode> {
+function applyDecoration(frame: FrameNode | ComponentNode, node: FigmaFrameNode): void {
+  // createFrame() starts with an opaque white fill; every node here states
+  // its own fill explicitly, and "no fill" genuinely means transparent.
+  frame.fills = node.fill ? [solid(node.fill)] : [];
+
+  if (node.stroke) {
+    frame.strokes = [solid(node.stroke.color)];
+    frame.strokeAlign = "INSIDE"; // CSS borders sit inside the border-box
+    frame.strokeTopWeight = node.stroke.top;
+    frame.strokeRightWeight = node.stroke.right;
+    frame.strokeBottomWeight = node.stroke.bottom;
+    frame.strokeLeftWeight = node.stroke.left;
+  } else {
+    frame.strokes = [];
+  }
+
+  if (node.radius) {
+    frame.topLeftRadius = node.radius.tl;
+    frame.topRightRadius = node.radius.tr;
+    frame.bottomRightRadius = node.radius.br;
+    frame.bottomLeftRadius = node.radius.bl;
+  }
+
+  if (node.shadows && node.shadows.length > 0) {
+    frame.effects = node.shadows.map(
+      (s: FigmaShadow): DropShadowEffect | InnerShadowEffect => ({
+        type: s.inset ? "INNER_SHADOW" : "DROP_SHADOW",
+        color: { r: s.color.r / 255, g: s.color.g / 255, b: s.color.b / 255, a: s.color.a },
+        offset: { x: s.offsetX, y: s.offsetY },
+        radius: s.blur,
+        spread: s.spread,
+        visible: true,
+        blendMode: "NORMAL",
+      })
+    );
+  }
+
+  if (node.opacity !== undefined) frame.opacity = node.opacity;
+  frame.clipsContent = node.clipsContent === true;
+}
+
+async function buildFrame(node: FigmaFrameNode, warnings: Warning[]): Promise<FrameNode> {
   const frame = figma.createFrame();
   frame.name = node.name;
+  frame.resize(Math.max(node.rect.width, 0.01), Math.max(node.rect.height, 0.01));
+  applyDecoration(frame, node);
 
-  if (node.layout && node.layout.direction !== "NONE") {
-    frame.layoutMode = node.layout.direction;
-    frame.itemSpacing = node.layout.gap ?? 0;
-    frame.primaryAxisSizingMode = "AUTO";
-    frame.counterAxisSizingMode = "AUTO";
-    if (node.layout.padding) {
-      const [top, right, bottom, left] = node.layout.padding;
-      frame.paddingTop = top;
-      frame.paddingRight = right;
-      frame.paddingBottom = bottom;
-      frame.paddingLeft = left;
+  const layout = node.layout;
+  const auto = !!layout && layout.direction !== "NONE";
+  if (auto && layout) {
+    frame.layoutMode = layout.direction as "HORIZONTAL" | "VERTICAL";
+    frame.itemSpacing = layout.gap || 0;
+    if (layout.padding) {
+      frame.paddingTop = layout.padding[0];
+      frame.paddingRight = layout.padding[1];
+      frame.paddingBottom = layout.padding[2];
+      frame.paddingLeft = layout.padding[3];
     }
-    if (node.layout.primaryAlign) frame.primaryAxisAlignItems = node.layout.primaryAlign;
-    if (node.layout.counterAlign) frame.counterAxisAlignItems = node.layout.counterAlign;
-    if (node.layout.wrap) frame.layoutWrap = "WRAP";
+    if (layout.primaryAlign) frame.primaryAxisAlignItems = layout.primaryAlign;
+    if (layout.counterAlign) frame.counterAxisAlignItems = layout.counterAlign;
+    // Sizes are measured, not inferred, so both axes stay fixed — letting
+    // Figma re-hug would recompute a layout the browser already resolved and
+    // reintroduce exactly the drift this rewrite removes.
+    frame.primaryAxisSizingMode = "FIXED";
+    frame.counterAxisSizingMode = "FIXED";
   } else {
     frame.layoutMode = "NONE";
   }
 
-  // node.width/node.height were declared on the type but never actually
-  // applied — every fixed-size node (the rollout section's progress bar and
-  // its fill, footer swatches) silently kept Figma's default new-frame size
-  // (100x100) instead. A 100x100 frame with a "full" (9999px) corner radius
-  // renders as a large circle, which is exactly what the progress bar
-  // looked like instead of a thin bar.
-  if (node.width !== undefined && node.height !== undefined) {
-    if (frame.layoutMode !== "NONE") {
-      frame.primaryAxisSizingMode = "FIXED";
-      frame.counterAxisSizingMode = "FIXED";
-    }
-    frame.resize(node.width, node.height);
-  }
-
-  if (typeof node.radius === "number") frame.cornerRadius = node.radius;
-  else if (node.radius) {
-    const v = colorVars[`radius-${node.radius.variable}`];
-    if (v) frame.setBoundVariable("topLeftRadius" as VariableBindableNodeField, v);
-  }
-
-  // figma.createFrame() defaults to an opaque white fill. Every node in this
-  // export that has no `fill` in the payload means "transparent" (e.g. a
-  // plain layout row inside a card) — leaving Figma's default in place
-  // painted solid white boxes over content wherever a node was fill-less.
-  const fillPaint = resolvePaint(node.fill, colorVars);
-  frame.fills = fillPaint ? [fillPaint] : [];
-  if (node.stroke) {
-    const strokePaint = resolvePaint(node.stroke.paint, colorVars);
-    if (strokePaint) {
-      frame.strokes = [strokePaint];
-      frame.strokeWeight = node.stroke.width;
-    }
-  }
-  if (node.opacity !== undefined) frame.opacity = node.opacity;
-
-  for (const child of node.children ?? []) {
-    const built = await buildFrameTree(child, vars, colorVars, warnings);
+  for (const child of node.children || []) {
+    const built = await buildNode(child, warnings);
     if (!built) continue;
     frame.appendChild(built);
-    // A row laid out as "space between" (e.g. a card's price+CTA footer)
-    // only has room to space its children apart if it actually fills the
-    // parent's width — with the default hug-contents sizing every child
-    // stayed pinned together with no gap between them at all, since the row
-    // itself shrank to fit. This mirrors CSS's own default (a block-level
-    // flex child stretches to its container's width unless told not to).
-    if (child.layout?.primaryAlign === "SPACE_BETWEEN" && "layoutSizingHorizontal" in built) {
-      (built as FrameNode).layoutSizingHorizontal = "FILL";
+    if (auto) {
+      // Keep the measured size inside an auto-layout parent.
+      if ("layoutSizingHorizontal" in built) {
+        try {
+          (built as FrameNode).layoutSizingHorizontal = "FIXED";
+          (built as FrameNode).layoutSizingVertical = "FIXED";
+        } catch {
+          // Text nodes with auto-resize refuse FIXED until resized; harmless.
+        }
+      }
+      if (child.absolute) {
+        (built as FrameNode).layoutPositioning = "ABSOLUTE";
+        built.x = child.rect.x;
+        built.y = child.rect.y;
+      }
+    } else {
+      built.x = child.rect.x;
+      built.y = child.rect.y;
     }
+  }
+
+  // Re-assert the measured box: appending children into an auto-layout frame
+  // can grow it past what the browser actually painted.
+  if (auto) {
+    frame.resize(Math.max(node.rect.width, 0.01), Math.max(node.rect.height, 0.01));
   }
 
   return frame;
 }
 
-async function buildText(node: FigmaFrameNode, colorVars: ColorVarMap, warnings: Warning[]): Promise<TextNode> {
-  const t = node.text!;
-  const family = t.fontFamily === "display" ? "Inter" : "Inter"; // Figma can't guarantee arbitrary custom fonts are installed — Inter is StyleBook's own safe fallback everywhere a real brand font isn't available in this Figma account.
-  let fontName: FontName = { family, style: t.weight >= 700 ? "Bold" : t.weight >= 600 ? "Semi Bold" : "Regular" };
-
-  try {
-    await figma.loadFontAsync(fontName);
-  } catch {
-    warnings.push(`Font "${family} ${fontName.style}" unavailable — used a fallback for "${node.name}".`);
-    fontName = { family: "Inter", style: "Regular" };
-    await figma.loadFontAsync(fontName);
+async function buildText(node: FigmaFrameNode, warnings: Warning[]): Promise<TextNode> {
+  const t = node.text as FigmaTextStyle;
+  const font = await resolveFont(t.fontFamily, t.fontWeight, t.italic);
+  if (font.family !== t.fontFamily) {
+    warnings.push(`"${t.fontFamily}" isn't available in Figma — used ${font.family} ${font.style} instead.`);
   }
 
   const text = figma.createText();
-  text.name = node.name;
-  text.fontName = fontName;
+  text.fontName = font;
   text.characters = t.characters;
-  text.fontSize = t.size ?? 16;
+  text.name = node.name || t.characters.slice(0, 40);
+  text.fontSize = t.fontSize;
+  text.fills = [solid(t.color)];
+  text.textAlignHorizontal = t.align;
+  if (t.decoration !== "NONE") text.textDecoration = t.decoration;
+  if (t.letterSpacing) text.letterSpacing = { unit: "PIXELS", value: t.letterSpacing };
+  if (t.lineHeight !== null) text.lineHeight = { unit: "PIXELS", value: t.lineHeight };
 
-  const fill = t.fillVar ? resolvePaint({ variable: t.fillVar }, colorVars) : t.fillHex ? resolvePaint({ hex: t.fillHex }, colorVars) : undefined;
-  if (fill) text.fills = [fill];
+  // Fixed to the measured box so wrapping matches the browser exactly rather
+  // than being re-flowed by Figma's own text engine.
+  text.textAutoResize = "NONE";
+  text.resize(Math.max(node.rect.width, 1), Math.max(node.rect.height, 1));
+  if (node.opacity !== undefined) text.opacity = node.opacity;
 
   return text;
 }
 
 function buildVector(node: FigmaFrameNode, warnings: Warning[]): SceneNode | null {
-  if (!node.iconSvg) {
-    warnings.push(`Skipped icon "${node.name}": no SVG available for this V1 icon set.`);
+  if (!node.iconSvg) return null;
+  try {
+    const vector = figma.createNodeFromSvg(node.iconSvg);
+    vector.name = node.name;
+    vector.resize(Math.max(node.rect.width, 0.01), Math.max(node.rect.height, 0.01));
+    return vector;
+  } catch (err) {
+    warnings.push(`Couldn't import icon "${node.name}": ${err instanceof Error ? err.message : String(err)}`);
     return null;
   }
-  const vector = figma.createNodeFromSvg(node.iconSvg);
-  vector.name = node.name;
-  return vector;
 }
 
 // ---------------------------------------------------------------------------
 // Component library → variant component sets
 
-const LIBRARY_ROW_MAX_WIDTH = 2400;
+const ROW_MAX_WIDTH = 2600;
 
-async function buildComponentLibrary(sets: FigmaComponentSet[], vars: FigmaVariables, colorVars: ColorVarMap, warnings: Warning[], startY: number) {
+async function buildComponentLibrary(sets: FigmaComponentSet[], warnings: Warning[], startY: number): Promise<SceneNode[]> {
   const page = figma.currentPage;
+  const placed: SceneNode[] = [];
   let x = 0;
   let y = startY;
   let rowHeight = 0;
 
   for (const set of sets) {
     const components: ComponentNode[] = [];
-    for (const { state, node } of set.states) {
-      const built = await buildFrameTree(node, vars, colorVars, warnings);
+
+    for (const entry of set.states) {
+      const built = await buildNode(entry.node, warnings);
       if (!built) continue;
-      const component = figma.createComponentFromNode(built as FrameNode);
-      component.name = `State=${state}`;
+      // createComponentFromNode wraps whatever it's given; building the frame
+      // first keeps one code path for every node type.
+      const component = figma.createComponentFromNode(built);
+      component.name = `State=${entry.state}`;
       components.push(component);
     }
-    if (components.length === 0) continue;
 
-    const combined = components.length > 1 ? figma.combineAsVariants(components, page) : components[0];
-    combined.name = `${set.componentName} (${set.variant})`;
-    if ("layoutMode" in combined) {
+    if (components.length === 0) {
+      warnings.push(`No states could be built for ${set.label} (${set.variant}).`);
+      continue;
+    }
+
+    let container: SceneNode;
+    if (components.length > 1) {
+      const combined = figma.combineAsVariants(components, page);
+      combined.name = `${set.label} — ${set.variant}`;
       combined.layoutMode = "HORIZONTAL";
       combined.itemSpacing = 24;
+      combined.paddingTop = 24;
+      combined.paddingBottom = 24;
+      combined.paddingLeft = 24;
+      combined.paddingRight = 24;
+      combined.primaryAxisSizingMode = "AUTO";
+      combined.counterAxisSizingMode = "AUTO";
+      combined.counterAxisAlignItems = "CENTER";
+      container = combined;
+    } else {
+      components[0].name = `${set.label} — ${set.variant}`;
+      container = components[0];
     }
 
-    // Wrap into a new row rather than one unbounded strip 20 component sets
-    // wide — each set's own width varies (a table's is much wider than a
-    // badge's), so wrapping is width-based, not count-based. The vertical
-    // gap between rows needs real headroom, not just visual breathing room:
-    // Figma draws each node's name label floating above its top edge, and a
-    // tight gap let the next row's labels visually collide with the row
-    // above it.
-    if (x > 0 && x + combined.width > LIBRARY_ROW_MAX_WIDTH) {
+    if (x > 0 && x + container.width > ROW_MAX_WIDTH) {
       x = 0;
-      y += rowHeight + 100;
+      y += rowHeight + 120; // headroom for Figma's floating layer labels
       rowHeight = 0;
     }
-    combined.x = x;
-    combined.y = y;
-    x += combined.width + 48;
-    rowHeight = Math.max(rowHeight, combined.height);
+    container.x = x;
+    container.y = y;
+    x += container.width + 64;
+    rowHeight = Math.max(rowHeight, container.height);
+    placed.push(container);
   }
+
+  return placed;
 }
