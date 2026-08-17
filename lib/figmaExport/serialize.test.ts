@@ -51,4 +51,26 @@ describe("serializeFigmaExport", () => {
     const payload = serializeFigmaExport(tokens, { componentLibrary: false, canvas: true });
     expect(payload.canvas?.children?.map((c) => c.name)).toEqual(["Navbar", "Hero"]);
   });
+
+  it("gives every non-default button state a visually distinct fill or ring when nothing was hand-customized", () => {
+    const payload = serializeFigmaExport(tokens, { componentLibrary: true, canvas: false });
+    const button = payload.componentLibrary!.find((s) => s.componentName === "button" && s.variant === "light")!;
+    const byState = Object.fromEntries(button.states.map((s) => [s.state, s.node]));
+
+    const defaultFill = byState.Default.fill;
+    expect(byState.Hover.fill).not.toEqual(defaultFill);
+    expect(byState.Active.fill).not.toEqual(defaultFill);
+    expect(byState.Active.fill).not.toEqual(byState.Hover.fill);
+    expect(byState.Disabled.opacity).toBeLessThan(1);
+    expect(byState.Focus.stroke?.width).toBe(2);
+  });
+
+  it("gives card, dropdown, and table real multi-part content instead of a single generic label", () => {
+    const payload = serializeFigmaExport(tokens, { componentLibrary: true, canvas: false });
+    const byName = (name: string) => payload.componentLibrary!.find((s) => s.componentName === name && s.variant === "light")!;
+
+    expect(byName("card").states[0].node.children!.length).toBeGreaterThan(1);
+    expect(byName("dropdown").states[0].node.children!.some((c) => c.kind === "vector")).toBe(true);
+    expect(byName("table").states[0].node.children!.length).toBeGreaterThan(1);
+  });
 });
