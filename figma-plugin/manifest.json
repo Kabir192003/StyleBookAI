@@ -1,0 +1,12 @@
+{
+  "name": "StyleBook Import",
+  "id": "stylebook-import",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html",
+  "editorType": ["figma"],
+  "networkAccess": {
+    "allowedDomains": ["https://YOUR-STYLEBOOK-DOMAIN"],
+    "devAllowedDomains": ["http://localhost:3000"]
+  }
+}
