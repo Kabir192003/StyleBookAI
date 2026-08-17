@@ -47,7 +47,15 @@ figma.ui.onmessage = async (msg: { type: string; code?: string }) => {
     figma.ui.postMessage({ type: "done", created, warnings });
     figma.notify(`Imported ${payload.meta.name} from StyleBook`);
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Import failed";
+    // Always log the raw error to the plugin console (Plugins > Development
+    // > Open Console) even though the UI panel only has room for a short
+    // message — a bare "Import failed" with no detail is undebuggable both
+    // for a user and for whoever gets asked to fix it after the fact.
+    console.error("StyleBook Import failed:", err);
+    const message =
+      err instanceof Error
+        ? err.message
+        : `Import failed: ${typeof err === "string" ? err : JSON.stringify(err)} — see Plugins > Development > Open Console for detail.`;
     figma.ui.postMessage({ type: "error", message });
   }
 };

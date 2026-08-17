@@ -4,6 +4,13 @@
  * by the web app. One-shot: the row is deleted on successful read, and
  * expired rows are rejected and cleaned up opportunistically, so a code
  * can't be replayed or left lingering in the table indefinitely.
+ *
+ * CORS headers are required here specifically: a Figma plugin's main-thread
+ * fetch() still enforces normal browser CORS (networkAccess in manifest.json
+ * only controls which domains it's allowed to *attempt*, not whether the
+ * response is exposed to it) and runs from `Origin: null`, not this site's
+ * own origin — every other route in this app is same-origin (called from
+ * StyleBook's own pages) and has never needed this.
  */
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/db/supabase";
@@ -14,6 +21,20 @@ import { getSupabaseAdmin } from "@/lib/db/supabase";
 // silently replay the already-deleted payload instead of 404ing.
 export const dynamic = "force-dynamic";
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+function json(body: unknown, status = 200) {
+  return NextResponse.json(body, { status, headers: CORS_HEADERS });
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
+}
+
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
   const admin = getSupabaseAdmin();
@@ -21,17 +42,17 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ cod
   const { data, error } = await admin.from("figma_export_codes").select("*").eq("code", code.toUpperCase()).maybeSingle();
   if (error) {
     console.error("Failed to look up Figma export code:", error);
-    return NextResponse.json({ error: "Failed to look up code" }, { status: 500 });
+    return json({ error: "Failed to look up code" }, 500);
   }
   if (!data) {
-    return NextResponse.json({ error: "Code not found or already used" }, { status: 404 });
+    return json({ error: "Code not found or already used" }, 404);
   }
 
   await admin.from("figma_export_codes").delete().eq("code", code.toUpperCase());
 
   if (new Date(data.expires_at).getTime() < Date.now()) {
-    return NextResponse.json({ error: "Code expired — generate a new one in StyleBook" }, { status: 410 });
+    return json({ error: "Code expired — generate a new one in StyleBook" }, 410);
   }
 
-  return NextResponse.json(data.payload);
+  return json(data.payload);
 }
