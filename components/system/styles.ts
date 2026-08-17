@@ -115,7 +115,14 @@ export const SYSTEM_COMPONENT_CSS = `
   --pgc-font-label: var(--pg-font-label, var(--pgc-font-body));
   --pgc-font-caption: var(--pg-font-caption, var(--pgc-font-body));
   --pgc-ring: var(--pgc-accent);
-  --pgc-shadow: var(--shadow-subtle, 0 1px 2px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.05));
+  /* --shadow is the "recommended" level's own alias (StudioBuilder's Shadow
+     selector writes state.shadows.recommended) — reading it here first is
+     what makes that selector do anything at all; it used to be defined and
+     exported but never consumed, so none/subtle/dramatic all looked
+     identical on canvas. --shadow-lift stays pinned to the dramatic level
+     regardless of the recommended choice: a hover/press lift is expected to
+     read as *more* present than the resting state even in a "none" system. */
+  --pgc-shadow: var(--shadow, var(--shadow-subtle, 0 1px 2px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.05)));
   --pgc-shadow-lift: var(--shadow-dramatic, 0 8px 28px rgba(0, 0, 0, 0.14));
 
   font-family: var(--pgc-font-body);
@@ -175,7 +182,7 @@ export const SYSTEM_COMPONENT_CSS = `
 /* Mouse users get no ring; keyboard users always do. :focus-visible is the
    whole reason the ring can be this loud without looking broken on click. */
 .pg-btn:focus { outline: none; }
-.pg-btn:focus-visible { outline: 2px solid var(--pgc-ring); outline-offset: 2px; }
+.pg-btn:focus-visible { outline: 2px solid var(--ds-button-border-focus, var(--pgc-ring)); outline-offset: 2px; }
 /* The press must be *felt*, not implied — a reviewer clicks the button and
    expects it to move. Paired with a darker :active fill below. */
 .pg-btn:active:not(:disabled) { transform: translateY(1px); }
@@ -202,6 +209,14 @@ export const SYSTEM_COMPONENT_CSS = `
   background: var(--ds-button-bg-active, color-mix(in srgb, var(--pgc-primary) 72%, var(--pgc-ink)));
   box-shadow: none;
 }
+/* Opacity (base .pg-btn:disabled rule) is the primary disabled signal; this
+   only applies if a disabled-state colour was actually set in the inspector,
+   otherwise it resolves to the same colour the button already has. */
+.pg-btn--primary:disabled {
+  background: var(--ds-button-bg-disabled, var(--ds-button-bg, var(--pgc-primary)));
+  color: var(--ds-button-text-disabled, var(--ds-button-text, var(--pgc-on-primary)));
+  border-color: var(--ds-button-border-disabled, var(--ds-button-border, transparent));
+}
 
 .pg-btn--secondary {
   background: var(--ds-buttonSecondary-bg, color-mix(in srgb, var(--pgc-secondary) 16%, var(--pgc-surface)));
@@ -214,22 +229,44 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-btn--secondary:active:not(:disabled) {
   background: var(--ds-buttonSecondary-bg-active, color-mix(in srgb, var(--pgc-secondary) 36%, var(--pgc-surface)));
 }
+.pg-btn--secondary:disabled {
+  background: var(--ds-buttonSecondary-bg-disabled, var(--ds-buttonSecondary-bg, color-mix(in srgb, var(--pgc-secondary) 16%, var(--pgc-surface))));
+  color: var(--ds-buttonSecondary-text-disabled, var(--ds-buttonSecondary-text, var(--pgc-ink)));
+  border-color: var(--ds-buttonSecondary-border-disabled, var(--ds-buttonSecondary-border, transparent));
+}
+.pg-btn--secondary:focus-visible { outline-color: var(--ds-buttonSecondary-border-focus, var(--pgc-ring)); }
 
+/* Outline and ghost both collapse to the same "button" ComponentName as
+   primary in lib/studio/componentSelection.ts (only secondary gets its own
+   slot) — so they read --ds-button-* here too, precedence-inverted like
+   primary, or an edit to "the button" visibly changes primary and silently
+   does nothing to these. Fallbacks reproduce the pre-existing hardcoded
+   look exactly when nothing is customized. */
 .pg-btn--outline {
   background: transparent;
-  color: var(--pgc-ink);
-  border-color: var(--pgc-border);
+  color: var(--ds-button-text, var(--pgc-ink));
+  border-color: var(--ds-button-border, var(--pgc-border));
 }
 .pg-btn--outline:hover:not(:disabled) {
-  border-color: var(--pgc-accent);
-  color: var(--pgc-accent);
-  background: color-mix(in srgb, var(--pgc-accent) 8%, transparent);
+  border-color: var(--ds-button-bg-hover, var(--ds-button-bg, var(--pgc-accent)));
+  color: var(--ds-button-bg-hover, var(--ds-button-bg, var(--pgc-accent)));
+  background: color-mix(in srgb, var(--ds-button-bg-hover, var(--ds-button-bg, var(--pgc-accent))) 8%, transparent);
 }
-.pg-btn--outline:active:not(:disabled) { background: color-mix(in srgb, var(--pgc-accent) 16%, transparent); }
+.pg-btn--outline:active:not(:disabled) {
+  background: color-mix(in srgb, var(--ds-button-bg-active, var(--ds-button-bg, var(--pgc-accent))) 16%, transparent);
+}
+.pg-btn--outline:disabled {
+  color: var(--ds-button-text-disabled, var(--ds-button-text, var(--pgc-ink)));
+  border-color: var(--ds-button-border-disabled, var(--ds-button-border, var(--pgc-border)));
+}
 
-.pg-btn--ghost { background: transparent; color: var(--pgc-ink); }
-.pg-btn--ghost:hover:not(:disabled) { background: color-mix(in srgb, var(--pgc-ink) 8%, transparent); }
-.pg-btn--ghost:active:not(:disabled) { background: color-mix(in srgb, var(--pgc-ink) 15%, transparent); }
+.pg-btn--ghost { background: transparent; color: var(--ds-button-text, var(--pgc-ink)); }
+.pg-btn--ghost:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--ds-button-bg-hover, var(--ds-button-bg, var(--pgc-ink))) 8%, transparent);
+}
+.pg-btn--ghost:active:not(:disabled) {
+  background: color-mix(in srgb, var(--ds-button-bg-active, var(--ds-button-bg, var(--pgc-ink))) 15%, transparent);
+}
 
 .pg-btn--danger {
   background: var(--pgc-error);
@@ -306,18 +343,29 @@ export const SYSTEM_COMPONENT_CSS = `
    and one in a comment ends the CSS mid-file with a build error that points
    at the wrong line. */
 .pg-input:focus:not(:disabled),
-.pg-select:focus:not(:disabled),
 .pg-textarea:focus:not(:disabled) {
   outline: none;
-  border-color: var(--pgc-accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--pgc-accent) 26%, transparent);
+  border-color: var(--ds-input-border-focus, var(--pgc-accent));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ds-input-border-focus, var(--pgc-accent)) 26%, transparent);
+}
+/* dropdown is its own ComponentName, split from input's rule below so
+   editing "dropdown"'s focus/disabled doesn't also change a plain text
+   field, mirroring dropdown's own background/text/border override above. */
+.pg-select:focus:not(:disabled) {
+  outline: none;
+  border-color: var(--ds-dropdown-border-focus, var(--ds-input-border-focus, var(--pgc-accent)));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ds-dropdown-border-focus, var(--ds-input-border-focus, var(--pgc-accent))) 26%, transparent);
 }
 .pg-input:disabled,
-.pg-select:disabled,
 .pg-textarea:disabled {
   cursor: not-allowed;
   opacity: 0.55;
-  background: color-mix(in srgb, var(--pgc-ink) 6%, var(--pgc-surface));
+  background: var(--ds-input-bg-disabled, color-mix(in srgb, var(--pgc-ink) 6%, var(--pgc-surface)));
+}
+.pg-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  background: var(--ds-dropdown-bg-disabled, var(--ds-input-bg-disabled, color-mix(in srgb, var(--pgc-ink) 6%, var(--pgc-surface))));
 }
 .pg-input[aria-invalid="true"]:not(:disabled) { border-color: var(--pgc-error); }
 .pg-input[aria-invalid="true"]:focus:not(:disabled) {
@@ -377,9 +425,13 @@ export const SYSTEM_COMPONENT_CSS = `
 /* Interactive cards are real <a>/<button> elements, so they get the same
    keyboard ring the buttons do rather than a hover-only affordance. */
 .pg-card--interactive { cursor: pointer; text-align: left; text-decoration: none; }
-.pg-card--interactive:hover { border-color: var(--pgc-accent); box-shadow: var(--pgc-shadow-lift); transform: translateY(-3px); }
+.pg-card--interactive:hover {
+  border-color: var(--ds-card-border-hover, var(--pgc-accent));
+  box-shadow: var(--pgc-shadow-lift);
+  transform: translateY(-3px);
+}
 .pg-card--interactive:focus { outline: none; }
-.pg-card--interactive:focus-visible { outline: 2px solid var(--pgc-ring); outline-offset: 3px; }
+.pg-card--interactive:focus-visible { outline: 2px solid var(--ds-card-border-focus, var(--pgc-ring)); outline-offset: 3px; }
 .pg-card--interactive:active { transform: translateY(-1px); }
 
 /* Media placeholder. A tint of the card's own text colour rather than a
@@ -455,22 +507,36 @@ export const SYSTEM_COMPONENT_CSS = `
   flex: none;
 }
 .pg-navbar__links { display: flex; align-items: center; gap: 2px; }
+/* navigation collapses three structurally different widgets (navbar,
+   tablist, breadcrumbs — see componentSelection.ts) to one editable slot;
+   previously only the navbar's own box consumed --ds-navigation-*, so
+   editing "navigation" never touched a single link/tab/crumb's own text or
+   hover colour anywhere. Resting/hover text+hover-background now read the
+   token; the active/selected highlight stays on --pgc-accent (a distinct
+   "this is current" cue, not literally the component's text colour). */
 .pg-navlink {
   position: relative;
   padding: 7px 11px;
   border-radius: var(--pgc-radius-sm);
   font-size: var(--text-sm, 14px);
   font-weight: 500;
-  color: color-mix(in srgb, var(--pgc-ink) 72%, transparent);
+  color: var(--ds-navigation-text, color-mix(in srgb, var(--pgc-ink) 72%, transparent));
   background: transparent;
   border: 0;
   cursor: pointer;
   transition: color var(--pgc-t), background-color var(--pgc-t);
 }
-.pg-navlink:hover { color: var(--pgc-ink); background: color-mix(in srgb, var(--pgc-ink) 7%, transparent); }
+.pg-navlink:hover {
+  color: var(--ds-navigation-text, var(--pgc-ink));
+  background: var(--ds-navigation-bg-hover, color-mix(in srgb, var(--pgc-ink) 7%, transparent));
+}
 .pg-navlink:focus { outline: none; }
 .pg-navlink:focus-visible { outline: 2px solid var(--pgc-ring); outline-offset: 1px; }
 .pg-navlink[aria-current="page"] { color: var(--pgc-accent); background: color-mix(in srgb, var(--pgc-accent) 12%, transparent); }
+/* Same specificity as .pg-navlink:hover above, declared later, so without
+   this the active item silently lost hover feedback — every other nav
+   link hovers, the current page's doesn't. */
+.pg-navlink[aria-current="page"]:hover { background: color-mix(in srgb, var(--pgc-accent) 20%, transparent); }
 
 /* Tabs. The underline is a pseudo-element on the button so it tracks the
    button's own box and needs no measuring JS. */
@@ -489,7 +555,7 @@ export const SYSTEM_COMPONENT_CSS = `
   font-size: var(--text-sm, 14px);
   font-weight: 600;
   white-space: nowrap;
-  color: var(--pgc-muted);
+  color: var(--ds-navigation-text, var(--pgc-muted));
   background: transparent;
   border: 0;
   cursor: pointer;
@@ -507,7 +573,10 @@ export const SYSTEM_COMPONENT_CSS = `
   transform: scaleX(0);
   transition: transform 180ms cubic-bezier(0.4, 0, 0.2, 1);
 }
-.pg-tab:hover { color: var(--pgc-ink); background: color-mix(in srgb, var(--pgc-ink) 5%, transparent); }
+.pg-tab:hover {
+  color: var(--ds-navigation-text, var(--pgc-ink));
+  background: var(--ds-navigation-bg-hover, color-mix(in srgb, var(--pgc-ink) 5%, transparent));
+}
 .pg-tab:focus { outline: none; }
 .pg-tab:focus-visible { outline: 2px solid var(--pgc-ring); outline-offset: -2px; border-radius: var(--pgc-radius-sm); }
 .pg-tab[aria-selected="true"] { color: var(--pgc-accent); }
@@ -521,7 +590,7 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-crumb {
   padding: 3px 6px;
   border-radius: var(--pgc-radius-sm);
-  color: var(--pgc-muted);
+  color: var(--ds-navigation-text, var(--pgc-muted));
   text-decoration: none;
   background: transparent;
   border: 0;
@@ -529,7 +598,10 @@ export const SYSTEM_COMPONENT_CSS = `
   font: inherit;
   transition: color var(--pgc-t), background-color var(--pgc-t);
 }
-.pg-crumb:hover { color: var(--pgc-accent); background: color-mix(in srgb, var(--pgc-accent) 10%, transparent); }
+.pg-crumb:hover {
+  color: var(--pgc-accent);
+  background: var(--ds-navigation-bg-hover, color-mix(in srgb, var(--pgc-accent) 10%, transparent));
+}
 .pg-crumb:focus { outline: none; }
 .pg-crumb:focus-visible { outline: 2px solid var(--pgc-ring); outline-offset: 1px; }
 .pg-crumb[aria-current="page"] { color: var(--pgc-ink); font-weight: 600; cursor: default; }
@@ -556,8 +628,11 @@ export const SYSTEM_COMPONENT_CSS = `
 }
 /* One rule, four tones: each modifier only rebinds --pgc-tone, and the
    surface/border/icon colours are derived from it. Adding a fifth tone is
-   one three-line block, not another copy of the alert. */
-.pg-alert--info { --pgc-tone: var(--pgc-info); }
+   one three-line block, not another copy of the alert.
+   info is the neutral/default tone (not a status colour), so it takes
+   --ds-alert-bg first — same reasoning as badge's --soft variant above.
+   success/warning/error stay pinned to their semantic meaning. */
+.pg-alert--info { --pgc-tone: var(--ds-alert-bg, var(--pgc-info)); }
 .pg-alert--success { --pgc-tone: var(--pgc-success); }
 .pg-alert--warning { --pgc-tone: var(--pgc-warning); }
 .pg-alert--error { --pgc-tone: var(--pgc-error); }
@@ -611,10 +686,15 @@ export const SYSTEM_COMPONENT_CSS = `
   color: var(--ds-badge-text, var(--pgc-on-accent));
   border: 1px solid var(--ds-badge-border, transparent);
 }
-/* The soft variants deliberately ignore --ds-badge-* : those tokens describe
-   the *solid* badge, and reusing them here would make all five variants
-   identical the moment an AI system is present. */
-.pg-badge--soft { --pgc-tone: var(--pgc-accent); }
+/* success/warning/error stay pinned to their semantic tone, same principle as
+   .pg-btn--danger staying pinned to --pgc-error: a status colour losing its
+   meaning because someone edited "badge" would be actively misleading.
+   --soft is the neutral/default variant (every badge in this app is one of
+   these five, confirmed by grep) and --outline has no tone concept at all,
+   so both take --ds-badge-* first — without this, editing "badge" in the
+   inspector visibly did nothing, since no real badge on canvas ever uses the
+   bare solid .pg-badge these tokens originally targeted. */
+.pg-badge--soft { --pgc-tone: var(--ds-badge-bg, var(--pgc-accent)); }
 .pg-badge--success { --pgc-tone: var(--pgc-success); }
 .pg-badge--warning { --pgc-tone: var(--pgc-warning); }
 .pg-badge--error { --pgc-tone: var(--pgc-error); }
@@ -628,8 +708,8 @@ export const SYSTEM_COMPONENT_CSS = `
 }
 .pg-badge--outline {
   background: transparent;
-  color: var(--pgc-muted);
-  border-color: var(--pgc-border);
+  color: var(--ds-badge-text, var(--pgc-muted));
+  border-color: var(--ds-badge-border, var(--pgc-border));
 }
 .pg-badge__dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
 
@@ -1018,7 +1098,7 @@ export const SYSTEM_COMPONENT_CSS = `
 }
 .pg-table tbody tr:last-child td { border-bottom: 0; }
 .pg-table tbody tr { transition: background-color var(--pgc-t); }
-.pg-table tbody tr:hover { background: color-mix(in srgb, var(--pgc-ink) 3%, transparent); }
+.pg-table tbody tr:hover { background: var(--ds-table-bg-hover, color-mix(in srgb, var(--pgc-ink) 3%, transparent)); }
 .pg-table__num { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* A definition list rendered as rows — the "detail panel" shape (spec sheet,

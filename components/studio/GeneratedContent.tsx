@@ -118,7 +118,7 @@ function ItemGrid({ section }: { section: Extract<AISection, { type: "itemGrid" 
       <SectionHeading title={section.title} lead={section.lead} />
       <div className="pg-grid">
         {section.items.map((item) => (
-          <article key={item.title} className="pg-card pg-card--interactive" style={{ padding: "var(--space-4, 18px)" }}>
+          <article key={item.title} className="pg-card" style={{ padding: "var(--space-4, 18px)" }}>
             {item.badge && (
               <span className="pg-badge pg-badge--soft" style={{ alignSelf: "flex-start", marginBottom: 10 }}>
                 {item.badge}

@@ -47,6 +47,7 @@ export function ComponentEditor({
   onChange,
   previewState,
   onPreviewStateChange,
+  applicableStates = NON_DEFAULT_STATES,
 }: {
   tokens: ComponentTokenSet;
   onChange: (next: ComponentTokenSet) => void;
@@ -57,6 +58,13 @@ export function ComponentEditor({
    *  preview against, so the button is simply absent there. */
   previewState?: NonDefaultState | null;
   onPreviewStateChange?: (state: NonDefaultState | null) => void;
+  /** Which of the four states actually have a real CSS rule behind them for
+   *  this component (see lib/studio/componentSelection.ts's
+   *  APPLICABLE_STATES) — a state with no live target on canvas is never
+   *  offered, so the control can't claim to do something the canvas won't
+   *  show. Defaults to all four for callers that don't know their
+   *  component's identity. */
+  applicableStates?: readonly NonDefaultState[];
 }) {
   const [statesOpen, setStatesOpen] = useState(false);
 
@@ -70,16 +78,18 @@ export function ComponentEditor({
         onChange={(hex) => onChange({ ...tokens, border: hex })}
       />
 
-      <button
-        type="button"
-        onClick={() => setStatesOpen((v) => !v)}
-        className="mt-2 font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]"
-      >
-        {statesOpen ? "▾" : "▸"} States
-      </button>
-      {statesOpen && (
+      {applicableStates.length > 0 && (
+        <button
+          type="button"
+          onClick={() => setStatesOpen((v) => !v)}
+          className="mt-2 font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]"
+        >
+          {statesOpen ? "▾" : "▸"} States
+        </button>
+      )}
+      {statesOpen && applicableStates.length > 0 && (
         <div className="mt-1.5 space-y-2.5">
-          {NON_DEFAULT_STATES.map((state) => {
+          {applicableStates.map((state) => {
             const enabled = Boolean(tokens.states?.[state]);
             const override = tokens.states?.[state];
             const previewing = previewState === state;

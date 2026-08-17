@@ -9,11 +9,15 @@
  * body font with poor rhythm or a text/muted pair with too little separation —
  * repeated placeholder words hide both.
  *
- * The product and article cards are interactive containers, so they are real
- * `<a>` elements: `.pg-card--interactive` gives them hover lift *and* a
- * `:focus-visible` ring, and a div with an onClick would have neither keyboard
- * reachability nor that ring. The `href="#"` is inert-by-intent — these are
- * specimens on a canvas, not navigation.
+ * `.pg-card--interactive` (styles.ts) exists for a card that genuinely is a
+ * real `<a>`/`<button>` — it gives hover lift and a `:focus-visible` ring,
+ * consuming the same --ds-card-* tokens the card's own colours do. Nothing
+ * in the current showcase/generated canvas content applies it (every
+ * rendered card is a plain, non-actionable `.pg-card`) — a div styled to
+ * look clickable with no real click target is worse than one that looks
+ * static, so don't add the class back onto a container with nothing to
+ * click just to "use" it. It stays wired and correct for whichever card
+ * genuinely needs it.
  */
 "use client";
 
