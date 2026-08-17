@@ -30,7 +30,13 @@
 import { X } from "lucide-react";
 import { ComponentEditor, type NonDefaultState } from "@/components/design-system/ComponentEditor";
 import { FontPicker } from "./FontPicker";
-import { COMPONENT_LABELS, TYPE_ROLE_LABELS, type Selection } from "@/lib/studio/componentSelection";
+import {
+  APPLICABLE_STATES,
+  COMPONENT_LABELS,
+  COMPONENT_SCOPE_NOTES,
+  TYPE_ROLE_LABELS,
+  type Selection,
+} from "@/lib/studio/componentSelection";
 import type { ComponentTokenSet } from "@/types/designSystem";
 import type { TypeScale } from "@/types/theme";
 
@@ -119,11 +125,15 @@ export function ComponentInspector({
         tokens && (
           <section>
             <h3 className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">This component</h3>
+            {!isType && COMPONENT_SCOPE_NOTES[selection.name] && (
+              <p className="mt-0.5 text-[11px] leading-snug text-[#8A8477]">{COMPONENT_SCOPE_NOTES[selection.name]}</p>
+            )}
             <ComponentEditor
               tokens={tokens}
               onChange={onTokensChange}
               previewState={previewState}
               onPreviewStateChange={onPreviewStateChange}
+              applicableStates={!isType ? APPLICABLE_STATES[selection.name] : undefined}
             />
           </section>
         )

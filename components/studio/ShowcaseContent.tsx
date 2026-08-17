@@ -187,7 +187,7 @@ export function ShowcaseContent({ systemName }: { systemName: string }) {
         >
           <div className="pg-grid">
             {FEATURES.map((feature) => (
-              <article key={feature.title} className="pg-card pg-card--interactive" style={{ padding: "var(--space-4, 20px)" }}>
+              <article key={feature.title} className="pg-card" style={{ padding: "var(--space-4, 20px)" }}>
                 <span className="pg-badge pg-badge--soft" style={{ alignSelf: "flex-start" }}>
                   {feature.badge}
                 </span>

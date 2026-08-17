@@ -23,6 +23,7 @@
  * edits. Nothing here invents a component vocabulary of its own.
  */
 import type { ComponentName } from "@/types/designSystem";
+import type { NonDefaultState } from "@/components/design-system/ComponentEditor";
 
 /**
  * Ordered most-specific-first, and `closest()` is called against each entry in
@@ -122,4 +123,41 @@ export const COMPONENT_LABELS: Record<ComponentName, string> = {
   modal: "Modal",
   alert: "Alert",
   badge: "Badge",
+};
+
+/**
+ * Which of the four non-default states components/design-system/
+ * ComponentEditor.tsx's `NON_DEFAULT_STATES` actually has a real CSS rule
+ * behind it for this component (see components/system/styles.ts). Every
+ * component technically CAN carry any of the four in a saved/exported
+ * `ComponentTokenSet` — this only controls which state buttons the
+ * inspector offers, so it never presents a control with nothing on canvas
+ * to back it (a static container like `card`/`alert`/`badge`/`modal` has no
+ * real hover/active/disabled/focus target today; `input`/`dropdown` have no
+ * meaningful `:active` press state; `navigation`/`table` only differentiate
+ * on hover). If a component gains a real interactive treatment later, add
+ * its state here alongside the CSS that backs it — not before.
+ */
+export const APPLICABLE_STATES: Record<ComponentName, readonly NonDefaultState[]> = {
+  button: ["hover", "active", "disabled", "focus"],
+  buttonSecondary: ["hover", "active", "disabled", "focus"],
+  input: ["focus", "disabled"],
+  dropdown: ["focus", "disabled"],
+  navigation: ["hover"],
+  table: ["hover"],
+  card: [],
+  modal: [],
+  alert: [],
+  badge: [],
+};
+
+/**
+ * Short, factual note shown under the inspector's "This component" header
+ * when one editable slot intentionally drives more than one visual variant
+ * on canvas — so a shared value is never mistaken for an independent one.
+ * Absent entries mean the component maps one-to-one with what's on canvas.
+ */
+export const COMPONENT_SCOPE_NOTES: Partial<Record<ComponentName, string>> = {
+  button: "Also affects outline and ghost buttons on canvas — Danger keeps its own semantic colour.",
+  navigation: "Affects the nav bar, tabs, and breadcrumbs together.",
 };

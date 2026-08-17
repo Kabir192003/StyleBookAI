@@ -37,14 +37,7 @@ import {
   deriveThemeVariantFromPalette,
   synthesizeDesignSystemFromPalettes,
 } from "@/lib/studio/deriveThemeVariant";
-import {
-  PrimitiveColor,
-  ColorValue,
-  isColorRef,
-  resolvePalette,
-  unlinkPrimitiveFromPalette,
-  makePrimitiveId,
-} from "@/lib/studio/tokenGraph";
+import { PrimitiveColor, ColorValue, resolvePalette } from "@/lib/studio/tokenGraph";
 import type { ComponentName, ComponentTokenSet } from "@/types/designSystem";
 import type { Selection } from "@/lib/studio/componentSelection";
 import { generateTypeScale, TYPE_SCALE_RATIOS } from "@/lib/typeScale/generateTypeScale";
@@ -379,13 +372,6 @@ export function StudioBuilder() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [savedPing, setSavedPing] = useState(false);
-  // Primitives and the type-scale ratio math are the two sidebar sections a
-  // first-time user is least likely to need on their first visit — everyone
-  // wants to change the palette or fonts immediately, few people arrive
-  // already wanting to link a role to a named swatch or pick a modular
-  // scale ratio. Collapsed by default so the sidebar's first screenful is
-  // "palette, typography" rather than six equally-weighted sections.
-  const [advancedOpen, setAdvancedOpen] = useState(false);
 
   // Debounced snapshot history — a snapshot is only pushed once edits
   // settle for 500ms, so dragging a color/slider doesn't spam undo with
@@ -647,29 +633,6 @@ export function StudioBuilder() {
     });
   }
 
-  function addPrimitive() {
-    setState((s) => ({
-      ...s,
-      primitives: [...s.primitives, { id: makePrimitiveId(), name: `Color ${s.primitives.length + 1}`, hex: "#888888" }],
-    }));
-  }
-
-  function updatePrimitive(id: string, patch: Partial<Omit<PrimitiveColor, "id">>) {
-    setState((s) => ({
-      ...s,
-      primitives: s.primitives.map((p) => (p.id === id ? { ...p, ...patch } : p)),
-    }));
-  }
-
-  function removePrimitive(id: string) {
-    setState((s) => ({
-      ...s,
-      primitives: s.primitives.filter((p) => p.id !== id),
-      light: unlinkPrimitiveFromPalette(s.light, id, s.primitives),
-      dark: unlinkPrimitiveFromPalette(s.dark, id, s.primitives),
-    }));
-  }
-
   function applyPalette(p: (typeof PALETTES)[number]) {
     setState((s) => {
       const variant = s.mode === "Dark" ? "dark" : "light";
@@ -867,69 +830,26 @@ export function StudioBuilder() {
                 </button>
               )}
             {ROLES.map((r) => {
-              const raw = activePalette[r.key];
-              const linked = isColorRef(raw);
+              // A role may internally still hold a ColorRef (every role on an
+              // AI-generated project does, see primitivesFromAIColors) — the
+              // swatch resolves and displays that either way, and picking a
+              // new colour always writes a literal hex regardless of what was
+              // there before. That's the entire "unlink" step, folded into
+              // the same interaction as editing any other role: primitives
+              // and links keep working underneath (persistence, export,
+              // resolvePalette), the user just never has to know they exist.
               const resolvedHex = resolvedActivePalette[r.key];
               return (
                 <div key={r.key} className="flex items-center gap-3">
-                  {linked ? (
-                    <span
-                      className="h-10 w-10 flex-none rounded-lg shadow-[0_0_0_1px_rgba(33,30,24,0.14)]"
-                      style={{ backgroundColor: resolvedHex }}
-                      title={resolvedHex}
-                    />
-                  ) : (
-                    <input
-                      type="color"
-                      value={raw}
-                      onChange={(e) => setToken(r.key, e.target.value)}
-                      className="studio-color-input h-10 w-10 flex-none rounded-lg shadow-[0_0_0_1px_rgba(33,30,24,0.14)]"
-                    />
-                  )}
+                  <input
+                    type="color"
+                    value={resolvedHex}
+                    onChange={(e) => setToken(r.key, e.target.value)}
+                    className="studio-color-input h-10 w-10 flex-none rounded-lg shadow-[0_0_0_1px_rgba(33,30,24,0.14)]"
+                  />
                   <div className="flex flex-1 flex-col gap-1">
                     <span className="text-[13px] text-[#211E18]">{r.label}</span>
-                    {linked ? (
-                      <select
-                        value={raw.primitiveId}
-                        onChange={(e) => setToken(r.key, { primitiveId: e.target.value })}
-                        className="rounded-md border border-black/[0.16] bg-white px-1.5 py-1 font-mono-plex text-[11px] uppercase text-[#211E18]"
-                      >
-                        {state.primitives.map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {p.name}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <span className="font-mono-plex text-[11px] uppercase text-[#8A8477]">{resolvedHex}</span>
-                    )}
-                  </div>
-                  <div className="flex flex-none overflow-hidden rounded-md border border-black/[0.16]">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (linked) setToken(r.key, resolvedHex);
-                      }}
-                      className={cn(
-                        "px-2 py-1 font-mono-plex text-[9px] uppercase tracking-[0.08em]",
-                        !linked ? "bg-[#211E18] text-[#F2EBE0]" : "bg-white text-[#8A8477]"
-                      )}
-                    >
-                      Custom
-                    </button>
-                    <button
-                      type="button"
-                      disabled={state.primitives.length === 0}
-                      onClick={() => {
-                        if (!linked) setToken(r.key, { primitiveId: state.primitives[0].id });
-                      }}
-                      className={cn(
-                        "px-2 py-1 font-mono-plex text-[9px] uppercase tracking-[0.08em] disabled:opacity-30",
-                        linked ? "bg-[#211E18] text-[#F2EBE0]" : "bg-white text-[#8A8477]"
-                      )}
-                    >
-                      Linked
-                    </button>
+                    <span className="font-mono-plex text-[11px] uppercase text-[#8A8477]">{resolvedHex}</span>
                   </div>
                   <span className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#B4AD9E]">{r.token}</span>
                 </div>
@@ -1050,111 +970,48 @@ export function StudioBuilder() {
           </div>
 
           <div className="flex flex-col gap-3 border-t border-black/[0.1] pt-4">
-            <button
-              type="button"
-              onClick={() => setAdvancedOpen((v) => !v)}
-              className="flex items-center justify-between font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]"
-            >
-              <span>Advanced</span>
-              <span>{advancedOpen ? "▾" : "▸"}</span>
-            </button>
-            {!advancedOpen && (
-              <p className="text-[12px] leading-relaxed text-[#B4AD9E]">Named swatches and the type-scale ratio.</p>
-            )}
-
-            {advancedOpen && (
-              <>
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center justify-between">
-                    <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Primitives</div>
-                    <button
-                      type="button"
-                      onClick={addPrimitive}
-                      className="font-mono-plex text-[9px] uppercase tracking-[0.12em] text-[#222D52]"
-                    >
-                      + Add
-                    </button>
-                  </div>
-                  <p className="text-[12px] leading-relaxed text-[#6E675C]">
-                    Named swatches a palette role can link to instead of holding its own hex — edit one here and every
-                    linked role, in both modes, updates with it.
-                  </p>
-                  {state.primitives.map((p) => (
-                    <div key={p.id} className="flex items-center gap-3">
-                      <input
-                        type="color"
-                        value={p.hex}
-                        onChange={(e) => updatePrimitive(p.id, { hex: e.target.value })}
-                        className="studio-color-input h-9 w-9 flex-none rounded-lg shadow-[0_0_0_1px_rgba(33,30,24,0.14)]"
-                      />
-                      <input
-                        value={p.name}
-                        onChange={(e) => updatePrimitive(p.id, { name: e.target.value })}
-                        className="min-w-0 flex-1 rounded-md border border-black/[0.16] bg-white px-2 py-1.5 text-[13px] text-[#211E18]"
-                      />
-                      <span className="font-mono-plex text-[11px] uppercase text-[#8A8477]">{p.hex}</span>
-                      <button
-                        type="button"
-                        onClick={() => removePrimitive(p.id)}
-                        className="font-mono-plex text-[13px] text-[#B4AD9E]"
-                        aria-label={`Remove ${p.name}`}
-                        title={`Remove ${p.name}`}
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                  {state.primitives.length === 0 && (
-                    <p className="font-mono-plex text-[11px] uppercase text-[#B4AD9E]">No primitives yet.</p>
-                  )}
-                </div>
-
-                <div className="flex flex-col gap-3">
-                  <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Type scale</div>
-                  <label className="flex flex-col gap-1.5">
-                    <span className="flex justify-between text-xs text-[#6E675C]">
-                      <span>Base size</span>
-                      <span className="font-mono-plex text-[#211E18]">{state.typeScale.baseSize}px</span>
-                    </span>
-                    <input
-                      type="range"
-                      min={12}
-                      max={22}
-                      step={1}
-                      value={state.typeScale.baseSize}
-                      onChange={(e) => set("typeScale", generateTypeScale(Number(e.target.value), state.typeScale.ratioName))}
-                      className="studio-range w-full"
-                    />
-                  </label>
-                  <label className="flex flex-col gap-1.5">
-                    <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#B4AD9E]">Ratio</span>
-                    <select
-                      value={state.typeScale.ratioName}
-                      onChange={(e) => set("typeScale", generateTypeScale(state.typeScale.baseSize, e.target.value))}
-                      className="rounded-lg border border-black/20 bg-white px-3 py-2.5 text-sm text-[#211E18]"
-                    >
-                      {Object.keys(TYPE_SCALE_RATIOS).map((name) => (
-                        <option key={name} value={name}>
-                          {name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <div className="flex items-end gap-2 rounded-lg border border-black/[0.12] bg-white px-3 py-3">
-                    {(["sm", "base", "lg", "xl", "2xl", "3xl"] as const).map((k) => (
-                      <span
-                        key={k}
-                        className="font-editorial-serif leading-none text-[#211E18]"
-                        style={{ fontSize: Math.min(state.typeScale.sizes[k], 34) }}
-                        title={`${k}: ${state.typeScale.sizes[k]}px`}
-                      >
-                        Aa
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
+            <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Type scale</div>
+            <label className="flex flex-col gap-1.5">
+              <span className="flex justify-between text-xs text-[#6E675C]">
+                <span>Base size</span>
+                <span className="font-mono-plex text-[#211E18]">{state.typeScale.baseSize}px</span>
+              </span>
+              <input
+                type="range"
+                min={12}
+                max={22}
+                step={1}
+                value={state.typeScale.baseSize}
+                onChange={(e) => set("typeScale", generateTypeScale(Number(e.target.value), state.typeScale.ratioName))}
+                className="studio-range w-full"
+              />
+            </label>
+            <label className="flex flex-col gap-1.5">
+              <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#B4AD9E]">Ratio</span>
+              <select
+                value={state.typeScale.ratioName}
+                onChange={(e) => set("typeScale", generateTypeScale(state.typeScale.baseSize, e.target.value))}
+                className="rounded-lg border border-black/20 bg-white px-3 py-2.5 text-sm text-[#211E18]"
+              >
+                {Object.keys(TYPE_SCALE_RATIOS).map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="flex items-end gap-2 rounded-lg border border-black/[0.12] bg-white px-3 py-3">
+              {(["sm", "base", "lg", "xl", "2xl", "3xl"] as const).map((k) => (
+                <span
+                  key={k}
+                  className="font-editorial-serif leading-none text-[#211E18]"
+                  style={{ fontSize: Math.min(state.typeScale.sizes[k], 34) }}
+                  title={`${k}: ${state.typeScale.sizes[k]}px`}
+                >
+                  Aa
+                </span>
+              ))}
+            </div>
           </div>
         </aside>
 
@@ -1202,7 +1059,16 @@ export function StudioBuilder() {
                     <button
                       key={label}
                       type="button"
-                      onClick={() => setShowGenerated(wantsGenerated)}
+                      onClick={() => {
+                        // A selected component may not exist in the content
+                        // state being switched to (Showcase's Modal has no
+                        // Generated counterpart, for instance) — closing the
+                        // inspector here matches clicking canvas background,
+                        // rather than leaving it open on a token set with no
+                        // visible element to point at.
+                        if (wantsGenerated !== showGenerated) handleSelect(null);
+                        setShowGenerated(wantsGenerated);
+                      }}
                       className={cn(
                         "px-3.5 py-1.5 font-mono-plex text-[10px] uppercase tracking-[0.12em]",
                         showGenerated === wantsGenerated ? "bg-[#222D52] text-[#F2EBE0]" : "text-[#6E675C]"
