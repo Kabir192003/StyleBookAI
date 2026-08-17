@@ -29,19 +29,25 @@ figma.ui.onmessage = async (msg: { type: string; code?: string }) => {
     const warnings: Warning[] = [];
     const colorVars = await buildVariables(payload.variables, warnings);
 
+    // Canvas goes first and anchors at the origin; the component library
+    // (if also requested) starts well below it rather than also at (0,0) —
+    // placing everything at the same origin was stacking the canvas root
+    // and every component set directly on top of each other.
     let created = 0;
-    if (payload.componentLibrary?.length) {
-      await buildComponentLibrary(payload.componentLibrary, payload.variables, colorVars, warnings);
-      created += payload.componentLibrary.length;
-    }
+    let libraryStartY = 0;
     if (payload.canvas) {
       const root = await buildFrameTree(payload.canvas, payload.variables, colorVars, warnings);
       if (root) {
         figma.currentPage.appendChild(root);
         root.x = 0;
         root.y = 0;
+        libraryStartY = root.height + 200;
       }
       created += 1;
+    }
+    if (payload.componentLibrary?.length) {
+      await buildComponentLibrary(payload.componentLibrary, payload.variables, colorVars, warnings, libraryStartY);
+      created += payload.componentLibrary.length;
     }
 
     figma.ui.postMessage({ type: "done", created, warnings });
@@ -178,8 +184,12 @@ async function buildFrame(node: FigmaFrameNode, vars: FigmaVariables, colorVars:
     if (v) frame.setBoundVariable("topLeftRadius" as VariableBindableNodeField, v);
   }
 
+  // figma.createFrame() defaults to an opaque white fill. Every node in this
+  // export that has no `fill` in the payload means "transparent" (e.g. a
+  // plain layout row inside a card) — leaving Figma's default in place
+  // painted solid white boxes over content wherever a node was fill-less.
   const fillPaint = resolvePaint(node.fill, colorVars);
-  if (fillPaint) frame.fills = [fillPaint];
+  frame.fills = fillPaint ? [fillPaint] : [];
   if (node.stroke) {
     const strokePaint = resolvePaint(node.stroke.paint, colorVars);
     if (strokePaint) {
@@ -191,7 +201,17 @@ async function buildFrame(node: FigmaFrameNode, vars: FigmaVariables, colorVars:
 
   for (const child of node.children ?? []) {
     const built = await buildFrameTree(child, vars, colorVars, warnings);
-    if (built) frame.appendChild(built);
+    if (!built) continue;
+    frame.appendChild(built);
+    // A row laid out as "space between" (e.g. a card's price+CTA footer)
+    // only has room to space its children apart if it actually fills the
+    // parent's width — with the default hug-contents sizing every child
+    // stayed pinned together with no gap between them at all, since the row
+    // itself shrank to fit. This mirrors CSS's own default (a block-level
+    // flex child stretches to its container's width unless told not to).
+    if (child.layout?.primaryAlign === "SPACE_BETWEEN" && "layoutSizingHorizontal" in built) {
+      (built as FrameNode).layoutSizingHorizontal = "FILL";
+    }
   }
 
   return frame;
@@ -200,14 +220,14 @@ async function buildFrame(node: FigmaFrameNode, vars: FigmaVariables, colorVars:
 async function buildText(node: FigmaFrameNode, colorVars: ColorVarMap, warnings: Warning[]): Promise<TextNode> {
   const t = node.text!;
   const family = t.fontFamily === "display" ? "Inter" : "Inter"; // Figma can't guarantee arbitrary custom fonts are installed — Inter is StyleBook's own safe fallback everywhere a real brand font isn't available in this Figma account.
-  const fontName: FontName = { family, style: t.weight >= 700 ? "Bold" : t.weight >= 600 ? "Semi Bold" : "Regular" };
+  let fontName: FontName = { family, style: t.weight >= 700 ? "Bold" : t.weight >= 600 ? "Semi Bold" : "Regular" };
 
   try {
     await figma.loadFontAsync(fontName);
   } catch {
     warnings.push(`Font "${family} ${fontName.style}" unavailable — used a fallback for "${node.name}".`);
-    await figma.loadFontAsync({ family: "Inter", style: "Regular" });
-    fontName.style = "Regular";
+    fontName = { family: "Inter", style: "Regular" };
+    await figma.loadFontAsync(fontName);
   }
 
   const text = figma.createText();
@@ -235,10 +255,13 @@ function buildVector(node: FigmaFrameNode, warnings: Warning[]): SceneNode | nul
 // ---------------------------------------------------------------------------
 // Component library → variant component sets
 
-async function buildComponentLibrary(sets: FigmaComponentSet[], vars: FigmaVariables, colorVars: ColorVarMap, warnings: Warning[]) {
+const LIBRARY_ROW_MAX_WIDTH = 2400;
+
+async function buildComponentLibrary(sets: FigmaComponentSet[], vars: FigmaVariables, colorVars: ColorVarMap, warnings: Warning[], startY: number) {
   const page = figma.currentPage;
   let x = 0;
-  const y = 0;
+  let y = startY;
+  let rowHeight = 0;
 
   for (const set of sets) {
     const components: ComponentNode[] = [];
@@ -256,9 +279,19 @@ async function buildComponentLibrary(sets: FigmaComponentSet[], vars: FigmaVaria
     if ("layoutMode" in combined) {
       combined.layoutMode = "HORIZONTAL";
       combined.itemSpacing = 24;
-      combined.x = x;
-      combined.y = y;
-      x += combined.width + 48;
     }
+
+    // Wrap into a new row rather than one unbounded strip 20 component sets
+    // wide — each set's own width varies (a table's is much wider than a
+    // badge's), so wrapping is width-based, not count-based.
+    if (x > 0 && x + combined.width > LIBRARY_ROW_MAX_WIDTH) {
+      x = 0;
+      y += rowHeight + 48;
+      rowHeight = 0;
+    }
+    combined.x = x;
+    combined.y = y;
+    x += combined.width + 48;
+    rowHeight = Math.max(rowHeight, combined.height);
   }
 }

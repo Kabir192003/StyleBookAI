@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["ES2017", "DOM"],
+    "lib": ["ES2017"],
     "strict": true,
     "typeRoots": ["./node_modules/@figma", "./node_modules/@types"],
     "noEmit": true
