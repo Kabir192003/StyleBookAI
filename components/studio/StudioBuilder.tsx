@@ -1103,7 +1103,6 @@ export function StudioBuilder() {
               selected={selected}
               onSelect={handleSelect}
               previewState={previewState}
-              previewTokens={activeComponentTokens}
             >
               {showGenerated && generatedStructure ? (
                 <GeneratedContent structure={generatedStructure} />

@@ -103,7 +103,16 @@ export function ComponentEditor({
                       onChange={(e) => {
                         const nextStates = { ...tokens.states };
                         if (e.target.checked) {
-                          nextStates[state] = { background: tokens.background, text: tokens.text, border: tokens.border };
+                          // Empty, not a clone of the default colours: the
+                          // fields below still *display* the default (via
+                          // their own `?? tokens.x` fallback) as a starting
+                          // point to edit from, but nothing is actually
+                          // stored as a real override — and therefore
+                          // nothing on canvas changes — until a field is
+                          // genuinely picked. A clone here made every newly
+                          // enabled state look identical to the default,
+                          // which reads as "this state does nothing."
+                          nextStates[state] = {};
                         } else {
                           delete nextStates[state];
                         }

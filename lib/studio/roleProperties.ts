@@ -72,10 +72,17 @@ export function rolePropertyBlock(
   const surface = palette.surface;
   const primary = palette.accent;
   const secondary = palette.support;
-  // No palette slot of its own — falls back to `support` so a component using
-  // --pg-accent for a highlight still reads as part of the brand rather than
-  // disappearing into the surface.
-  const accent = palette.support;
+  // Was `palette.support` — the Palette sidebar's "Accent" swatch fed
+  // --pg-primary (button fills) but never --pg-accent itself, so editing
+  // Accent never reached anything --pg-accent drives: focus rings, the
+  // outline button's hover border/text, the tab underline, the progress
+  // bar fill, badge/alert's neutral tone default. A role literally named
+  // "Accent" not reaching the CSS variable named --pg-accent was exactly
+  // that: editing it looked like it did nothing, everywhere except primary
+  // buttons. Primary and accent now share one source, same as most design
+  // systems using one brand colour for both — Support remains distinct,
+  // secondary buttons only.
+  const accent = palette.accent;
   const text = palette.ink;
   const muted = palette.muted;
   // Same blend deriveThemeVariantFromPalette uses when it first sets up a
