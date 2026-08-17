@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils";
 type FigmaExportState =
   | { kind: "idle" }
   | { kind: "generating" }
-  | { kind: "ready"; code: string; expiresInMinutes: number }
+  | { kind: "ready"; code: string; expiresInMinutes: number; missing: string[] }
   | { kind: "error"; message: string };
 
 export function ExportDrawer({ tokens, onClose }: { tokens: StudioExportTokens; onClose: () => void }) {
@@ -38,14 +38,24 @@ export function ExportDrawer({ tokens, onClose }: { tokens: StudioExportTokens; 
   async function generateFigmaCode() {
     setFigmaState({ kind: "generating" });
     try {
+      // Imported lazily: captureCanvas reaches for `document` and pulls in the
+      // DOM serializer, neither of which should be in the drawer's initial
+      // bundle when most exports never touch the Figma tab.
+      const [{ captureFromCanvas }, { buildFigmaPayload }] = await Promise.all([
+        import("@/lib/figmaExport/captureCanvas"),
+        import("@/lib/figmaExport/serializePayload"),
+      ]);
+      const capture = captureFromCanvas({ canvas: figmaCanvas, componentLibrary: figmaComponentLibrary });
+      const payload = buildFigmaPayload(tokens, capture);
+
       const res = await fetch("/api/figma-export", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tokens, componentLibrary: figmaComponentLibrary, canvas: figmaCanvas }),
+        body: JSON.stringify({ payload }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed to generate export code");
-      setFigmaState({ kind: "ready", code: data.code, expiresInMinutes: data.expiresInMinutes });
+      setFigmaState({ kind: "ready", code: data.code, expiresInMinutes: data.expiresInMinutes, missing: capture.missing });
     } catch (err) {
       setFigmaState({ kind: "error", message: err instanceof Error ? err.message : "Failed to generate export code" });
     }
@@ -221,6 +231,12 @@ export function ExportDrawer({ tokens, onClose }: { tokens: StudioExportTokens; 
                   Expires in {figmaState.expiresInMinutes} minutes. In Figma, run the StyleBook Import plugin and paste
                   this code.
                 </p>
+                {figmaState.missing.length > 0 && (
+                  <p className="mt-3 border-t border-black/[0.08] pt-3 text-[12px] text-[#6E675C]">
+                    Not included: {figmaState.missing.join(", ")} — no instance of these is on the canvas right now, so
+                    there was nothing to capture.
+                  </p>
+                )}
               </div>
             )}
             {figmaState.kind === "error" && (
