@@ -24,7 +24,6 @@ import { canvasCss } from "@/lib/studio/roleProperties";
 import { findComponentAt } from "@/lib/studio/componentSelection";
 import type { StudioExportTokens } from "@/lib/studio/exportCode";
 import type { Selection } from "@/lib/studio/componentSelection";
-import type { ComponentTokenSet } from "@/types/designSystem";
 import type { NonDefaultState } from "@/components/design-system/ComponentEditor";
 
 const SCOPE_ATTR = "data-sb-canvas";
@@ -32,6 +31,10 @@ const SCOPE_SELECTOR = `[${SCOPE_ATTR}]`;
 /** Set on the selected element so the outline can be drawn without React
  *  having to own a ref to a node it did not render. */
 const SELECTED_ATTR = "data-sb-selected";
+/** Set on the previewed element(s) so real `:hover`/`:active` CSS rules
+ *  (components/system/styles.ts) apply via this attribute as an alternate
+ *  selector — see the Preview effect below for why. */
+const PREVIEW_ATTR = "data-sb-preview";
 
 /** Click-to-edit is the canvas's whole premise, but nothing about a button or
  *  a heading visually signals "this is clickable" — a first-time visitor has
@@ -55,7 +58,6 @@ export function StudioCanvas({
   selected,
   onSelect,
   previewState,
-  previewTokens,
   children,
 }: {
   tokens: StudioExportTokens;
@@ -63,10 +65,11 @@ export function StudioCanvas({
   selected: Selection | null;
   onSelect: (selection: Selection | null) => void;
   /** Which non-default state the inspector wants forced onto the selected
-   *  instance right now, and that instance's own token set to read the
-   *  override from. Null/null means "show it normally." */
+   *  instance right now. Null means "show it normally." Doesn't need the
+   *  instance's own tokens — the real CSS (components/system/styles.ts)
+   *  already reads whatever override is stored, the same way real
+   *  hover/focus/disabled does. */
   previewState?: NonDefaultState | null;
-  previewTokens?: ComponentTokenSet | null;
   children: ReactNode;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -110,38 +113,66 @@ export function StudioCanvas({
     return () => window.removeEventListener("keydown", onKey);
   }, [selected, onSelect]);
 
-  // Forces the previewed state's colours directly onto the selected
-  // instance via inline styles, which win over every CSS rule — including
-  // the real `:hover`/`:focus`/`:disabled` selectors — regardless of
-  // whether components/system/styles.ts happens to wire that particular
-  // component/slot/state to a `--ds-*` var. That sidesteps needing to hand-
-  // edit ten components' worth of pseudo-class rules just to make an edit
-  // *visible while editing it*; the real interactive states are a separate,
-  // larger concern from "let me see what I just set."
+  // Triggers the REAL state, not a colour approximation of it. `focus` and
+  // `disabled` have real DOM mechanisms (.focus(), the `disabled` property)
+  // that only ever apply to button/input/select/textarea — exactly the
+  // components APPLICABLE_STATES offers those two for (componentSelection.ts)
+  // — so using them is both more correct and simpler than faking it. `hover`
+  // and `active` have no DOM API to force them (no `el.hover()` exists), so
+  // PREVIEW_ATTR is added as an alternate selector on the *same* CSS rule as
+  // the real `:hover`/`:active` (components/system/styles.ts) rather than a
+  // hand-copied subset of it — so preview shows the exact real hover,
+  // shadow/transform included, never a background-only stand-in for it.
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
     const el = root.querySelector<HTMLElement>(`[${SELECTED_ATTR}]`);
     if (!el) return;
 
-    if (!previewState || !previewTokens || selected?.kind !== "component") {
-      el.style.removeProperty("background");
-      el.style.removeProperty("color");
-      el.style.removeProperty("border-color");
+    // navigation's editable slot spans three descendant families
+    // (links/tabs/crumbs) inside whichever container got selected, and
+    // table's spans its rows — previewing has to reach those descendants or
+    // nothing visibly changes, since the container itself carries none of
+    // that colour.
+    const previewTargets: HTMLElement[] =
+      selected?.kind === "component" && selected.name === "navigation"
+        ? [...el.querySelectorAll<HTMLElement>(".pg-navlink, .pg-tab, .pg-crumb")]
+        : selected?.kind === "component" && selected.name === "table"
+          ? [...el.querySelectorAll<HTMLElement>("tbody tr")]
+          : [el];
+
+    function isFormControl(node: HTMLElement): node is HTMLButtonElement | HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement {
+      return (
+        node instanceof HTMLButtonElement ||
+        node instanceof HTMLInputElement ||
+        node instanceof HTMLSelectElement ||
+        node instanceof HTMLTextAreaElement
+      );
+    }
+
+    function clear() {
+      previewTargets.forEach((t) => {
+        t.removeAttribute(PREVIEW_ATTR);
+        if (isFormControl(t)) t.disabled = false;
+      });
+      if (document.activeElement === el) (el as HTMLElement).blur?.();
+    }
+
+    if (!previewState || selected?.kind !== "component") {
+      clear();
       return;
     }
 
-    const override = previewTokens.states?.[previewState];
-    el.style.setProperty("background", override?.background ?? previewTokens.background);
-    el.style.setProperty("color", override?.text ?? previewTokens.text);
-    el.style.setProperty("border-color", override?.border ?? previewTokens.border ?? previewTokens.background);
+    if (previewState === "focus") {
+      el.focus();
+    } else if (previewState === "disabled") {
+      if (isFormControl(el)) el.disabled = true;
+    } else {
+      previewTargets.forEach((t) => t.setAttribute(PREVIEW_ATTR, previewState));
+    }
 
-    return () => {
-      el.style.removeProperty("background");
-      el.style.removeProperty("color");
-      el.style.removeProperty("border-color");
-    };
-  }, [selected, previewState, previewTokens]);
+    return clear;
+  }, [selected, previewState]);
 
   function handleClick(e: React.MouseEvent<HTMLDivElement>) {
     const root = rootRef.current;

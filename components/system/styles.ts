@@ -200,12 +200,19 @@ export const SYSTEM_COMPONENT_CSS = `
 /* color-mix toward --pgc-ink rather than toward black: on a dark experiment
    the ink is light, so the same rule brightens instead of darkening and the
    hover stays visible in both directions. The --ds-*-hover token, when the
-   AI system supplies one, always wins over the computed fallback. */
-.pg-btn--primary:hover:not(:disabled) {
+   AI system supplies one, always wins over the computed fallback.
+   [data-sb-preview="hover"] is Studio's Preview toggle (StudioCanvas.tsx) —
+   there is no DOM API to force real :hover, so it sets this attribute on the
+   selected element instead. It's added to the *same* rule, not a duplicate
+   with hand-picked properties, so preview shows the exact real hover
+   (shadow lift included), never an approximation of it. */
+.pg-btn--primary:hover:not(:disabled),
+.pg-btn--primary[data-sb-preview="hover"] {
   background: var(--ds-button-bg-hover, color-mix(in srgb, var(--pgc-primary) 85%, var(--pgc-ink)));
   box-shadow: var(--pgc-shadow-lift);
 }
-.pg-btn--primary:active:not(:disabled) {
+.pg-btn--primary:active:not(:disabled),
+.pg-btn--primary[data-sb-preview="active"] {
   background: var(--ds-button-bg-active, color-mix(in srgb, var(--pgc-primary) 72%, var(--pgc-ink)));
   box-shadow: none;
 }
@@ -223,10 +230,12 @@ export const SYSTEM_COMPONENT_CSS = `
   color: var(--ds-buttonSecondary-text, var(--pgc-ink));
   border-color: var(--ds-buttonSecondary-border, transparent);
 }
-.pg-btn--secondary:hover:not(:disabled) {
+.pg-btn--secondary:hover:not(:disabled),
+.pg-btn--secondary[data-sb-preview="hover"] {
   background: var(--ds-buttonSecondary-bg-hover, color-mix(in srgb, var(--pgc-secondary) 26%, var(--pgc-surface)));
 }
-.pg-btn--secondary:active:not(:disabled) {
+.pg-btn--secondary:active:not(:disabled),
+.pg-btn--secondary[data-sb-preview="active"] {
   background: var(--ds-buttonSecondary-bg-active, color-mix(in srgb, var(--pgc-secondary) 36%, var(--pgc-surface)));
 }
 .pg-btn--secondary:disabled {
@@ -247,12 +256,14 @@ export const SYSTEM_COMPONENT_CSS = `
   color: var(--ds-button-text, var(--pgc-ink));
   border-color: var(--ds-button-border, var(--pgc-border));
 }
-.pg-btn--outline:hover:not(:disabled) {
+.pg-btn--outline:hover:not(:disabled),
+.pg-btn--outline[data-sb-preview="hover"] {
   border-color: var(--ds-button-bg-hover, var(--ds-button-bg, var(--pgc-accent)));
   color: var(--ds-button-bg-hover, var(--ds-button-bg, var(--pgc-accent)));
   background: color-mix(in srgb, var(--ds-button-bg-hover, var(--ds-button-bg, var(--pgc-accent))) 8%, transparent);
 }
-.pg-btn--outline:active:not(:disabled) {
+.pg-btn--outline:active:not(:disabled),
+.pg-btn--outline[data-sb-preview="active"] {
   background: color-mix(in srgb, var(--ds-button-bg-active, var(--ds-button-bg, var(--pgc-accent))) 16%, transparent);
 }
 .pg-btn--outline:disabled {
@@ -261,10 +272,12 @@ export const SYSTEM_COMPONENT_CSS = `
 }
 
 .pg-btn--ghost { background: transparent; color: var(--ds-button-text, var(--pgc-ink)); }
-.pg-btn--ghost:hover:not(:disabled) {
+.pg-btn--ghost:hover:not(:disabled),
+.pg-btn--ghost[data-sb-preview="hover"] {
   background: color-mix(in srgb, var(--ds-button-bg-hover, var(--ds-button-bg, var(--pgc-ink))) 8%, transparent);
 }
-.pg-btn--ghost:active:not(:disabled) {
+.pg-btn--ghost:active:not(:disabled),
+.pg-btn--ghost[data-sb-preview="active"] {
   background: color-mix(in srgb, var(--ds-button-bg-active, var(--ds-button-bg, var(--pgc-ink))) 15%, transparent);
 }
 
@@ -273,8 +286,10 @@ export const SYSTEM_COMPONENT_CSS = `
   color: var(--pgc-on-error);
   box-shadow: var(--pgc-shadow);
 }
-.pg-btn--danger:hover:not(:disabled) { background: color-mix(in srgb, var(--pgc-error) 84%, #000); }
-.pg-btn--danger:active:not(:disabled) { background: color-mix(in srgb, var(--pgc-error) 70%, #000); box-shadow: none; }
+.pg-btn--danger:hover:not(:disabled),
+.pg-btn--danger[data-sb-preview="hover"] { background: color-mix(in srgb, var(--pgc-error) 84%, #000); }
+.pg-btn--danger:active:not(:disabled),
+.pg-btn--danger[data-sb-preview="active"] { background: color-mix(in srgb, var(--pgc-error) 70%, #000); box-shadow: none; }
 .pg-btn--danger:focus-visible { outline-color: var(--pgc-error); }
 
 .pg-btn--icon { padding: 0; width: 38px; height: 38px; }
@@ -526,7 +541,8 @@ export const SYSTEM_COMPONENT_CSS = `
   cursor: pointer;
   transition: color var(--pgc-t), background-color var(--pgc-t);
 }
-.pg-navlink:hover {
+.pg-navlink:hover,
+.pg-navlink[data-sb-preview="hover"] {
   color: var(--ds-navigation-text, var(--pgc-ink));
   background: var(--ds-navigation-bg-hover, color-mix(in srgb, var(--pgc-ink) 7%, transparent));
 }
@@ -573,7 +589,8 @@ export const SYSTEM_COMPONENT_CSS = `
   transform: scaleX(0);
   transition: transform 180ms cubic-bezier(0.4, 0, 0.2, 1);
 }
-.pg-tab:hover {
+.pg-tab:hover,
+.pg-tab[data-sb-preview="hover"] {
   color: var(--ds-navigation-text, var(--pgc-ink));
   background: var(--ds-navigation-bg-hover, color-mix(in srgb, var(--pgc-ink) 5%, transparent));
 }
@@ -598,7 +615,8 @@ export const SYSTEM_COMPONENT_CSS = `
   font: inherit;
   transition: color var(--pgc-t), background-color var(--pgc-t);
 }
-.pg-crumb:hover {
+.pg-crumb:hover,
+.pg-crumb[data-sb-preview="hover"] {
   color: var(--pgc-accent);
   background: var(--ds-navigation-bg-hover, color-mix(in srgb, var(--pgc-accent) 10%, transparent));
 }
@@ -1098,7 +1116,8 @@ export const SYSTEM_COMPONENT_CSS = `
 }
 .pg-table tbody tr:last-child td { border-bottom: 0; }
 .pg-table tbody tr { transition: background-color var(--pgc-t); }
-.pg-table tbody tr:hover { background: var(--ds-table-bg-hover, color-mix(in srgb, var(--pgc-ink) 3%, transparent)); }
+.pg-table tbody tr:hover,
+.pg-table tbody tr[data-sb-preview="hover"] { background: var(--ds-table-bg-hover, color-mix(in srgb, var(--pgc-ink) 3%, transparent)); }
 .pg-table__num { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* A definition list rendered as rows — the "detail panel" shape (spec sheet,
