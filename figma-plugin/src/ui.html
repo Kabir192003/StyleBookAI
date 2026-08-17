@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body { font-family: Inter, sans-serif; padding: 16px; color: #211e18; }
+      h1 { font-size: 13px; margin: 0 0 4px; }
+      p { font-size: 11px; color: #6e675c; margin: 0 0 16px; line-height: 1.5; }
+      input { width: 100%; box-sizing: border-box; padding: 10px 12px; font-size: 18px; letter-spacing: 0.14em; text-align: center; text-transform: uppercase; border: 1px solid #d8d2c4; border-radius: 8px; }
+      button { width: 100%; margin-top: 12px; padding: 10px; font-size: 13px; background: #222d52; color: #f2ebe0; border: none; border-radius: 999px; cursor: pointer; }
+      button:disabled { opacity: 0.5; cursor: default; }
+      #status { margin-top: 12px; font-size: 11px; line-height: 1.5; white-space: pre-wrap; }
+      #status.error { color: #b23b3b; }
+      #status.ok { color: #2f6b4f; }
+    </style>
+  </head>
+  <body>
+    <h1>StyleBook Import</h1>
+    <p>Paste the code shown in StyleBook's Export drawer under "Figma Components."</p>
+    <input id="code" maxlength="8" placeholder="ABCD1234" autofocus />
+    <button id="go">Import</button>
+    <div id="status"></div>
+    <script>
+      const codeInput = document.getElementById("code");
+      const status = document.getElementById("status");
+      const button = document.getElementById("go");
+
+      function submit() {
+        const code = codeInput.value.trim();
+        if (!code) return;
+        button.disabled = true;
+        status.className = "";
+        status.textContent = "Importing…";
+        parent.postMessage({ pluginMessage: { type: "import", code } }, "*");
+      }
+
+      button.addEventListener("click", submit);
+      codeInput.addEventListener("keydown", (e) => { if (e.key === "Enter") submit(); });
+
+      window.onmessage = (event) => {
+        const msg = event.data.pluginMessage;
+        if (!msg) return;
+        button.disabled = false;
+        if (msg.type === "done") {
+          status.className = "ok";
+          status.textContent = `Imported. ${msg.warnings?.length ? msg.warnings.join("\n") : ""}`;
+        } else if (msg.type === "error") {
+          status.className = "error";
+          status.textContent = msg.message;
+        }
+      };
+    </script>
+  </body>
+</html>

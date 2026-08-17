@@ -38,6 +38,23 @@ CREATE TABLE favorites (
 CREATE INDEX favorites_user_id_idx ON favorites (user_id);
 CREATE INDEX projects_user_id_idx ON projects (user_id);
 
+-- Short-lived redemption codes for the "Export to Figma" plugin flow. The
+-- Studio export drawer builds a FigmaExportPayload (lib/figmaExport/) and
+-- stores it here; the Figma plugin (a separate app with no access to a
+-- Supabase session) fetches it once via GET /api/figma-export/[code] using
+-- only the code the user pasted, then the row is deleted. No user_id — the
+-- payload is design tokens/geometry, not account data, and the code itself
+-- is the only credential, same trust level as a share link.
+CREATE TABLE figma_export_codes (
+  code       TEXT PRIMARY KEY,
+  payload    JSONB NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE figma_export_codes ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "service_role_only" ON figma_export_codes FOR ALL USING (false);
+
 -- RLS is enabled for defense-in-depth, but every read/write in this app
 -- goes through the server-only service-role client (getSupabaseAdmin() in
 -- lib/db/supabase.ts), which bypasses RLS — ownership is enforced in API
