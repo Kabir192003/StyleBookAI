@@ -176,23 +176,35 @@ function tokenSetToFrame(name: ComponentName, tokens: ComponentTokenSet, variabl
 /** Literal override wins when the design system actually authored one
  *  (matches ColorField's `override.field ?? tokens.field`); otherwise
  *  derives the same mix-toward-ink look the real CSS falls back to, so
- *  Hover/Active are never pixel-identical to Default by default. */
-function resolveStateTokens(tokens: ComponentTokenSet, state: Exclude<FigmaComponentState, "Default">, accent: string): ComponentTokenSet {
+ *  Hover/Active are never pixel-identical to Default by default.
+ *
+ *  Mixes toward `ink` (the design system's text/ink role) — NOT
+ *  `tokens.text`. For a primary button, `tokens.text` is the on-accent
+ *  colour (often near-white), so mixing toward it made hover *lighter* and
+ *  washed-out; the real CSS (`.pg-btn--primary:hover`'s
+ *  `color-mix(in srgb, var(--pgc-primary) 85%, var(--pgc-ink))`) always
+ *  mixes toward the app's ink role, which darkens on a light theme and
+ *  lightens on a dark one exactly the way a hover state should read.
+ *  Simplification: styles.ts actually varies the mix target per component
+ *  (outline/navigation mix toward accent, secondary toward surface) — this
+ *  uses ink uniformly, which is correct for button/buttonSecondary/badge and
+ *  a reasonable approximation elsewhere, not an exhaustive per-component
+ *  match. */
+function resolveStateTokens(tokens: ComponentTokenSet, state: Exclude<FigmaComponentState, "Default">, ink: string): ComponentTokenSet {
   const override = tokens.states?.[STATE_LABEL[state]];
   if (override) {
     return { background: override.background ?? tokens.background, text: override.text ?? tokens.text, border: override.border ?? tokens.border };
   }
   switch (state) {
     case "Hover":
-      return { ...tokens, background: mix(tokens.background, tokens.text, 0.15) };
+      return { ...tokens, background: mix(tokens.background, ink, 0.15) };
     case "Active":
-      return { ...tokens, background: mix(tokens.background, tokens.text, 0.28) };
+      return { ...tokens, background: mix(tokens.background, ink, 0.28) };
     case "Disabled":
-      return tokens; // opacity handled separately (see buildOpacity below) — real disabled state is a fade, not a recolor
+      return tokens; // opacity handled separately — real disabled state is a fade, not a recolor
     case "Focus":
       return tokens; // fill unchanged; a focus ring is added instead (see focusRing param on tokenSetToFrame)
   }
-  void accent;
 }
 
 const OPACITY_BY_STATE: Partial<Record<FigmaComponentState, number>> = { Disabled: 0.45 };
@@ -206,13 +218,14 @@ export function serializeComponent(
   const variants = resolvedThemeVariants(s);
   const tokens = variants[variant].components[name];
   if (!tokens) return null;
+  const ink = variants[variant].colorRoles.text;
   const accent = variables.color.accent?.[variant] ?? "#222D52";
 
   const applicable = APPLICABLE_STATES[name];
   const states: FigmaComponentSet["states"] = [{ state: "Default", node: tokenSetToFrame(name, tokens, variables) }];
   for (const stateName of ["Hover", "Active", "Disabled", "Focus"] as const) {
     if (!applicable.includes(STATE_LABEL[stateName])) continue;
-    const resolved = resolveStateTokens(tokens, stateName, accent);
+    const resolved = resolveStateTokens(tokens, stateName, ink);
     const node = tokenSetToFrame(name, resolved, variables, stateName === "Focus" ? accent : undefined);
     const opacity = OPACITY_BY_STATE[stateName];
     if (opacity !== undefined) node.opacity = opacity;
