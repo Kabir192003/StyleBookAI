@@ -155,6 +155,20 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
             {isSignUp ? "Sign in" : "Create one"}
           </Link>
         </p>
+
+        {isSignUp && (
+          <p className="mt-4 text-center text-[11px] leading-relaxed text-[#6E675C]">
+            By creating an account, you agree to StyleBook&rsquo;s{" "}
+            <Link href="/terms" className="underline decoration-[#6E675C]/40 underline-offset-2 hover:decoration-[#6E675C]">
+              Terms of Use
+            </Link>{" "}
+            and{" "}
+            <Link href="/privacy" className="underline decoration-[#6E675C]/40 underline-offset-2 hover:decoration-[#6E675C]">
+              Privacy Policy
+            </Link>
+            .
+          </p>
+        )}
       </div>
     </main>
   );
