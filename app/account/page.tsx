@@ -84,22 +84,33 @@ function PreferenceRow({
 
 function SignedOutPrompt() {
   return (
-    <main id="main" className="flex min-h-[calc(100vh-56px)] items-center justify-center bg-[#EDE6DA] px-6">
-      <div className="w-full max-w-[380px] rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-8 text-center">
-        <div className="font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#6E675C]">Account</div>
-        <h1 className="mt-2 font-editorial-serif text-2xl font-normal text-[#211E18]">Sign in to see your account.</h1>
-        <p className="mt-3 text-sm text-[#6E675C]">
-          Save projects, favorite colors, fonts and themes, and set your
-          defaults — all tied to a simple username and password, no email
-          required.
-        </p>
-        <div className="mt-6 flex flex-col gap-2.5">
-          <Link href="/sign-in" className="rounded-full bg-[#222D52] py-2.5 text-sm font-semibold text-[#F2EBE0]">
-            Sign in
-          </Link>
-          <Link href="/sign-up" className="rounded-full border border-black/20 py-2.5 text-sm font-medium text-[#211E18] hover:bg-black/[0.04]">
-            Create account
-          </Link>
+    <main id="main" className="min-h-[calc(100vh-56px)] bg-[#EDE6DA] px-6 py-10 sm:px-12">
+      <div className="mx-auto flex max-w-2xl flex-col items-center gap-6">
+        <div className="w-full max-w-[380px] rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-8 text-center">
+          <div className="font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#6E675C]">Account</div>
+          <h1 className="mt-2 font-editorial-serif text-2xl font-normal text-[#211E18]">Sign in to see your account.</h1>
+          <p className="mt-3 text-sm text-[#6E675C]">
+            Save projects, favorite colors, fonts and themes, and set your
+            defaults — all tied to a simple username and password, no email
+            required.
+          </p>
+          <div className="mt-6 flex flex-col gap-2.5">
+            <Link href="/sign-in" className="rounded-full bg-[#222D52] py-2.5 text-sm font-semibold text-[#F2EBE0]">
+              Sign in
+            </Link>
+            <Link href="/sign-up" className="rounded-full border border-black/20 py-2.5 text-sm font-medium text-[#211E18] hover:bg-black/[0.04]">
+              Create account
+            </Link>
+          </div>
+        </div>
+
+        {/* Deliberately outside the sign-in gate. These preferences live in
+            localStorage and need no account, and requiring someone to create
+            one before they can turn on larger text or reduce motion would put
+            the barrier in front of exactly the people the settings exist
+            for. */}
+        <div className="w-full">
+          <AccessibilitySection />
         </div>
       </div>
     </main>
