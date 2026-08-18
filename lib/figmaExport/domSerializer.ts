@@ -218,12 +218,41 @@ function applyTransform(text: string, transform: string): { text: string; transf
   return { text, transformed: false };
 }
 
-function readText(cs: CSSStyleDeclaration, raw: string): FigmaTextStyle | null {
+/**
+ * How many line boxes a run of text occupies, counted from the rectangles
+ * the browser actually laid out rather than inferred from height ÷
+ * line-height (which rounds badly once line-height is `normal`).
+ *
+ * `getClientRects()` returns one rect per line box for a plain text run, but
+ * can return several on the same line when inline children split it — so
+ * distinct `top` values are counted, not raw rects.
+ */
+function countLines(range: Range): number {
+  const rects = Array.from(range.getClientRects()).filter((r) => r.width > 0.5 && r.height > 0.5);
+  if (rects.length === 0) return 1;
+  const tops = new Set(rects.map((r) => Math.round(r.top)));
+  return Math.max(1, tops.size);
+}
+
+function lineCountOf(el: Element): number {
+  try {
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const count = countLines(range);
+    range.detach();
+    return count;
+  } catch {
+    return 1;
+  }
+}
+
+function readText(cs: CSSStyleDeclaration, raw: string, lineCount = 1): FigmaTextStyle | null {
   const { text, transformed } = applyTransform(raw.replace(/\s+/g, " ").trim(), cs.textTransform);
   if (!text) return null;
   const color = colorToRgba(cs.color) ?? { r: 0, g: 0, b: 0, a: 1 };
   const lineHeight = cs.lineHeight === "normal" ? null : px(cs.lineHeight);
   return {
+    lineCount,
     characters: text,
     fontFamily: firstFamily(cs.fontFamily),
     fontWeight: parseInt(cs.fontWeight, 10) || 400,
@@ -311,7 +340,7 @@ function walk(el: Element, originX: number, originY: number, parentIsAutoLayout:
   const elementChildren = Array.from(el.children).filter((c) => !SKIP_TAGS.has(c.tagName));
   const ownText = controlText(el) ?? (elementChildren.length === 0 ? el.textContent ?? "" : "");
   if (elementChildren.length === 0) {
-    const text = readText(cs, ownText);
+    const text = readText(cs, ownText, lineCountOf(el));
     if (text) {
       // Wrap in a frame only when the text box itself is decorated (a pill
       // badge, an input); otherwise emit the text node directly so a designer
@@ -365,13 +394,14 @@ function walk(el: Element, originX: number, originY: number, parentIsAutoLayout:
     if (child.nodeType === Node.TEXT_NODE) {
       const raw = child.textContent ?? "";
       if (!raw.trim()) continue;
-      const text = readText(cs, raw);
-      if (!text) continue;
       const range = document.createRange();
       range.selectNodeContents(child);
       const tr = range.getBoundingClientRect();
+      const runLines = countLines(range);
       range.detach();
       if (tr.width < 0.5 || tr.height < 0.5) continue;
+      const text = readText(cs, raw, runLines);
+      if (!text) continue;
       children.push({
         kind: "text",
         name: text.characters.slice(0, 40),

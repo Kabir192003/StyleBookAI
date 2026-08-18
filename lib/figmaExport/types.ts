@@ -72,6 +72,18 @@ export type FigmaTextStyle = {
    *  fidelity only, since Figma's textCase would double-apply it. */
   transformed: boolean;
   decoration: "NONE" | "UNDERLINE" | "STRIKETHROUGH";
+  /**
+   * How many line boxes the browser actually painted this text on.
+   *
+   * Load-bearing for fidelity: Figma's text engine measures slightly
+   * differently from the browser, so pinning a node to its measured width
+   * makes any string that comes out a pixel wider wrap to a second line —
+   * and because siblings are placed at fixed offsets, that extra line then
+   * overlaps whatever sits below it. The plugin uses this to let
+   * single-line text hug its own width (making a wrap impossible) while
+   * genuinely wrapped text keeps the measured width and grows in height.
+   */
+  lineCount: number;
 };
 
 export type FigmaFrameNode = {
