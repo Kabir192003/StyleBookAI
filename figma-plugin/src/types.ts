@@ -60,6 +60,9 @@ export type FigmaTextStyle = {
   align: "LEFT" | "CENTER" | "RIGHT" | "JUSTIFIED";
   transformed: boolean;
   decoration: "NONE" | "UNDERLINE" | "STRIKETHROUGH";
+  /** Line boxes the browser actually painted — see the same field in
+   *  lib/figmaExport/types.ts for why it exists. */
+  lineCount: number;
 };
 
 export type FigmaFrameNode = {

@@ -303,8 +303,13 @@ async function buildFrame(node: FigmaFrameNode, warnings: Warning[]): Promise<Fr
     if (!built) continue;
     frame.appendChild(built);
     if (auto) {
-      // Keep the measured size inside an auto-layout parent.
-      if ("layoutSizingHorizontal" in built) {
+      // Keep the measured size inside an auto-layout parent — except for
+      // single-line text, which is deliberately left hugging so it can't be
+      // re-wrapped by Figma's slightly different text metrics (see buildText).
+      // Forcing FIXED here would pin it back to the measured width and
+      // reintroduce exactly the wrapping this avoids.
+      const hugsToAvoidWrapping = child.kind === "text" && (child.text?.lineCount ?? 1) <= 1;
+      if (!hugsToAvoidWrapping && "layoutSizingHorizontal" in built) {
         try {
           (built as FrameNode).layoutSizingHorizontal = "FIXED";
           (built as FrameNode).layoutSizingVertical = "FIXED";
@@ -350,10 +355,26 @@ async function buildText(node: FigmaFrameNode, warnings: Warning[]): Promise<Tex
   if (t.letterSpacing) text.letterSpacing = { unit: "PIXELS", value: t.letterSpacing };
   if (t.lineHeight !== null) text.lineHeight = { unit: "PIXELS", value: t.lineHeight };
 
-  // Fixed to the measured box so wrapping matches the browser exactly rather
-  // than being re-flowed by Figma's own text engine.
-  text.textAutoResize = "NONE";
-  text.resize(Math.max(node.rect.width, 1), Math.max(node.rect.height, 1));
+  // Sizing is the difference between a clean import and a mangled one.
+  //
+  // Pinning every node to its measured box looks right in principle but
+  // fails in practice: Figma's text engine measures a little differently
+  // from the browser, so any string that comes out even a pixel wider wraps
+  // to a second line, and since siblings sit at fixed offsets that extra
+  // line lands on top of whatever is below it. That's what turned "Northwind"
+  // into "Northw/ind" and dropped field hints onto the next label.
+  //
+  // So: text the browser kept on one line hugs its own width, which makes
+  // wrapping structurally impossible regardless of metric differences. Text
+  // the browser genuinely wrapped keeps the measured width — that width is
+  // what produced the wrap — and is free to grow in height so a differently
+  // placed break lengthens the block instead of clipping it.
+  if (t.lineCount > 1) {
+    text.textAutoResize = "HEIGHT";
+    text.resize(Math.max(node.rect.width, 1), Math.max(node.rect.height, 1));
+  } else {
+    text.textAutoResize = "WIDTH_AND_HEIGHT";
+  }
   if (node.opacity !== undefined) text.opacity = node.opacity;
 
   return text;
