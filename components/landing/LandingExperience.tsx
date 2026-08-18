@@ -26,6 +26,7 @@ import Lenis from "lenis";
 import { prefersReducedMotion } from "@/lib/landing/motion";
 import { GoogleFontsLoader } from "@/components/fonts/GoogleFontsLoader";
 import { LandingGeneratePanel } from "@/components/landing/LandingGeneratePanel";
+import { LandingPressSheet } from "@/components/landing/LandingPressSheet";
 import { useAIResultStore } from "@/store";
 import { paletteFromAIColors } from "@/lib/studio/paletteFromAIColors";
 import {
@@ -699,65 +700,26 @@ export function LandingExperience() {
         {landingProject && <GoogleFontsLoader fonts={[landingProject.fonts.primary]} />}
 
         {/* S0 — Product hero: what this is, and a working generator, both
-            above the fold and above the scroll story. The story below is
-            reframed as an optional deep-dive ("see how it's built"), not
-            the thing a visitor has to get through first. */}
-        <section data-reveal-group className="relative mx-auto flex min-h-[calc(100vh-56px)] max-w-[1040px] flex-col justify-center px-6 py-16 sm:px-12" style={{ background: "#F2EBE0", color: "#211E18" }}>
-          <div data-reveal-item className="font-mono-plex text-xs uppercase tracking-[0.28em]" style={{ color: "#C36B3E" }}>
-            StyleBook — AI design-system generator
-          </div>
-          <h1 data-reveal-item className="mt-[18px] max-w-[18ch] font-editorial-serif text-[clamp(38px,5.6vw,72px)] font-normal leading-[1.04] tracking-[-0.01em]">
-            Describe your brand.
-            <br />
-            Get a complete design system.
-          </h1>
-          <p data-reveal-item className="mt-5 max-w-[54ch] text-[clamp(15px,1.3vw,18px)] leading-relaxed" style={{ color: "#6E675C" }}>
-            Palette, typography, spacing and accessibility — generated in seconds, verified for real contrast (not
-            just claimed), refined in Studio, exported anywhere.
-          </p>
+            above the fold and above the scroll story, which stays an optional
+            deep-dive ("see how it's built") rather than the thing a visitor
+            has to get through first.
 
-          <div data-reveal-item className="mt-9 max-w-[720px]">
-            <LandingGeneratePanel
-              theme="light"
-              inputId="landing-ai-prompt-hero"
-              prompt={landingPrompt}
-              onPromptChange={setLandingPrompt}
-              status={landingStatus}
-              onGenerate={handleLandingGenerate}
-              fellBack={landingFellBack}
-              hasProject={Boolean(landingProject)}
-              preview={landingPreview}
-            />
-          </div>
-
-          <div data-reveal-item className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
-            {landingProject && (
-              <button
-                type="button"
-                onClick={openLandingResultInStudio}
-                className="rounded-full px-6 py-3 text-sm font-semibold"
-                style={{ background: "#211E18", color: "#F2EBE0" }}
-              >
-                Open &ldquo;{landingProject.name}&rdquo; in Studio →
-              </button>
-            )}
-            <Link href="/browse/colors" className="text-sm font-semibold" style={{ color: "#211E18" }}>
-              Browse the library →
-            </Link>
-            <Link href="/studio" className="text-sm font-semibold" style={{ color: "#211E18" }}>
-              Open the Studio →
-            </Link>
-          </div>
-
-          <a
-            href="#story"
-            className="pointer-events-auto absolute bottom-[30px] left-1/2 flex -translate-x-1/2 flex-col items-center gap-2.5 font-mono-plex text-[10px] uppercase tracking-[0.24em]"
-            style={{ color: "#8A8477" }}
-          >
-            <span>See how it&apos;s built</span>
-            <span className="sb-hint-el h-[26px] w-px" style={{ background: "#8A8477", animation: "sb-hint 1.8s ease-in-out infinite" }} />
-          </a>
-        </section>
+            The "Press sheet" (1A) layout from the Hero Shortlist design doc —
+            see components/landing/LandingPressSheet.tsx. It owns the same
+            lifted generator state this section always did, so the panel
+            further down the page still mirrors whatever is typed here. */}
+        <LandingPressSheet
+          inputId="landing-ai-prompt-hero"
+          prompt={landingPrompt}
+          onPromptChange={setLandingPrompt}
+          status={landingStatus}
+          onGenerate={handleLandingGenerate}
+          fellBack={landingFellBack}
+          hasProject={Boolean(landingProject)}
+          preview={landingPreview}
+          projectName={landingProject?.name}
+          onOpenInStudio={openLandingResultInStudio}
+        />
 
         {/* S1 — Undesigned hero */}
         <section id="story" className="relative mx-auto flex min-h-[calc(100vh-56px)] max-w-[1160px] flex-col justify-center px-6 pb-[90px] pt-16 sm:px-12">
