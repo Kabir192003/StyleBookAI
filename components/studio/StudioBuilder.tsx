@@ -688,7 +688,7 @@ export function StudioBuilder() {
   return (
     <div className="min-h-screen bg-[#EDE6DA] font-grotesk text-[#211E18]">
       <div className="sticky top-14 z-40 flex flex-wrap items-center justify-between gap-4 border-b border-black/[0.18] bg-[#EDE6DA]/[0.94] px-6 py-3.5 backdrop-blur-md sm:px-12">
-        <div className="flex items-center gap-2 font-mono-plex text-[11px] uppercase tracking-[0.18em] text-[#8A8477]">
+        <div className="flex items-center gap-2 font-mono-plex text-[11px] uppercase tracking-[0.18em] text-[#6E675C]">
           The Studio — {state.name}
           {isDirty && (
             <span
@@ -777,7 +777,7 @@ export function StudioBuilder() {
       >
         <aside className="flex flex-col gap-[30px] border-b border-black/[0.18] bg-[#F2EBE0] px-6 py-6 lg:sticky lg:top-[105px] lg:max-h-[calc(100vh-105px)] lg:overflow-y-auto lg:border-b-0 lg:border-r">
           <div>
-            <div className="font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#8A8477]">The Studio</div>
+            <div className="font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#6E675C]">The Studio</div>
             <h1 className="mt-2 font-editorial-serif text-[34px] font-normal leading-[1.02] tracking-[-0.02em]">
               Compose your system.
             </h1>
@@ -787,7 +787,7 @@ export function StudioBuilder() {
           </div>
 
           <div className="flex flex-col gap-3">
-            <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Identity</div>
+            <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">Identity</div>
             <input
               value={state.name}
               onChange={(e) => set("name", e.target.value)}
@@ -812,8 +812,8 @@ export function StudioBuilder() {
 
           <div className="flex flex-col gap-3.5">
             <div className="flex items-center justify-between">
-              <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Palette</div>
-              <div className="font-mono-plex text-[9px] uppercase tracking-[0.12em] text-[#B4AD9E]">
+              <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">Palette</div>
+              <div className="font-mono-plex text-[9px] uppercase tracking-[0.12em] text-[#6E675C]">
                 Editing {state.mode}
               </div>
             </div>
@@ -849,9 +849,9 @@ export function StudioBuilder() {
                   />
                   <div className="flex flex-1 flex-col gap-1">
                     <span className="text-[13px] text-[#211E18]">{r.label}</span>
-                    <span className="font-mono-plex text-[11px] uppercase text-[#8A8477]">{resolvedHex}</span>
+                    <span className="font-mono-plex text-[11px] uppercase text-[#6E675C]">{resolvedHex}</span>
                   </div>
-                  <span className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#B4AD9E]">{r.token}</span>
+                  <span className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#6E675C]">{r.token}</span>
                 </div>
               );
             })}
@@ -875,9 +875,9 @@ export function StudioBuilder() {
           </div>
 
           <div className="flex flex-col gap-3">
-            <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Typography</div>
+            <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">Typography</div>
             <label className="flex flex-col gap-1.5">
-              <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#B4AD9E]">Display</span>
+              <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">Display</span>
               <select
                 value={state.headFont}
                 onChange={(e) => set("headFont", e.target.value)}
@@ -891,7 +891,7 @@ export function StudioBuilder() {
               </select>
             </label>
             <label className="flex flex-col gap-1.5">
-              <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#B4AD9E]">Body</span>
+              <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">Body</span>
               <select
                 value={state.bodyFont}
                 onChange={(e) => set("bodyFont", e.target.value)}
@@ -905,7 +905,7 @@ export function StudioBuilder() {
               </select>
             </label>
             <label className="flex flex-col gap-1.5">
-              <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#B4AD9E]">Accent (optional)</span>
+              <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">Accent (optional)</span>
               <select
                 value={state.accentFont ?? ""}
                 onChange={(e) => set("accentFont", e.target.value || undefined)}
@@ -936,7 +936,7 @@ export function StudioBuilder() {
           </div>
 
           <div className="flex flex-col gap-4">
-            <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Shape &amp; density</div>
+            <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">Shape &amp; density</div>
             <label className="flex flex-col gap-2">
               <span className="flex justify-between text-xs text-[#6E675C]">
                 <span>Corner radius</span>
@@ -970,7 +970,7 @@ export function StudioBuilder() {
           </div>
 
           <div className="flex flex-col gap-3 border-t border-black/[0.1] pt-4">
-            <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Type scale</div>
+            <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">Type scale</div>
             <label className="flex flex-col gap-1.5">
               <span className="flex justify-between text-xs text-[#6E675C]">
                 <span>Base size</span>
@@ -987,7 +987,7 @@ export function StudioBuilder() {
               />
             </label>
             <label className="flex flex-col gap-1.5">
-              <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#B4AD9E]">Ratio</span>
+              <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">Ratio</span>
               <select
                 value={state.typeScale.ratioName}
                 onChange={(e) => set("typeScale", generateTypeScale(state.typeScale.baseSize, e.target.value))}
@@ -1016,13 +1016,14 @@ export function StudioBuilder() {
         </aside>
 
         <main
+          id="main"
           className="relative overflow-hidden"
           style={{
             backgroundImage:
               "repeating-linear-gradient(45deg, #E7DFD1, #E7DFD1 1px, #EDE6DA 1px, #EDE6DA 11px)",
           }}
         >
-          <div className="flex items-center justify-between px-6 py-3.5 font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477] sm:px-8">
+          <div className="flex items-center justify-between px-6 py-3.5 font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C] sm:px-8">
             <span>Live preview</span>
             <span>
               {state.name} · {state.mode} · {state.headFont} + {state.bodyFont}
@@ -1031,7 +1032,7 @@ export function StudioBuilder() {
 
           <div className="px-6 pb-10 sm:px-8">
             <div className="mb-4 flex flex-wrap items-center gap-3">
-              <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Shadow</div>
+              <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">Shadow</div>
               <div className="flex gap-2">
                 {(["none", "subtle", "dramatic"] as const).map((level) => (
                   <button

@@ -24,7 +24,7 @@ export default function ComparePage() {
   return (
     <>
       <StudioNav />
-      <main className="min-h-screen bg-neutral-50 p-8">
+      <main id="main" className="min-h-screen bg-neutral-50 p-8">
         <div className="mx-auto max-w-6xl">
           <div className="max-w-3xl">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-neutral-500">Studio compare</p>

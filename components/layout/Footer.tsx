@@ -29,7 +29,7 @@ export function Footer() {
           <Link href="/" className="font-editorial-serif text-base font-bold text-[#211E18]">
             StyleBook
           </Link>
-          <span className="text-xs text-[#8A8477]">Design decisions, unified.</span>
+          <span className="text-xs text-[#6E675C]">Design decisions, unified.</span>
         </div>
 
         <nav className="flex flex-wrap gap-x-6 gap-y-2" aria-label="Footer">
@@ -44,7 +44,7 @@ export function Footer() {
           ))}
         </nav>
 
-        <span className="text-xs text-[#8A8477]">
+        <span className="text-xs text-[#6E675C]">
           © {new Date().getFullYear()} StyleBook AI
         </span>
       </div>

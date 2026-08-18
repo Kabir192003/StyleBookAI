@@ -18,6 +18,7 @@ import { LayoutGrid, LogOut } from "lucide-react";
 import { applyTheme, getStoredTheme, type ThemePreference } from "@/lib/theme";
 import { Button } from "@/components/ui/Button";
 import { FavoritesSection } from "@/components/account/FavoritesSection";
+import { AccessibilitySection } from "@/components/account/AccessibilitySection";
 import { useAuthStore, useFavoritesStore } from "@/store";
 
 const PREFS_KEY = "stylebook-prefs";
@@ -51,7 +52,7 @@ function SegmentedControl<T extends string>({
           className={`relative rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
             value === opt.value
               ? "bg-white text-[#211E18] shadow-[0_1px_3px_rgba(24,28,45,0.12)]"
-              : "text-[#8A8477] hover:text-[#6E675C]"
+              : "text-[#6E675C] hover:text-[#6E675C]"
           }`}
         >
           {opt.label}
@@ -74,7 +75,7 @@ function PreferenceRow({
     <div className="flex items-center justify-between gap-6 py-4">
       <div>
         <div className="text-sm font-medium text-[#211E18]">{title}</div>
-        {description && <div className="mt-0.5 text-xs text-[#8A8477]">{description}</div>}
+        {description && <div className="mt-0.5 text-xs text-[#6E675C]">{description}</div>}
       </div>
       {children}
     </div>
@@ -83,9 +84,9 @@ function PreferenceRow({
 
 function SignedOutPrompt() {
   return (
-    <main className="flex min-h-[calc(100vh-56px)] items-center justify-center bg-[#EDE6DA] px-6">
+    <main id="main" className="flex min-h-[calc(100vh-56px)] items-center justify-center bg-[#EDE6DA] px-6">
       <div className="w-full max-w-[380px] rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-8 text-center">
-        <div className="font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#8A8477]">Account</div>
+        <div className="font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#6E675C]">Account</div>
         <h1 className="mt-2 font-editorial-serif text-2xl font-normal text-[#211E18]">Sign in to see your account.</h1>
         <p className="mt-3 text-sm text-[#6E675C]">
           Save projects, favorite colors, fonts and themes, and set your
@@ -190,7 +191,7 @@ export default function AccountPage() {
   }
 
   if (authStatus === "loading") {
-    return <main className="min-h-[calc(100vh-56px)] bg-[#EDE6DA]" />;
+    return <main id="main" className="min-h-[calc(100vh-56px)] bg-[#EDE6DA]" />;
   }
 
   if (!user) {
@@ -200,11 +201,11 @@ export default function AccountPage() {
   const memberSince = new Date(user.createdAt).toLocaleDateString(undefined, { month: "long", year: "numeric" });
 
   return (
-    <main className="min-h-[calc(100vh-56px)] bg-[#EDE6DA] px-6 py-10 sm:px-12">
+    <main id="main" className="min-h-[calc(100vh-56px)] bg-[#EDE6DA] px-6 py-10 sm:px-12">
       <div className="mx-auto max-w-2xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <div className="font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#8A8477]">Account · Vol. 01</div>
+            <div className="font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#6E675C]">Account · Vol. 01</div>
             <h1 className="mt-2 font-editorial-serif text-[34px] font-normal leading-[1.02] tracking-[-0.02em] text-[#211E18]">
               {user.username}
             </h1>
@@ -226,7 +227,7 @@ export default function AccountPage() {
         <div className="flex flex-col gap-6">
           <section className="flex items-center justify-between gap-4 rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-6">
             <div>
-              <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Profile</div>
+              <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">Profile</div>
               <p className="mt-1.5 text-sm text-[#6E675C]">Member since {memberSince}</p>
             </div>
             <button
@@ -241,7 +242,7 @@ export default function AccountPage() {
 
           <section className="flex items-center justify-between gap-4 rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-6">
             <div>
-              <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Saved projects</div>
+              <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">Saved projects</div>
               <p className="mt-1.5 text-sm text-[#6E675C]">
                 {projectCount === null ? "Loading…" : `${projectCount} project${projectCount === 1 ? "" : "s"} saved`}
               </p>
@@ -257,8 +258,10 @@ export default function AccountPage() {
 
           <FavoritesSection />
 
+          <AccessibilitySection />
+
           <section className="relative overflow-hidden rounded-2xl border border-black/[0.12] bg-[#F2EBE0] px-6">
-            <h2 className="border-b border-black/[0.1] py-4 font-mono-plex text-xs font-semibold uppercase tracking-wider text-[#8A8477]">
+            <h2 className="border-b border-black/[0.1] py-4 font-mono-plex text-xs font-semibold uppercase tracking-wider text-[#6E675C]">
               Preferences
             </h2>
 

@@ -67,7 +67,7 @@ function TabButton({
       type="button"
       onClick={onClick}
       className={`whitespace-nowrap border-b-2 py-4 font-mono-plex text-[11px] uppercase tracking-[0.16em] transition-colors ${
-        active ? "border-[#211E18] text-[#211E18]" : "border-transparent text-[#8A8477] hover:text-[#211E18]"
+        active ? "border-[#211E18] text-[#211E18]" : "border-transparent text-[#6E675C] hover:text-[#211E18]"
       }`}
     >
       {children}
@@ -264,7 +264,7 @@ export function ThemeGrid({ themes }: { themes: Theme[] }) {
             Every look is a complete edition — palette, pairing, and type scale bound together. Each cover below
             is set in its own theme, so you&apos;re reading the design before you ever open it.
           </p>
-          <span className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#8A8477]">
+          <span className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#6E675C]">
             {String(items.length).padStart(2, "0")} editions shown
           </span>
         </div>
@@ -293,7 +293,7 @@ export function ThemeGrid({ themes }: { themes: Theme[] }) {
         </>
       )}
 
-      <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-black/[0.18] px-6 py-9 font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477] sm:px-12">
+      <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-black/[0.18] px-6 py-9 font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C] sm:px-12">
         <span>© {new Date().getFullYear()} StyleBook</span>
         <span>Colour · Type · Theme — unified</span>
       </footer>

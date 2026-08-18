@@ -82,7 +82,7 @@ export function ClipboardTray() {
 
           <div className="max-h-[280px] overflow-y-auto px-4 py-3">
             {count === 0 ? (
-              <p className="py-6 text-center text-[13px] leading-relaxed text-[#8A8477]">
+              <p className="py-6 text-center text-[13px] leading-relaxed text-[#6E675C]">
                 Nothing clipped yet. Use the clipboard icon on any colour or font in Browse.
               </p>
             ) : (
@@ -95,13 +95,13 @@ export function ClipboardTray() {
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[13px] text-[#211E18]">{c.name}</p>
-                      <p className="font-mono-plex text-[10px] uppercase tracking-[0.1em] text-[#8A8477]">{c.hex}</p>
+                      <p className="font-mono-plex text-[10px] uppercase tracking-[0.1em] text-[#6E675C]">{c.hex}</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => removeColor(c.id)}
                       aria-label={`Remove ${c.name} from clipboard`}
-                      className="rounded-full p-1 text-[#8A8477] hover:bg-black/[0.06] hover:text-[#211E18]"
+                      className="rounded-full p-1 text-[#6E675C] hover:bg-black/[0.06] hover:text-[#211E18]"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -114,7 +114,7 @@ export function ClipboardTray() {
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[13px] text-[#211E18]">{f.family}</p>
-                      <p className="font-mono-plex text-[10px] uppercase tracking-[0.1em] text-[#8A8477]">
+                      <p className="font-mono-plex text-[10px] uppercase tracking-[0.1em] text-[#6E675C]">
                         {f.category}
                       </p>
                     </div>
@@ -122,7 +122,7 @@ export function ClipboardTray() {
                       type="button"
                       onClick={() => removeFont(f.id)}
                       aria-label={`Remove ${f.family} from clipboard`}
-                      className="rounded-full p-1 text-[#8A8477] hover:bg-black/[0.06] hover:text-[#211E18]"
+                      className="rounded-full p-1 text-[#6E675C] hover:bg-black/[0.06] hover:text-[#211E18]"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>

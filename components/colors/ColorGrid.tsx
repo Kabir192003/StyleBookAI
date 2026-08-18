@@ -60,7 +60,7 @@ function TabButton({
       type="button"
       onClick={onClick}
       className={`whitespace-nowrap border-b-2 py-4 font-mono-plex text-[11px] uppercase tracking-[0.16em] transition-colors ${
-        active ? "border-[#211E18] text-[#211E18]" : "border-transparent text-[#8A8477] hover:text-[#211E18]"
+        active ? "border-[#211E18] text-[#211E18]" : "border-transparent text-[#6E675C] hover:text-[#211E18]"
       }`}
     >
       {children}
@@ -121,29 +121,38 @@ export function ColorGrid({ colors }: { colors: Color[] }) {
             Every shade in the house register, hung salon-style. Click any plate to copy its hex and drop it
             straight into your design system.
           </p>
-          <span className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#8A8477]">
+          <span className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#6E675C]">
             {String(items.length).padStart(3, "0")} shades matched
           </span>
         </div>
       </section>
 
       <div className="flex items-center gap-3 border-b border-black/[0.18] bg-[#F2EBE0] px-6 py-5 sm:px-12">
-        <span className="whitespace-nowrap font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#8A8477]">
+        {/* A real <label htmlFor>, not a lookalike span: the visual design is
+            unchanged, but the input now has an accessible name instead of
+            relying on a placeholder (which is announced inconsistently and
+            disappears the moment you type). */}
+        <label
+          htmlFor="color-search"
+          className="whitespace-nowrap font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#6E675C]"
+        >
           Search
-        </span>
+        </label>
         <div className="relative flex-1 min-w-[160px] max-w-sm">
           <input
+            id="color-search"
+            type="search"
             value={search}
             onChange={(e) => updateSearch(e.target.value)}
             placeholder="Name or hex — “midnight” or “3B82F6”…"
-            className="w-full border-b border-black/[0.35] bg-transparent py-1 pr-7 font-mono-plex text-[13px] text-[#211E18] outline-none placeholder:text-[#8A8477]"
+            className="w-full border-b border-black/[0.35] bg-transparent py-1 pr-7 font-mono-plex text-[13px] text-[#211E18] outline-none placeholder:text-[#6E675C]"
           />
           {search && (
             <button
               type="button"
               onClick={() => updateSearch("")}
               aria-label="Clear search"
-              className="absolute right-0 top-1/2 -translate-y-1/2 font-mono-plex text-[13px] text-[#8A8477] hover:text-[#211E18]"
+              className="absolute right-0 top-1/2 -translate-y-1/2 font-mono-plex text-[13px] text-[#6E675C] hover:text-[#211E18]"
             >
               ×
             </button>
@@ -194,7 +203,7 @@ export function ColorGrid({ colors }: { colors: Color[] }) {
         </>
       )}
 
-      <footer className="flex flex-wrap items-center justify-between gap-3 px-6 py-9 font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477] sm:px-12">
+      <footer className="flex flex-wrap items-center justify-between gap-3 px-6 py-9 font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C] sm:px-12">
         <span>© {new Date().getFullYear()} StyleBook</span>
         <span>Colour · Type · Theme — unified</span>
       </footer>

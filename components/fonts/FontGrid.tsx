@@ -44,7 +44,7 @@ function TabButton({
       type="button"
       onClick={onClick}
       className={`whitespace-nowrap border-b-2 py-4 font-mono-plex text-[11px] uppercase tracking-[0.16em] transition-colors ${
-        active ? "border-[#211E18] text-[#211E18]" : "border-transparent text-[#8A8477] hover:text-[#211E18]"
+        active ? "border-[#211E18] text-[#211E18]" : "border-transparent text-[#6E675C] hover:text-[#211E18]"
       }`}
     >
       {children}
@@ -60,7 +60,7 @@ function FontRow({ font, index, proofText }: { font: Font; index: number; proofT
     <div className="border-t border-black/[0.14] px-6 py-9 transition-colors hover:bg-[#EBE2D2] sm:px-12">
       <div className="flex flex-wrap items-baseline justify-between gap-5">
         <div className="flex items-baseline gap-5">
-          <span className="font-mono-plex text-[10px] tracking-[0.2em] text-[#8A8477]">
+          <span className="font-mono-plex text-[10px] tracking-[0.2em] text-[#6E675C]">
             {String(index).padStart(2, "0")}
           </span>
           <Link
@@ -69,19 +69,19 @@ function FontRow({ font, index, proofText }: { font: Font; index: number; proofT
           >
             {font.family}
           </Link>
-          <span className="font-mono-plex text-[10px] uppercase tracking-[0.16em] text-[#8A8477]">
+          <span className="font-mono-plex text-[10px] uppercase tracking-[0.16em] text-[#6E675C]">
             {font.category}
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="font-mono-plex text-[10px] tracking-[0.14em] text-[#8A8477]">
+          <span className="font-mono-plex text-[10px] tracking-[0.14em] text-[#6E675C]">
             {font.variants.join(" · ")}
           </span>
           <ClipboardButton
             target={{ type: "font", item: { id: font.id, family: font.family, category: font.category } }}
-            className="text-[#8A8477] hover:bg-black/[0.05] hover:text-[#211E18]"
+            className="text-[#6E675C] hover:bg-black/[0.05] hover:text-[#211E18]"
           />
-          <FavoriteButton type="font" id={font.id} className="text-[#8A8477] hover:bg-black/[0.05] hover:text-[#211E18]" />
+          <FavoriteButton type="font" id={font.id} className="text-[#6E675C] hover:bg-black/[0.05] hover:text-[#211E18]" />
         </div>
       </div>
       <div
@@ -92,7 +92,7 @@ function FontRow({ font, index, proofText }: { font: Font; index: number; proofT
       </div>
       <div className="mt-4 flex flex-wrap items-baseline justify-between gap-6">
         <p className="max-w-[460px] text-[13px] leading-relaxed text-[#6E675C]">{font.note}</p>
-        <span className="whitespace-nowrap text-[15px] text-[#8A8477]" style={{ fontFamily: stack }}>
+        <span className="whitespace-nowrap text-[15px] text-[#6E675C]" style={{ fontFamily: stack }}>
           AaBbCcDdEeFf 0123456789
         </span>
       </div>
@@ -143,26 +143,26 @@ export function FontGrid({ fonts }: { fonts: Font[] }) {
             Real Google Fonts, proofed at full size. Type your own line below and read it in every voice before
             you commit.
           </p>
-          <span className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#8A8477]">
+          <span className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#6E675C]">
             {String(items.length).padStart(2, "0")} faces matched
           </span>
         </div>
       </section>
 
       <div className="flex items-baseline gap-7 border-b border-black/[0.18] px-6 py-6 sm:px-12">
-        <span className="whitespace-nowrap font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#8A8477]">
+        <span className="whitespace-nowrap font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#6E675C]">
           Proof text
         </span>
         <input
           value={proofText}
           onChange={(e) => setProofText(e.target.value)}
           placeholder="Type a line to proof…"
-          className="min-w-[200px] flex-1 border-b border-black/[0.35] bg-transparent font-editorial-serif text-xl italic text-[#211E18] outline-none placeholder:text-[#8A8477]"
+          className="min-w-[200px] flex-1 border-b border-black/[0.35] bg-transparent font-editorial-serif text-xl italic text-[#211E18] outline-none placeholder:text-[#6E675C]"
         />
       </div>
 
       <div className="flex items-center gap-3 border-b border-black/[0.18] px-6 py-5 sm:px-12">
-        <span className="whitespace-nowrap font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#8A8477]">
+        <span className="whitespace-nowrap font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#6E675C]">
           Search
         </span>
         <div className="relative flex-1 min-w-[160px] max-w-sm">
@@ -170,14 +170,14 @@ export function FontGrid({ fonts }: { fonts: Font[] }) {
             value={search}
             onChange={(e) => updateSearch(e.target.value)}
             placeholder="Font family — “Inter”, “Playfair”…"
-            className="w-full border-b border-black/[0.35] bg-transparent py-1 pr-7 font-mono-plex text-[13px] text-[#211E18] outline-none placeholder:text-[#8A8477]"
+            className="w-full border-b border-black/[0.35] bg-transparent py-1 pr-7 font-mono-plex text-[13px] text-[#211E18] outline-none placeholder:text-[#6E675C]"
           />
           {search && (
             <button
               type="button"
               onClick={() => updateSearch("")}
               aria-label="Clear search"
-              className="absolute right-0 top-1/2 -translate-y-1/2 font-mono-plex text-[13px] text-[#8A8477] hover:text-[#211E18]"
+              className="absolute right-0 top-1/2 -translate-y-1/2 font-mono-plex text-[13px] text-[#6E675C] hover:text-[#211E18]"
             >
               ×
             </button>
@@ -218,7 +218,7 @@ export function FontGrid({ fonts }: { fonts: Font[] }) {
         </>
       )}
 
-      <footer className="flex flex-wrap items-center justify-between gap-3 px-6 py-9 font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477] sm:px-12">
+      <footer className="flex flex-wrap items-center justify-between gap-3 px-6 py-9 font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C] sm:px-12">
         <span>© {new Date().getFullYear()} StyleBook</span>
         <span>Colour · Type · Theme — unified</span>
       </footer>

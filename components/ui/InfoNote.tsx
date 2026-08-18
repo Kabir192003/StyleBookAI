@@ -41,7 +41,7 @@ export function InfoNote({ note }: { note: string }) {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-label="Why this one"
-        className="flex h-5 w-5 items-center justify-center rounded-full text-[#8A8477] transition-colors hover:bg-black/[0.05] hover:text-[#211E18]"
+        className="flex h-5 w-5 items-center justify-center rounded-full text-[#6E675C] transition-colors hover:bg-black/[0.05] hover:text-[#211E18]"
       >
         <Info className="h-3.5 w-3.5" aria-hidden="true" />
       </button>

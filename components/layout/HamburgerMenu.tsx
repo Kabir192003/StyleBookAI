@@ -86,7 +86,7 @@ export function HamburgerMenu({ open, onClose }: { open: boolean; onClose: () =>
         className="flex h-full w-[min(340px,88vw)] flex-col border-r border-black/20 bg-[#F2EBE0]"
       >
         <div className="flex items-center justify-between border-b border-black/[0.14] px-6 py-5">
-          <span className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Menu</span>
+          <span className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">Menu</span>
           <button
             type="button"
             onClick={onClose}
@@ -106,7 +106,7 @@ export function HamburgerMenu({ open, onClose }: { open: boolean; onClose: () =>
           {status === "loading" ? null : user ? (
             <div className="flex items-center justify-between gap-3 rounded-xl bg-black/[0.04] px-4 py-3">
               <div className="min-w-0">
-                <div className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]">Signed in as</div>
+                <div className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#6E675C]">Signed in as</div>
                 <div className="truncate text-sm font-semibold text-[#211E18]">{user.username}</div>
               </div>
               <button

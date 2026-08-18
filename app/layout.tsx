@@ -11,6 +11,7 @@ import { landingFontVariables } from "@/lib/landing/fonts";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { ClipboardTray } from "@/components/clipboard/ClipboardTray";
 import { themeInitScript } from "@/lib/theme";
+import { a11yInitScript } from "@/lib/a11y/preferences";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -39,6 +40,7 @@ export default function RootLayout({
     <html lang="en" className={landingFontVariables} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <script dangerouslySetInnerHTML={{ __html: a11yInitScript }} />
       </head>
       <body>
         <SiteHeader />

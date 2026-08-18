@@ -6,5 +6,5 @@
  * centered `max-w-7xl` container inside their own grid components.
  */
 export default function BrowseLayout({ children }: { children: React.ReactNode }) {
-  return <main>{children}</main>;
+  return <main id="main">{children}</main>;
 }

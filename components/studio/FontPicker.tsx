@@ -68,19 +68,19 @@ export function FontPicker({
       <label className="block text-[11px] text-[#6E675C]">
         {label}
         <span className="mt-1 flex items-center gap-1.5 rounded-md border border-black/[0.16] bg-white px-2 py-1.5">
-          <Search className="h-3 w-3 shrink-0 text-[#8A8477]" aria-hidden="true" />
+          <Search className="h-3 w-3 shrink-0 text-[#6E675C]" aria-hidden="true" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={`Search ${allFonts.length} fonts…`}
-            className="min-w-0 flex-1 bg-transparent font-mono-plex text-[11px] text-[#211E18] outline-none placeholder:text-[#8A8477]"
+            className="min-w-0 flex-1 bg-transparent font-mono-plex text-[11px] text-[#211E18] outline-none placeholder:text-[#6E675C]"
           />
         </span>
       </label>
 
       <ul className="mt-1.5 max-h-[190px] overflow-y-auto rounded-md border border-black/[0.1] bg-white/60">
         {results.length === 0 ? (
-          <li className="px-2 py-3 text-[11px] text-[#8A8477]">No family matches &ldquo;{query.trim()}&rdquo;.</li>
+          <li className="px-2 py-3 text-[11px] text-[#6E675C]">No family matches &ldquo;{query.trim()}&rdquo;.</li>
         ) : (
           results.map((font) => {
             const selected = font.family === value;
@@ -99,7 +99,7 @@ export function FontPicker({
                   {selected ? (
                     <Check className="h-3 w-3 shrink-0 text-[#222D52]" aria-hidden="true" />
                   ) : (
-                    <span className="font-mono-plex shrink-0 text-[9px] uppercase tracking-[0.1em] text-[#8A8477]">
+                    <span className="font-mono-plex shrink-0 text-[9px] uppercase tracking-[0.1em] text-[#6E675C]">
                       {font.category}
                     </span>
                   )}

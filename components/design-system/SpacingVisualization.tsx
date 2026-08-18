@@ -19,7 +19,7 @@ export function SpacingVisualization({
   return (
     <div>
       <div className="flex items-center justify-between gap-2">
-        <div className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]">
+        <div className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#6E675C]">
           Spacing · base {spacing.base}px
         </div>
         {editable && (
@@ -44,7 +44,7 @@ export function SpacingVisualization({
       <div className="mt-3 space-y-1.5">
         {spacing.steps.map((step, i) => (
           <div key={step} className="flex items-center gap-2.5">
-            <span className="w-6 shrink-0 font-mono-plex text-[9px] text-[#8A8477]">{i + 1}</span>
+            <span className="w-6 shrink-0 font-mono-plex text-[9px] text-[#6E675C]">{i + 1}</span>
             <div className="h-2 rounded-full bg-[#222D52]/30" style={{ width: `${Math.min(step, 160)}px` }} />
             <span className="shrink-0 font-mono-plex text-[10px] text-[#6E675C]">{step}px</span>
           </div>

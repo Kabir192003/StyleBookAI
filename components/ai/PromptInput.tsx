@@ -122,7 +122,7 @@ function VerificationPanel({
               className="flex flex-wrap items-center gap-2 rounded-lg border border-[#B3261E]/30 bg-[#B3261E]/[0.06] px-3 py-2 text-[13px]"
             >
               <span className="font-semibold text-[#211E18]">{c.label}</span>
-              <span className="font-mono-plex text-[11px] uppercase text-[#8A8477]">{c.variant}</span>
+              <span className="font-mono-plex text-[11px] uppercase text-[#6E675C]">{c.variant}</span>
               <span className="ml-auto font-mono-plex text-[12px] text-[#B3261E]">
                 {c.ratio}:1 · needs {c.required}:1
               </span>
@@ -133,7 +133,7 @@ function VerificationPanel({
 
       {report && enforced.length > 0 && (
         <details className="mt-3">
-          <summary className="cursor-pointer font-mono-plex text-[10px] uppercase tracking-[0.14em] text-[#8A8477]">
+          <summary className="cursor-pointer font-mono-plex text-[10px] uppercase tracking-[0.14em] text-[#6E675C]">
             All {enforced.length} measured pairs
           </summary>
           <ul className="mt-2 grid gap-x-6 gap-y-1 sm:grid-cols-2">
@@ -154,7 +154,7 @@ function VerificationPanel({
 
       {deviations && deviations.length > 0 && (
         <div className="mt-5 border-t border-black/[0.1] pt-4">
-          <p className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">
+          <p className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">
             What we changed
           </p>
           <ul className="mt-2.5 flex flex-col gap-2.5">
@@ -321,7 +321,7 @@ export function PromptInput() {
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="e.g. a warm, trustworthy fintech app for freelance creatives…"
             rows={3}
-            className="w-full resize-none border-none bg-transparent font-grotesk text-[19px] leading-relaxed text-[#211E18] outline-none placeholder:text-[#8A8477]"
+            className="w-full resize-none border-none bg-transparent font-grotesk text-[19px] leading-relaxed text-[#211E18] outline-none placeholder:text-[#6E675C]"
           />
           <label className="mt-2 flex w-fit cursor-pointer items-center gap-2 text-xs text-[#6E675C]">
             <input
@@ -374,7 +374,7 @@ export function PromptInput() {
 
       {!isLoading && !result && (
         <section className="mx-auto max-w-[1080px] px-6 pb-[90px] pt-5 text-center sm:px-8">
-          <div className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#8A8477]">
+          <div className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#6E675C]">
             Your generated system will appear here
           </div>
         </section>
@@ -423,7 +423,7 @@ export function PromptInput() {
           </div>
 
           <div className="mb-5 flex flex-wrap items-center gap-2.5 rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-4">
-            <span className="font-mono-plex shrink-0 text-[10px] uppercase tracking-[0.16em] text-[#8A8477]">
+            <span className="font-mono-plex shrink-0 text-[10px] uppercase tracking-[0.16em] text-[#6E675C]">
               Not quite?
             </span>
             <input
@@ -433,7 +433,7 @@ export function PromptInput() {
                 if (e.key === "Enter") regenerateWithFeedback();
               }}
               placeholder="e.g. make the accent more vibrant, try a serif pairing…"
-              className="min-w-[220px] flex-1 rounded-full border border-black/[0.16] bg-white px-4 py-2 text-sm text-[#211E18] outline-none placeholder:text-[#B4AD9E]"
+              className="min-w-[220px] flex-1 rounded-full border border-black/[0.16] bg-white px-4 py-2 text-sm text-[#211E18] outline-none placeholder:text-[#6E675C]"
             />
             <button
               type="button"
@@ -484,7 +484,7 @@ export function PromptInput() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-[18px]">
-                  <div className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#8A8477]">Display</div>
+                  <div className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">Display</div>
                   <div
                     className="mt-1.5 text-[46px] leading-[0.95]"
                     style={{ fontFamily: `'${result.fonts.primary.family}', serif` }}
@@ -494,7 +494,7 @@ export function PromptInput() {
                   <div className="mt-1.5 text-[13px] text-[#6E675C]">{result.fonts.primary.family}</div>
                 </div>
                 <div className="rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-[18px]">
-                  <div className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#8A8477]">Body</div>
+                  <div className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">Body</div>
                   <div
                     className="mt-1.5 text-[46px] leading-[0.95]"
                     style={{ fontFamily: `'${result.fonts.secondary.family}', sans-serif` }}
@@ -514,13 +514,13 @@ export function PromptInput() {
                   )}
                   {result.shadows && (
                     <div className="rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-4">
-                      <div className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]">Shadow</div>
+                      <div className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#6E675C]">Shadow</div>
                       <div className="mt-3 text-[13px] capitalize text-[#211E18]">{result.shadows.recommended}</div>
                     </div>
                   )}
                   {result.cornerRadius && (
                     <div className="rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-4">
-                      <div className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]">Radius</div>
+                      <div className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#6E675C]">Radius</div>
                       <div className="mt-3 text-[13px] text-[#211E18]">{result.cornerRadius.recommended}px</div>
                     </div>
                   )}
@@ -529,14 +529,14 @@ export function PromptInput() {
 
               {result.moodboard && result.moodboard.length > 0 && (
                 <div className="rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-[18px]">
-                  <div className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#8A8477]">Moodboard</div>
+                  <div className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">Moodboard</div>
                   <div className="mt-3 grid grid-cols-3 gap-2">
                     {result.moodboard.map((image) => (
                       <div key={image.id}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={image.src} alt={image.alt} className="h-20 w-full rounded-lg object-cover" />
                         {image.credit && (
-                          <p className="mt-1 truncate text-[10px] text-[#8A8477]">
+                          <p className="mt-1 truncate text-[10px] text-[#6E675C]">
                             Photo:{" "}
                             <a href={image.credit.photographerUrl} target="_blank" rel="noopener noreferrer" className="underline">
                               {image.credit.photographerName}

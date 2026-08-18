@@ -29,7 +29,7 @@ function RemoveButton({ onClick }: { onClick: () => void }) {
 }
 
 function EmptyRow({ children }: { children: React.ReactNode }) {
-  return <p className="text-sm text-[#8A8477]">{children}</p>;
+  return <p className="text-sm text-[#6E675C]">{children}</p>;
 }
 
 export function FavoritesSection() {
@@ -44,7 +44,7 @@ export function FavoritesSection() {
 
   return (
     <section className="rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-6">
-      <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Favorites</div>
+      <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">Favorites</div>
 
       <div className="mt-4">
         <h3 className="mb-2.5 text-xs font-semibold uppercase tracking-wide text-[#6E675C]">
@@ -64,7 +64,7 @@ export function FavoritesSection() {
                   />
                 </Link>
                 <RemoveButton onClick={() => toggle("color", c.id)} />
-                <div className="mt-1 w-14 truncate text-center font-mono-plex text-[9px] text-[#8A8477]">{c.hex}</div>
+                <div className="mt-1 w-14 truncate text-center font-mono-plex text-[9px] text-[#6E675C]">{c.hex}</div>
               </div>
             ))}
           </div>
@@ -83,7 +83,7 @@ export function FavoritesSection() {
               <div key={f.id} className="group relative flex items-center justify-between rounded-lg border border-black/[0.1] bg-white/60 px-4 py-3">
                 <div>
                   <div className="text-sm font-semibold text-[#211E18]">{f.family}</div>
-                  <div className="text-xs capitalize text-[#8A8477]">{f.category}</div>
+                  <div className="text-xs capitalize text-[#6E675C]">{f.category}</div>
                 </div>
                 <button
                   type="button"
