@@ -1266,28 +1266,50 @@ export function LandingExperience() {
             </div>
           </div>
 
-          <footer className="flex flex-wrap items-center justify-between gap-4 py-[26px] font-mono-plex text-[10px] uppercase tracking-[0.2em]" style={{ color: "#8A8477" }}>
-            <span className="font-editorial-serif text-[17px] normal-case tracking-[-0.01em]" style={{ color: "#211E18" }}>
-              StyleBook
-            </span>
-            <div className="flex gap-[22px]">
-              <Link href="/browse/colors" style={{ color: "#8A8477" }}>
-                Colours
-              </Link>
-              <Link href="/browse/fonts" style={{ color: "#8A8477" }}>
-                Fonts
-              </Link>
-              <Link href="/browse/themes" style={{ color: "#8A8477" }}>
-                Themes
-              </Link>
-              <Link href="/studio" style={{ color: "#8A8477" }}>
-                Studio
-              </Link>
-              <Link href="/studio/ai" style={{ color: "#8A8477" }}>
-                AI
-              </Link>
+          <footer className="flex flex-col gap-5 py-[26px] font-mono-plex text-[10px] uppercase tracking-[0.2em]" style={{ color: "#6E675C" }}>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <span className="font-editorial-serif text-[17px] normal-case tracking-[-0.01em]" style={{ color: "#211E18" }}>
+                StyleBook
+              </span>
+              <div className="flex flex-wrap gap-[22px]">
+                <Link href="/browse/colors" style={{ color: "#6E675C" }}>
+                  Colours
+                </Link>
+                <Link href="/browse/fonts" style={{ color: "#6E675C" }}>
+                  Fonts
+                </Link>
+                <Link href="/browse/themes" style={{ color: "#6E675C" }}>
+                  Themes
+                </Link>
+                <Link href="/studio" style={{ color: "#6E675C" }}>
+                  Studio
+                </Link>
+                <Link href="/studio/ai" style={{ color: "#6E675C" }}>
+                  AI
+                </Link>
+                <Link href="/guide" style={{ color: "#6E675C" }}>
+                  Guide
+                </Link>
+              </div>
+              <span>© {new Date().getFullYear()} StyleBook</span>
             </div>
-            <span>© {new Date().getFullYear()} StyleBook</span>
+            <div className="flex flex-wrap items-center justify-between gap-4 border-t pt-5 normal-case tracking-normal" style={{ borderColor: "rgba(33,30,24,0.1)" }}>
+              <p className="max-w-[52ch] text-[11px] leading-relaxed">
+                AI Generate can make mistakes — review generated results before relying on them. See the{" "}
+                <Link href="/ai-disclaimer" className="underline decoration-[#6E675C]/40 underline-offset-2 hover:decoration-[#6E675C]">
+                  AI disclaimer
+                </Link>
+                .
+              </p>
+              <div className="flex shrink-0 gap-[18px] font-mono-plex text-[10px] uppercase tracking-[0.2em]">
+                <Link href="/privacy" style={{ color: "#6E675C" }}>
+                  Privacy
+                </Link>
+                <Link href="/terms" style={{ color: "#6E675C" }}>
+                  Terms
+                </Link>
+              </div>
+            </div>
           </footer>
         </section>
       </main>
