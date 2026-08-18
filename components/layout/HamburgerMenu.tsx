@@ -23,8 +23,17 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutGrid, LogOut, Menu, User, X } from "lucide-react";
+import { LayoutGrid, LogOut, Menu, Palette, Shapes, Sparkles, Type, User, X } from "lucide-react";
 import { useAuthStore } from "@/store";
+
+/** Mirrors NAV_LINKS in SiteHeader — the header hides its own copy below
+ *  `sm`, so these are the only way to reach the libraries on a phone. */
+const PRIMARY_LINKS = [
+  { href: "/browse/colors", label: "Colours", icon: Palette },
+  { href: "/browse/fonts", label: "Fonts", icon: Type },
+  { href: "/browse/themes", label: "Themes", icon: Shapes },
+  { href: "/studio", label: "Studio", icon: Sparkles },
+];
 
 function MenuLink({ href, icon: Icon, label, onNavigate }: { href: string; icon: React.ElementType; label: string; onNavigate: () => void }) {
   const pathname = usePathname();
@@ -98,6 +107,23 @@ export function HamburgerMenu({ open, onClose }: { open: boolean; onClose: () =>
         </div>
 
         <div className="flex flex-1 flex-col gap-1 overflow-y-auto p-4">
+          {/* The header's primary nav is `hidden sm:flex`, so below 640px it
+              renders nothing at all — which left Colours/Fonts/Themes/Studio
+              with no route into them from any phone. They're repeated here
+              and hidden again at `sm`, where the header takes over, so
+              neither breakpoint shows them twice. */}
+          <div className="sm:hidden">
+            <span className="block px-4 pb-1 pt-2 font-mono-plex text-[9px] uppercase tracking-[0.18em] text-[#6E675C]">
+              Browse
+            </span>
+            {PRIMARY_LINKS.map((link) => (
+              <MenuLink key={link.href} href={link.href} icon={link.icon} label={link.label} onNavigate={onClose} />
+            ))}
+            <div className="my-3 border-t border-black/[0.10]" />
+            <span className="block px-4 pb-1 font-mono-plex text-[9px] uppercase tracking-[0.18em] text-[#6E675C]">
+              Account
+            </span>
+          </div>
           <MenuLink href="/dashboard" icon={LayoutGrid} label="My Projects" onNavigate={onClose} />
           <MenuLink href="/account" icon={User} label="Account" onNavigate={onClose} />
         </div>
