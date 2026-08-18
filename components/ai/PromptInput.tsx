@@ -467,7 +467,15 @@ export function PromptInput() {
 
           <VerificationPanel report={result.contrastReport} deviations={result.deviations} />
 
-          <div className="grid items-start gap-5 lg:grid-cols-[1.05fr_1fr]">
+          {/* The mockup leads, at the section's full width. It used to sit in
+              the right-hand column of a two-column grid, which left a page
+              mockup rendering at roughly half the width it was designed for —
+              nav, hero and cards all compressed into something you couldn't
+              actually judge. The token detail below it reads fine at any
+              width; the mockup is the thing that needed the room. */}
+          <div className="flex flex-col gap-5">
+            <LivePreviewMock result={result} surface={surface} ink={ink} accent={accent} support={support} onAccent={onAccent} />
+
             <div className="flex flex-col gap-4">
               <div className="flex overflow-hidden rounded-2xl border border-black/[0.12]">
                 {result.colors.map((c) => (
@@ -553,8 +561,6 @@ export function PromptInput() {
                 </div>
               )}
             </div>
-
-            <LivePreviewMock result={result} surface={surface} ink={ink} accent={accent} support={support} onAccent={onAccent} />
           </div>
 
           {result.designSystem && <DesignSystemGallery designSystem={result.designSystem} />}

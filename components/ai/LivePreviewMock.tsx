@@ -148,9 +148,13 @@ function Hero({ result, ink, accent, onAccent, mockup }: Tokens & { mockup: Mock
   );
 }
 
+// auto-fit rather than a fixed column count: the model returns anywhere from
+// one to four cards, and the mock now renders at the full width of the results
+// column instead of half of it. Hardcoding two columns left three cards as a
+// row of two plus an orphan, each roughly 500px wide.
 function Cards({ result, surface, ink, accent, support, onAccent, cards }: Tokens & { cards: MockupSpec["cards"] }) {
   return (
-    <div className="grid grid-cols-2 gap-2.5 px-[22px] pb-[26px]">
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2.5 px-[22px] pb-[26px]">
       {cards.slice(0, 4).map((card, i) => (
         <div
           key={card.title}
