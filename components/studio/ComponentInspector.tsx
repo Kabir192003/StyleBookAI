@@ -90,7 +90,7 @@ export function ComponentInspector({
         <div className="min-w-0">
           <p className="font-mono-plex text-[10px] uppercase tracking-[0.18em] text-[#222D52]">Selected</p>
           <h2 className="mt-0.5 truncate text-[15px] font-medium text-[#211E18]">{title}</h2>
-          <p className="mt-0.5 text-[11px] text-[#8A8477]">
+          <p className="mt-0.5 text-[11px] text-[#6E675C]">
             {isType
               ? usesBodyFace
                 ? "Uses the body typeface"
@@ -106,7 +106,7 @@ export function ComponentInspector({
           type="button"
           onClick={onClose}
           aria-label="Close inspector"
-          className="rounded p-1 text-[#B4AD9E] hover:text-[#211E18]"
+          className="rounded p-1 text-[#6E675C] hover:text-[#211E18]"
         >
           <X className="h-4 w-4" aria-hidden="true" />
         </button>
@@ -126,7 +126,7 @@ export function ComponentInspector({
           <section>
             <h3 className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">This component</h3>
             {!isType && COMPONENT_SCOPE_NOTES[selection.name] && (
-              <p className="mt-0.5 text-[11px] leading-snug text-[#8A8477]">{COMPONENT_SCOPE_NOTES[selection.name]}</p>
+              <p className="mt-0.5 text-[11px] leading-snug text-[#6E675C]">{COMPONENT_SCOPE_NOTES[selection.name]}</p>
             )}
             <ComponentEditor
               tokens={tokens}
@@ -141,13 +141,13 @@ export function ComponentInspector({
 
       <section className="border-t border-black/[0.1] pt-3">
         <h3 className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">Whole system</h3>
-        <p className="mt-1 text-[10px] leading-snug text-[#B4AD9E]">
+        <p className="mt-1 text-[10px] leading-snug text-[#6E675C]">
           Single system tokens. Changing one moves every component that uses it, not just this one.
         </p>
 
         <label className="mt-3 flex items-center justify-between gap-2 text-[11px] text-[#6E675C]">
           <span>Corner radius</span>
-          <span className="font-mono-plex text-[10px] text-[#8A8477]">{radius}px</span>
+          <span className="font-mono-plex text-[10px] text-[#6E675C]">{radius}px</span>
         </label>
         <input
           type="range"
@@ -161,7 +161,7 @@ export function ComponentInspector({
 
         <label className="mt-3 flex items-center justify-between gap-2 text-[11px] text-[#6E675C]">
           <span>Base text size</span>
-          <span className="font-mono-plex text-[10px] text-[#8A8477]">{typeScale.baseSize}px</span>
+          <span className="font-mono-plex text-[10px] text-[#6E675C]">{typeScale.baseSize}px</span>
         </label>
         <input
           type="range"

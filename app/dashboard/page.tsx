@@ -46,7 +46,7 @@ function SkeletonCard() {
 function EmptyState() {
   return (
     <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-black/[0.18] py-20 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-lg border-2 border-dashed border-[#8A8477] font-editorial-serif text-2xl font-bold text-[#8A8477]">
+      <div className="flex h-14 w-14 items-center justify-center rounded-lg border-2 border-dashed border-[#8A8477] font-editorial-serif text-2xl font-bold text-[#6E675C]">
         Aa
       </div>
       <div>
@@ -113,11 +113,11 @@ export default function DashboardPage() {
   });
 
   return (
-    <main className="min-h-[calc(100vh-56px)] bg-[#EDE6DA] px-6 py-12 sm:px-12">
+    <main id="main" className="min-h-[calc(100vh-56px)] bg-[#EDE6DA] px-6 py-12 sm:px-12">
       <div className="mx-auto max-w-6xl">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
-            <p className="mb-1 font-mono-plex text-[11px] uppercase tracking-[0.18em] text-[#8A8477]">Dashboard · Vol. 01</p>
+            <p className="mb-1 font-mono-plex text-[11px] uppercase tracking-[0.18em] text-[#6E675C]">Dashboard · Vol. 01</p>
             <h1 className="font-editorial-serif text-3xl font-bold tracking-tight text-[#211E18]">
               My Projects
             </h1>

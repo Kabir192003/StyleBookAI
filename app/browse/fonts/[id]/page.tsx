@@ -33,7 +33,7 @@ export default function FontDetailPage({ params }: { params: { id: string } }) {
   const stack = fontStack(font.family, font.category);
 
   return (
-    <main className="min-h-screen bg-[#F2EBE0] font-grotesk text-[#211E18]">
+    <main id="main" className="min-h-screen bg-[#F2EBE0] font-grotesk text-[#211E18]">
       <GoogleFontsLoader fonts={[font, ...pairings]} />
 
       <section className="border-b border-black/[0.18] px-6 pb-11 pt-10 sm:px-12 sm:pt-14">
@@ -41,7 +41,7 @@ export default function FontDetailPage({ params }: { params: { id: string } }) {
           <Link href="/browse/fonts" className="hover:underline">
             ← Back to fonts
           </Link>
-          <div className="flex items-center gap-1 text-[#8A8477]">
+          <div className="flex items-center gap-1 text-[#6E675C]">
             <ClipboardButton target={{ type: "font", item: { id: font.id, family: font.family, category: font.category } }} />
             <FavoriteButton type="font" id={font.id} />
           </div>
@@ -52,7 +52,7 @@ export default function FontDetailPage({ params }: { params: { id: string } }) {
         >
           {font.family}
         </h1>
-        <div className="mt-6 flex flex-wrap items-center gap-3 font-mono-plex text-[10px] uppercase tracking-[0.16em] text-[#8A8477]">
+        <div className="mt-6 flex flex-wrap items-center gap-3 font-mono-plex text-[10px] uppercase tracking-[0.16em] text-[#6E675C]">
           <span className="rounded-full border border-black/[0.14] px-3 py-1">{font.category}</span>
           <span className="rounded-full border border-black/[0.14] px-3 py-1">{font.era}</span>
           {font.useCase.map((u) => (
@@ -65,14 +65,14 @@ export default function FontDetailPage({ params }: { params: { id: string } }) {
       </section>
 
       <div className="flex items-baseline gap-7 border-b border-black/[0.18] px-6 py-6 sm:px-12">
-        <span className="whitespace-nowrap font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#8A8477]">
+        <span className="whitespace-nowrap font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#6E675C]">
           Proof text
         </span>
         <input
           value={proofText}
           onChange={(e) => setProofText(e.target.value)}
           placeholder="Type a line to proof…"
-          className="min-w-[200px] flex-1 border-b border-black/[0.35] bg-transparent font-editorial-serif text-xl italic text-[#211E18] outline-none placeholder:text-[#8A8477]"
+          className="min-w-[200px] flex-1 border-b border-black/[0.35] bg-transparent font-editorial-serif text-xl italic text-[#211E18] outline-none placeholder:text-[#6E675C]"
         />
       </div>
 
@@ -95,7 +95,7 @@ export default function FontDetailPage({ params }: { params: { id: string } }) {
           { label: "Style", value: font.style.join(", ") },
         ].map((row) => (
           <div key={row.label} className="bg-[#F2EBE0] px-6 py-6 sm:px-10">
-            <p className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">{row.label}</p>
+            <p className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">{row.label}</p>
             <p className="mt-2 text-[15px] leading-relaxed text-[#211E18]">{row.value}</p>
           </div>
         ))}
@@ -103,7 +103,7 @@ export default function FontDetailPage({ params }: { params: { id: string } }) {
 
       {pairings.length > 0 && (
         <section className="px-6 py-12 sm:px-12">
-          <p className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#8A8477]">Pairs well with</p>
+          <p className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#6E675C]">Pairs well with</p>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             {pairings.map((p) => (
               <Link
@@ -117,7 +117,7 @@ export default function FontDetailPage({ params }: { params: { id: string } }) {
                 >
                   {p.family}
                 </span>
-                <span className="mt-1 block font-mono-plex text-[10px] uppercase tracking-[0.16em] text-[#8A8477]">
+                <span className="mt-1 block font-mono-plex text-[10px] uppercase tracking-[0.16em] text-[#6E675C]">
                   {p.category}
                 </span>
               </Link>

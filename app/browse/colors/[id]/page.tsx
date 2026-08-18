@@ -28,7 +28,7 @@ export default function ColorDetailPage({ params }: { params: { id: string } }) 
   const related = allColors.filter((c) => c.family === color.family && c.id !== color.id).slice(0, 6);
 
   return (
-    <main className="min-h-screen bg-[#F2EBE0] font-grotesk text-[#211E18]">
+    <main id="main" className="min-h-screen bg-[#F2EBE0] font-grotesk text-[#211E18]">
       <div
         className="flex min-h-[360px] flex-col justify-between px-6 py-10 sm:px-12 sm:py-14"
         style={{ backgroundColor: color.hex, color: overlay }}
@@ -61,7 +61,7 @@ export default function ColorDetailPage({ params }: { params: { id: string } }) 
           { label: "HSL", value: `${color.hsl.h}°, ${color.hsl.s}%, ${color.hsl.l}%` },
         ].map((row) => (
           <div key={row.label} className="bg-[#F2EBE0] px-6 py-6 sm:px-10">
-            <p className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">{row.label}</p>
+            <p className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">{row.label}</p>
             <p className="mt-2 font-editorial-serif text-2xl tracking-tight">{row.value}</p>
           </div>
         ))}
@@ -82,7 +82,7 @@ export default function ColorDetailPage({ params }: { params: { id: string } }) 
       </section>
 
       <section className="border-t border-black/[0.14] px-6 py-12 sm:px-12">
-        <p className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#8A8477]">Accessibility</p>
+        <p className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#6E675C]">Accessibility</p>
         <h2 className="mt-2 font-editorial-serif text-2xl tracking-tight">Contrast against white &amp; black</h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           {[
@@ -106,7 +106,7 @@ export default function ColorDetailPage({ params }: { params: { id: string } }) 
 
       {related.length > 0 && (
         <section className="border-t border-black/[0.14] px-6 py-12 sm:px-12">
-          <p className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#8A8477]">More {color.family}</p>
+          <p className="font-mono-plex text-[11px] uppercase tracking-[0.2em] text-[#6E675C]">More {color.family}</p>
           <div className="mt-5 grid grid-cols-3 gap-3 sm:grid-cols-6">
             {related.map((c) => (
               <Link key={c.id} href={`/browse/colors/${c.id}`} className="group">

@@ -108,7 +108,7 @@ export function ExportDrawer({ tokens, onClose }: { tokens: StudioExportTokens; 
       >
         <div className="flex items-start justify-between border-b border-black/[0.16] px-7 pb-[18px] pt-[26px]">
           <div>
-            <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">Export system</div>
+            <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">Export system</div>
             <h2 className="mt-1.5 font-editorial-serif text-[30px] font-normal tracking-[-0.02em] text-[#211E18]">
               {tokens.name}
             </h2>
@@ -136,7 +136,7 @@ export function ExportDrawer({ tokens, onClose }: { tokens: StudioExportTokens; 
         <div className="flex flex-col gap-2.5 border-b border-black/[0.12] px-7 pb-3 pt-4">
           {EXPORT_CATEGORIES.map((category) => (
             <div key={category.label} className="flex flex-wrap items-center gap-1.5">
-              <span className="font-mono-plex mr-1 w-[92px] shrink-0 text-[9px] uppercase tracking-[0.14em] text-[#B4AD9E]">
+              <span className="font-mono-plex mr-1 w-[92px] shrink-0 text-[9px] uppercase tracking-[0.14em] text-[#6E675C]">
                 {category.label}
               </span>
               {category.tabs.map((t) => (
@@ -253,7 +253,7 @@ export function ExportDrawer({ tokens, onClose }: { tokens: StudioExportTokens; 
 
         {!showFigmaPanel && (
           <div className="flex items-center justify-between gap-3 border-t border-black/[0.16] px-7 py-[18px]">
-            <span className="truncate font-mono-plex text-[10px] uppercase tracking-[0.14em] text-[#8A8477]">
+            <span className="truncate font-mono-plex text-[10px] uppercase tracking-[0.14em] text-[#6E675C]">
               {filename}
             </span>
             <div className="flex shrink-0 items-center gap-2">

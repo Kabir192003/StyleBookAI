@@ -7,6 +7,40 @@ import { getContrastRatio } from "@/lib/colors/colorUtils";
 import { FavoriteButton } from "@/components/browse/FavoriteButton";
 import { ClipboardButton } from "@/components/clipboard/ClipboardButton";
 
+const AA_NORMAL_TEXT = 4.5;
+/** The warm pair the salon-wall design is built around, then a pure-contrast
+ *  fallback. */
+const WARM_INK = ["#F6F0E5", "#191611"];
+const PURE_INK = ["#FFFFFF", "#000000"];
+
+function best(hex: string, candidates: string[]): { color: string; ratio: number } {
+  return candidates
+    .map((color) => ({ color, ratio: getContrastRatio(hex, color) }))
+    .sort((a, b) => b.ratio - a.ratio)[0];
+}
+
+/**
+ * Label colour for text sitting directly on a swatch.
+ *
+ * Two things were wrong before: the ratio was measured against opaque cream
+ * or ink but *rendered* at 92%/78% alpha, so the real contrast was always
+ * lower than the value the check approved; and on mid-luminance colours
+ * neither warm tone reaches AA at all (a mid red tops out around 4.2:1
+ * either way).
+ *
+ * So: render opaque, keep the warm pair whenever it genuinely clears AA —
+ * which is the large majority of the library and preserves the editorial
+ * look — and only fall back to pure white/black on the colours where warm
+ * can't, since there the alternative is unreadable text rather than a
+ * slightly cooler one.
+ */
+function overlayInkFor(hex: string): string {
+  const warm = best(hex, WARM_INK);
+  if (warm.ratio >= AA_NORMAL_TEXT) return warm.color;
+  const pure = best(hex, PURE_INK);
+  return pure.ratio > warm.ratio ? pure.color : warm.color;
+}
+
 // One "plate" on the /browse/colors salon wall — a full-bleed 200px swatch tile.
 export function ColorPlate({ color, index }: { color: Color; index: number }) {
   const [status, setStatus] = useState<"idle" | "copied" | "failed">("idle");
@@ -28,10 +62,7 @@ export function ColorPlate({ color, index }: { color: Color; index: number }) {
   const label =
     status === "copied" ? `${color.hex} copied ✓` : status === "failed" ? "Copy blocked — select it" : color.hex;
 
-  const overlay =
-    getContrastRatio(color.hex, "#F6F0E5") >= getContrastRatio(color.hex, "#191611")
-      ? "rgba(246,240,229,0.92)"
-      : "rgba(25,22,17,0.78)";
+  const overlay = overlayInkFor(color.hex);
 
   return (
     // Deliberately not interactive itself (no role="button"/onClick) — it
@@ -62,7 +93,7 @@ export function ColorPlate({ color, index }: { color: Color; index: number }) {
           type="button"
           onClick={copy}
           aria-label={`Copy hex value ${color.hex} to clipboard`}
-          className="font-mono-plex text-[11px] tracking-[0.08em] underline-offset-2 hover:underline"
+          className="sb-tap-target font-mono-plex text-[11px] tracking-[0.08em] underline-offset-2 hover:underline"
           style={{ color: overlay }}
         >
           <span role="status">{label}</span>
@@ -72,7 +103,7 @@ export function ColorPlate({ color, index }: { color: Color; index: number }) {
         </span>
       </div>
       <div className="px-4 pb-6 pt-[18px]">
-        <div className="flex items-center justify-between font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#8A8477]">
+        <div className="flex items-center justify-between font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">
           <span>{String(index).padStart(3, "0")}</span>
           <span>{color.family}</span>
         </div>

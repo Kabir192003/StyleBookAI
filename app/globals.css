@@ -144,11 +144,88 @@ body:has([data-landing]) {
   outline-offset: 3px;
 }
 
+/* Reduced motion is honoured app-wide, not just on the landing page. The
+   landing scroll experience was the obvious offender, but the Studio,
+   drawers and grids animate too, and someone who sets this preference
+   because motion makes them ill does not stop needing it once they click
+   through to a product page. */
 @media (prefers-reduced-motion: reduce) {
-  [data-landing] * {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* WCAG 2.2 Target Size (Minimum, 2.5.8) asks for 24x24 CSS px. Several
+   controls — the colour-grid copy buttons especially — render smaller than
+   that because their visual size is the point. Rather than resize them and
+   change the layout, this expands only the *hit* area with a centred
+   pseudo-element, so the control looks identical and is merely easier to
+   land a thumb on. Applied on coarse pointers, where it actually matters. */
+@media (pointer: coarse) {
+  .sb-tap-target {
+    position: relative;
+  }
+
+  .sb-tap-target::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Opt-in accessibility preferences (lib/a11y/preferences.ts, toggled in
+   /account). These are the adjustments that visibly change the interface, so
+   they are the user's choice rather than the default — the baseline the app
+   ships with already meets WCAG AA. Applied as data attributes on <html> by
+   a pre-paint script, so there's no flash of un-adjusted UI.
+   ------------------------------------------------------------------------- */
+
+/* Secondary text moves from the AA-passing warm grey to near-ink, and
+   hairline borders get materially darker. */
+[data-a11y-high-contrast] {
+  --sb-a11y-muted: #3F3A31;
+}
+
+[data-a11y-high-contrast] .text-\[\#6E675C\] {
+  color: var(--sb-a11y-muted) !important;
+}
+
+[data-a11y-high-contrast] [class*="border-black/["] {
+  border-color: rgba(20, 17, 12, 0.45) !important;
+}
+
+/* Scales the root font size; everything sized in rem follows. Pixel-sized
+   type is left alone deliberately — scaling it here would break the tight
+   editorial layouts rather than help. */
+[data-a11y-large-text] {
+  font-size: 112.5%;
+}
+
+[data-a11y-underline-links] a:not([class*="no-underline"]) {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+[data-a11y-reduce-transparency] * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+[data-a11y-reduce-motion] *,
+[data-a11y-reduce-motion] *::before,
+[data-a11y-reduce-motion] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
 }

@@ -38,7 +38,7 @@ export function StudioNav() {
     <nav aria-label="Studio sections" className="border-b border-black/[0.08] bg-[#EDE6DA]">
       <div className="mx-auto max-w-6xl px-6 py-3">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="font-mono-plex mr-2 text-[10px] uppercase tracking-[0.2em] text-[#B4AD9E]">Studio</span>
+          <span className="font-mono-plex mr-2 text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">Studio</span>
           {SECTIONS.map((section) => {
             // Exact match, not `startsWith` — "/studio" is a prefix of every
             // other section's href, so a prefix test lights up the Builder tab
@@ -61,7 +61,7 @@ export function StudioNav() {
             );
           })}
         </div>
-        <p className="mt-1.5 pl-[calc(10px+0.5rem)] text-[11px] text-[#8A8477]">{active.hint}</p>
+        <p className="mt-1.5 pl-[calc(10px+0.5rem)] text-[11px] text-[#6E675C]">{active.hint}</p>
       </div>
     </nav>
   );

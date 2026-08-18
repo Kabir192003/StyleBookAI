@@ -46,6 +46,15 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-black/[0.18] bg-[#F2EBE0]/[0.94] backdrop-blur-md">
+      {/* Visually hidden until focused, so keyboard and screen-reader users
+          can jump the nav instead of tabbing it on every page. Every route's
+          <main> carries id="main" to receive it. */}
+      <a
+        href="#main"
+        className="sr-only rounded-b-lg focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-[100] focus:bg-[#211E18] focus:px-4 focus:py-2 focus:text-[13px] focus:text-[#F2EBE0]"
+      >
+        Skip to main content
+      </a>
       <div className="flex h-14 items-center justify-between gap-6 px-6 sm:px-12">
         {/* Menu trigger sits at the far LEFT, before the wordmark. An
             accessibility review raised it as a low-vision concern: someone

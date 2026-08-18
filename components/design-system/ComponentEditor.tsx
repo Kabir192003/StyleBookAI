@@ -36,7 +36,7 @@ export function ColorField({ label, value, onChange }: { label: string; value: s
           onChange={(e) => onChange(e.target.value)}
           className="h-5 w-5 cursor-pointer rounded border border-black/[0.15] bg-transparent p-0"
         />
-        <span className="font-mono-plex text-[10px] text-[#8A8477]">{value}</span>
+        <span className="font-mono-plex text-[10px] text-[#6E675C]">{value}</span>
       </span>
     </label>
   );
@@ -82,7 +82,7 @@ export function ComponentEditor({
         <button
           type="button"
           onClick={() => setStatesOpen((v) => !v)}
-          className="mt-2 font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]"
+          className="mt-2 font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#6E675C]"
         >
           {statesOpen ? "▾" : "▸"} States
         </button>
@@ -129,7 +129,7 @@ export function ComponentEditor({
                       aria-pressed={previewing}
                       title={previewing ? `Stop previewing ${state}` : `Preview ${state} on the canvas`}
                       className={`flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] uppercase tracking-[0.08em] ${
-                        previewing ? "bg-[#222D52] text-[#F2EBE0]" : "text-[#B4AD9E] hover:text-[#6E675C]"
+                        previewing ? "bg-[#222D52] text-[#F2EBE0]" : "text-[#6E675C] hover:text-[#6E675C]"
                       }`}
                     >
                       {previewing ? <Eye className="h-3 w-3" aria-hidden="true" /> : <EyeOff className="h-3 w-3" aria-hidden="true" />}

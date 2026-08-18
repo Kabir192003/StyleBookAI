@@ -95,10 +95,10 @@ function ScalePreview({ project }: { project: Project }) {
   return (
     <div>
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-mono-plex text-xs font-semibold uppercase tracking-wider text-[#8A8477]">
+        <h3 className="font-mono-plex text-xs font-semibold uppercase tracking-wider text-[#6E675C]">
           Scale preview
         </h3>
-        <span className="font-mono-plex text-[11px] text-[#8A8477]">
+        <span className="font-mono-plex text-[11px] text-[#6E675C]">
           {ratioName} · {baseSize}px base
         </span>
       </div>
@@ -111,7 +111,7 @@ function ScalePreview({ project }: { project: Project }) {
             >
               The quiet mind
             </span>
-            <span className="shrink-0 font-mono-plex text-[11px] text-[#8A8477]">
+            <span className="shrink-0 font-mono-plex text-[11px] text-[#6E675C]">
               {label} · {Math.round(size)}px
             </span>
           </div>
@@ -259,8 +259,8 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
 
   if (state.status === "loading") {
     return (
-      <main className="min-h-[calc(100vh-56px)] bg-[#EDE6DA] px-6 py-12 sm:px-12">
-        <div className="mx-auto flex max-w-6xl items-center gap-2 text-sm text-[#8A8477]">
+      <main id="main" className="min-h-[calc(100vh-56px)] bg-[#EDE6DA] px-6 py-12 sm:px-12">
+        <div className="mx-auto flex max-w-6xl items-center gap-2 text-sm text-[#6E675C]">
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
           Loading project…
         </div>
@@ -270,7 +270,7 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
 
   if (state.status === "error") {
     return (
-      <main className="min-h-[calc(100vh-56px)] bg-[#EDE6DA] px-6 py-12 sm:px-12">
+      <main id="main" className="min-h-[calc(100vh-56px)] bg-[#EDE6DA] px-6 py-12 sm:px-12">
         <div className="mx-auto max-w-6xl">
           <Link href="/dashboard" className="mb-6 inline-flex items-center gap-1.5 text-sm text-[#6E675C] hover:text-[#211E18]">
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
@@ -286,7 +286,7 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
 
   if (state.status === "unauthorized") {
     return (
-      <main className="min-h-[calc(100vh-56px)] bg-[#EDE6DA] px-6 py-12 sm:px-12">
+      <main id="main" className="min-h-[calc(100vh-56px)] bg-[#EDE6DA] px-6 py-12 sm:px-12">
         <div className="mx-auto max-w-6xl">
           <Link href="/dashboard" className="mb-6 inline-flex items-center gap-1.5 text-sm text-[#6E675C] hover:text-[#211E18]">
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
@@ -316,7 +316,7 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
   const { project } = state;
 
   return (
-    <main className="min-h-[calc(100vh-56px)] bg-[#EDE6DA] px-6 py-10 sm:px-12">
+    <main id="main" className="min-h-[calc(100vh-56px)] bg-[#EDE6DA] px-6 py-10 sm:px-12">
       <div className="mx-auto max-w-6xl">
         <Link href="/dashboard" className="mb-4 inline-flex items-center gap-1.5 text-sm text-[#6E675C] hover:text-[#211E18]">
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
@@ -391,7 +391,7 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
                 </button>
                 <button
                   onClick={() => setConfirmingDelete(false)}
-                  className="text-xs font-medium text-[#8A8477] hover:text-[#211E18]"
+                  className="text-xs font-medium text-[#6E675C] hover:text-[#211E18]"
                 >
                   Cancel
                 </button>
@@ -407,7 +407,7 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
           <div className="relative flex flex-col gap-6 overflow-hidden rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-6 shadow-[0_10px_30px_-18px_rgba(20,17,12,0.35)]">
             <div className="absolute inset-x-0 top-0 h-[3px] bg-[#222D52]" aria-hidden="true" />
             <div>
-              <h3 className="mb-3 font-mono-plex text-xs font-semibold uppercase tracking-wider text-[#8A8477]">
+              <h3 className="mb-3 font-mono-plex text-xs font-semibold uppercase tracking-wider text-[#6E675C]">
                 Palette
               </h3>
               <div className="flex flex-wrap gap-4">
@@ -420,7 +420,7 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
                       </span>
                       <InfoNote note={c.note} />
                     </div>
-                    <span className="font-mono-plex text-[11px] text-[#8A8477]">{c.hex}</span>
+                    <span className="font-mono-plex text-[11px] text-[#6E675C]">{c.hex}</span>
                   </div>
                 ))}
               </div>
@@ -429,13 +429,13 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
             <div className="h-px bg-black/[0.1]" />
 
             <div>
-              <h3 className="mb-3 font-mono-plex text-xs font-semibold uppercase tracking-wider text-[#8A8477]">
+              <h3 className="mb-3 font-mono-plex text-xs font-semibold uppercase tracking-wider text-[#6E675C]">
                 Typography
               </h3>
               <div className="flex flex-wrap gap-8">
                 <div>
                   <div className="mb-1 flex items-center gap-1">
-                    <span className="font-mono-plex text-[10px] text-[#8A8477]">HEADING</span>
+                    <span className="font-mono-plex text-[10px] text-[#6E675C]">HEADING</span>
                     {project.fonts.primary && <InfoNote note={project.fonts.primary.note} />}
                   </div>
                   <div className="font-editorial-serif text-lg font-semibold text-[#211E18]">
@@ -444,7 +444,7 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
                 </div>
                 <div>
                   <div className="mb-1 flex items-center gap-1">
-                    <span className="font-mono-plex text-[10px] text-[#8A8477]">BODY</span>
+                    <span className="font-mono-plex text-[10px] text-[#6E675C]">BODY</span>
                     {project.fonts.secondary && <InfoNote note={project.fonts.secondary.note} />}
                   </div>
                   <div className="text-lg text-[#211E18]">{project.fonts.secondary?.family}</div>
@@ -460,7 +460,7 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
               <>
                 <div className="h-px bg-black/[0.1]" />
                 <div>
-                  <h3 className="mb-3 font-mono-plex text-xs font-semibold uppercase tracking-wider text-[#8A8477]">
+                  <h3 className="mb-3 font-mono-plex text-xs font-semibold uppercase tracking-wider text-[#6E675C]">
                     Why this system — AI reasoning
                   </h3>
                   <div className="flex flex-col gap-3 text-sm leading-relaxed text-[#6E675C]">

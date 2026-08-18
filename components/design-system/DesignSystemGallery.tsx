@@ -343,7 +343,7 @@ export function DesignSystemGallery({
           {componentEntries.map(([name, tokens]) => (
             <div key={name} className="rounded-xl border border-black/[0.1] bg-white p-3.5">
               <div className="mb-3 flex items-center justify-between gap-2">
-                <p className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]">
+                <p className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#6E675C]">
                   {COMPONENT_LABELS[name]}
                 </p>
                 <ContrastBadge foreground={tokens.text} background={tokens.background} />
@@ -386,7 +386,7 @@ export function DesignSystemGallery({
       {verifiedPairs.length > 0 && (
         <div className={cn("mb-5 rounded-xl border p-3.5", failingPairs.length > 0 ? "border-[#B3261E]/30 bg-[#B3261E]/[0.04]" : "border-[#22733F]/25 bg-[#22733F]/[0.04]")}>
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]">
+            <p className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#6E675C]">
               System-verified contrast — not the AI&rsquo;s claim
             </p>
             <span className="font-mono-plex text-[10px] uppercase tracking-[0.1em] text-[#211E18]">
@@ -423,7 +423,7 @@ export function DesignSystemGallery({
       <div className="grid gap-3 sm:grid-cols-3">
         {designSystem.accessibility && (
           <div className="rounded-xl border border-black/[0.1] bg-white p-3.5">
-            <p className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]">
+            <p className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#6E675C]">
               AI-written accessibility notes
             </p>
             {editable ? (
@@ -455,7 +455,7 @@ export function DesignSystemGallery({
               </div>
             ) : (
               <>
-                <p className="mt-1 font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]">
+                <p className="mt-1 font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#6E675C]">
                   WCAG {designSystem.accessibility.level}
                 </p>
                 <ul className="mt-2 space-y-1 text-[12px] leading-relaxed text-[#211E18]">
@@ -470,7 +470,7 @@ export function DesignSystemGallery({
 
         {designSystem.iconStyle && (
           <div className="rounded-xl border border-black/[0.1] bg-white p-3.5">
-            <p className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]">Icon style</p>
+            <p className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#6E675C]">Icon style</p>
             {editable ? (
               <div className="mt-2 flex items-center gap-2">
                 <select
@@ -500,7 +500,7 @@ export function DesignSystemGallery({
                   }
                   className="w-14 rounded-md border border-black/[0.15] bg-white px-2 py-1 text-[11px] text-[#211E18]"
                 />
-                <span className="text-[10px] text-[#8A8477]">px stroke</span>
+                <span className="text-[10px] text-[#6E675C]">px stroke</span>
               </div>
             ) : (
               <>
@@ -508,7 +508,7 @@ export function DesignSystemGallery({
                   {designSystem.iconStyle.style}
                   {designSystem.iconStyle.strokeWidth ? ` · ${designSystem.iconStyle.strokeWidth}px stroke` : ""}
                 </p>
-                <p className="mt-1 text-[12px] leading-relaxed text-[#8A8477]">{designSystem.iconStyle.note}</p>
+                <p className="mt-1 text-[12px] leading-relaxed text-[#6E675C]">{designSystem.iconStyle.note}</p>
               </>
             )}
           </div>
@@ -516,13 +516,13 @@ export function DesignSystemGallery({
 
         {(designSystem.grid || designSystem.breakpoints) && (
           <div className="rounded-xl border border-black/[0.1] bg-white p-3.5">
-            <p className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#8A8477]">Grid & breakpoints</p>
+            <p className="font-mono-plex text-[9px] uppercase tracking-[0.14em] text-[#6E675C]">Grid & breakpoints</p>
             {editable ? (
               <div className="mt-2 space-y-2 text-[11px] text-[#211E18]">
                 {designSystem.grid && (
                   <div className="grid grid-cols-3 gap-1.5">
                     {(["columns", "gutter", "maxWidth"] as const).map((field) => (
-                      <label key={field} className="flex flex-col gap-0.5 text-[9px] capitalize text-[#8A8477]">
+                      <label key={field} className="flex flex-col gap-0.5 text-[9px] capitalize text-[#6E675C]">
                         {field}
                         <input
                           type="number"
@@ -542,7 +542,7 @@ export function DesignSystemGallery({
                 {designSystem.breakpoints && (
                   <div className="grid grid-cols-4 gap-1.5">
                     {(["sm", "md", "lg", "xl"] as const).map((field) => (
-                      <label key={field} className="flex flex-col gap-0.5 text-[9px] uppercase text-[#8A8477]">
+                      <label key={field} className="flex flex-col gap-0.5 text-[9px] uppercase text-[#6E675C]">
                         {field}
                         <input
                           type="number"

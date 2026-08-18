@@ -61,10 +61,10 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
                 </span>
               )}
             </div>
-            <p className="text-xs text-[#8A8477]">
+            <p className="text-xs text-[#6E675C]">
               {project.fonts.primary?.family} / {project.fonts.secondary?.family}
             </p>
-            <p className="text-[11px] text-[#8A8477]">
+            <p className="text-[11px] text-[#6E675C]">
               Edited {editedAt.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
             </p>
           </div>

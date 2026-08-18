@@ -78,7 +78,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
   }
 
   return (
-    <main className="flex min-h-[calc(100vh-56px)] items-center justify-center bg-[#EDE6DA] px-6 py-16">
+    <main id="main" className="flex min-h-[calc(100vh-56px)] items-center justify-center bg-[#EDE6DA] px-6 py-16">
       <div className="w-full max-w-[400px]">
         {reasonMessage && (
           <div className="mb-5 rounded-xl border border-black/[0.12] bg-[#F2EBE0] px-4 py-3 text-center text-sm text-[#6E675C]">
@@ -86,7 +86,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
           </div>
         )}
         <div className="text-center">
-          <div className="font-mono-plex text-[11px] uppercase tracking-[0.22em] text-[#8A8477]">
+          <div className="font-mono-plex text-[11px] uppercase tracking-[0.22em] text-[#6E675C]">
             {isSignUp ? "Create account" : "Sign in"}
           </div>
           <h1 className="mt-2 font-editorial-serif text-[32px] font-normal leading-[1.05] tracking-[-0.02em] text-[#211E18]">
@@ -96,7 +96,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
 
         <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4 rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-6">
           <label className="flex flex-col gap-1.5">
-            <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#8A8477]">Username</span>
+            <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">Username</span>
             <input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -108,7 +108,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
           </label>
 
           <label className="flex flex-col gap-1.5">
-            <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#8A8477]">Password</span>
+            <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">Password</span>
             <input
               type="password"
               value={password}
