@@ -1,18 +1,9 @@
-/**
- * Footer — the shared, product-grade sitewide footer: product links,
- * the how-to guide, legal pages, and a standing AI disclaimer.
- *
- * Owner: Amna
- *
- * Mounted per-route via app/browse/layout.tsx, app/(legal)/layout.tsx,
- * app/account/layout.tsx, and app/dashboard/layout.tsx. Not mounted on
- * the landing page (LandingExperience.tsx has its own hand-styled footer
- * that links to the same /privacy, /terms, /ai-disclaimer, /guide pages
- * in its own visual language) or on Studio (a full-screen working canvas,
- * where a marketing footer would just be scroll noise under the tool) or
- * on auth screens (kept minimal/centered, with just a one-line legal
- * mention under the sign-up form — see components/auth/AuthForm.tsx).
- */
+// Owner: Amna
+//
+// Mounted on browse, legal, account and dashboard. Not on the landing page
+// (it has its own footer, same links, own visual style), not on Studio (it's
+// a full-screen canvas, a footer would just be scroll noise), and not on the
+// auth screens (those just get a one-line legal mention, see AuthForm.tsx).
 import Link from "next/link";
 
 const PRODUCT_LINKS = [

@@ -1,10 +1,6 @@
-/**
- * Shared page chrome for /privacy, /terms, /ai-disclaimer, /guide — title
- * block + prose container, so those four pages share one consistent look
- * instead of four hand-rolled layouts. `prose` styling is done with plain
- * Tailwind utility selectors (`[&_h2]:...`) rather than the Tailwind
- * Typography plugin, since that plugin isn't a project dependency.
- */
+// Shared title block + prose container for /privacy, /terms, /ai-disclaimer,
+// /guide. Styling the prose by hand with arbitrary selectors below since
+// @tailwindcss/typography isn't installed here.
 import Link from "next/link";
 
 export function LegalPage({
@@ -20,9 +16,9 @@ export function LegalPage({
   title: string;
   updated: string;
   intro?: React.ReactNode;
-  /** Widens the container for content-heavy pages (currently just the guide). */
+  // widens the container — the guide page uses this, the others don't
   wide?: boolean;
-  /** Renders below the intro but outside the prose-styled container — for a table of contents. */
+  // sits below the intro, outside the prose styling — for a table of contents
   afterIntro?: React.ReactNode;
   children: React.ReactNode;
 }) {
