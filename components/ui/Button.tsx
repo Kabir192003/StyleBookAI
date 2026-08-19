@@ -1,12 +1,7 @@
-/**
- * Button — shared primitive used across the dashboard/account pages
- * instead of raw <button> tags.
- *
- * Owner: Amna (styling adapted to the site's cream/ink/navy editorial
- * system — see CLAUDE.md — instead of the separate glass/dark design
- * system this was originally built against, to stay visually consistent
- * with Studio/browse/SiteHeader).
- */
+// Shared button primitive for the dashboard/account pages. Styling follows
+// the site's cream/ink/navy editorial system, not the separate glass/dark
+// system this was originally built against, to stay consistent with
+// Studio/browse/SiteHeader.
 import { ButtonHTMLAttributes, forwardRef } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Loader2 } from "lucide-react";

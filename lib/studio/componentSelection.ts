@@ -1,42 +1,28 @@
 /**
  * Maps a clicked DOM node in the Studio canvas back to the design-system
- * component it is an instance of, so the inspector knows which token set to
+ * component it's an instance of, so the inspector knows which token set to
  * open.
  *
- * Selection is resolved by CSS class rather than by a `data-*` attribute on
- * every component. That choice is worth explaining, because the attribute
- * approach is the more obvious one:
- *
- *   - The components in components/system are props-free by contract, and the
- *     AI-generated sections build their markup from the same `.pg-*` classes.
- *     Matching on class therefore covers *both* canvas content states with one
- *     mechanism and zero edits to the component files — the requirement that
- *     the default showcase and the generated UI share one editor is satisfied
- *     structurally rather than by remembering to tag each new element.
- *   - The cost is a coupling: renaming a class in
- *     components/system/styles.ts silently stops selection working for that
- *     component. If that ever bites, the fix is explicit `data-sb-component`
- *     attributes on the components — a mechanical change, not a redesign.
+ * Selection resolves by CSS class (`.pg-*`) rather than a `data-*` attribute
+ * on every component. Both ShowcaseContent and the AI-generated sections
+ * build markup from the same classes, so this covers both content states with
+ * one mechanism and no per-component tagging — at the cost of a coupling:
+ * renaming a class in components/system/styles.ts silently breaks selection
+ * for that component. If that bites, the fix is explicit `data-sb-component`
+ * attributes, a mechanical change rather than a redesign.
  *
  * `ComponentName` is the existing ten-value union from types/designSystem.ts —
- * the same set the AI authors, the exports write, and DesignSystemGallery
- * edits. Nothing here invents a component vocabulary of its own.
+ * nothing here invents its own component vocabulary.
  */
 import type { ComponentName } from "@/types/designSystem";
 import type { NonDefaultState } from "@/components/design-system/ComponentEditor";
 
-/**
- * Ordered most-specific-first, and `closest()` is called against each entry in
- * turn. Order is load-bearing twice over:
- *
- *   1. `.pg-btn--secondary` must be tested before `.pg-btn`, or a secondary
- *      button resolves to `button` and edits the wrong token set — the two
- *      look near-identical on screen, so the mistake would be invisible.
- *   2. Structural containers (`.pg-card`, `.pg-modal`, `.pg-navbar`) come last,
- *      because a button inside a card must select the button. `closest()`
- *      walks *up* the tree, so an early card entry would swallow every control
- *      nested inside one.
- */
+// Ordered most-specific-first; order is load-bearing twice over: (1)
+// `.pg-btn--secondary` must precede `.pg-btn`, or a secondary button resolves
+// to `button` and edits the wrong token set — a mistake invisible on screen;
+// (2) structural containers (`.pg-card`, `.pg-modal`, `.pg-navbar`) come
+// last, since `closest()` walks up the tree and an early card entry would
+// swallow every control nested inside one.
 const SELECTORS: Array<{ selector: string; name: ComponentName }> = [
   { selector: ".pg-btn--secondary", name: "buttonSecondary" },
   { selector: ".pg-btn", name: "button" },
@@ -125,19 +111,12 @@ export const COMPONENT_LABELS: Record<ComponentName, string> = {
   badge: "Badge",
 };
 
-/**
- * Which of the four non-default states components/design-system/
- * ComponentEditor.tsx's `NON_DEFAULT_STATES` actually has a real CSS rule
- * behind it for this component (see components/system/styles.ts). Every
- * component technically CAN carry any of the four in a saved/exported
- * `ComponentTokenSet` — this only controls which state buttons the
- * inspector offers, so it never presents a control with nothing on canvas
- * to back it (a static container like `card`/`alert`/`badge`/`modal` has no
- * real hover/active/disabled/focus target today; `input`/`dropdown` have no
- * meaningful `:active` press state; `navigation`/`table` only differentiate
- * on hover). If a component gains a real interactive treatment later, add
- * its state here alongside the CSS that backs it — not before.
- */
+// Which of the four non-default states actually has a real CSS rule behind it
+// for this component (see components/system/styles.ts). Every component CAN
+// carry any of the four in a saved/exported ComponentTokenSet — this only
+// controls which state buttons the inspector offers, so it never presents a
+// control with nothing on canvas to back it. Add a state here only once the
+// CSS backing it exists.
 export const APPLICABLE_STATES: Record<ComponentName, readonly NonDefaultState[]> = {
   button: ["hover", "active", "disabled", "focus"],
   buttonSecondary: ["hover", "active", "disabled", "focus"],

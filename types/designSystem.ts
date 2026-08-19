@@ -1,11 +1,7 @@
-/**
- * Optional "full design system" tokens AI Generate can produce alongside
- * the core palette/fonts/type-scale, when the user opts into it (the
- * "Generate a full design system" checkbox in <PromptInput />) or asks for
- * component-level detail (buttons, inputs, states, dark mode, a11y, etc.)
- * in their prompt. See lib/ai/schema.ts for the zod mirror of this shape
- * and docs/TECHNICAL_ARCHITECTURE.md §6 for the generation contract.
- */
+// Optional "full design system" tokens AI Generate can produce alongside
+// the core palette/fonts/type-scale, when the user opts in via the
+// "Generate a full design system" checkbox in <PromptInput />. See
+// lib/ai/schema.ts for the zod mirror and docs/TECHNICAL_ARCHITECTURE.md §6.
 
 export type ComponentTokenSet = {
   background: string; // hex

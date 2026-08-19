@@ -1,12 +1,7 @@
-/**
- * Project and AIReasoning — the unit a user assembles and saves.
- *
- * A Project can be built manually (Studio) or AI-generated (/studio/ai).
- * When AI-generated, `aiPrompt` stores the original user prompt and
- * `aiReasoning` stores the four explanatory strings the model returns
- * alongside its color/font choices — this reasoning is the core
- * differentiator and must always be surfaced prominently in the UI.
- */
+// A Project can be built manually (Studio) or AI-generated (/studio/ai).
+// When AI-generated, `aiReasoning` stores the four explanatory strings the
+// model returns alongside its color/font choices — this is the core
+// differentiator and should always be surfaced prominently in the UI.
 import { Color } from "./color";
 import { Font } from "./font";
 import { Theme, TypeScale } from "./theme";

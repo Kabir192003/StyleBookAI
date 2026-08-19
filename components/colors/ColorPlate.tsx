@@ -8,8 +8,7 @@ import { FavoriteButton } from "@/components/browse/FavoriteButton";
 import { ClipboardButton } from "@/components/clipboard/ClipboardButton";
 
 const AA_NORMAL_TEXT = 4.5;
-/** The warm pair the salon-wall design is built around, then a pure-contrast
- *  fallback. */
+// The salon-wall's warm ink pair, tried first, then a pure b/w fallback.
 const WARM_INK = ["#F6F0E5", "#191611"];
 const PURE_INK = ["#FFFFFF", "#000000"];
 
@@ -19,21 +18,11 @@ function best(hex: string, candidates: string[]): { color: string; ratio: number
     .sort((a, b) => b.ratio - a.ratio)[0];
 }
 
-/**
- * Label colour for text sitting directly on a swatch.
- *
- * Two things were wrong before: the ratio was measured against opaque cream
- * or ink but *rendered* at 92%/78% alpha, so the real contrast was always
- * lower than the value the check approved; and on mid-luminance colours
- * neither warm tone reaches AA at all (a mid red tops out around 4.2:1
- * either way).
- *
- * So: render opaque, keep the warm pair whenever it genuinely clears AA —
- * which is the large majority of the library and preserves the editorial
- * look — and only fall back to pure white/black on the colours where warm
- * can't, since there the alternative is unreadable text rather than a
- * slightly cooler one.
- */
+// Label colour for text sitting directly on a swatch. Used to be checked
+// against opaque cream/ink but rendered at 92%/78% alpha, so the real
+// contrast was always lower than what passed. Now renders opaque and
+// keeps the warm pair wherever it genuinely clears AA, falling back to
+// pure white/black only where warm can't (unreadable text otherwise).
 function overlayInkFor(hex: string): string {
   const warm = best(hex, WARM_INK);
   if (warm.ratio >= AA_NORMAL_TEXT) return warm.color;
@@ -66,10 +55,9 @@ export function ColorPlate({ color, index }: { color: Color; index: number }) {
 
   return (
     // Deliberately not interactive itself (no role="button"/onClick) — it
-    // used to be a click-anywhere-to-copy card wrapping three more
-    // interactive controls (clipboard, favorite, detail link), which is
-    // invalid nested-interactive markup and made keyboard/AT behavior
-    // ambiguous. Copying now lives on its own explicit button below.
+    // used to be a click-anywhere card wrapping three other interactive
+    // controls, which is invalid nested-interactive markup. Copying now
+    // lives on its own button below.
     <div className="group relative flex flex-col border-b border-r border-black/[0.18] bg-[#F2EBE0] transition-colors hover:bg-[#EBE2D2]">
       <div className="absolute right-3 top-3 z-10 flex items-center gap-1">
         <ClipboardButton
@@ -82,13 +70,10 @@ export function ColorPlate({ color, index }: { color: Color; index: number }) {
         className="flex h-[200px] items-end justify-between px-4 py-3.5"
         style={{ backgroundColor: color.hex }}
       >
-        {/* Feedback names *what* landed on the clipboard, not just that
-            something did. A first-time visitor clicking a colour band and
-            seeing a bare "Copied ✓" has no way to know whether they took
-            the hex, the colour's name, or the whole swatch — a UX review
-            flagged it as confusing in the first seconds of using the site.
-            role="status" also announces the same wording to a screen
-            reader, which previously got no confirmation at all. */}
+        {/* Names *what* landed on the clipboard rather than a bare "Copied ✓"
+            — otherwise there's no way to tell if you got the hex, the name,
+            or the swatch. role="status" announces the same text to screen
+            readers. */}
         <button
           type="button"
           onClick={copy}

@@ -1,20 +1,10 @@
-/**
- * Hard-constraint extraction and enforcement for AI Generate.
- *
- * QA's complaint was not that the model made different choices — it's that it
- * made them *silently*. A prompt asking for "hard 0px corners" got 4px, a
- * prompt banning stock-photo lifestyle imagery got Unsplash architecture
- * shots, and a prompt naming an exact accent hex got a different colour, with
- * nothing anywhere saying so. A design tool that quietly overrules the brief
- * reads as broken even when its output is pretty.
- *
- * So: the few constraints that are unambiguous in plain text are parsed here
- * and enforced in code by lib/ai/generate.ts (not left to the model), and
- * anything that still can't be honoured is emitted as an AIDeviation
- * (types/ai.ts) that the UI can show. Deliberately conservative — it only
- * claims a constraint when the phrasing is explicit, because a false positive
- * (overriding a choice the user never asked for) is worse than a miss.
- */
+// Parses the few hard constraints that are unambiguous in plain text (exact
+// radius, named hexes, banned photography/monospace) so lib/ai/generate.ts
+// can enforce them in code instead of trusting the model to honour them
+// silently. Anything that still can't be honoured comes back as an
+// AIDeviation (types/ai.ts) so the UI can show it. Deliberately conservative —
+// only claims a constraint on explicit phrasing, since a false positive
+// (overriding a choice the user never asked for) is worse than a miss.
 import { AIDeviation } from "@/types/ai";
 import { normalizeHex } from "@/lib/colors/contrast";
 

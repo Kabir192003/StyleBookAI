@@ -1,24 +1,17 @@
-/**
- * GET /api/figma-export/[code] — redeemed by the StyleBook Figma plugin
- * (manifest.json allow-lists this route's domain under networkAccess), not
- * by the web app. One-shot: the row is deleted on successful read, and
- * expired rows are rejected and cleaned up opportunistically, so a code
- * can't be replayed or left lingering in the table indefinitely.
- *
- * CORS headers are required here specifically: a Figma plugin's main-thread
- * fetch() still enforces normal browser CORS (networkAccess in manifest.json
- * only controls which domains it's allowed to *attempt*, not whether the
- * response is exposed to it) and runs from `Origin: null`, not this site's
- * own origin — every other route in this app is same-origin (called from
- * StyleBook's own pages) and has never needed this.
- */
+// Redeemed by the StyleBook Figma plugin, not the web app. One-shot: the row
+// is deleted on successful read, so a code can't be replayed.
+//
+// CORS headers are required here specifically: the plugin's fetch() runs
+// from `Origin: null` and still enforces normal browser CORS (manifest.json's
+// networkAccess only controls what it's allowed to attempt, not whether the
+// response is exposed to it). Every other route here is same-origin and has
+// never needed this.
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/db/supabase";
 
-// Without this, Next.js treats a GET route handler that touches no dynamic
-// API (cookies/headers) as static and caches its response — which for a
-// one-shot redemption endpoint means a second identical request would
-// silently replay the already-deleted payload instead of 404ing.
+// Without this, Next treats a GET handler that touches no dynamic API as
+// static and caches it — for a one-shot endpoint that means a second request
+// would replay the already-deleted payload instead of 404ing.
 export const dynamic = "force-dynamic";
 
 const CORS_HEADERS = {

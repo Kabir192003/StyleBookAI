@@ -1,11 +1,5 @@
-/**
- * Request/response shapes for POST /api/ai/generate.
- *
- * `style`, `colorPreferences`, and `avoid` are optional refinements the
- * user can pass alongside the free-text prompt — the quick-pick chips in
- * <PromptInput /> populate these. Keep this type in sync with the zod
- * schema in app/api/ai/generate/route.ts.
- */
+// Request/response shapes for POST /api/ai/generate. Keep in sync with the
+// zod schema in app/api/ai/generate/route.ts.
 import { ColorStyle } from "./color";
 import type { AIUiStructure } from "@/lib/ai/schema";
 import { Project } from "./project";
@@ -48,111 +42,82 @@ export type AIGenerateRequest = {
   includeDesignSystem?: boolean;
 };
 
-// What POST /api/ai/generate actually returns — a draft Project, not yet
-// saved (no id/userId/timestamps until the user chooses to save it), plus
-// the display-only mockup content. `mockup` intentionally isn't part of
-// Project itself — ProjectInputSchema (lib/validation/project.ts) doesn't
-// know about it, so it's silently dropped if this object is ever POSTed
-// to /api/projects, which is exactly right: it's regenerated fresh next
-// time, never stored.
-// ---------------------------------------------------------------------------
-// Verification data attached to a generated result
-// ---------------------------------------------------------------------------
-// QA found the generator shipping body text at 1.02:1 (#f8fafc on #f8f7f7)
-// and, separately, a 4.1:1 button under an AI-written note claiming "all text
-// and interactive states exceed 4.5:1". Prose from the model can't be trusted
-// about numbers it never computed, so lib/ai/validateTokens.ts measures every
-// pair itself, repairs what it can, and returns the measurements as data. The
-// UI should render *these* numbers, never the model's claims.
+// QA found the generator shipping body text at 1.02:1 contrast, plus a
+// button claimed (in AI-written prose) to hit 4.5:1 when it didn't. Model
+// prose about numbers it never computed can't be trusted, so
+// lib/ai/validateTokens.ts measures every pair itself and returns the real
+// numbers here — the UI should render these, never the model's claims.
 
 export type ContrastCheck = {
-  /** Stable id, e.g. "light.text-on-surface" or "dark.button.text". */
+  // Stable id, e.g. "light.text-on-surface" or "dark.button.text".
   id: string;
   variant: "light" | "dark";
-  /** Human label for the UI, e.g. "Body text on surface". */
+  // Human label for the UI, e.g. "Body text on surface".
   label: string;
   foreground: string;
   background: string;
-  /** Measured WCAG 2.x ratio of the FINAL tokens, rounded to 2dp. */
+  // Measured WCAG 2.x ratio of the final tokens, rounded to 2dp.
   ratio: number;
-  /** Threshold this pair is held to: 4.5 for text, 3 for non-text UI. */
+  // Threshold this pair is held to: 4.5 for text, 3 for non-text UI.
   required: number;
   level: "AAA" | "AA" | "Fail";
   passes: boolean;
-  /**
-   * Reported but never failed or repaired — disabled controls (exempt under
-   * WCAG 1.4.3) and decorative surface-on-surface relationships (a card is
-   * *meant* to sit quietly against the page).
-   */
+  // Reported but never failed or repaired — disabled controls (exempt
+  // under WCAG 1.4.3) and decorative surface-on-surface pairs.
   informational?: boolean;
-  /** Present when validateTokens had to move a token to reach `required`. */
+  // Present when validateTokens had to move a token to reach `required`.
   repaired?: { from: string; to: string; originalRatio: number };
 };
 
 export type ContrastReport = {
-  /** The level actually achieved across all enforced pairs, not a claim. */
+  // The level actually achieved across all enforced pairs, not a claim.
   level: "AAA" | "AA" | "Fail";
   checks: ContrastCheck[];
   passCount: number;
   failCount: number;
   repairedCount: number;
-  /** Code-generated, measurement-backed sentences for the UI/export. */
   notes: string[];
 };
 
-/**
- * Anything the pipeline changed or could not honour. QA asked for "hard 0px
- * corners" and silently got 4px; asked for a specific accent and got another
- * colour; asked for no stock photography and got Unsplash architecture. A
- * substitution that is never surfaced reads as the tool ignoring the brief —
- * so every substitution now has to declare itself here.
- */
+// Anything the pipeline changed or couldn't honor. QA asked for "hard 0px
+// corners" and silently got 4px; asked for a specific accent and got another
+// color; asked for no stock photography and got Unsplash architecture. A
+// substitution that's never surfaced reads as the tool ignoring the brief —
+// so every substitution now has to declare itself here.
 export type AIDeviation = {
   kind: "unhonoured-constraint" | "auto-correction";
-  /** What the deviation is about, e.g. "cornerRadius", "contrast", "bodyFont". */
-  subject: string;
-  /** What was asked for (or what the model returned). */
+  subject: string; // e.g. "cornerRadius", "contrast", "bodyFont"
   requested: string;
-  /** What actually shipped. */
   applied: string;
-  /** Why — always a concrete reason, never "for accessibility". */
-  reason: string;
+  reason: string; // always a concrete reason, never "for accessibility"
 };
 
-/**
- * Named corner-radius scale. `CornerRadiusScale` in types/designTokens.ts is
- * `{ options, recommended }` with no names, so radius shipped as one flat
- * number while spacing got a full progressive scale. This is additive: the
- * numeric ramp is still written into `cornerRadius.options` for existing
- * consumers (lib/export/generators.ts, Studio), and the named mapping rides
- * alongside for UIs that want small/medium/large/pill semantics.
- */
+// Named corner-radius scale, additive to CornerRadiusScale (types/designTokens.ts)
+// which is just `{ options, recommended }` with no names. The numeric ramp
+// still gets written into `cornerRadius.options` for existing consumers
+// (lib/export/generators.ts, Studio); this rides alongside for UIs that
+// want small/medium/large/pill semantics.
 export type NamedRadiusScale = {
   none: number;
   sm: number;
   md: number;
   lg: number;
   full: number;
-  /** Which named step the brand's base value corresponds to. */
-  base: "sm" | "md" | "lg";
+  base: "sm" | "md" | "lg"; // which named step the brand's base value maps to
 };
 
 export type AIGeneratedProject = Omit<Project, "id" | "userId" | "createdAt" | "updatedAt"> & {
   mockup?: MockupSpec;
-  /**
-   * The generated screen: an ordered list of sections from the fixed
-   * vocabulary in lib/ai/schema.ts, filled with content for this brand. The
-   * Studio canvas renders it through the same component library and the same
-   * tokens as the default showcase, so it is editable in exactly the same way.
-   *
-   * Display-only for the same reason as `mockup` — it is regenerated per
-   * prompt and would go stale the moment a user edits a token.
-   */
+  // The generated screen: an ordered list of sections from the fixed
+  // vocabulary in lib/ai/schema.ts, filled with content for this brand. The
+  // Studio canvas renders it through the same component library and tokens
+  // as the default showcase, so it's editable the same way.
   uiStructure?: AIUiStructure;
-  // Display-only, like `mockup`: ProjectInputSchema (lib/validation/project.ts)
-  // doesn't know these keys, so they're dropped if this object is POSTed to
-  // /api/projects — correct, since they're re-derived on every generation and
-  // would go stale the moment a user edits a token in Studio.
+  // mockup/uiStructure/contrastReport/deviations/radiusScale are all
+  // display-only: ProjectInputSchema (lib/validation/project.ts) doesn't
+  // know these keys, so they're dropped if this object is POSTed to
+  // /api/projects — correct, since they're re-derived on every generation
+  // and would go stale the moment a user edits a token in Studio.
   contrastReport?: ContrastReport;
   deviations?: AIDeviation[];
   radiusScale?: NamedRadiusScale;

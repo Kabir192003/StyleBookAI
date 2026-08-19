@@ -1,18 +1,9 @@
-/**
- * Live mock preview on the AI results screen. Renders from
- * `result.mockup` — real nav/hero/card copy the model wrote specifically
- * for the described business (a car dealership brief gets inventory
- * cards and "Schedule a test drive", a hotel brief gets room types, a
- * SaaS brief gets feature/pricing cards), not a fixed set of generic
- * per-industry templates. See lib/ai/prompt.ts for the mockup contract
- * and lib/ai/schema.ts for its shape.
- *
- * Every visual element still derives its color/font from the same
- * resolved tokens passed in — only the copy comes from the model.
- * `buildFallbackMockup` covers `result.mockup` being absent (older
- * sessionStorage-cached aiResultStore entries from before this field
- * existed) with generic-but-real copy instead of crashing.
- */
+// Live mock preview on the AI results screen, rendered from `result.mockup`
+// — real nav/hero/card copy the model wrote for the specific business, not
+// a fixed per-industry template. See lib/ai/prompt.ts / schema.ts for the
+// contract. Color/font still comes from the resolved tokens; only the copy
+// is the model's. `buildFallbackMockup` covers older cached aiResultStore
+// entries from before `mockup` existed, so they don't crash.
 import { AIGeneratedProject } from "@/types/ai";
 import { MockupSpec } from "@/types/ai";
 

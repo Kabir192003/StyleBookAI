@@ -1,19 +1,7 @@
-/**
- * Shared sub-nav across Studio's three sections. Studio's IA is route-based
- * (/studio, /studio/ai, /studio/compare) and nothing on any of those pages
- * linked to the others — you could only reach the Preview Lab by typing the
- * URL.
- *
- * Deliberately a thin strip mounted *above* each page's own content rather
- * than a layout wrapper: /studio/compare renders its own <main> with its own
- * background, and StudioBuilder owns its full-bleed canvas, so a shared
- * layout.tsx would have had to fight both. Nothing here touches either
- * page's internals.
- *
- * Styled in the site's editorial language — #EDE6DA page, #F2EBE0 card,
- * #211E18 ink, #6E675C muted, #222D52 accent, font-mono-plex uppercase
- * labels — the same values StudioBuilder uses inline.
- */
+// Shared sub-nav across Studio's three sections. Deliberately a thin strip
+// mounted above each page's own content, not a layout wrapper — /studio/compare
+// renders its own <main> with its own background, and StudioBuilder owns its
+// full-bleed canvas, so a shared layout.tsx would fight both.
 "use client";
 
 import Link from "next/link";
@@ -28,10 +16,8 @@ const SECTIONS = [
 
 export function StudioNav() {
   const pathname = usePathname();
-  // Hover title text is invisible until someone happens to hover a pill —
-  // a first-time visitor has no reason to. Surfacing the active section's
-  // hint as a plain caption means the "what is this tab for" answer is on
-  // screen by default, not hidden behind a hover a novice won't try.
+  // Shown as a plain caption, not a hover title, so a first-time visitor sees
+  // what the active tab is for without needing to hover anything.
   const active = SECTIONS.find((s) => s.href === pathname) ?? SECTIONS[0];
 
   return (
@@ -40,9 +26,8 @@ export function StudioNav() {
         <div className="flex flex-wrap items-center gap-2">
           <span className="font-mono-plex mr-2 text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">Studio</span>
           {SECTIONS.map((section) => {
-            // Exact match, not `startsWith` — "/studio" is a prefix of every
-            // other section's href, so a prefix test lights up the Builder tab
-            // on all four pages.
+            // Exact match, not startsWith — "/studio" prefixes every other
+            // section's href, so a prefix test would light up Builder everywhere.
             const isActive = pathname === section.href;
             return (
               <Link

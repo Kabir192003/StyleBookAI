@@ -1,12 +1,9 @@
 "use client";
 
-/**
- * Signature cursor: a small ring by default, expands and absorbs the exact
- * color of whatever it's hovering when the target has a `data-cursor-color`
- * attribute, and shows a tiny contextual label (DRAG/TRY/OPEN/COPY/MIX) from
- * `data-cursor`. Desktop + fine-pointer only — see the (max-width: 767px),
- * (pointer: coarse) rule in globals.css that restores the native cursor.
- */
+// Signature cursor: a small ring by default, expands and absorbs the exact
+// color of whatever it's hovering via `data-cursor-color`, and shows a
+// contextual label from `data-cursor`. Desktop + fine-pointer only — see
+// the (pointer: coarse) rule in globals.css that restores the native cursor.
 import { motion, useSpring } from "framer-motion";
 import { useEffect, useState } from "react";
 import { usePointer } from "./PointerProvider";

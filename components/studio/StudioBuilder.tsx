@@ -1,16 +1,8 @@
-/**
- * StudioBuilder — the manual builder's token editor + live preview,
- * embedded in app/studio/page.tsx. Styled to match the Studio.dc.html
- * design pulled from claude.ai/design (project "Website redesign
- * request"): a 5-token palette (accent/support/surface/ink/muted), a
- * display/body font pair, corner radius, and density, all driving a live
- * mock landing page preview via CSS custom properties, plus an export
- * drawer that formats the tokens as CSS/Tailwind/JSON/SwiftUI/Figma.
- *
- * Replaces the old StudioCanvas.tsx stub — a different, unfinished
- * "pick arbitrary colors + assign roles" model that never shipped and
- * doesn't match this design's much simpler, more opinionated token set.
- */
+// The manual builder's token editor + live preview, embedded in
+// app/studio/page.tsx: a 5-token palette (accent/support/surface/ink/muted),
+// a display/body font pair, corner radius, and density, all driving a live
+// mock landing page preview via CSS custom properties, plus an export drawer
+// that formats the tokens as CSS/Tailwind/JSON/SwiftUI/Figma.
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -63,11 +55,8 @@ const FONTS = [
   "Unbounded",
 ];
 
-// Each preset is a complete 5-token palette in its own right, muted
-// included — previously `muted` wasn't part of this data at all and was
-// patched on afterward with a 2-value brightness guess (applyPalette
-// below), so the swatch button shown here didn't even represent the
-// colour it was about to apply.
+// Each preset is a complete 5-token palette, muted included, so the swatch
+// shown here actually matches the colors it applies (see applyPalette below).
 const PALETTES = [
   { name: "Studio Navy", accent: "#222D52", support: "#C36B3E", surface: "#F5F1E8", ink: "#211E18", muted: "#8A8477" },
   { name: "Emerald", accent: "#1F5C41", support: "#C9A96E", surface: "#F4F2EC", ink: "#1C2B24", muted: "#7C9186" },
@@ -121,11 +110,11 @@ function randomOf<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// Each of the 5 roles now holds either a literal hex (today's behavior,
-// "Custom" in the UI) or a reference to a named entry in state.primitives
-// ("Linked") — see lib/studio/tokenGraph.ts. Resolution to plain hex
-// happens once, in resolvedLight/resolvedDark below; every other consumer
-// (preview, export, save) only ever sees resolved hex, unchanged.
+// Each of the 5 roles holds either a literal hex ("Custom" in the UI) or a
+// reference to a named entry in state.primitives ("Linked") — see
+// lib/studio/tokenGraph.ts. Resolution to plain hex happens once, in
+// resolvedLight/resolvedDark below; every other consumer (preview, export,
+// save) only ever sees resolved hex.
 export type EditablePaletteTokens = {
   accent: ColorValue;
   support: ColorValue;
@@ -137,10 +126,9 @@ export type EditablePaletteTokens = {
 export type StudioState = {
   name: string;
   mode: "Light" | "Dark";
-  // Two independently-editable token sets — previously a single flat
-  // palette with a "mode" label that nothing actually read. The mode
-  // toggle now switches which of these drives the preview (see
-  // previewVars below), so it's a real dark mode, not cosmetic.
+  // Two independently-editable token sets — the mode toggle switches which
+  // one drives the preview (see previewVars below), so it's a real dark
+  // mode, not cosmetic.
   light: EditablePaletteTokens;
   dark: EditablePaletteTokens;
   // Named, unlimited-count swatches a palette role can alias instead of
@@ -152,19 +140,16 @@ export type StudioState = {
   accentFont?: string;
   radius: number;
   density: Density;
-  // Always present now, manual build or AI-seeded alike — these three
-  // used to only exist when hydrated from an AI result, so a from-scratch
-  // build had no way to see or edit type scale at all, and the Shadow/
-  // Spacing controls further down would simply never appear. Every
-  // Studio project is now a real typographic + spacing system, not just
-  // a palette.
+  // Always present, manual build or AI-seeded alike, so a from-scratch
+  // build can see and edit type scale and the Shadow/Spacing controls
+  // further down — every Studio project is a real typographic + spacing
+  // system, not just a palette.
   typeScale: TypeScale;
   spacing: SpacingScale;
   shadows: ShadowScale;
-  // The "advanced" layer (per-component tokens, accessibility, icon
-  // style, grid, breakpoints) — still optional. A manual build starts
-  // without one; the "Enable component tokens" action synthesizes a
-  // real starting one rather than this staying AI-generation-only.
+  // The "advanced" layer (per-component tokens, accessibility, icon style,
+  // grid, breakpoints) is optional. A manual build starts without one; the
+  // "Enable component tokens" action synthesizes a real starting one.
   designSystem?: DesignSystem;
   moodboard?: MoodboardImage[];
   aiReasoning?: AIReasoning;
@@ -178,12 +163,10 @@ export const DEFAULT_LIGHT: PaletteTokens = {
   muted: "#8A8477",
 };
 
-// The from-scratch dark default ONLY. This exact violet set is what QA found
-// shipping byte-identical across three unrelated AI-generated brands: nothing
-// was deriving a dark palette, so every brand fell through to these five
-// hexes. It is now unreachable from any branded path — anywhere a light
-// palette is known (URL seed, AI result, saved project), dark is derived from
-// it via deriveDarkPaletteTokens instead. Don't reintroduce it as a fallback.
+// The from-scratch dark default ONLY. Don't reintroduce this as a fallback
+// for branded paths — anywhere a light palette is known (URL seed, AI
+// result, saved project), dark must be derived from it via
+// deriveDarkPaletteTokens, or every brand ends up sharing this exact violet set.
 const DEFAULT_DARK: PaletteTokens = {
   accent: "#8B5CF6",
   support: "#22D3EE",
@@ -192,12 +175,11 @@ const DEFAULT_DARK: PaletteTokens = {
   muted: "#6B6483",
 };
 
-// Fixed ids (not makePrimitiveId()) — this array is built at module init,
-// which also runs during SSR; a random id generated there would differ
-// between the server-rendered HTML and the client's first render and
-// trip a hydration mismatch. Starts unlinked (every role below still
-// ships in "Custom" mode) — the Primitives panel just has a named
-// starter set ready to link to, not a required migration.
+// Fixed ids, not makePrimitiveId() — this array is built at module init,
+// which also runs during SSR, and a random id there would differ between
+// server-rendered HTML and the client's first render and trip a hydration
+// mismatch. Starts unlinked — the Primitives panel just has a named starter
+// set ready to link to, not a required migration.
 const DEFAULT_PRIMITIVES: PrimitiveColor[] = [
   { id: "primitive-navy", name: "Navy", hex: DEFAULT_LIGHT.accent },
   { id: "primitive-terracotta", name: "Terracotta", hex: DEFAULT_LIGHT.support },
@@ -240,9 +222,9 @@ function seedFromParams(params: URLSearchParams): Partial<StudioState> {
     const merged = { ...base, ...seededPalette };
     seeded[resolvedMode === "Dark" ? "dark" : "light"] = merged;
     // A deep link ("Open in Studio", "Apply this edition") only ever carries
-    // ONE palette — the light one. Without this, the brand's light palette
-    // landed next to the stock violet DEFAULT_DARK, so flipping to Dark threw
-    // away the brand entirely. Derive the counterpart from what we were given.
+    // the light palette, so derive dark from it — otherwise the brand's
+    // light palette lands next to the stock DEFAULT_DARK and flipping to
+    // Dark throws the brand away.
     if (resolvedMode !== "Dark") seeded.dark = deriveDarkPaletteTokens(merged);
   }
 
@@ -283,31 +265,28 @@ export function StudioBuilder() {
   const [state, setState] = useState<StudioState>(() => {
     const seeded = { ...DEFAULT_STATE, ...seedFromParams(searchParams) };
     // Only enrich from the persisted AI result when this navigation didn't
-    // already provide its own explicit palette from a different source
-    // (e.g. a saved theme's "Apply this edition" link) — avoids leaking a
+    // already provide its own explicit palette from a different source (e.g.
+    // a saved theme's "Apply this edition" link) — avoids leaking a
     // stale/unrelated AI result's design system into an unrelated deep link.
     const cameFromOtherSource = Boolean(searchParams.get("accent")) && searchParams.get("from") !== "ai";
     // A project that already went through Studio once (Save) carries its own
     // primitives + role→primitive links forward as-is — re-deriving from
     // aiResult.colors on every load would silently drop manual edits (a
     // renamed/re-hexed primitive, a role relinked to a different one).
-    // Only a result with no prior Studio session derives fresh primitives.
     const hasSavedPrimitiveLinks = Boolean(aiResult?.colorPrimitives && aiResult?.studioPaletteLinks?.light);
-    // One Primitive per AI-generated color, with the Palette's 5 roles
-    // linked to them via ColorRef — see lib/studio/paletteFromAIColors.ts.
-    // Without this, `state.primitives` fell through to the hardcoded
-    // DEFAULT_PRIMITIVES while the Palette (and export) correctly showed
-    // the AI's own colors: two unrelated palettes on screen at once.
+    // One Primitive per AI-generated color, with the Palette's 5 roles linked
+    // to them via ColorRef (see paletteFromAIColors.ts), so state.primitives
+    // and the Palette/export show the same colors instead of two unrelated
+    // palettes.
     const freshDerivation =
       aiResult && !hasSavedPrimitiveLinks
         ? primitivesFromAIColors(aiResult.colors, resolvePalette(seeded.light, seeded.primitives))
         : null;
-    // Hoisted so the dark fallback below can derive from the *resolved* light
-    // palette rather than from seeded.dark (which, absent a URL palette to
-    // seed from, is still the stock DEFAULT_DARK). Two values because a saved
-    // project's light palette may hold primitive references rather than
-    // literal hex: `aiLight` is what Studio edits, `aiLightHex` is the
-    // flattened form the colour maths needs.
+    // Hoisted so the dark fallback below can derive from the resolved light
+    // palette rather than seeded.dark (still the stock DEFAULT_DARK absent a
+    // URL palette). Two values because a saved project's light palette may
+    // hold primitive references rather than literal hex: aiLight is what
+    // Studio edits, aiLightHex is the flattened form the color math needs.
     const aiPrimitives = hasSavedPrimitiveLinks
       ? aiResult!.colorPrimitives!
       : (freshDerivation?.primitives ?? seeded.primitives);
@@ -332,20 +311,14 @@ export function StudioBuilder() {
             // primitives/links pass through untouched; a fresh result gets
             // primitives synthesized from its own colors.
             primitives: aiPrimitives,
-            // Light always traces back to aiResult.colors — the same
-            // canonical source the AI results page itself renders and
-            // that "Open in Studio" already seeds via URL params (see
-            // paletteFromAIColors) — never to designSystem.light, which is
-            // a second, independently-generated color set that isn't
-            // guaranteed to agree with it (a confirmed data-fidelity bug:
-            // the two could silently disagree, e.g. "Secondary" showing
-            // one hex on the results page and a different one in Studio).
-            // Dark has no equivalent in aiResult.colors, so designSystem.dark
-            // is still the best available signal for dark mode specifically —
-            // but when it's absent the fallback derives from this brand's own
+            // Light always traces back to aiResult.colors, the same canonical
+            // source the AI results page renders and "Open in Studio" seeds
+            // via URL params — never to designSystem.light, which is a
+            // second, independently-generated color set that isn't
+            // guaranteed to agree with it. Dark has no equivalent in
+            // aiResult.colors, so designSystem.dark is the best available
+            // signal there; when it's absent, derive from this brand's own
             // light palette (deriveDarkPaletteTokens), never from seeded.dark.
-            // That fallback was the stock violet set, which is how three
-            // unrelated QA brands ended up sharing an identical dark palette.
             light: aiLight!,
             dark:
               aiResult.studioPaletteLinks?.dark ??
@@ -451,13 +424,10 @@ export function StudioBuilder() {
   const density = DENSITIES[state.density];
   const domain = `${state.name.toLowerCase().replace(/[^a-z0-9]/g, "")}.com`;
 
-  // FONTS is a small curated list for the manual builder's dropdown, but
-  // an AI-generated result can seed headFont/bodyFont with any font from
-  // the full ~2,000-font catalog (e.g. "IBM Plex Mono"). Previously the
-  // <select> silently had no matching <option> for those, so it rendered
-  // out of sync with the actually-applied font — a confirmed data-fidelity
-  // bug. Unioning the current value in keeps the control honest for any
-  // font, not just the 12 curated ones.
+  // FONTS is a small curated list for the manual builder's dropdown, but an
+  // AI-generated result can seed headFont/bodyFont with any font from the
+  // full ~2,000-font catalog. Unioning the current value in keeps the
+  // <select> honest for those too, not just the 12 curated ones.
   const headFontOptions = FONTS.includes(state.headFont) ? FONTS : [state.headFont, ...FONTS];
   const bodyFontOptions = FONTS.includes(state.bodyFont) ? FONTS : [state.bodyFont, ...FONTS];
   const activeVariant = state.mode === "Dark" ? "dark" : "light";
@@ -468,11 +438,11 @@ export function StudioBuilder() {
   const resolvedLight = useMemo(() => resolvePalette(state.light, state.primitives), [state.light, state.primitives]);
   const resolvedDark = useMemo(() => resolvePalette(state.dark, state.primitives), [state.dark, state.primitives]);
   const resolvedActivePalette = activeVariant === "dark" ? resolvedDark : resolvedLight;
-  // Everything downstream that only needs to render/export (Live Preview,
-  // the Export drawer) reads this — plain resolved hex, so those consumers
-  // never need to know the token graph exists. Saving is different: it
-  // needs the raw, unresolved state.light/state.dark/state.primitives too
-  // (to persist links), so handleSave passes `state` itself, not this.
+  // Everything downstream that only renders/exports (Live Preview, Export
+  // drawer) reads this plain resolved hex, so those consumers never need to
+  // know the token graph exists. Saving needs the raw, unresolved
+  // state.light/dark/primitives too (to persist links), so handleSave
+  // passes `state` itself, not this.
   const resolvedState = useMemo(
     () => ({ ...state, light: resolvedLight, dark: resolvedDark }),
     [state, resolvedLight, resolvedDark]
@@ -496,22 +466,17 @@ export function StudioBuilder() {
     [resolvedActivePalette, state.headFont, state.bodyFont, state.radius, density]
   );
 
-  /**
-   * The selected component's tokens for the variant currently on screen.
-   * Falls back to the light variant when the system has no dark one, matching
-   * where `setComponentTokens` writes — the panel must never display one
-   * variant's values while edits land in another.
-   */
+  // Falls back to the light variant when the system has no dark one, matching
+  // where setComponentTokens writes — the panel must never show one variant's
+  // values while edits land in another.
   const activeComponentTokens = useMemo<ComponentTokenSet | null>(() => {
     if (!selected || selected.kind !== "component" || !state.designSystem) return null;
     const variant =
       activeVariant === "dark" && state.designSystem.dark ? state.designSystem.dark : state.designSystem.light;
-    // An AI-authored design system is free to omit components — the schema
-    // marks every one optional — so a missing entry is normal data, not a
-    // bug. Deriving one from the palette on demand keeps every component in
-    // the canvas clickable; without it, clicking (say) a table on a system
-    // whose model never mentioned tables selects the element and then opens
-    // nothing, which reads as broken.
+    // An AI-authored design system can omit components (the schema marks
+    // every one optional), so deriving one from the palette on demand keeps
+    // every component clickable — otherwise clicking a table on a system
+    // that never mentioned tables selects it and opens nothing.
     return (
       variant.components[selected.name] ??
       deriveThemeVariantFromPalette(activeVariant === "dark" ? resolvedDark : resolvedLight).components[selected.name] ??
@@ -523,14 +488,9 @@ export function StudioBuilder() {
     setState((s) => ({ ...s, [key]: value }));
   }
 
-  /**
-   * Opening the inspector on a system with no `designSystem` synthesises one
-   * first, rather than showing an empty panel or refusing the click. This is
-   * the same call the old "Enable component tokens" button made — a manual
-   * build simply has no per-component tokens until something needs them, and
-   * "I clicked a button" is a clearer trigger than a button labelled with an
-   * implementation detail.
-   */
+  // Opening the inspector on a system with no designSystem synthesizes one
+  // first, rather than showing an empty panel or refusing the click — a
+  // manual build has no per-component tokens until something needs them.
   function handleSelect(next: Selection | null) {
     setSelected(next);
     setPreviewState(null);
@@ -543,17 +503,12 @@ export function StudioBuilder() {
         resolvePalette(s.dark, s.primitives)
       );
       // `components` starts empty rather than pre-filled with every
-      // component's derived default. A pre-filled entry is a *frozen* hex —
-      // it can never react to a later palette or primitive edit, which is
-      // the whole "primitives don't reflect in the canvas" bug. Leaving a
-      // component absent lets the canvas's own `var(--ds-*-bg, var(--pgc-*))`
-      // fallback resolve it live, straight from the palette, until the
-      // moment someone actually clicks that component and edits it — at
-      // which point setComponentTokens() writes a real, intentionally
-      // sticky entry. The inspector still shows a sensible starting colour
-      // for an unedited component (see activeComponentTokens' own fallback
-      // to deriveThemeVariantFromPalette below), so nothing about editing
-      // changes — only what happens *before* a component is ever touched.
+      // component's derived default — a pre-filled entry is a frozen hex
+      // that can never react to a later palette/primitive edit. Leaving a
+      // component absent lets the canvas's own var(--ds-*-bg, var(--pgc-*))
+      // fallback resolve it live from the palette until someone actually
+      // clicks and edits it, at which point setComponentTokens() writes a
+      // real, intentionally sticky entry.
       return {
         ...s,
         designSystem: {
@@ -586,30 +541,12 @@ export function StudioBuilder() {
     });
   }
 
-  /**
-   * `designSystem.colorRoles` and `designSystem.components` are only ever
-   * derived from the palette once, at creation time (either here or in
-   * `synthesizeDesignSystemFromPalettes`/AI generation) — nothing recomputes
-   * them when the palette or a primitive changes afterwards, which is why an
-   * edit there can look like it does nothing: every component already has
-   * its own frozen `--ds-*` token that wins over the derived one. This
-   * re-runs the same derivation on demand, from the *current* resolved
-   * palette, so those tokens catch up.
-   *
-   * Deliberately a full re-derive, not a merge — it overwrites any
-   * per-component customisation made via click-to-edit, which is why it's a
-   * confirmed, explicit action rather than something that happens on every
-   * keystroke. Undo still recovers from it, same as any other edit.
-   */
-  /**
-   * Clears every component's stored colour rather than re-populating them
-   * from the palette — an emptied component isn't frozen at a new snapshot,
-   * it falls through to the canvas's own `var(--ds-*, var(--pgc-*))`
-   * fallback and stays live from that point on (same mechanism a
-   * newly-created design system already starts in, see handleSelect). This
-   * is a "discard my per-component edits and go back to following the
-   * palette" action, not a one-time sync.
-   */
+  // Clears every component's stored color rather than re-populating it from
+  // the palette — an emptied component falls through to the canvas's own
+  // var(--ds-*, var(--pgc-*)) fallback and stays live from then on (same
+  // mechanism a newly-created design system starts in, see handleSelect).
+  // This discards per-component edits and goes back to following the
+  // palette; it's a confirmed action since it overwrites click-to-edit work.
   function resyncDesignSystemFromPalette() {
     if (!state.designSystem) return;
     const proceed = window.confirm(
@@ -765,10 +702,7 @@ export function StudioBuilder() {
         </div>
       )}
 
-      {/* Three columns while something is selected, two otherwise — the
-          inspector is a sibling of the sidebar and the canvas, so without the
-          extra track it lands on a new grid row underneath the canvas instead
-          of beside it. */}
+      {/* Three columns while something is selected, two otherwise — without the extra track the inspector drops to a new row instead of sitting beside the canvas. */}
       <div
         className={cn(
           "grid grid-cols-1",
@@ -830,14 +764,11 @@ export function StudioBuilder() {
                 </button>
               )}
             {ROLES.map((r) => {
-              // A role may internally still hold a ColorRef (every role on an
-              // AI-generated project does, see primitivesFromAIColors) — the
-              // swatch resolves and displays that either way, and picking a
-              // new colour always writes a literal hex regardless of what was
-              // there before. That's the entire "unlink" step, folded into
-              // the same interaction as editing any other role: primitives
-              // and links keep working underneath (persistence, export,
-              // resolvePalette), the user just never has to know they exist.
+              // A role may still hold a ColorRef internally (every role on an
+              // AI-generated project does), and the swatch resolves/displays
+              // that either way. Picking a new color always writes a literal
+              // hex regardless — that's the entire "unlink" step, folded into
+              // the same interaction as editing any other role.
               const resolvedHex = resolvedActivePalette[r.key];
               return (
                 <div key={r.key} className="flex items-center gap-3">
@@ -1061,12 +992,10 @@ export function StudioBuilder() {
                       key={label}
                       type="button"
                       onClick={() => {
-                        // A selected component may not exist in the content
-                        // state being switched to (Showcase's Modal has no
-                        // Generated counterpart, for instance) — closing the
-                        // inspector here matches clicking canvas background,
-                        // rather than leaving it open on a token set with no
-                        // visible element to point at.
+                        // A selected component may not exist in the state being
+                        // switched to (Showcase's Modal has no Generated
+                        // counterpart) — close the inspector rather than leave
+                        // it open on nothing.
                         if (wantsGenerated !== showGenerated) handleSelect(null);
                         setShowGenerated(wantsGenerated);
                       }}
@@ -1122,9 +1051,7 @@ export function StudioBuilder() {
           </div>
         </main>
 
-        {/* Mounted only while something is selected, so the canvas gets the
-            full width the rest of the time. `activeComponentTokens` is null
-            until the synthesise-on-first-click in handleSelect has landed. */}
+        {/* Mounted only while something is selected, so the canvas gets full width otherwise. */}
         {selected && (
           <ComponentInspector
             selection={selected}

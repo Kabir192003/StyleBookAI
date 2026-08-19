@@ -1,11 +1,7 @@
-/**
- * Client-side auth state — who's signed in, if anyone. Not persisted
- * (the real session lives in the httpOnly cookie); this store just
- * caches the /api/auth/me response for the current page load so every
- * component that needs to know "am I signed in" doesn't each fetch it
- * separately. Call `fetchUser()` once near the root (SiteHeader does
- * this) and read `user`/`status` everywhere else.
- */
+// Client-side auth cache, not persisted — the real session lives in the
+// httpOnly cookie. This just caches /api/auth/me for the page load so every
+// component doesn't fetch it separately. Call fetchUser() once near the
+// root (SiteHeader does this) and read user/status everywhere else.
 import { create } from "zustand";
 
 export type AuthUser = { id: string; username: string; createdAt: string };

@@ -1,26 +1,14 @@
-/**
- * Inputs — real `<input>`/`<textarea>` elements, so the focus ring, the
- * caret, the placeholder colour and the disabled cursor are the browser's
- * own behaviour rather than an imitation of it.
- *
- * The error and success specimens are *earned*, not hard-coded: the email
- * field validates what you type and moves between neutral, invalid and
- * valid on its own. A reviewer can therefore break it and fix it live,
- * which is the difference between "here is what an error looks like" and
- * "here is the error state working".
- *
- * Wiring worth keeping if you edit this: `aria-invalid` is what the CSS
- * hooks the red border off (`.pg-input[aria-invalid="true"]`), and
- * `aria-describedby` is what makes the helper/error line get read out. They
- * are the same attribute doing double duty — dropping one silently breaks
- * the other's counterpart.
- */
+// The error/success states are earned, not hard-coded — the email field
+// validates what you type and moves between neutral/invalid/valid live.
+// `aria-invalid` is what the CSS hooks the red border off
+// (.pg-input[aria-invalid="true"]), and `aria-describedby` makes the
+// helper/error line get read out — dropping either silently breaks the other.
 "use client";
 
 import { useId, useState } from "react";
 import { AlertCircle, CheckCircle2, Search } from "lucide-react";
 
-/** Deliberately loose: this validates for the demo, not for a signup form. */
+// Deliberately loose: validates for the demo, not for a real signup form.
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 export function ValidatedEmailField() {
@@ -49,8 +37,7 @@ export function ValidatedEmailField() {
         className={
           status === "invalid" ? "pg-hint pg-hint--error" : status === "valid" ? "pg-hint pg-hint--success" : "pg-hint"
         }
-        // Only the failure is assertive; announcing every keystroke of a
-        // passing field would talk over the user as they type.
+        // Only the failure is assertive — announcing every keystroke of a passing field would talk over the user.
         role={status === "invalid" ? "alert" : undefined}
       >
         {status === "invalid" && (

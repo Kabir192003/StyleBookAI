@@ -1,11 +1,7 @@
-/**
- * One-time generator: writes a simple 4-swatch SVG thumbnail per theme in
- * data/themes/seed.ts to public/themes/<slug>.svg, using that theme's own
- * colorRoles. Keeps the `thumbnail` path on every Theme pointing at a real
- * file instead of a broken link, until real design renders replace them.
- *
- * Run: npx tsx scripts/generateThemeThumbnails.ts
- */
+// One-time generator: writes a 4-swatch SVG thumbnail per theme in
+// data/themes/seed.ts to public/themes/<slug>.svg, so `thumbnail` points at
+// a real file instead of a broken link until real design renders replace them.
+// Run: npx tsx scripts/generateThemeThumbnails.ts
 import fs from "fs";
 import path from "path";
 import { themesSeed } from "../data/themes/seed";

@@ -1,18 +1,12 @@
-/**
- * Captures the live Studio canvas — the whole page, and each component in
- * each of its real states — as Figma payload nodes.
- *
- * States are captured by driving the *same* mechanism Studio's own inspector
- * Preview toggle uses (the `data-sb-preview` attribute alternation in
- * components/system/styles.ts, plus real `.focus()`/`.disabled` for the two
- * states that have genuine DOM equivalents). So a Hover variant in Figma is
- * the browser's own `:hover` rule output, not a colour formula guessed at
- * export time — the same guarantee StudioCanvas.tsx already makes on screen.
- *
- * Light/dark is captured the same way: flip `data-theme` on the canvas root,
- * let the cascade recompute, read it back. Everything is restored in a
- * `finally`, so an export can never leave the canvas in a previewed state.
- */
+// Captures the live Studio canvas — the whole page, and each component in
+// each of its real states — as Figma payload nodes. States are captured by
+// driving the same mechanism Studio's own inspector Preview toggle uses (the
+// `data-sb-preview` attribute in components/system/styles.ts, plus real
+// `.focus()`/`.disabled`), so a Hover variant in Figma is the browser's own
+// `:hover` rule output, not a guessed colour formula. Light/dark works the
+// same way: flip `data-theme`, let the cascade recompute, read it back.
+// Everything restores in a `finally` so an export can't leave the canvas
+// stuck in a previewed state.
 "use client";
 
 import type { ComponentName } from "@/types/designSystem";
@@ -69,20 +63,15 @@ function isFormControl(node: Element): node is HTMLButtonElement | HTMLInputElem
 /**
  * Forces a genuine style *recalculation* of the whole canvas subtree.
  *
- * Reading `offsetHeight` alone only flushes pending layout — it does not
- * discard already-computed style, and the canvas keeps a stale one:
- * `getComputedStyle()` on a primary button returned a transparent
- * background (the `var(--ds-button-bg, var(--pgc-primary))` fallback never
- * re-resolved) while the very same element cloned fresh reported the correct
- * `rgb(34,45,82)`, and the button was visibly navy on screen the whole time.
- * The canvas's own `<style>` tag is rewritten by React on every token change,
- * which is what leaves those cached values behind.
+ * Reading `offsetHeight` alone only flushes pending layout, not already-
+ * computed style — `getComputedStyle()` can return a stale value (e.g. a
+ * CSS-variable fallback that never re-resolved) even while the element is
+ * visibly correct on screen, because React rewrites the canvas's `<style>`
+ * tag on every token change without invalidating that cache.
  *
- * Detaching the root from the render tree and re-attaching it drops that
- * cache for everything inside, so the values read afterwards are the ones the
- * browser is actually painting. It is the same trick that proved out the
- * `data-sb-preview` state work earlier, applied once at the root rather than
- * per node.
+ * Detaching the root from the render tree and re-attaching it drops the
+ * stale cache for everything inside, so values read afterwards match what
+ * the browser is actually painting.
  */
 function flush(root: HTMLElement): void {
   const previous = root.style.display;

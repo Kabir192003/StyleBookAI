@@ -1,10 +1,5 @@
-/**
- * /api/favorites — list (GET) and add (POST) favorited colors/fonts/themes
- * for the signed-in user. item_id references the static data/ library's
- * own id, not a DB row — colors/fonts/themes aren't stored in the database.
- *
- * Owner: Kabir
- */
+// item_id references the static data/ library's own id, not a DB row —
+// colors/fonts/themes aren't stored in the database.
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { getSupabaseAdmin } from "@/lib/db/supabase";

@@ -1,29 +1,16 @@
-/**
- * Hue-preserving contrast repair — the deterministic half of the fix for
- * the two accessibility defects QA found in AI Generate:
- *
- *  1. A generated brand shipped body text #f8fafc on background #f8f7f7 —
- *     1.02:1, literally unreadable. Nothing in the pipeline measured it.
- *  2. Another run's primary button measured 4.1:1 while the model's own
- *     prose claimed "all text and interactive states exceed 4.5:1".
- *
- * Asking the model more nicely can't guarantee either. So contrast is
- * measured and *repaired* in code, after the model responds, by
- * lib/ai/validateTokens.ts — this file is the pure math it leans on. Ratios
- * come from getContrastRatio() in ./colorUtils (WCAG 2.x relative
- * luminance), the same function ContrastBadge and the theme pages report
- * with, so a badge in the UI and a repair here can never disagree.
- *
- * Repair strategy: walk the foreground's HSL lightness while holding hue
- * and saturation fixed, and take the smallest move that clears the target.
- * Hue is what makes a token feel like *this* brand, so it is never touched;
- * lightness is the only axis that meaningfully changes luminance anyway.
- * A full 0-100 lightness sweep necessarily includes near-black and
- * near-white, so a solution is found whenever one exists at all — and when
- * one genuinely doesn't (a mid-lightness background caps out around 4.0:1
- * against anything), we say so rather than pretending, which is what feeds
- * the "could not be auto-fixed" line in the generated accessibility notes.
- */
+// Hue-preserving contrast repair — the pure math lib/ai/validateTokens.ts
+// leans on to measure and fix contrast after the model responds, since the
+// model itself can't be trusted to get ratios right. Ratios come from
+// getContrastRatio() in ./colorUtils (WCAG 2.x relative luminance), the same
+// function ContrastBadge and the theme pages use, so a badge in the UI and a
+// repair here can never disagree.
+//
+// Repair strategy: walk the foreground's HSL lightness while holding hue and
+// saturation fixed, taking the smallest move that clears the target — hue is
+// what makes a token feel like *this* brand, so it's never touched. A full
+// 0-100 sweep finds a solution whenever one exists; when one genuinely
+// doesn't, that's reported honestly rather than papered over (see the
+// "could not be auto-fixed" line in the generated accessibility notes).
 import chroma from "chroma-js";
 import { getContrastRatio } from "./colorUtils";
 

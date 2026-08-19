@@ -1,28 +1,18 @@
 /**
- * The single canonical mapping from an AI-generated project's `colors`
- * array (role-tagged: primary/secondary/background/surface/text/muted)
- * onto Studio's 5-slot palette (accent/support/surface/ink/muted).
- *
- * Previously this logic was duplicated: PromptInput's openInStudio()
- * computed it one way to build URL params, while StudioBuilder separately
- * derived the palette from `aiResult.designSystem.light` (a *different*,
- * independently AI-authored color set — the model returns both a flat
- * `colors` array and, when a full design system is requested, its own
- * `designSystem.light.colorRoles`/`components`). Those two never had to
- * agree, so a role like "secondary" could show one hex on the results
- * page and a different hex once Studio opened — a confirmed data-fidelity
- * defect. Both callers now go through this one function so there is
- * exactly one source of truth for "what does 'support' mean for this
- * result" (see components/ai/PromptInput.tsx and
- * components/studio/StudioBuilder.tsx).
+ * The single canonical mapping from an AI-generated project's `colors` array
+ * (role-tagged: primary/secondary/background/surface/text/muted) onto
+ * Studio's 5-slot palette (accent/support/surface/ink/muted). Both
+ * components/ai/PromptInput.tsx and components/studio/StudioBuilder.tsx go
+ * through this one function, so "what does 'support' mean for this result"
+ * has exactly one answer — they used to derive it independently (one from
+ * `colors`, one from `designSystem.light`) and could disagree.
  *
  * `primitivesFromAIColors` extends the same principle to the Primitive
- * editor: a fresh AI generation used to leave `state.primitives` at its
- * hardcoded default (see StudioBuilder's DEFAULT_PRIMITIVES) while the
- * Palette/export correctly showed the AI's own colors — two unrelated
- * palettes on screen at once. This derives Primitives directly from the
- * same `colors` array and links the Palette roles to them via `ColorRef`,
- * exactly like the sidebar's manual "Linked" button does.
+ * editor: derives Primitives directly from the same `colors` array and links
+ * the Palette roles to them via `ColorRef`, exactly like the sidebar's manual
+ * "Linked" button does, so a fresh AI generation doesn't leave
+ * `state.primitives` on its hardcoded default while the Palette shows
+ * different colours.
  */
 import { PaletteTokens } from "./exportCode";
 import { ColorValue, PrimitiveColor, makePrimitiveId } from "./tokenGraph";

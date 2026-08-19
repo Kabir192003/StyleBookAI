@@ -1,35 +1,14 @@
-/**
- * Named corner-radius scale for AI-generated projects.
- *
- * Spacing has always come back as a full progressive scale
- * (lib/designTokens/spacing.ts) while radius came back as a single number —
- * `buildRadiusScale()` in lib/designTokens/radius.ts returns a fixed
- * `{ options: [4, 8, 12, 20], recommended }`, so a generated system had one
- * flat corner value for buttons, cards and modals alike. Real interfaces need
- * a ramp: tight on inputs, softer on cards, softest on modals, plus a pill.
- *
- * Two things are fixed here at once:
- *   1. The ramp itself, derived from the model's chosen base so per-prompt
- *      variation survives (a base of 4 and a base of 16 produce genuinely
- *      different systems, not the same four numbers).
- *   2. `0` becomes reachable. The old option set forbade it, which is exactly
- *      why a QA prompt asking for "hard 0px corners" silently shipped 4px.
- *
- * This is additive on purpose: the numeric ramp is still handed to the
- * existing `CornerRadiusScale` (types/designTokens.ts, which this batch does
- * not own) via `options`, so lib/export/generators.ts and Studio keep working
- * unchanged, while the named mapping rides alongside on AIGeneratedProject as
- * `radiusScale` (types/ai.ts).
- */
+// Named corner-radius scale for AI-generated projects. Unlike
+// lib/designTokens/radius.ts's fixed `{options, recommended}` shape, this
+// derives a real ramp (sm/md/lg/pill) from the model's own chosen base, and
+// allows `0` as a legal base (needed for brutalist/hard-corner briefs). Rides
+// alongside the existing CornerRadiusScale as AIGeneratedProject.radiusScale
+// (types/ai.ts) rather than replacing it, so existing consumers are unaffected.
 import { CornerRadiusScale } from "@/types/designTokens";
 import { NamedRadiusScale } from "@/types/ai";
 
-/**
- * Values the model may choose from. Widened from [4, 8, 12, 20] — `0` for
- * brutalist/technical brands that genuinely want square corners, and finer
- * intermediate steps so "slightly soft" and "very soft" aren't the same
- * answer. Anything else the model returns snaps to the nearest entry.
- */
+// Values the model may choose from; anything else it returns snaps to the
+// nearest entry. Includes 0 for brutalist/square-corner brands.
 export const RADIUS_BASE_OPTIONS = [0, 2, 4, 6, 8, 10, 12, 16, 20, 24];
 
 export function snapRadiusBase(value: number | undefined, fallback = 8): number {
@@ -40,14 +19,9 @@ export function snapRadiusBase(value: number | undefined, fallback = 8): number 
   );
 }
 
-/**
- * Derives the named ramp from the brand's base radius.
- *
- * A base of 0 zeroes the *whole* ramp including `full`: a brand that asked
- * for hard corners does not want pill-shaped avatars sneaking back in via a
- * different token. That is the concrete constraint-honouring behaviour the
- * "hard 0px corners" QA prompt was owed.
- */
+// Derives the named ramp from the brand's base radius. A base of 0 zeroes the
+// *whole* ramp including `full` — a hard-corners brand shouldn't get a
+// pill-shaped avatar sneaking back in via a different token.
 export function buildNamedRadiusScale(base: number): NamedRadiusScale {
   const md = snapRadiusBase(base);
   if (md === 0) {

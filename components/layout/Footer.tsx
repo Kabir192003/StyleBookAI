@@ -1,9 +1,7 @@
-// Owner: Amna
-//
 // Mounted on browse, legal, account and dashboard. Not on the landing page
-// (it has its own footer, same links, own visual style), not on Studio (it's
-// a full-screen canvas, a footer would just be scroll noise), and not on the
-// auth screens (those just get a one-line legal mention, see AuthForm.tsx).
+// (own footer, same links), not on Studio (full-screen canvas, a footer is
+// just scroll noise), and not on auth (one-line legal mention instead, see
+// AuthForm.tsx).
 import Link from "next/link";
 
 const PRODUCT_LINKS = [

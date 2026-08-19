@@ -1,13 +1,8 @@
-/**
- * Mirrors lib/figmaExport/types.ts in the main StyleBook repo.
- *
- * Duplicated on purpose, not imported across the repo boundary: this plugin
- * is a separate, separately-built/shipped project (Figma plugins bundle
- * their own dependency graph), so it has no access to the Next.js app's
- * TypeScript project. If the payload shape changes, update both this file
- * and lib/figmaExport/types.ts together — schemaVersion exists specifically
- * so a mismatch fails loudly (see code.ts) instead of silently.
- */
+// Mirrors lib/figmaExport/types.ts in the main StyleBook repo. Duplicated
+// on purpose, not imported: this plugin is a separately built/shipped
+// project with no access to the Next.js app's TypeScript project. If the
+// payload shape changes, update both files — schemaVersion exists so a
+// mismatch fails loudly (see code.ts) instead of silently.
 
 export type FigmaColorVariable = { light: string; dark?: string };
 
@@ -60,9 +55,7 @@ export type FigmaTextStyle = {
   align: "LEFT" | "CENTER" | "RIGHT" | "JUSTIFIED";
   transformed: boolean;
   decoration: "NONE" | "UNDERLINE" | "STRIKETHROUGH";
-  /** Line boxes the browser actually painted — see the same field in
-   *  lib/figmaExport/types.ts for why it exists. */
-  lineCount: number;
+  lineCount: number; // line boxes the browser actually painted, see lib/figmaExport/types.ts
 };
 
 export type FigmaFrameNode = {

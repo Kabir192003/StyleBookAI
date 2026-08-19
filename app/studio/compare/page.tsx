@@ -1,22 +1,5 @@
-/**
- * /studio/compare — Palette & Font Preview Lab
- *
- * Owner: Qi
- *
- * This is the centerpiece feature. Full interaction spec:
- * docs/PRODUCT_AND_UX.md §3 — read it before building.
- *
- * Three connected views (tabs within the same canvas), backed by
- * store/previewLabStore.ts:
- *   1. Side-by-side swatches with contrast badges (drag to reorder via
- *      @dnd-kit)
- *   2. Mood mockup — same colors applied to a card/heading/button/input
- *   3. Font-on-color — heading + body fonts rendered on the mockup's
- *      background colors
- *
- * "Send to Studio" stages the selection via store/studioImportStore.ts
- * and navigates to /studio, which consumes it once on mount.
- */
+// "Send to Studio" stages the selection via store/studioImportStore.ts and
+// navigates to /studio, which consumes it once on mount.
 import { PreviewLab } from "@/components/studio/PreviewLab";
 import { StudioNav } from "@/components/studio/StudioNav";
 

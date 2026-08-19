@@ -1,15 +1,9 @@
-/**
- * Prompt builder for POST /api/ai/generate.
- *
- * Gemini should prefer picking from the candidate colors/fonts list below
- * (they carry real editorial metadata — name, family, mood, a written
- * note), but for colors it may return an exact hex directly when the user
- * asked for a specific value the candidates can't approximate — see the
- * colorId/hex contract below and lib/ai/generate.ts's resolution logic.
- * Fonts are still id-only; Gemini never invents a font family. Keeps the
- * JSON contract in prose form here so schema.ts and this file are the two
- * places that define "what Gemini must return."
- */
+// Prompt builder for POST /api/ai/generate. Gemini prefers picking from the
+// candidate colors/fonts lists (real editorial metadata), but may return a
+// literal hex for a color the candidates can't approximate — see the
+// colorId/hex contract below and lib/ai/generate.ts's resolution logic. Fonts
+// stay id-only; Gemini never invents a font family. schema.ts and this file
+// are the two places that define what Gemini must return.
 import { Color } from "@/types/color";
 import { Font } from "@/types/font";
 import { MoodboardImage } from "@/types/designTokens";

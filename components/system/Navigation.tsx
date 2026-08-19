@@ -1,19 +1,9 @@
-/**
- * Navigation — navbar, tabs, breadcrumbs.
- *
- * The tabs are the accessibility-load-bearing component in the whole
- * library, so they implement the WAI-ARIA tabs pattern properly rather than
- * approximately: a roving tabindex (exactly one tab is in the tab order, so
- * Tab moves *past* the tablist instead of through every tab), Arrow keys to
- * move selection, Home/End to jump, and `aria-controls`/`aria-labelledby`
- * tying each tab to its panel. Requirement: "the tabs must be keyboard-
- * operable" (docs/DESIGN_PLAYGROUND.md, P2).
- *
- * All ids come from `useId()` because the canvas can render this
- * component once per experiment — hard-coded ids would collide across cards
- * and `aria-controls` would resolve to the wrong panel in every card but the
- * first.
- */
+// Tabs implement the full WAI-ARIA tabs pattern, not an approximation: roving
+// tabindex (only one tab in the tab order, so Tab skips past the tablist
+// instead of through every tab), arrow keys to move selection, Home/End to
+// jump, aria-controls/aria-labelledby tying each tab to its panel. All ids
+// come from useId() since the canvas can render this more than once — hard-
+// coded ids would collide and aria-controls would resolve to the wrong panel.
 "use client";
 
 import { useId, useRef, useState } from "react";
@@ -37,8 +27,7 @@ export function Navbar() {
             key={item}
             type="button"
             className="pg-navlink"
-            // aria-current="page" is both the a11y signal and the CSS hook for
-            // the active pill — one source of truth, so they cannot disagree.
+            // aria-current="page" is both the a11y signal and the CSS hook for the active pill.
             aria-current={active === item ? "page" : undefined}
             onClick={() => setActive(item)}
           >
@@ -86,9 +75,8 @@ export function Tabs() {
     if (next === null) return;
     e.preventDefault();
     setSelected(next);
-    // Automatic activation (selection follows focus) is the correct choice
-    // here: the panels are already rendered and cheap, so there is nothing
-    // to defer, and it saves the extra Enter press.
+    // Selection follows focus here since the panels are already rendered and
+    // cheap — nothing to defer, and it saves the extra Enter press.
     tabRefs.current[next]?.focus();
   }
 
@@ -120,8 +108,7 @@ export function Tabs() {
         id={`${id}-panel-${selected}`}
         aria-labelledby={`${id}-tab-${selected}`}
         className="pg-tabpanel"
-        // The panel itself is focusable so that Tab out of the tablist lands
-        // on the content it just revealed, per the ARIA authoring practice.
+        // Focusable so Tab out of the tablist lands on the content it just revealed.
         tabIndex={0}
       >
         {TABS[selected].body}
@@ -145,8 +132,7 @@ export function Breadcrumbs() {
           </li>
         ))}
         <li>
-          {/* The current page is not a link. aria-current="page" is what tells
-              assistive tech where you are; the styling follows from it. */}
+          {/* Not a link — aria-current="page" tells assistive tech where you are, and styling follows from it. */}
           <span className="pg-crumb" aria-current="page">
             Components
           </span>

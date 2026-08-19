@@ -1,16 +1,10 @@
-/**
- * Client-side cache of the signed-in user's favorited colors/fonts/themes,
- * so every ColorCard/FontCard/theme tile can check "is this favorited"
- * without its own network request. `toggle()` updates optimistically and
- * calls the API in the background — see components/browse/FavoriteButton.tsx.
- *
- * `toggle()` reverts the optimistic update on *any* non-OK response, not
- * just network failures — a 401 (session expired mid-visit) used to leave
- * the heart filled in the UI while the server silently rejected the
- * write. `sessionExpired` flips true on a 401 specifically so
- * FavoriteButton can redirect to sign-in instead of just looking
- * "successful" and doing nothing server-side.
- */
+// Client-side cache of the signed-in user's favorited colors/fonts/themes,
+// so every ColorCard/FontCard/theme tile can check "is this favorited"
+// without its own request. toggle() updates optimistically, calls the API,
+// and reverts on any non-OK response — not just network failures, since a
+// 401 (session expired mid-visit) used to leave the heart filled while the
+// write silently failed. sessionExpired flips true on a 401 so
+// FavoriteButton can redirect to sign-in instead of looking "successful".
 import { create } from "zustand";
 
 export type FavoriteType = "color" | "font" | "theme";
@@ -103,7 +97,6 @@ export const useFavoritesStore = create<FavoritesState>()((set, get) => ({
         if (res.status === 401) set({ sessionExpired: true });
       }
     } catch {
-      // Revert on network failure — the optimistic update didn't stick.
       revert();
     }
   },

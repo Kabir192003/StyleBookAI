@@ -1,10 +1,6 @@
-/**
- * ProjectCard — one saved project on /dashboard. Shows just enough of the
- * palette + font pairing to recognize the project at a glance; the full
- * system lives on /dashboard/[projectId].
- *
- * Owner: Amna
- */
+// One saved project on /dashboard. Shows just enough of the palette + font
+// pairing to recognize it at a glance; the full system lives on
+// /dashboard/[projectId].
 "use client";
 
 import Link from "next/link";

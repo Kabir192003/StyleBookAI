@@ -1,27 +1,18 @@
-/**
- * Renders the optional `designSystem` block from an AI Generate result —
- * component tokens/states, a light/dark toggle, accessibility notes, icon
- * style, and grid/breakpoints. Shared between the AI results page
- * (components/ai/PromptInput.tsx, always read-only) and Studio
- * (components/studio/StudioBuilder.tsx, `editable` there so every token
- * that's editable elsewhere in Studio is editable here too) once a project
- * carries a designSystem.
- *
- * Styled to the site's one light editorial theme (bg-[#F2EBE0] cards,
- * #211E18 ink, #8A8477 muted, border-black/[0.12]) — same vocabulary as
- * PromptInput.tsx and StudioBuilder.tsx, so this panel doesn't need its
- * own dark/light chrome toggle; `variant` below is the *generated design
- * system's own* light/dark theme-role toggle, unrelated to page chrome.
- *
- * Each ComponentName gets its own small mock shape (button = pill, card =
- * bordered container with a header + body lines, table = mini grid, etc.)
- * driven by its "default" tokens, so a card doesn't look like a button —
- * only the shape differs per type; the same tokens (background/text/border)
- * drive every shape. Non-default states (hover/active/disabled/focus) are
- * shown as small labeled swatches below the shape — real :hover/:active
- * can't be simulated in a static preview, so this is a legible approximation,
- * not a live component library.
- */
+// Renders the optional designSystem block from an AI Generate result.
+// Shared between the AI results page (components/ai/PromptInput.tsx, always
+// read-only) and Studio (StudioBuilder.tsx, editable there) once a project
+// carries a designSystem.
+//
+// Styled to the site's one light editorial theme, same vocabulary as
+// PromptInput.tsx/StudioBuilder.tsx, so this panel needs no dark/light chrome
+// toggle of its own — `variant` below is the generated design system's own
+// light/dark theme-role toggle, unrelated to page chrome.
+//
+// Each ComponentName gets a small mock shape (button = pill, card = bordered
+// container, table = mini grid, etc) driven by its default tokens, so only
+// the shape differs per type while the same background/text/border tokens
+// drive all of them. Non-default states show as small labeled swatches below
+// the shape since real :hover/:active can't be simulated in a static preview.
 "use client";
 
 import { useState } from "react";
@@ -38,12 +29,10 @@ function onColor(hex: string): string {
 }
 
 // The AI's own accessibility.level/notes are prose it wrote about the
-// palette, not a calculated fact — this app previously displayed that
-// claim as if it were verified. These pairs are the actual foreground/
-// background combinations end users will read: the core text roles
-// against their surfaces, plus every present component's own text vs
-// background. WCAG normal-text AA is 4.5:1 — anything under that is a
-// real, deterministic failure regardless of what the AI claimed.
+// palette, not a calculated fact, so we independently verify the actual
+// foreground/background pairs users will read (core text roles against their
+// surfaces, plus every component's text vs background). WCAG normal-text AA
+// is 4.5:1 — anything under that fails regardless of what the AI claimed.
 const NORMAL_TEXT_AA = 4.5;
 
 type VerifiedPair = { label: string; foreground: string; background: string; ratio: number };
@@ -242,10 +231,9 @@ export function DesignSystemGallery({
   editable?: boolean;
   onChange?: (next: DesignSystem) => void;
   onSpacingChange?: (next: SpacingScale) => void;
-  // Controlled by the caller when provided (Studio, so its one Light/Dark
-  // toggle drives this panel too instead of each maintaining its own).
-  // Omitted on the AI results page (components/ai/PromptInput.tsx, always
-  // read-only there), which falls back to owning its own local toggle.
+  // Controlled by the caller when provided (Studio, so its own Light/Dark
+  // toggle drives this panel too). Omitted on the AI results page, which
+  // falls back to its own local toggle.
   variant?: "light" | "dark";
   onVariantChange?: (variant: "light" | "dark") => void;
 }) {

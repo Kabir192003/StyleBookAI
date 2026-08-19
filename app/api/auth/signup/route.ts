@@ -1,17 +1,9 @@
-/**
- * POST /api/auth/signup — creates a user with a username + password and
- * signs them in (sets the session cookie). No email, no verification —
- * a deliberately minimal v1 auth system (see CLAUDE.md).
- *
- * Every non-validation failure is classified and reported (see
- * lib/auth/authFailure.ts). The previous version returned a flat
- * "Couldn't create account" for anything that went wrong and logged the
- * reason to an untagged console.error, so a missing env var, an unapplied
- * `lib/db/schema.sql` migration, and a genuinely duplicate username were
- * all the same opaque failure to the person hitting the button. That is
- * why "unable to register" survived three rounds of fixes aimed at the
- * form component: nothing in the product ever said what actually broke.
- */
+// No email/verification — deliberately minimal v1 auth (see CLAUDE.md).
+// Every non-validation failure gets classified (lib/auth/authFailure.ts)
+// instead of a flat "Couldn't create account". Used to log everything the
+// same way, so a missing env var, an unapplied migration, and an actually
+// taken username all looked identical — which is why "unable to register"
+// survived several rounds of fixes aimed at the form itself.
 import { NextRequest, NextResponse } from "next/server";
 import { CredentialsSchema } from "@/lib/validation/auth";
 import { hashPassword } from "@/lib/auth/password";
@@ -40,10 +32,9 @@ export async function POST(req: NextRequest) {
   try {
     const admin = getSupabaseAdmin();
 
-    // `error` is checked, not discarded: on a database whose migration was
-    // never applied this lookup fails with 42P01/PGRST205, and treating that
-    // as "no existing user" would march straight into an insert that fails
-    // for the same reason one step later, reported as a mystery 500.
+    // Check the lookup error instead of discarding it — an unapplied migration
+    // fails with 42P01/PGRST205, and treating that as "no existing user" would
+    // just hit the same failure on insert, reported as a mystery 500.
     const { data: existing, error: lookupError } = await admin
       .from("users")
       .select("id")
@@ -62,8 +53,7 @@ export async function POST(req: NextRequest) {
       .single();
 
     // A UNIQUE violation here is a real race (two people claiming the same
-    // name at once), not a server fault — report it as the taken username
-    // it is rather than letting the classifier call it a database error.
+    // name at once), not a server fault — report it as a taken username.
     if (insertError?.code === "23505") {
       return NextResponse.json({ error: "That username is taken" }, { status: 409 });
     }
@@ -71,8 +61,8 @@ export async function POST(req: NextRequest) {
       throw insertError ?? new Error("Insert returned no row");
     }
 
-    // Reached only on success, and the only place AUTH_SECRET is read —
-    // a throw from here means the deployment can't sign session cookies.
+    // Only place AUTH_SECRET is read — a throw here means the deployment
+    // can't sign session cookies.
     await setSessionCookie(user.id);
 
     return NextResponse.json(

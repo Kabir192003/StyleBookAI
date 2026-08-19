@@ -1,25 +1,15 @@
-/**
- * The one place that knows how to turn *everything the app can generate*
- * into a W3C Design Tokens Community Group (DTCG) token tree.
- *
- * Why this file exists at all: there were two export pipelines
- * (lib/studio/exportCode.ts for the Studio drawer, lib/export/generators.ts
- * for the saved-Project API) and they had drifted — the API one silently
- * dropped the dark palette, the type scale beyond a bare px list, and every
- * component state, while the Studio one emitted an ad-hoc `{value, type}`
- * shape that no Figma plugin has ever understood. Both now normalise into
- * `NormalizedSystem` here and share one DTCG writer, so a fix lands in both
- * pipelines instead of one.
- *
- * Format target: the DTCG *second editors' draft* value grammar —
- * colours as `#rrggbb[aa]` hex strings, dimensions as `"16px"` strings,
- * composite `shadow`/`typography` objects. That is deliberately NOT the
- * newest draft (which changed dimension to `{value, unit}` and colour to
- * `{colorSpace, components}`): the string grammar is what Tokens Studio and
- * the Figma "Design Tokens" plugins actually parse today, and an import
- * that a real designer can run at the expo is the entire point of this
- * export. See docs at second-editors-draft.tr.designtokens.org/format/.
- */
+// The one place that knows how to turn everything the app can generate into a
+// W3C Design Tokens Community Group (DTCG) token tree. Both export pipelines
+// (lib/studio/exportCode.ts and lib/export/generators.ts) normalise into
+// `NormalizedSystem` here and share one DTCG writer, so a fix lands in both
+// instead of drifting between an ad-hoc Studio shape and an API shape that
+// silently dropped the dark palette and component states.
+//
+// Format target: the DTCG *second editors' draft* value grammar — colours as
+// `#rrggbb[aa]` hex strings, dimensions as `"16px"` strings, composite
+// `shadow`/`typography` objects — not the newest draft's `{value, unit}` /
+// `{colorSpace, components}` shapes, because the string grammar is what
+// Tokens Studio and the Figma "Design Tokens" plugins actually parse today.
 import { SpacingScale, ShadowScale } from "@/types/designTokens";
 import { ComponentName, ComponentTokenSet, DesignSystem, ThemeVariantTokens } from "@/types/designSystem";
 import { TypeScale } from "@/types/theme";
@@ -239,17 +229,11 @@ export function parseBoxShadow(value: string): ShadowLayer[] {
     });
 }
 
-/**
- * Tokens Studio's own boxShadow field names — confirmed against its docs
- * (docs.tokens.studio/manage-tokens/token-types/box-shadow): `x`/`y`, not
- * DTCG's `offsetX`/`offsetY`, and a required `type: "dropShadow" |
- * "innerShadow"` in place of DTCG's optional `inset` boolean. A shadow
- * composite written with the DTCG field names is not a recognised
- * Tokens Studio boxShadow value — this is why "Create Styles" produced no
- * Effect Styles even though the token itself imported and looked complete.
- * Values keep their `px` suffix; Tokens Studio's own docs describe shadow
- * layer values as accepting either bare numbers or unit-suffixed strings.
- */
+// Tokens Studio's own field names for a boxShadow layer: `x`/`y`, not DTCG's
+// `offsetX`/`offsetY`, and a required `type` in place of DTCG's `inset`
+// boolean — a shadow written with DTCG's names isn't a recognised Tokens
+// Studio value, which is why "Create Styles" produced no Effect Styles even
+// though the token looked complete on import.
 export type TokensStudioShadowLayer = {
   color: string;
   type: "dropShadow" | "innerShadow";
@@ -296,24 +280,15 @@ export function shadowOverflowPx(value: string): number {
 type TokenNode = Record<string, unknown>;
 
 /**
- * `explicitType` exists because of a real Tokens Studio import bug, found by
- * testing an actual export in Tokens Studio v2.11.12: every colour token
- * came in as a broken `?` swatch, even the flat top-level ones. The DTCG
- * spec says a group's `$type` is inherited by every descendant that doesn't
- * set its own — and that is exactly what `toDtcgJson`'s plain output relies
- * on, one `$type: "color"` on the outer `color` group covering `palette.*`,
- * `role.*`, and `component.<name>.<state>.*` several levels down. Tokens
- * Studio's importer does not walk that far: it resolves `$type` from a
- * group only for its *direct* children, so `color.palette.accent` (two
- * levels down) and `color.component.button.hover.background` (four levels
- * down) never see it and get treated as untyped, unresolvable values.
- *
- * The fix is to stamp `$type: "color"` on every leaf instead of relying on
- * inheritance — legal per spec either way, and it can't go wrong regardless
- * of how deep an importer is willing to look. Scoped to a flag rather than
- * made the default so `toDtcgJson` (generic DTCG importers, which do
- * implement the inheritance rule) stays byte-for-byte unchanged; only
- * `toTokensStudioJson` sets it.
+ * `explicitType` works around a real Tokens Studio import bug: the DTCG spec
+ * says a group's `$type` is inherited by every descendant that doesn't set
+ * its own, but Tokens Studio's importer only resolves `$type` for a group's
+ * *direct* children — so a nested token like `color.palette.accent` or
+ * `color.component.button.hover.background` came in as a broken, untyped `?`
+ * swatch. Stamping `$type: "color"` on every leaf instead of relying on
+ * inheritance fixes it (legal per spec either way). Scoped to a flag, not the
+ * default, so `toDtcgJson` (generic DTCG importers, which do implement
+ * inheritance) stays unchanged; only `toTokensStudioJson` sets it.
  */
 function colorToken(hex: string, description?: string, explicitType = false): TokenNode {
   return {
@@ -325,17 +300,14 @@ function colorToken(hex: string, description?: string, explicitType = false): To
 
 /**
  * Same as `colorToken`, but first checks whether this exact colour was
- * already emitted earlier in the same token set — if so, it points at that
- * token with a `{group.token}` reference instead of repeating the literal
- * hex.
+ * already emitted earlier in the same token set — if so, points at it with a
+ * `{group.token}` reference instead of repeating the literal hex.
  *
- * This is intentionally an exact-match check, not a "closest" one. A
- * component colour is frequently a WCAG-contrast-adjusted variant of a
- * primitive — hue preserved, lightness moved — and referencing the
- * unadjusted primitive in that case would make Tokens Studio resolve the
- * component back to a colour that no longer passes the ratio it was
- * corrected for. Only a byte-identical hex is safe to collapse into a
- * reference; everything else stays a literal, which is already correct.
+ * Deliberately an exact-match check, not "closest": a component colour is
+ * often a contrast-adjusted variant of a primitive (hue preserved, lightness
+ * moved), and referencing the unadjusted primitive would make Tokens Studio
+ * resolve it back to a colour that no longer passes the ratio it was
+ * corrected for.
  */
 function colorTokenOrRef(
   hex: string,
@@ -344,13 +316,10 @@ function colorTokenOrRef(
   explicitType = false
 ): TokenNode {
   const resolved = toHexColor(hex);
-  // Gated on the same flag as the $type stamp, not just reusing whatever
-  // `candidates` happens to hold: this function is called unconditionally
-  // from componentGroup/variantColorGroup, including from the plain
-  // `toDtcgJson` path where `explicitType` is false. Without this guard the
-  // plain "Design Tokens" tab would start emitting `{role.surface}`-style
-  // references too — exactly the kind of change to the normal export this
-  // fix must not make.
+  // Gated on the same flag as the $type stamp: this function runs
+  // unconditionally from componentGroup/variantColorGroup, including from the
+  // plain toDtcgJson path — without the guard, the plain "Design Tokens" tab
+  // would start emitting `{role.surface}`-style references too.
   const ref = explicitType ? candidates.get(resolved.toLowerCase()) : undefined;
   return {
     ...(explicitType ? { $type: "color" as const } : {}),
@@ -444,70 +413,49 @@ function paletteOnlyGroup(palette: NamedColor[], explicitType = false): TokenNod
 
 export type DtcgOptions = {
   /**
-   * Emit only the tokens that belong to one mode, with the mode's own
-   * `color` group hoisted to the top level. Used to build Tokens Studio
-   * token *sets* (one set per mode) — inside a set, `color.accent` must
-   * resolve without a `light.`/`dark.` prefix or the plugin can't swap
-   * modes by enabling a different set.
+   * Emit only the tokens for one mode, with that mode's `color` group hoisted
+   * to the top level — builds a Tokens Studio token *set* per mode, where
+   * `color.accent` must resolve without a `light.`/`dark.` prefix or the
+   * plugin can't swap modes by enabling a different set.
    */
   mode?: "light" | "dark";
   /** Drop the non-colour token groups (they live in the shared `global` set). */
   colorsOnly?: boolean;
   /**
-   * Tokens Studio speaks a different typography dialect than plain DTCG:
-   * font family/weight tokens use the plugin's own `fontFamilies`/
-   * `fontWeights` types (not the spec's singular `fontFamily`/`fontWeight`),
-   * and a `typography` composite is expected to *reference* those tokens
-   * with `{group.token}` syntax rather than repeat their values inline —
-   * that's what lets editing "Body" in the Fonts panel move every text
-   * style that uses it. Only `toTokensStudioJson` sets this; the plain
-   * `toDtcgJson` output stays spec-literal, since that's the file aimed at
-   * generic DTCG importers rather than Tokens Studio specifically.
+   * Tokens Studio's typography dialect: font family/weight tokens use its own
+   * `fontFamilies`/`fontWeights` types (not DTCG's singular forms), and a
+   * `typography` composite references those tokens with `{group.token}`
+   * syntax instead of repeating values inline, so editing "Body" in the Fonts
+   * panel moves every text style built on it. Only `toTokensStudioJson` sets
+   * this; plain `toDtcgJson` stays spec-literal.
    */
   tokensStudioTypography?: boolean;
   /**
-   * Stamp `$type: "color"` on every colour leaf instead of relying on the
-   * outer `color` group's `$type` to cascade down through `palette.*`,
-   * `role.*` and `component.*.*` — see the comment on `colorToken` for why
-   * that cascade doesn't survive Tokens Studio's importer. Also turns on
-   * reference-over-duplicate for `role`/`component` colours that exactly
-   * match an already-emitted primitive (see `colorTokenOrRef`). Only
-   * `toTokensStudioJson` sets this, for the same reason as
-   * `tokensStudioTypography` above.
+   * Stamp `$type: "color"` on every colour leaf instead of relying on
+   * inheritance from the outer `color` group (see `colorToken`'s comment for
+   * why that cascade doesn't survive Tokens Studio's importer), and turn on
+   * reference-over-duplicate for role/component colours that exactly match an
+   * already-emitted primitive (see `colorTokenOrRef`). Only
+   * `toTokensStudioJson` sets this.
    */
   explicitColorType?: boolean;
   /**
-   * Tokens Studio's UI groups every token under a left-hand category
-   * ("Color", "Font Family", "Font Weight", "Font Size", "Typography",
-   * "Sizing"/"Spacing", "Border Radius", "Box Shadow", …), and that grouping
-   * is keyed off the token's own `$type` string using the plugin's *native*
-   * vocabulary — not the generic DTCG spec type this file otherwise targets.
-   * `dimension` (the spec-correct type for every length in DTCG) doesn't
-   * match any of those categories, so with this off, a real import proved
-   * the font-size, spacing, radius and shadow tokens land in the tree with
-   * working values but don't surface under any of the named categories —
-   * distinct from the earlier "?" broken-value bug, but the same root
-   * pattern: spec-legal DTCG that Tokens Studio's own UI doesn't key off of.
-   * Turning this on renames only the group-level `$type` for those four
-   * groups (fontSize -> "fontSizes", spacing -> "spacing", radius ->
-   * "borderRadius", shadow -> "boxShadow"); token names, values and
-   * references are untouched. `color` has its own flag above because it
-   * needed a different fix (leaf-level, not a renamed group). Only
-   * `toTokensStudioJson` sets this.
+   * Tokens Studio's UI groups tokens by category (Color, Font Family, Box
+   * Shadow, …) keyed off each group's `$type` using its own vocabulary, not
+   * DTCG's generic `dimension` — without this, font-size/spacing/radius/
+   * shadow tokens import with working values but surface under no category at
+   * all. Renames only the group-level `$type` for those four groups
+   * (fontSize -> "fontSizes", spacing -> "spacing", radius -> "borderRadius",
+   * shadow -> "boxShadow"); values and references are untouched. `color` has
+   * its own flag above since it needs a leaf-level fix, not a renamed group.
+   * Only `toTokensStudioJson` sets this.
    */
   nativeValueTypes?: boolean;
 };
 
-/**
- * Named weight tokens, derived from whichever numeric weights
- * SEMANTIC_TYPE_ROLES actually uses — not a generic 100–900 ladder. A
- * fixed ladder would define nine tokens and use three of them, and (worse)
- * if a role's weight ever changed to a value the ladder didn't cover, a
- * typography token would reference a name that doesn't exist. Deriving the
- * set from the roles themselves makes that class of bug structurally
- * impossible: every weight a role needs has a token, because the token was
- * created *from* that need.
- */
+// Named weight tokens, derived from whichever numeric weights
+// SEMANTIC_TYPE_ROLES actually uses rather than a generic 100-900 ladder — so
+// a typography token can never reference a weight name that doesn't exist.
 const FONT_WEIGHT_NAMES: Record<number, string> = {
   100: "thin",
   200: "extralight",
@@ -524,13 +472,9 @@ function weightTokenName(weight: number): string {
   return FONT_WEIGHT_NAMES[weight] ?? `w${weight}`;
 }
 
-/**
- * Figma matches a font's *style* by name ("Regular", "Semi Bold", "Bold"),
- * never by the CSS numeric weight — confirmed against a known-working
- * reference export, whose fontWeight tokens hold these exact strings rather
- * than the number `700`. Standard Google Fonts style naming, so this holds
- * for any generated family, not a hardcoded one.
- */
+// Figma matches a font's *style* by name ("Regular", "Semi Bold", "Bold"),
+// never by the CSS numeric weight. Standard Google Fonts style naming, so
+// this holds for any generated family.
 const FIGMA_WEIGHT_STYLE_NAMES: Record<number, string> = {
   100: "Thin",
   200: "Extra Light",
@@ -547,14 +491,10 @@ function figmaWeightStyleName(weight: number): string {
   return FIGMA_WEIGHT_STYLE_NAMES[weight] ?? String(weight);
 }
 
-/**
- * Confirms every `{group.token}` reference the typography composite just
- * wrote actually resolves inside the tree we're about to emit. Throws
- * rather than emitting — a dangling reference is a bug in this file, not a
- * recoverable input problem, and the whole point of asking is that nobody
- * wants to find out from an import that silently shows "{fontFamilies.
- * heading}" as literal text instead of the font name.
- */
+// Confirms every `{group.token}` reference the typography composite just
+// wrote actually resolves inside the tree about to be emitted. Throws rather
+// than emitting a dangling reference — better to fail here than have it show
+// up as literal "{fontFamilies.heading}" text after a Figma import.
 function validateTypographyReferences(tree: TokenNode, fontFamilyKey: string, fontWeightKey: string): void {
   const typography = tree.typography as TokenNode | undefined;
   if (!typography) return;
@@ -656,9 +596,7 @@ export function toDtcgTokens(system: NormalizedSystem, options: DtcgOptions = {}
   tree[fontWeightKey] = {
     $type: options.tokensStudioTypography ? "fontWeights" : "fontWeight",
     // Figma matches a font's *style* by name ("Bold"), never by CSS numeric
-    // weight — the reference export's own fontWeight tokens hold these exact
-    // strings, confirmed working. The plain DTCG tab keeps the spec-correct
-    // number.
+    // weight. The plain DTCG tab keeps the spec-correct number.
     ...Object.fromEntries(
       weightsUsed.map((weight) => [
         weightTokenName(weight),
@@ -676,36 +614,21 @@ export function toDtcgTokens(system: NormalizedSystem, options: DtcgOptions = {}
     };
 
     // Composite typography tokens: a Figma import turns each of these into
-    // one text style. Emitting only raw fontSize dimensions (what the old
-    // Figma tab did) left the importer with numbers and no text styles.
+    // one text style; raw fontSize dimensions alone import as numbers with no
+    // text styles.
     //
-    // fontFamily/fontWeight are literal resolved values, not `{group.token}`
-    // references, in *either* dialect now. A prior version referenced them
-    // for the Tokens Studio dialect (so editing "Body" in the Fonts panel
-    // would move every text style built on it) — but a real Tokens Studio
-    // run confirmed that once past variable creation, Text Style creation
-    // fails with "Error setting font family/weight combination for
-    // {font.display}/{fontWeight.bold}": Figma has no bindable Variable
-    // property for a text style's font, so there is nothing for the
-    // reference to resolve *into* at that step, and Tokens Studio does not
-    // fall back to the literal value on its own. Writing the already-known
-    // literal here — derived from `system.fonts`/the actual numeric weight,
-    // never hardcoded — is what makes Text Style creation succeed for any
-    // generated system.
+    // fontFamily/fontWeight are literal resolved values in *either* dialect,
+    // not `{group.token}` references — a real Tokens Studio run showed Text
+    // Style creation fails with a reference here, because Figma has no
+    // bindable Variable property for a text style's font to resolve into.
+    // fontSize stays a reference (`{fontSize.<step>}`): Figma *can* bind a
+    // Number Variable to it.
     //
-    // fontSize stays a reference (`{fontSize.<step>}`): unlike font/weight,
-    // Figma *can* bind a Number Variable to it, and the reference is exactly
-    // how the working reference export represents it.
-    //
-    // lineHeight/letterSpacing keep their dialect split — the plain DTCG
-    // spec allows a unitless lineHeight ratio (a multiplier, "1.1" meaning
-    // 110% of the font size) and any CSS length unit for letterSpacing,
-    // including `em`. Tokens Studio/Figma accept neither literally: a bare
-    // "1.1" is read as 1.1 *pixels*, not a 110% ratio, and Figma has no `em`
-    // unit at all (Tokens Studio's own docs give the conversion: 1em ==
-    // 100%). The plain "Design Tokens" tab keeps the spec-literal
-    // unitless/`em` form; only `toTokensStudioJson` sets
-    // `tokensStudioTypography`.
+    // lineHeight/letterSpacing keep their dialect split — plain DTCG allows a
+    // unitless lineHeight ratio and `em` letter-spacing, but Tokens Studio/
+    // Figma read a bare "1.1" as pixels and have no `em` unit at all (1em ==
+    // 100%, per Tokens Studio's own docs). Only `toTokensStudioJson` sets
+    // `tokensStudioTypography` to switch dialects.
     const lineHeightRatio = { display: 1.1, body: 1.6 } as const;
     const letterSpacingEm = { display: -0.02, body: 0 } as const;
     const asPercent = (n: number) => `${Math.round(n * 1000) / 10}%`;
@@ -733,24 +656,17 @@ export function toDtcgTokens(system: NormalizedSystem, options: DtcgOptions = {}
       ),
     };
 
-    // A reference the composite just built has to resolve, or Tokens Studio
-    // either drops the text style or renders it with a literal "{…}" string
-    // as the font name — a failure a human only notices by opening Figma.
-    // Checked here, at generation time, so a bad reference is an export-time
-    // error instead of an import-time mystery.
+    // A bad reference here would otherwise only surface after opening Figma —
+    // checked at generation time so it's an export-time error instead.
     if (options.tokensStudioTypography) validateTypographyReferences(tree, fontFamilyKey, fontWeightKey);
   }
 
   /* ---------- space & shape ---------- */
   if (system.spacing) {
     tree.spacing = {
-      // Tokens Studio's own "spacing" type string was expected to key its UI
-      // category the same way "borderRadius"/"boxShadow" do — but a real
-      // import test showed spacing tokens typed "spacing" don't surface as
-      // Number Variables at all. "dimension" (the same type radius/breakpoint
-      // groups already use) is what Tokens Studio actually recognises for a
-      // spacing value. Confirmed against a known-working reference export
-      // whose spacing tokens use "dimension", not "spacing".
+      // "dimension", not "spacing" — a spacing token typed "spacing" doesn't
+      // surface as a Number Variable in Tokens Studio at all; "dimension" is
+      // what it actually recognises here (same type radius/breakpoint use).
       $type: "dimension",
       $description: `Spacing scale on a ${system.spacing.base}px base unit.`,
       ...Object.fromEntries(system.spacing.steps.map((step, i) => [String(i + 1), dimensionToken(step)])),
@@ -772,20 +688,16 @@ export function toDtcgTokens(system: NormalizedSystem, options: DtcgOptions = {}
       ...Object.fromEntries(
         system.shadows.levels.map((level) => {
           const layers = parseBoxShadow(level.value);
-          // A shadow token needs a value even for the "none" level —
-          // omitting it would make the exported set disagree with the CSS
-          // export, which does emit `--shadow-none: none`. A fully
-          // transparent zero-shadow is the importable spelling of "none".
+          // A shadow token needs a value even for "none" — a fully
+          // transparent zero-shadow is the importable spelling of it.
           const zero: ShadowLayer = { color: "#00000000", offsetX: "0px", offsetY: "0px", blur: "0px", spread: "0px" };
           const resolved = layers.length === 0 ? [zero] : layers;
           const toLayer = (l: ShadowLayer): ShadowLayer | TokensStudioShadowLayer =>
             options.nativeValueTypes ? toTokensStudioShadowLayer(l) : l;
           // Single-vs-array collapse differs by dialect: the plain "Design
-          // Tokens" tab keeps a lone layer as a bare object (unchanged, DTCG
-          // is fine with either shape). Tokens Studio's own boxShadow value
-          // is always an array, even for one layer — the known-working
-          // reference export wraps its single-layer "none"/"subtle" shadows
-          // in a one-element array, never a bare object.
+          // Tokens" tab keeps a lone layer as a bare object (DTCG allows
+          // either shape); Tokens Studio's own boxShadow value is always an
+          // array, even for one layer.
           const value = options.nativeValueTypes
             ? resolved.map(toLayer)
             : resolved.length === 1
@@ -859,39 +771,21 @@ export function toDtcgJson(system: NormalizedSystem): string {
 }
 
 /**
- * The actual root cause of a real, confirmed failure: importing the file
- * this section used to produce showed the right token *categories* in
- * Tokens Studio's UI, but switching to a set's own JSON view showed
- * `global`/`light`/`dark` resolving to `{}` — the tokens simply weren't
- * there as far as Tokens Studio's own set model was concerned.
+ * Tokens Studio's own token *sets* (the top-level `global`/`light`/`dark`
+ * structure) predate the DTCG spec and use a different, native schema:
+ * literal `value`/`type` keys, no `$`, and a group's type never cascades to
+ * its children the way DTCG's does. A tree built only from `$value`/`$type`
+ * has no `value` key anywhere, so Tokens Studio's set JSON view shows it as
+ * empty (`{}`) even though the right categories appear in the main UI.
  *
- * The reason is a second, orthogonal format split on top of the
- * fontFamilies/boxShadow one already handled above: Tokens Studio's own
- * token *sets* — the top-level `global`/`light`/`dark` structure this file
- * builds — predate the DTCG spec and are not a DTCG concept at all. A set's
- * own tokens use Tokens Studio's *native* schema: literal `value`/`type`
- * keys, no `$`, and — unlike DTCG — a group's type never cascades to its
- * children. A tree built only from `$value`/`$type` has no `value` key
- * anywhere, so Tokens Studio finds nothing it recognises as a token in the
- * set at all. Hence `{}`.
+ * This renames rather than dual-writes: `$value` -> `value`, `$description`
+ * -> `description`, and `$type` is resolved by walking the same
+ * group-inheritance rule DTCG defines, then written as `type`. `$extensions`
+ * and the tree-root `$description` (StyleBook's own bookkeeping, read by
+ * nothing in Figma) are dropped rather than renamed.
  *
- * This was first fixed by writing *both* `$value`+`value` — safer-seeming,
- * since it stays valid DTCG too. But a known-working reference export
- * (independently generated, confirmed to import as 8 real token sets and
- * produce 24 real Figma variables) uses *only* `value`/`type`/`description`
- * — no `$`-prefixed keys anywhere in a set's own content. So this is now a
- * rename, not a dual-write, to match that proven shape exactly: `$value` →
- * `value`, `$description` → `description`, and `$type` is resolved by
- * walking the same group-inheritance rule DTCG already defines (so a token
- * several groups deep still gets the correct type) and written as `type`.
- * `$extensions` and the tree-root `$description` — StyleBook's own
- * accessibility/icon/grid bookkeeping, read by nothing in Figma's variable
- * or style creation — are dropped rather than renamed, since the reference
- * export carries neither.
- *
- * `toDtcgTokens` itself, and `toDtcgJson`'s output, are untouched — this
- * runs only here, as a final pass over the tree Tokens Studio's own set
- * JSON view renders.
+ * `toDtcgTokens` and `toDtcgJson`'s output are untouched — this runs only
+ * here, as a final pass over the tree Tokens Studio's set JSON view renders.
  */
 function toNativeTokenSet(node: TokenNode, inheritedType?: unknown, isRoot = false): TokenNode {
   const type = "$type" in node ? node.$type : inheritedType;
@@ -923,42 +817,28 @@ function toNativeTokenSet(node: TokenNode, inheritedType?: unknown, isRoot = fal
 }
 
 /**
- * Tokens Studio single-file shape, matched field-for-field against a known-
- * working reference export: a *flat* object whose top-level keys are the
- * token groups themselves — `color`, `font`, `fontWeight`, `fontSize`,
- * `typography`, `spacing`, `radius`, `shadow`, `breakpoint`, `grid`, `icon` —
+ * Tokens Studio single-file shape: a *flat* object whose top-level keys are
+ * the token groups themselves (`color`, `font`, `fontWeight`, `fontSize`,
+ * `typography`, `spacing`, `radius`, `shadow`, `breakpoint`, `grid`, `icon`) —
  * no `global`/`light`/`dark` wrapper, no `$metadata`/`$themes`.
  *
- * Unlike the previous version of this function, the reference is *not*
- * uniformly native `value`/`type` throughout. Its own dialect splits by
- * group: `color`, `font`, `typography`, `radius`, `breakpoint` and `grid`
- * stay native `value`/`type` (no `$`); `fontWeight`, `fontSize`, `spacing`,
- * `shadow` and `icon` keep `$value`/`$type`. Matched exactly rather than
- * normalised, per explicit instruction to replicate this file's format as
- * closely as possible rather than apply the native-only rule the previous
- * version of this function used everywhere.
+ * The dialect splits by group rather than being uniformly native: `color`,
+ * `font`, `typography`, `radius`, `breakpoint` and `grid` stay native
+ * `value`/`type` (no `$`); `fontWeight`, `fontSize`, `spacing`, `shadow` and
+ * `icon` keep `$value`/`$type`.
  *
- * Two more shape changes specific to this reference, both confined to this
- * function:
- *  - `fontWeight` here is a *separate* numeric token (`$value: 700,
- *    $type: "number"`) rather than the Figma style-name string
- *    ("Bold") — that string still lives inline on each `typography`
- *    composite's own `fontWeight` field, which Figma's Text Style creation
- *    actually reads to match a font. This lets `fontWeight` double as a
- *    plain Number Variable while typography keeps working.
- *  - Each `typography` composite's `fontSize` is now the *resolved pixel
- *    number* (e.g. `57.22`, not `"57.22px"` and not `{fontSize.6xl}`), with
- *    a sibling `fontSizeToken` field (`"fontSize.6xl"`, no braces) recording
- *    which `fontSize` entry it came from. `toDtcgTokens`'s own
- *    `{fontSize.<step>}` reference syntax is Tokens Studio's *alias*
- *    convention; `fontSizeToken` is a plain lookup string for external
- *    tooling, not a Tokens Studio alias.
+ * Two shape changes confined to this function: `fontWeight` here is a
+ * separate numeric token (`$value: 700, $type: "number"`), while the Figma
+ * style-name string ("Bold") still lives inline on each `typography`
+ * composite's own `fontWeight` field, which is what Figma's Text Style
+ * creation actually reads. And each `typography` composite's `fontSize` is
+ * the resolved pixel number (not `"57.22px"` or `{fontSize.6xl}`), with a
+ * sibling `fontSizeToken` field recording which `fontSize` entry it came
+ * from, for external tooling rather than as a Tokens Studio alias.
  *
  * All groups are still built from `toDtcgTokens`'s shared logic — this
  * function only decides, group by group, whether to native-convert
- * (`toNativeTokenSet`) or keep the `$`-prefixed shape it already produces,
- * and rewrites the two typography fields above. `toDtcgTokens` itself and
- * `toDtcgJson`'s output are untouched.
+ * (`toNativeTokenSet`) or keep the `$`-prefixed shape.
  */
 export function toTokensStudioJson(system: NormalizedSystem): string {
   const tree = toDtcgTokens(system, {

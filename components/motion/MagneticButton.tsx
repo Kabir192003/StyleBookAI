@@ -1,10 +1,8 @@
 "use client";
 
-/**
- * Wraps a button/link so it drifts slightly toward the pointer on hover and
- * springs back on leave. Movement is deliberately restrained (see `strength`)
- * — this is a micro-interaction, not a game.
- */
+// Wraps a button/link so it drifts slightly toward the pointer on hover and
+// springs back on leave. Movement is deliberately restrained (`strength`)
+// — micro-interaction, not a game.
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { PointerEvent, ReactNode, useRef } from "react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";

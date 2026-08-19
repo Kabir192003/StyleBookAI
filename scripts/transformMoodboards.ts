@@ -1,17 +1,9 @@
-/**
- * One-time transform script.
- *
- * Pulls real photos from the Unsplash API across a broad set of mood/style
- * search terms (matching the 12 ThemeCategory values) and writes a static
- * .ts file to /data/. Mirrors scripts/transformColors.ts and
- * scripts/transformFonts.ts — the running app never calls Unsplash at
- * runtime, it just imports this file. Images are hotlinked (Unsplash's own
- * recommended approach), never downloaded, and each carries the
- * photographer + Unsplash credit their API terms require.
- *
- * Run once, whenever the library should be refreshed:
- *   npx tsx scripts/transformMoodboards.ts
- */
+// One-time transform script: pulls real photos from the Unsplash API across
+// mood/style search terms matching the 12 ThemeCategory values, and writes
+// a static .ts file — the running app never calls Unsplash at runtime.
+// Images are hotlinked (Unsplash's recommended approach), never downloaded,
+// each carrying the photographer + Unsplash credit their API terms require.
+// Run whenever the library should be refreshed: npx tsx scripts/transformMoodboards.ts
 import fs from "fs";
 import path from "path";
 import { MoodboardImage } from "../types/designTokens";

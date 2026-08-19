@@ -1,19 +1,10 @@
-/**
- * POST /api/ai/generate — the only route that talks to the Gemini API.
- *
- * Owner: Kabir
- *
- * Request body: AIGenerateRequest (see types/ai.ts).
- * Response: a draft Project — colors[], fonts (primary/secondary/accent),
- * typeScale, and an AIReasoning object explaining each choice.
- */
+// The only route that talks to the Gemini API.
 import { NextRequest, NextResponse } from "next/server";
 import { AIGenerateRequestSchema } from "@/lib/ai/schema";
 import { AIGenerationError, generateProjectFromPrompt } from "@/lib/ai/generate";
 
-// Building the candidate-color/font prompt plus a real Gemini round-trip
-// (and possibly a retry) routinely exceeds Vercel's default serverless
-// function timeout — raise it explicitly rather than let requests die mid-generation.
+// Prompt building + the Gemini round-trip (plus a possible retry) can outrun
+// Vercel's default serverless timeout, so raise it explicitly.
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {

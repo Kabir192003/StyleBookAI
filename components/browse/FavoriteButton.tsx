@@ -1,16 +1,10 @@
-/**
- * FavoriteButton — the heart toggle used on ColorCard/FontCard/theme
- * tiles. Lazy-loads the signed-in user's favorites set on first mount
- * (once per page load, guarded by favoritesStore's `loaded` flag) rather
- * than requiring every browse page to fetch them up front. Signed-out
- * clicks route to /sign-in instead of silently failing — favoriting
- * needs an account, browsing doesn't.
- *
- * Also watches favoritesStore's `sessionExpired` flag — set when a toggle
- * comes back 401 (the session lapsed mid-visit) — and reacts by clearing
- * the stale cached user and redirecting to sign-in, instead of leaving
- * the heart looking "saved" when it silently wasn't.
- */
+// Heart toggle used on color/font/theme tiles. Lazy-loads the user's
+// favorites set on first mount (guarded by favoritesStore's `loaded`
+// flag) instead of every browse page fetching up front. Signed-out clicks
+// go to /sign-in rather than failing silently — favoriting needs an
+// account, browsing doesn't. Also watches `sessionExpired` (set when a
+// toggle 401s mid-visit) to clear the stale user and redirect, instead of
+// leaving the heart looking "saved" when it silently wasn't.
 "use client";
 
 import { useEffect } from "react";

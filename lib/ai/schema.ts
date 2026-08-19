@@ -20,9 +20,8 @@ const HEX_REGEX = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 const hexSchema = z.string().regex(HEX_REGEX, "must be a hex color like #4B5FD1");
 
 export const AIGenerateRequestSchema = z.object({
-  // Raised from 500 — detailed/comprehensive design-system prompts (see
-  // includeDesignSystem below) routinely run several hundred to a few
-  // thousand characters.
+  // 4000 chars, not the tighter limit you'd expect — detailed design-system
+  // prompts (see includeDesignSystem below) routinely run long.
   prompt: z.string().trim().min(3, "prompt is required").max(4000),
   style: z.array(z.enum(colorStyleValues)).optional(),
   colorPreferences: z.array(z.string()).max(10).optional(),
@@ -95,25 +94,18 @@ const themeVariantTokensSchema = z.object({
 // includeDesignSystem — keeps a plain "give me a palette" request small.
 const designSystemSchema = z.object({
   light: themeVariantTokensSchema,
-  // Dark is REQUIRED of the model by the contract in lib/ai/prompt.ts, but is
-  // parsed leniently here on purpose. It stays optional at this boundary only
-  // because rejecting a response for a missing dark variant would turn a
-  // fixable omission into a user-facing generation failure — and it is not
-  // fixable-by-retry anyway: lib/ai/generate.ts *always* ends up with a dark
-  // variant, deriving it from the brand's own light tokens via
-  // deriveDarkThemeVariantFromLight() (lib/studio/deriveThemeVariant.ts)
-  // whenever the model omits one or returns one that fails the quality gate
-  // in lib/colors/deriveDarkPalette.ts. That derivation — not this schema —
-  // is what guarantees dark mode is never again the stock violet DEFAULT_DARK
-  // palette three unrelated QA brands all shipped.
+  // Required of the model by lib/ai/prompt.ts's contract, but parsed leniently
+  // here — rejecting the whole response over a missing dark variant would be
+  // pointless, since lib/ai/generate.ts always ends up with one anyway,
+  // deriving it from the light tokens (deriveDarkThemeVariantFromLight) when
+  // the model omits one or returns one that fails the quality gate in
+  // lib/colors/deriveDarkPalette.ts.
   dark: themeVariantTokensSchema.optional(),
   accessibility: z
     .object({
       level: z.enum(["AA", "AAA"]),
-      // Notes are optional now because they are overwritten wholesale with
-      // measured ratios by lib/ai/validateTokens.ts — the model previously
-      // asserted "all text and interactive states exceed 4.5:1" over a button
-      // measuring 4.1:1, so its prose is no longer trusted or required here.
+      // Optional because lib/ai/validateTokens.ts overwrites these wholesale
+      // with measured ratios — the model's own compliance claims aren't trusted.
       notes: z.array(z.string().min(1)).max(20).optional(),
     })
     .optional(),
@@ -335,17 +327,10 @@ export const AI_SECTION_TYPES: AISectionType[] = [
   "footer",
 ];
 
-/**
- * `sections` is intentionally `unknown[]` here and validated per-entry by
- * `parseSections` below.
- *
- * The reason is blunt: this object rides along with the palette, the fonts,
- * the type scale and the whole design system in a single model response. If
- * one section came back with a 61-character title, a strict array would fail
- * the entire parse and throw away a perfectly good design system with it.
- * Dropping the one bad section and rendering the rest is the behaviour that
- * matches what the user asked for.
- */
+// `sections` is intentionally `unknown[]` here, validated per-entry by
+// `parseSections` below — this rides along with the palette, fonts and design
+// system in one model response, so one malformed section shouldn't fail the
+// whole parse and throw away an otherwise-good result.
 const uiStructureSchema = z.object({
   appName: z.string().min(1).max(40),
   tagline: z.string().max(90).optional(),
@@ -371,9 +356,8 @@ export const GeminiPaletteResponseSchema = z.object({
   // components/ai/PromptInput.tsx. Defaults to "generic" if the model omits
   // it (older prompt versions / retries).
   context: z.enum(contextValues).optional(),
-  // Widened from a fixed 5-7 so an explicit count in the prompt ("5-6 hex
-  // codes", "a palette of 3") can actually be honored — see the count
-  // instruction in lib/ai/prompt.ts.
+  // 2-12 rather than a fixed 5-7, so an explicit count in the prompt ("a
+  // palette of 3") can be honored — see lib/ai/prompt.ts's count instruction.
   colors: z.array(colorEntrySchema).min(2).max(12),
   primaryFontId: z.string().min(1),
   secondaryFontId: z.string().min(1),
@@ -382,12 +366,9 @@ export const GeminiPaletteResponseSchema = z.object({
   baseSize: z.number().min(12).max(24).optional(),
   spacingBase: z.union([z.literal(4), z.literal(8)]).optional(),
   shadowLevel: z.enum(["none", "subtle", "dramatic"]).optional(),
-  // Widened from the literal union [4, 8, 12, 20]. That set made `0`
-  // unrepresentable, which is why a QA prompt demanding "hard 0px corners"
-  // silently shipped 4px — the model had no legal way to say what was asked
-  // for. Any integer 0-24 is accepted and snapped to the nearest supported
-  // base by snapRadiusBase() in lib/ai/radiusScale.ts, which then derives the
-  // full sm/md/lg/pill ramp.
+  // Any integer 0-24, including 0 (hard corners) — snapped to the nearest
+  // supported base by snapRadiusBase() in lib/ai/radiusScale.ts, which then
+  // derives the full sm/md/lg/pill ramp.
   cornerRadius: z.number().int().min(0).max(24).optional(),
   moodboardImageIds: z.array(z.string().min(1)).min(2).max(3).optional(),
   designSystem: designSystemSchema.optional(),

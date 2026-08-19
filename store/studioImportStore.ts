@@ -1,45 +1,28 @@
-/**
- * A one-shot "hand this to Studio" bridge — the mechanism behind both
- * Preview Lab's "Send to Studio" button and the clipboard tray's "Import
- * into Studio" action. Replaces the old store/studioStore.ts, which two
- * places wrote to and nothing ever read (a real dead end — see
- * docs/CONTEXT.md's audit notes).
- *
- * Same stage/consume shape as useAIResultStore's role in the AI→Studio
- * hand-off: the sender calls `stage()` then navigates to /studio;
- * StudioBuilder's initial state reads `consume()` once on mount (which
- * also clears it), so a stale payload never gets silently reapplied on a
- * later, unrelated visit to /studio.
- */
+// A one-shot "hand this to Studio" bridge — behind both Preview Lab's "Send
+// to Studio" button and the clipboard tray's "Import into Studio" action.
+// Same stage/consume shape as useAIResultStore's AI→Studio hand-off: the
+// sender calls stage() then navigates to /studio; StudioBuilder reads
+// consume() once on mount (which also clears it), so a stale payload never
+// gets silently reapplied on a later, unrelated visit to /studio.
 import { create } from "zustand";
 import type { DesignSystem } from "@/types/designSystem";
 
-/**
- * The five Studio palette slots a colour may name. `role` was always in this
- * shape but nothing read it (lib/studio/applyImport.ts assigned positionally),
- * so Browse/Preview Lab/clipboard senders — which genuinely have no roles —
- * keep working untouched while other senders,
- * which knows exactly which slot each hex belongs in, can say so.
- */
+// The five Studio palette slots a color may name. Browse/Preview
+// Lab/clipboard senders have no roles and just go positional; a sender that
+// knows exactly which slot a hex belongs in can set `role` instead.
 export type StudioImportPaletteRole = "accent" | "support" | "surface" | "ink" | "muted";
 
 export type StudioImportPayload = {
-  /** `role` is honoured when it names a palette slot; otherwise positional. */
-  colors?: Array<{ hex: string; role?: string }>;
+  colors?: Array<{ hex: string; role?: string }>; // role honoured if it names a palette slot, else positional
   primaryFont?: string;
   secondaryFont?: string;
-  /** The small-text/label face. Studio's `accentFont` — optional there too. */
-  accentFont?: string;
+  accentFont?: string; // small-text/label face
   radius?: number;
-  /**
-   * Component-level tokens (colorRoles + per-component background/text/border)
-   * for senders that have them. A sender working in semantic roles needs this
-   * because several of them — background, surface, border, and the text/muted
-   * pair as component tokens — have no home in the 5-slot palette at all, so a
-   * payload limited to `colors` would silently drop an explicit override.
-   * Senders without component tokens (Preview Lab, the clipboard) omit it, and
-   * Studio's own save re-derives one from the palette exactly as before.
-   */
+  // Component-level tokens for senders that have them. Several slots here
+  // (background, surface, border, text/muted) have no home in the 5-slot
+  // palette, so without this a payload could silently drop an override.
+  // Senders without component tokens (Preview Lab, clipboard) omit it, and
+  // Studio's own save re-derives one from the palette as before.
   designSystem?: DesignSystem;
 };
 

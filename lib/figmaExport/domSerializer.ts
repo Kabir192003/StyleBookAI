@@ -1,19 +1,12 @@
-/**
- * Serializes the **real rendered Studio canvas** into the Figma payload by
- * walking the DOM and reading computed styles.
- *
- * This replaced a hand-written server-side rebuild of the page. That
- * approach could not work: it was a second implementation of
- * ShowcaseContent/GeneratedContent that had to be kept in sync by hand, so
- * every export was a near-miss — wrong padding, missing sections, a
- * "dropdown" that was really a rounded box, a table that was a stack of
- * text. Reading the DOM makes the export exact *by construction*: whatever
- * the browser painted is what Figma receives, and a change to any component
- * or to styles.ts propagates with no edit here.
- *
- * Client-only — it needs `getComputedStyle`/`getBoundingClientRect` and the
- * live canvas element. The rest of lib/figmaExport stays server-safe.
- */
+// Serializes the real rendered Studio canvas into the Figma payload by
+// walking the DOM and reading computed styles — rather than a hand-rebuilt
+// server-side copy of the page, which would need to be kept in sync by hand
+// and drift (wrong padding, a "dropdown" that's really a rounded box). Reading
+// the DOM makes the export exact by construction: whatever the browser
+// painted is what Figma receives, and a component/styles.ts change propagates
+// with no edit here.
+// Client-only — needs `getComputedStyle`/`getBoundingClientRect` and the live
+// canvas element. The rest of lib/figmaExport stays server-safe.
 "use client";
 
 import type {
@@ -218,15 +211,11 @@ function applyTransform(text: string, transform: string): { text: string; transf
   return { text, transformed: false };
 }
 
-/**
- * How many line boxes a run of text occupies, counted from the rectangles
- * the browser actually laid out rather than inferred from height ÷
- * line-height (which rounds badly once line-height is `normal`).
- *
- * `getClientRects()` returns one rect per line box for a plain text run, but
- * can return several on the same line when inline children split it — so
- * distinct `top` values are counted, not raw rects.
- */
+// How many line boxes a run of text occupies, counted from the rectangles the
+// browser actually laid out rather than inferred from height / line-height
+// (which rounds badly once line-height is `normal`). Distinct `top` values
+// are counted rather than raw rects, since inline children can split one line
+// into several rects.
 function countLines(range: Range): number {
   const rects = Array.from(range.getClientRects()).filter((r) => r.width > 0.5 && r.height > 0.5);
   if (rects.length === 0) return 1;

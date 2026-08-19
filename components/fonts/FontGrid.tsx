@@ -1,13 +1,7 @@
-/**
- * FontGrid — the "specimen room": a full-bleed, editorial proof sheet for
- * every typeface in the library. Used by app/browse/fonts/page.tsx.
- *
- * Styled to match the Fonts.dc.html design pulled from claude.ai/design
- * (project "Website redesign request"), same treatment as
- * components/colors/ColorGrid.tsx — cream/ink/navy editorial palette,
- * Fraunces + IBM Plex Mono, category tabs instead of dropdowns, plus a
- * live proof-text input so every face previews the visitor's own line.
- */
+// The "specimen room" — a full-bleed, editorial proof sheet for every
+// typeface in the library, used by app/browse/fonts/page.tsx. Same
+// editorial treatment as components/colors/ColorGrid.tsx, plus a live
+// proof-text input so every face previews the visitor's own line.
 "use client";
 
 import { useMemo, useState } from "react";

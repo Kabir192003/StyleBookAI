@@ -1,14 +1,6 @@
-/**
- * /browse/themes/[slug] — Theme Detail: "the edition page"
- *
- * Styled to match the ThemeDetail.dc.html design pulled from
- * claude.ai/design (project "Website redesign request"). Unlike the other
- * browse pages, this design is a full theme takeover — background, ink,
- * and headline type all switch to the theme's own tokens — so the page
- * (below the persistent global SiteHeader) renders entirely in the
- * theme's palette and font pairing instead of the site's fixed cream/ink
- * editorial chrome.
- */
+// Unlike the other browse pages, this one is a full theme takeover —
+// background, ink, and headline type all switch to the theme's own tokens
+// instead of the site's fixed cream/ink chrome.
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { allThemes } from "@/data/themes";
@@ -153,22 +145,17 @@ export default function ThemeDetailPage({ params }: { params: { slug: string } }
           <span>Roles &amp; contrast</span>
         </div>
 
-        {/* "Token" is jargon this page leans on repeatedly — in the header
-            count, on the Copy tokens button, and under every swatch — while
-            never defining it. A reviewer asked outright what tokens are and
-            what "copy tokens" would do to their clipboard. One sentence,
-            placed just before the first --token label a visitor reads, and
-            kept matter-of-fact so it doesn't lecture the designers who
-            already know the term. */}
+        {/* "Token" gets used all over this page (header count, Copy tokens
+            button, under every swatch) without ever being defined, so spell
+            it out once here. */}
         <p className="max-w-[640px] px-6 pt-4 text-[13px] leading-relaxed sm:px-12" style={{ color: soft }}>
           <strong style={{ color: ink, fontWeight: 600 }}>What&apos;s a token?</strong> A named slot in the
           palette: <span className="font-mono-plex">{TOKENS[0]}</span> means &ldquo;this theme&apos;s accent
           colour&rdquo; rather than one fixed hex. Name the slot once, swap the colour behind it later, and
           everything using it follows.{" "}
-          {/* Counts are stated as what CopyTokensButton actually writes —
-              all seven colour roles plus the two font slots — not as the
-              five swatches shown below, which are only the ones worth
-              displaying as full-bleed tiles. */}
+          {/* Counts here are what CopyTokensButton actually writes (all 7
+              colour roles + 2 fonts), not the 5 swatches shown below —
+              those are just the ones worth a full-bleed tile. */}
           <strong style={{ color: ink, fontWeight: 600 }}>Copy tokens</strong> puts every one of this
           theme&apos;s colour slots, plus its heading and body fonts, on your clipboard as CSS variables —
           ready to paste straight into a stylesheet.

@@ -1,26 +1,15 @@
 /**
- * Applies a staged StudioImportPayload (see store/studioImportStore.ts)
- * onto a StudioState — the actual merge logic shared by Preview Lab's
- * "Send to Studio", the clipboard tray's "Import into Studio" and the
- * the clipboard tray's "Import into Studio", all of which just stage a
+ * Applies a staged StudioImportPayload (see store/studioImportStore.ts) onto
+ * a StudioState — the merge logic shared by Preview Lab's "Send to Studio"
+ * and the clipboard tray's "Import into Studio", both of which just stage a
  * payload and navigate; StudioBuilder consumes it once and folds it in.
  *
- * Two colour-assignment modes, deliberately:
- *
- *  - **Positional** (Browse / Preview Lab / the clipboard). Those senders
- *    have hexes and nothing else — no roles exist to send — so colours are
- *    assigned in order to accent/support/surface/ink/muted. Extra colours
- *    beyond 5 are ignored; fewer than 5 leaves the rest as they were. This
- *    is the original behaviour and both existing callers still hit it,
- *    because neither sets `role`.
- *
- *  - **Explicit role**. A sender assigns colours to
- *    named roles, so guessing from array order would be strictly worse than
- *    the information we already have: a user who put a hex on `secondary`
- *    would watch it land on `accent` purely because it came first in the
- *    array. A colour carrying a recognised `role` claims that slot; anything
- *    left over still falls back to the positional walk, skipping slots
- *    already claimed so the two modes can't fight over one slot.
+ * Two colour-assignment modes: **positional** (existing callers, which only
+ * have hexes, no roles) assigns colours in order to accent/support/surface/
+ * ink/muted; **explicit role** lets a colour carrying a recognised `role`
+ * claim that slot directly, since guessing from array order would be worse
+ * than information already available. Anything left over falls back to the
+ * positional walk, skipping slots already claimed.
  */
 import type { StudioState } from "@/components/studio/StudioBuilder";
 import type { PaletteTokens } from "@/lib/studio/exportCode";

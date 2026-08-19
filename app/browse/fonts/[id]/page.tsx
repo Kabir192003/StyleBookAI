@@ -1,10 +1,3 @@
-/**
- * /browse/fonts/[id] — Font Detail
- *
- * A large live specimen (own proof-text input, same idea as FontGrid's),
- * full metadata, and resolved "pairs well with" links — the detail-page
- * counterpart to /browse/colors/[id].
- */
 "use client";
 
 import { useState } from "react";

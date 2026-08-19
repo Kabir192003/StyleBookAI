@@ -1,22 +1,10 @@
-/**
- * Converts Studio's local StudioState (5-token palette + font family
- * strings — see components/studio/StudioBuilder.tsx) into a real
- * ProjectInput payload for POST/PUT /api/projects.
- *
- * Previously this silently discarded real work on every save:
- *  - Only the *currently active* mode's palette (state.light OR
- *    state.dark, whichever the toggle was on) was ever persisted — the
- *    other was thrown away with no warning.
- *  - cornerRadius was set to `undefined` whenever a designSystem was
- *    present, even though the radius slider is always live and always
- *    edited independently of whether a designSystem exists.
- *  - typeScale was hardcoded to 16px/Major Third regardless of what
- *    Studio's own state.typeScale (now always present, either the AI's
- *    real generated scale or the user's own edit) actually held.
- * None of that is true anymore: both palettes are preserved via a real
- * designSystem (deriveThemeVariantFromPalette, one call per mode), radius
- * and typeScale are always taken from state, not conditionally dropped.
- */
+// Converts Studio's local StudioState (5-token palette + font family strings
+// — see components/studio/StudioBuilder.tsx) into a real ProjectInput payload
+// for POST/PUT /api/projects. Both light and dark palettes are always
+// preserved via a real designSystem (deriveThemeVariantFromPalette, one call
+// per mode) — not just whichever mode the toggle happened to be on — and
+// radius/typeScale are always taken from state rather than conditionally
+// dropped.
 import { allFonts } from "@/data/fonts";
 import { synthesizeColorFromHex } from "@/lib/colors/deriveColorMetadata";
 import { RADIUS_OPTIONS } from "@/lib/designTokens/radius";
@@ -56,13 +44,11 @@ function findOrSynthesizeFont(family: string): Font {
   };
 }
 
-// Both palettes always survive a save via a real designSystem, whether or
-// not one arrived from AI. If state.designSystem already exists (an AI
-// result with component-level tokens, accessibility notes, icon style,
-// etc.), that richer data is preserved as-is — only colorRoles and the
-// two palette-driven components (button/buttonSecondary) are refreshed
-// from the resolved palette, since the palette editor is the one place
-// a designer actually edits color in Studio and must always win.
+// If state.designSystem already exists (an AI result with component-level
+// tokens, accessibility notes, icon style, etc.), that richer data is kept as
+// is — only colorRoles and the two palette-driven components (button/
+// buttonSecondary) are refreshed from the resolved palette, since the palette
+// editor is the one place a designer edits colour in Studio and must win.
 function buildDesignSystem(state: StudioState, resolvedLight: PaletteTokens, resolvedDark: PaletteTokens): DesignSystem {
   const light = deriveThemeVariantFromPalette(resolvedLight);
   const dark = deriveThemeVariantFromPalette(resolvedDark);
@@ -109,16 +95,12 @@ export function projectInputFromStudioState(state: StudioState): ProjectInput {
     typeScale: state.typeScale,
     spacing: state.spacing,
     shadows: state.shadows,
-    // `recommended` stays the user's actual live radius, even if it isn't
-    // one of the fixed ladder steps (the slider allows any value) — snapping
-    // it would silently change what's currently applied throughout Studio.
-    // `options` used to be just `[state.radius]`, which collapsed the Figma/
-    // Tokens Studio export's radius picker down to a single "base" value on
-    // every Studio save, even for projects that started with a real
-    // multi-step ladder from AI generation (buildRadiusScaleFromBase).
-    // Restoring the fixed ladder here (plus the live value, so a custom
-    // radius still round-trips) is what lets radiusOptions in
-    // lib/export/designTokens.ts emit more than one radius token again.
+    // `recommended` stays the user's actual live radius even if it isn't one
+    // of the fixed ladder steps (the slider allows any value) — snapping it
+    // would silently change what's applied throughout Studio. `options` is
+    // the fixed ladder plus the live value, so a custom radius still
+    // round-trips and radiusOptions in lib/export/designTokens.ts can still
+    // emit more than one radius token.
     cornerRadius: {
       options: Array.from(new Set([...RADIUS_OPTIONS, state.radius])).sort((a, b) => a - b),
       recommended: state.radius,

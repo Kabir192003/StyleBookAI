@@ -1,13 +1,9 @@
-/**
- * The in-app design clipboard — a durable scratch tray for colors and
- * fonts collected while browsing, separate from copying a hex value to
- * the OS clipboard (ColorPlate's click-to-copy still does that). Persisted
- * to localStorage (not sessionStorage like aiResultStore) since a
- * clipboard is meant to survive across visits, not just the current tab.
- *
- * ClipboardTray.tsx is the floating UI that reads this store and turns
- * its contents into a studioImportStore payload for "Import into Studio".
- */
+// The in-app design clipboard — a scratch tray for colors/fonts collected
+// while browsing, separate from copying a hex to the OS clipboard
+// (ColorPlate's click-to-copy). Persisted to localStorage, not
+// sessionStorage like aiResultStore, since it should survive across visits.
+// ClipboardTray.tsx reads this and turns it into a studioImportStore
+// payload for "Import into Studio".
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 

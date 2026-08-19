@@ -1,22 +1,11 @@
-/**
- * HamburgerMenu — the site-wide nav drawer, replacing the old "Profile"
- * text link. Same right-side slide-in overlay pattern as
- * components/studio/ExportDrawer.tsx, so it reads as one piece of chrome
- * with the rest of the app rather than a bolted-on menu widget.
- *
- * Houses everything that used to be spread across separate nav items
- * (Dashboard, Account) plus sign-in/out — the header's top-level nav
- * (Colours/Fonts/Themes/Studio) stays as-is; this is for account-adjacent
- * navigation only.
- *
- * Rendered via a portal into document.body rather than inline where
- * SiteHeader mounts it. SiteHeader's <header> is `position: sticky` with
- * its own z-index, which creates a CSS stacking context — a `position:
- * fixed` overlay nested inside it only stacks within that context, not
- * against the rest of the page, so unrelated content elsewhere (e.g. a
- * page's own buttons) could paint on top of the drawer. Portaling to
- * body escapes the header's stacking context entirely.
- */
+// The site-wide nav drawer: Dashboard/Account/sign-in-out, account-adjacent
+// only (the header's top-level Colours/Fonts/Themes/Studio nav stays as-is).
+//
+// Rendered via a portal into document.body rather than inline where
+// SiteHeader mounts it — SiteHeader's <header> is `position: sticky` with
+// its own z-index, which creates a stacking context, so a `position: fixed`
+// overlay nested inside it would only stack within that context instead of
+// against the rest of the page. Portaling to body escapes that entirely.
 "use client";
 
 import { useEffect, useState } from "react";
@@ -26,8 +15,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { LayoutGrid, LogOut, Menu, Palette, Shapes, Sparkles, Type, User, X } from "lucide-react";
 import { useAuthStore } from "@/store";
 
-/** Mirrors NAV_LINKS in SiteHeader — the header hides its own copy below
- *  `sm`, so these are the only way to reach the libraries on a phone. */
+// Mirrors NAV_LINKS in SiteHeader — the header hides its own copy below
+// `sm`, so these are the only way to reach the libraries on a phone.
 const PRIMARY_LINKS = [
   { href: "/browse/colors", label: "Colours", icon: Palette },
   { href: "/browse/fonts", label: "Fonts", icon: Type },
@@ -85,11 +74,9 @@ export function HamburgerMenu({ open, onClose }: { open: boolean; onClose: () =>
       onClick={onClose}
       className="fixed inset-0 z-[80] flex justify-start bg-[rgba(20,17,12,0.42)] backdrop-blur-[3px]"
     >
-      {/* Anchored to the LEFT edge, following its trigger (see
-          SiteHeader.tsx) — a drawer that opens on the opposite side of the
-          screen from the button that opened it is exactly the pan-across
-          problem the accessibility review flagged, just moved one step
-          later in the interaction. */}
+      {/* Anchored to the LEFT edge, following its trigger (see SiteHeader.tsx)
+          — opening on the opposite side from the button that triggered it
+          would recreate the pan-across problem this menu exists to fix. */}
       <div
         onClick={(e) => e.stopPropagation()}
         className="flex h-full w-[min(340px,88vw)] flex-col border-r border-black/20 bg-[#F2EBE0]"
@@ -107,11 +94,9 @@ export function HamburgerMenu({ open, onClose }: { open: boolean; onClose: () =>
         </div>
 
         <div className="flex flex-1 flex-col gap-1 overflow-y-auto p-4">
-          {/* The header's primary nav is `hidden sm:flex`, so below 640px it
-              renders nothing at all — which left Colours/Fonts/Themes/Studio
-              with no route into them from any phone. They're repeated here
-              and hidden again at `sm`, where the header takes over, so
-              neither breakpoint shows them twice. */}
+          {/* Header nav is `hidden sm:flex`, so below 640px it renders
+              nothing — repeated here and hidden again at `sm` so neither
+              breakpoint shows them twice. */}
           <div className="sm:hidden">
             <span className="block px-4 pb-1 pt-2 font-mono-plex text-[9px] uppercase tracking-[0.18em] text-[#6E675C]">
               Browse

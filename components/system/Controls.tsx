@@ -1,21 +1,11 @@
-/**
- * Controls — checkbox, radio, toggle, select, tooltip, avatar, progress,
- * skeleton and modal.
- *
- * Every form control here is a *native* element with `appearance: none`
- * rather than a div wearing a role. That is a deliberate trade: styling a
- * native checkbox is fiddlier (the tick has to be a `::before`, because an
- * `<input>` cannot have children — see styles.ts), but it comes with the
- * label association, the space-bar toggle, the focus ring, the `:checked`
- * state and the form value already working. A `role="checkbox"` div would
- * have to reimplement all five, and would get at least one of them wrong.
- *
- * The two exceptions are the toggle, which is a real `<button role="switch">`
- * because a checkbox cannot express on/off wording to a screen reader, and
- * the tooltip, which is CSS-only — `:hover, :focus-within` means it is
- * reachable by keyboard, which a JS `onMouseEnter` implementation would not
- * be without extra work.
- */
+// Every form control here is a native element with appearance:none rather
+// than a div wearing a role — fiddlier to style (the checkbox tick has to be
+// a ::before, since an <input> can't have children) but label association,
+// space-bar toggle, focus ring, :checked and form value all come free. The
+// two exceptions: the toggle is a real <button role="switch"> because a
+// checkbox can't express on/off wording to a screen reader, and the tooltip
+// is CSS-only (:hover, :focus-within) so it's keyboard-reachable without a
+// JS onMouseEnter implementation.
 "use client";
 
 import { cloneElement, useCallback, useEffect, useId, useRef, useState, type ReactElement } from "react";
@@ -29,9 +19,8 @@ export function CheckboxSet() {
   const all = values.every(Boolean);
   const some = values.some(Boolean) && !all;
 
-  // `indeterminate` is a DOM property with no HTML attribute and no React
-  // prop, so it can only be set imperatively. Without this the parent
-  // checkbox would read as simply unchecked when only some children are on.
+  // `indeterminate` has no HTML attribute or React prop, only a DOM
+  // property, so it must be set imperatively.
   useEffect(() => {
     if (allRef.current) allRef.current.indeterminate = some;
   }, [some]);
@@ -91,9 +80,8 @@ export function RadioSet() {
   const id = useId();
   const [plan, setPlan] = useState("team");
   return (
-    // A radio group needs a group label; `role="radiogroup"` + aria-labelledby
-    // is the equivalent of a <fieldset>/<legend> without the legend's layout
-    // quirks inside a flex container.
+    // role="radiogroup" + aria-labelledby is a <fieldset>/<legend> without
+    // the legend's layout quirks inside a flex container.
     <div role="radiogroup" aria-labelledby={`${id}-legend`} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       <span id={`${id}-legend`} className="pg-label">
         Billing cadence
@@ -159,9 +147,7 @@ export function SelectField() {
         Type scale ratio
       </label>
       <div className="pg-select-wrap">
-        {/* A real <select>. The native popup is the one part of a dropdown a
-            custom listbox never gets right on touch devices, and it is not
-            worth reimplementing for a specimen. */}
+        {/* Real <select> — a custom listbox never gets the native popup right on touch. */}
         <select id={`${id}-scale`} className="pg-select" value={value} onChange={(e) => setValue(e.target.value)}>
           <option value="minor-third">Minor third — 1.200</option>
           <option value="major-third">Major third — 1.250</option>
@@ -189,8 +175,7 @@ export function ProgressDemo() {
         </span>
         <span className="pg-hint">{value}%</span>
       </div>
-      {/* role="progressbar" with the aria-value* trio — the visual bar is a
-          styled div, so without these it is invisible to assistive tech. */}
+      {/* The bar is a styled div; without role="progressbar" + aria-value* it's invisible to assistive tech. */}
       <div
         className={value === 100 ? "pg-progress pg-progress--success" : "pg-progress"}
         role="progressbar"
@@ -213,14 +198,10 @@ export function ProgressDemo() {
   );
 }
 
-/**
- * Tooltip. The show/hide is pure CSS (`:hover, :focus-within` in styles.ts)
- * so it works for keyboard users without a single event handler; all this
- * wrapper does is generate a unique id and hang `aria-describedby` off the
- * trigger, which is the part CSS cannot do. The id has to be per-instance
- * because the canvas renders this group once per experiment and duplicate
- * ids would point every trigger at the first card's bubble.
- */
+// Show/hide is pure CSS (:hover, :focus-within in styles.ts); this wrapper
+// just generates a unique id and hangs aria-describedby off the trigger,
+// which CSS can't do. Has to be per-instance or duplicate ids would point
+// every trigger at the first card's bubble.
 export function Tooltip({ tip, children }: { tip: string; children: ReactElement }) {
   const id = useId();
   return (
@@ -233,30 +214,24 @@ export function Tooltip({ tip, children }: { tip: string; children: ReactElement
   );
 }
 
-/**
- * Modal with genuine open/close, Escape-to-close, focus moved in on open and
- * returned to the trigger on close. Rendered `absolute` inside `.pg-stage`
- * (not `fixed`, not a portal) so it stays inside its own experiment card —
- * a portalled modal would also leave the `[data-pg-exp]` scope and lose
- * every token it is supposed to be demonstrating.
- */
-/**
- * `inline` drops the dashed specimen stage so the trigger can sit in a real
- * page next to other buttons. The backdrop is `position: absolute`, so inline
- * mode relies on an ancestor establishing a containing block — the Studio
- * canvas sets `position: relative` for exactly this, which also keeps the
- * overlay inside the mockup instead of covering the app's own chrome.
- */
+// Rendered absolute inside .pg-stage, not fixed and not a portal, so it stays
+// inside its own token scope — a portalled modal would leave [data-sb-canvas]
+// and lose every token it's demonstrating.
+//
+// `inline` drops the dashed specimen stage so the trigger sits in a real page
+// next to other buttons. The backdrop is position:absolute, so inline mode
+// relies on an ancestor for a containing block — the Studio canvas sets
+// position:relative for exactly this, which also keeps the overlay inside
+// the mockup instead of covering the app's own chrome.
 export function ModalDemo({ inline = false }: { inline?: boolean }) {
   const [open, setOpen] = useState(false);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const titleId = useId();
 
-  // Escape and the close buttons share one exit path (`close`), because the
-  // focus restore below has to happen on *every* dismissal — an Escape that
-  // skipped it would leave a keyboard user's focus on a node that no longer
-  // exists, which drops them back at the top of the document.
+  // Escape and the close buttons share one exit path so focus restore always
+  // runs — skipping it on Escape would leave a keyboard user's focus on a
+  // node that no longer exists.
   const close = useCallback(() => {
     setOpen(false);
     triggerRef.current?.focus();
@@ -286,8 +261,7 @@ export function ModalDemo({ inline = false }: { inline?: boolean }) {
             aria-modal="true"
             aria-labelledby={titleId}
             tabIndex={-1}
-            // The backdrop closes on click; without this the same click would
-            // bubble up from inside the dialog and close it immediately.
+            // Stops the backdrop's onClick from firing when the click originates inside the dialog.
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="pg-modal__title" id={titleId}>

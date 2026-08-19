@@ -1,21 +1,11 @@
-/**
- * One-time transform script.
- *
- * Pulls the full Google Fonts catalog via the Web Fonts Developer API
- * (requires GOOGLE_FONTS_API_KEY — dev-time only, the running app never
- * calls this API) and reshapes each entry into the Font type, writing a
- * static .ts file to /data/fonts/. Mirrors scripts/transformColors.ts.
- *
- * Google's API gives real facts (family, category, weights) but no
- * qualitative data — mood/style/useCase/note are derived from category
- * with a small heuristic table below, the same "real but templated"
- * approach data/colors/tailwind.ts uses for its auto-generated notes.
- * The 36 fonts in data/fonts/seed.ts are hand-curated with real pairing
- * data and bespoke notes; this file doesn't touch or duplicate those.
- *
- * Run once, whenever the catalog should be refreshed:
- *   npx tsx scripts/transformFonts.ts
- */
+// One-time transform script: pulls the full Google Fonts catalog via the
+// Web Fonts Developer API (GOOGLE_FONTS_API_KEY, dev-time only — the
+// running app never calls this API) and writes a static .ts file to
+// /data/fonts/. Google gives real facts (family, category, weights) but no
+// qualitative data, so mood/style/useCase/note are derived from category
+// with the heuristic table below — same "real but templated" approach
+// data/colors/tailwind.ts uses. Doesn't touch the hand-curated seed set.
+// Run whenever the catalog should be refreshed: npx tsx scripts/transformFonts.ts
 import fs from "fs";
 import path from "path";
 import { Font, FontCategory, FontUseCase } from "../types/font";
@@ -48,23 +38,13 @@ type GoogleFontsResponse = {
   items: GoogleFont[];
 };
 
-/**
- * Families that aren't typefaces you can read — icon and symbol fonts whose
- * glyphs are pictograms, plus emoji faces.
- *
- * A UX review found "Material Icons" sitting in the library at position 39
- * catalogued as a *monospace* face (Google's API genuinely reports it that
- * way) and previewed with the standard "AaBbCcDdEeFf 0123456789" proof
- * string, which renders as a row of unrelated pictograms. There are nine
- * Material Icons/Symbols variants plus the Noto symbol and emoji faces in
- * the catalog, so this is filtered at the source rather than patched in the
- * browse UI — anything that can't set a sentence has no business in a type
- * library, and a future re-run must not quietly bring them back.
- *
- * Matching is anchored (prefix or whole-name), never a bare substring: a
- * naive /icon/i also catches the perfectly legitimate script face
- * "Niconne", and /symbol/i would be one letter away from doing similar.
- */
+// Families that aren't typefaces you can read — icon/symbol fonts whose
+// glyphs are pictograms, plus emoji faces. "Material Icons" used to show up
+// in the library catalogued as a monospace face, previewed with the normal
+// "AaBbCcDdEeFf" proof string, rendering as a row of pictograms — filtered
+// here at the source so a future re-run can't quietly bring it back.
+// Matching is anchored, never a bare substring: a naive /icon/i would also
+// catch the legitimate script face "Niconne".
 const NON_READING_FAMILY_PATTERNS: RegExp[] = [
   /^Material Icons\b/i, // Material Icons, ...Outlined, ...Round, ...Sharp, ...Two Tone
   /^Material Symbols\b/i, // Material Symbols Outlined / Rounded / Sharp
@@ -112,19 +92,12 @@ function extractWeights(variants: string[]): string[] {
   return Array.from(weights).sort((a, b) => Number(a) - Number(b));
 }
 
-/**
- * Note copy for the auto-generated half of the library.
- *
- * The seed set in data/fonts/seed.ts has hand-written notes; the ~1,900
- * catalog entries can't. But the previous single template produced the
- * *identical* sentence shape for every one of them — a UX review measured
- * the cliff exactly, at the point the seed set runs out — while the site
- * described the library as curated. Nobody can hand-write 1,900 notes, so
- * these are built from the metadata that genuinely exists (category, the
- * weight range, the variable-axis flag, and the naming conventions Google
- * families follow) and are honest about being catalog entries rather than
- * pretending to editorial judgement nobody made.
- */
+// Note copy for the auto-generated half of the library. The seed set has
+// hand-written notes; these ~1,900 catalog entries can't, and the earlier
+// single template produced the identical sentence for every one of them.
+// These are built from metadata that genuinely exists (category, weight
+// range, variable-axis flag, naming conventions) rather than faking
+// editorial judgment nobody made.
 const CATEGORY_OPENERS: Record<FontCategory, string[]> = {
   "sans-serif": [
     "a workhorse sans with no ornament, built to stay out of the way of what it's setting",
@@ -158,7 +131,7 @@ const CATEGORY_OPENERS: Record<FontCategory, string[]> = {
   ],
 };
 
-/** Naming conventions Google families follow that say something real. */
+// Naming conventions Google families follow that say something real.
 const NAME_SIGNALS: { pattern: RegExp; clause: string }[] = [
   { pattern: /\bCondensed\b/i, clause: "The condensed widths fit more into a narrow measure" },
   { pattern: /\bExpanded\b|\bExtended\b/i, clause: "The extended widths want room to breathe" },
@@ -174,13 +147,10 @@ function describeWeights(variants: string[], isVariable: boolean): string {
   const lightest = variants[0];
   const heaviest = variants[variants.length - 1];
 
-  // Why this distinction exists: a UX review flagged Noto Sans, Noto Sans
-  // JP and Roboto Condensed as "implausibly" offering 9 weights. Checked
-  // against the Google Fonts API (`capability=VF`), all three are variable
-  // fonts with a continuous wght axis of 100–900 — the count was accurate
-  // but read as a copied default, because "9 weights" describes a family
-  // with nine separately drawn cuts, which these are not. Saying "a
-  // variable weight axis" is both true and no longer suspicious.
+  // Noto Sans, Noto Sans JP, and Roboto Condensed all report "9 weights"
+  // but are actually variable fonts with a continuous wght axis — accurate
+  // count, misleading phrasing, since 9 weights implies 9 separately drawn
+  // cuts. Saying "a variable weight axis" is both true and not suspicious.
   if (isVariable) {
     return `a continuous variable weight axis from ${lightest} to ${heaviest}`;
   }
@@ -245,12 +215,10 @@ async function main() {
     process.exit(1);
   }
 
-  // Two calls, on purpose. The default response enumerates the static
-  // instances Google will actually serve (`variants: 100…900`) but never
-  // says whether they come from one variable file; `capability=VF` reports
-  // the axes but collapses variants to "regular,italic". Weight *counts*
-  // come from the first, the variable flag from the second — see
-  // describeWeights() for why the distinction had to be made.
+  // Two calls, on purpose: the default response lists static weight
+  // instances but not whether they're one variable file; `capability=VF`
+  // reports the axes but collapses variants to "regular,italic". Weight
+  // counts come from the first, the variable flag from the second.
   const base = `https://www.googleapis.com/webfonts/v1/webfonts?key=${apiKey}&sort=popularity`;
   const [res, vfRes] = await Promise.all([fetch(base), fetch(`${base}&capability=VF`)]);
   if (!res.ok) {

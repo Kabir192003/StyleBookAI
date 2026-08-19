@@ -1,10 +1,5 @@
-/**
- * Hand-curated moodboard starter set — real photography already licensed
- * and shipped with this repo (public/landing/*.jpg, free-license Unsplash
- * photos also used elsewhere on the site). Combined with the much larger
- * auto-generated set in unsplash.ts (see data/moodboards/index.ts) —
- * mirrors the seed+generated pattern used for colors and fonts.
- */
+// Hand-curated moodboard starter set — real, licensed photography shipped
+// in public/landing/*.jpg. Same seed+generated pattern as colors and fonts.
 import { MoodboardImage } from "@/types/designTokens";
 
 export const moodboardSeed: MoodboardImage[] = [

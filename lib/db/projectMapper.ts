@@ -1,17 +1,12 @@
 /**
  * Maps between the `projects` table row shape and the `Project` type.
- * `data` JSONB holds everything not already a column (colors, fonts,
- * typeScale, spacing, shadows, cornerRadius, moodboard, theme, aiReasoning)
- * — see lib/db/schema.sql.
+ * `data` JSONB holds everything not already a column — see lib/db/schema.sql.
  *
- * **Adding a field to `Project` is a four-place change, not one.** `ProjectData`
- * below is an explicit `Pick<>` allowlist and both directions copy field by
- * field by name, so a new field that types cleanly and passes zod validation
- * still vanishes on save with no error anywhere. It must be added to (1) the
- * `Pick<>`, (2) `rowToProject`, (3) `projectInputToRow`, and (4) `mergeProjectData`
- * — which is what PUT /api/projects/[id] uses to fold a partial update into an
- * existing row. See `colorPrimitives` / `studioPaletteLinks`
- * for the precedent.
+ * Adding a field to `Project` is a four-place change, not one: `ProjectData`
+ * is an explicit `Pick<>` allowlist and both directions copy field by field by
+ * name, so a new field that types cleanly still vanishes on save with no
+ * error. Update the `Pick<>`, `rowToProject`, `projectInputToRow`, and
+ * `mergeProjectData` together.
  */
 import { Project } from "@/types/project";
 import { ProjectInput } from "@/lib/validation/project";
@@ -71,18 +66,11 @@ export function rowToProject(row: ProjectRow, userId: string): Project {
   };
 }
 
-/**
- * Folds a partial update (PUT /api/projects/[id]) into an existing row's
- * `data`, keeping any key the caller didn't send.
- *
- * This lives here rather than in the route because it is the same by-name
- * allowlist as the two functions around it, and keeping the four copies in
- * one file is the only thing that makes them reviewable together. The route
- * previously inlined its own shorter list, which silently dropped
- * `colorPrimitives` and `studioPaletteLinks` on every
- * update — so saving an existing project from Studio destroyed its primitive
- * links and its arranged preview layout, with no error.
- */
+// Folds a partial update (PUT /api/projects/[id]) into an existing row's
+// `data`, keeping any key the caller didn't send. Lives here rather than in
+// the route so it stays the same by-name allowlist as the two functions
+// around it — a route-local shorter list previously dropped
+// `colorPrimitives`/`studioPaletteLinks` silently on every update.
 export function mergeProjectData(existing: ProjectData, patch: Partial<ProjectInput>): ProjectData {
   return {
     colors: patch.colors ?? existing.colors,

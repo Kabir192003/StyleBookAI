@@ -1,11 +1,6 @@
-/**
- * Zustand store for the Preview Lab's Canvas — the single drag-and-drop
- * surface for testing color/font pairings (§3 of docs/PRODUCT_AND_UX.md).
- * Separate from studioStore so the Lab can be used standalone or embedded
- * inside the Studio without state collisions.
- *
- * Owner: Qi
- */
+// Preview Lab's drag-and-drop canvas for testing color/font pairings
+// (§3 of docs/PRODUCT_AND_UX.md). Kept separate from studioStore so the Lab
+// can be used standalone or embedded inside Studio without state collisions.
 import { create } from "zustand";
 import { ClipboardColorItem, ClipboardFontItem } from "@/store/clipboardStore";
 

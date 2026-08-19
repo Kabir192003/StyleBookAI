@@ -1,12 +1,8 @@
-/**
- * Shared state shape for the landing page's live AI generator, which now
- * renders twice on the same page — once in the new top-of-page product
- * hero, once in the "Three ways to build" panel further down the scroll
- * story — both driven by the same lifted state in LandingExperience, so
- * generating in one place shows up in the other. See
- * components/landing/LandingGeneratePanel.tsx for the shared UI and
- * components/landing/LandingExperience.tsx for the fetch/fallback logic.
- */
+// Shared state shape for the landing page's live AI generator, which renders
+// twice on the same page (the top hero and the "Three ways to build" panel),
+// both driven by the same lifted state in LandingExperience — generating in
+// one place shows up in the other. See components/landing/LandingGeneratePanel.tsx
+// and components/landing/LandingExperience.tsx.
 export const DEFAULT_LANDING_PROMPT =
   "A calm, premium skincare brand for Gen Z that feels trustworthy, not clinical.";
 

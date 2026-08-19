@@ -1,10 +1,5 @@
-/**
- * ContrastBadge — computes a WCAG contrast ratio between two colors with
- * chroma-js (already a project dependency) and renders the standard
- * AAA/AA/Fail badge.
- *
- * Owner: Amna
- */
+// Computes a WCAG contrast ratio between two colors with chroma-js
+// (already a project dependency) and renders the standard AAA/AA/Fail badge.
 import chroma from "chroma-js";
 
 function ratingFor(ratio: number, isLargeText = false) {

@@ -1,12 +1,6 @@
-/**
- * ColorGrid — the "colour wall": a salon-hung, editorial browse of every
- * shade in the library. Used by app/browse/colors/page.tsx.
- *
- * Styled to match the Colours.dc.html design pulled from claude.ai/design
- * (project "Website redesign request") — full-bleed, cream/ink/navy
- * editorial palette, Fraunces display serif + IBM Plex Mono labels,
- * family tabs and a spectrum/A–Z sort instead of dropdowns.
- */
+// The "colour wall" — a salon-hung, editorial browse of every shade in
+// the library, used by app/browse/colors/page.tsx. Family tabs and a
+// spectrum/A-Z sort instead of dropdowns is a deliberate style choice.
 "use client";
 
 import { useMemo, useState } from "react";
@@ -128,10 +122,9 @@ export function ColorGrid({ colors }: { colors: Color[] }) {
       </section>
 
       <div className="flex items-center gap-3 border-b border-black/[0.18] bg-[#F2EBE0] px-6 py-5 sm:px-12">
-        {/* A real <label htmlFor>, not a lookalike span: the visual design is
-            unchanged, but the input now has an accessible name instead of
-            relying on a placeholder (which is announced inconsistently and
-            disappears the moment you type). */}
+        {/* Real <label htmlFor>, not a lookalike span — gives the input an
+            accessible name instead of relying on a placeholder, which is
+            announced inconsistently and disappears once you type. */}
         <label
           htmlFor="color-search"
           className="whitespace-nowrap font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#6E675C]"

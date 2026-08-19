@@ -1,47 +1,14 @@
-/**
- * /dashboard/[projectId] — single saved project
- *
- * Owner: Amna
- *
- * Spec: docs/PRODUCT_AND_UX.md §2 + §6 (AI reasoning must be surfaced
- * prominently, not collapsed, when the project is AI-generated).
- *
- * Fetches GET /api/projects/[id] client-side — Kabir's backend is real
- * (Supabase-backed), gated behind the username/password auth in lib/auth/
- * (see CLAUDE.md). A 401 here means the session lapsed mid-visit, not a
- * real 404 — handled as its own "unauthorized" state with a sign-in CTA,
- * not lumped into the generic error state.
- *
- * "Edit in Studio": StudioBuilder (components/studio/StudioBuilder.tsx)
- * hydrates its local state from useAIResultStore (store/aiResultStore.ts),
- * the same bridge /studio/ai uses to hand off a generated result — not
- * from store/studioStore.ts, which nothing reads. A saved Project is
- * already an AIGeneratedProject plus id/userId/timestamps (types/ai.ts),
- * so populating that store with everything but those three fields (plus
- * `setSavedProjectId(id)`, so Studio's Save button updates this row
- * instead of creating a duplicate) and routing to /studio is the real
- * integration.
- *
- * "Export": POST /api/export, which returns real generated text (see
- * lib/export/generators.ts) for css/scss/tailwind/json. Downloads the
- * returned content with file-saver. The PDF style guide is a separate,
- * fully client-side export (lib/export/pdfStyleGuide.ts) available from
- * Studio's own export drawer, not this page.
- *
- * "Delete": DELETE /api/projects/[id] behind an inline confirm.
- *
- * The mockup panel is a small self-contained preview, not
- * components/studio/PreviewLab.tsx — that component takes no project
- * prop and reads from usePreviewLabStore directly, built for Studio's
- * own active-editing session rather than as an embeddable read-only
- * viewer for an arbitrary saved project. Wiring this read-only page into
- * a store it doesn't otherwise touch felt like more risk than value, so
- * it stays a lightweight local component.
- *
- * Styling adapted to the site's cream/ink/navy editorial system instead
- * of the separate glass/dark design system this was originally built
- * against, to stay visually consistent with Studio/browse/SiteHeader.
- */
+// A 401 fetching the project means the session lapsed mid-visit, not a real
+// 404 — handled as its own "unauthorized" state, not the generic error one.
+//
+// "Edit in Studio" hydrates useAIResultStore (same bridge /studio/ai uses),
+// not store/studioStore.ts, which nothing reads — plus setSavedProjectId(id)
+// so Studio's Save button updates this row instead of creating a duplicate.
+//
+// The mockup panel below is its own small preview, not
+// components/studio/PreviewLab.tsx — that one reads from usePreviewLabStore
+// directly and is built for Studio's live editing session, not as a
+// read-only viewer for an arbitrary saved project.
 "use client";
 
 import { useEffect, useState } from "react";
@@ -62,10 +29,9 @@ type FetchState =
   | { status: "unauthorized" }
   | { status: "ready"; project: Project };
 
-// `json` is the W3C DTCG token file (the one that imports into Figma), not a
-// loose dump — labelled explicitly because someone at a demo picking "JSON"
-// and getting an unimportable blob is exactly the confusion this avoids.
-// See EXPORT_FORMAT_META in lib/export/generators.ts for the canonical list.
+// `json` here is the W3C DTCG token file (the one Figma can import), not a
+// loose dump — labelled explicitly to avoid that confusion. Canonical list
+// is EXPORT_FORMAT_META in lib/export/generators.ts.
 const EXPORT_FORMATS = [
   { label: "CSS variables", value: "css", ext: "css" },
   { label: "Tailwind config", value: "tailwind", ext: "js" },
@@ -224,11 +190,9 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
       if (!res.ok) throw new Error(data.error ?? "Export failed.");
       const project = state.status === "ready" ? state.project : null;
       const fallbackName = `${(project?.name ?? "stylebook").toLowerCase().replace(/\s+/g, "-")}.${format.ext}`;
-      // Prefer the server's filename/contentType — it's generated alongside
-      // the content, so a DTCG token file arrives as `*.tokens.json` typed
-      // `application/json`. Blobbing everything as `text/plain` meant some
-      // Figma/Tokens Studio import dialogs (which filter on type as well as
-      // extension) refused the file outright.
+      // Prefer the server's filename/contentType — some Figma/Tokens Studio
+      // import dialogs filter on file type, not just extension, and reject
+      // a DTCG file blobbed as generic text/plain.
       saveAs(
         new Blob([data.content], { type: data.contentType ?? "text/plain;charset=utf-8" }),
         data.filename ?? fallbackName

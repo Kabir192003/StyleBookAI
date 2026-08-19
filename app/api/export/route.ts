@@ -1,17 +1,7 @@
-/**
- * POST /api/export — generates a text code snippet (CSS vars / SCSS /
- * Tailwind config / W3C DTCG design tokens / Tokens Studio file /
- * readable JSON) for a project. Accepts either a saved
- * `projectId` (sign-in required, ownership enforced) or an inline
- * `project` payload for unsaved Studio drafts (no auth needed — exporting
- * a draft you haven't saved doesn't touch anyone's account). The PDF
- * style-guide export is entirely client-side (see
- * lib/export/pdfStyleGuide.ts, wired into Studio's ExportDrawer) — it
- * rasterizes rendered DOM with html-to-image, so it never touches this
- * route.
- *
- * Owner: Kabir
- */
+// Accepts a saved projectId (sign-in required, ownership enforced) or an
+// inline project payload for unsaved Studio drafts (no auth needed). The PDF
+// style-guide export is client-side only (lib/export/pdfStyleGuide.ts,
+// rasterizes with html-to-image) and never hits this route.
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSupabaseAdmin } from "@/lib/db/supabase";
@@ -39,29 +29,24 @@ const InlineProjectSchema = ProjectInputSchema.pick({
 
 const ExportRequestSchema = z
   .object({
-    // "figma" and "json-readable" are additive — existing callers that send
-    // one of the original four keep working unchanged.
+    // "figma" and "json-readable" are additive; the original four formats
+    // still work unchanged.
     format: z.enum(["css", "scss", "tailwind", "json", "figma", "json-readable"]),
     projectId: z.string().optional(),
     project: InlineProjectSchema.optional(),
-    // When true the route replies with the raw file body plus a
-    // Content-Type and Content-Disposition, so the browser saves a
-    // correctly-typed, correctly-named file. The default JSON envelope is
-    // kept for the existing dashboard caller, which builds its own Blob.
+    // When true, replies with the raw file body + Content-Type/Disposition
+    // so the browser saves it directly. Default JSON envelope stays for the
+    // dashboard caller, which builds its own Blob.
     download: z.boolean().optional(),
   })
   .refine((data) => !!data.projectId || !!data.project, {
     message: "Either projectId or project is required",
   });
 
-/**
- * One response shape for both the saved-project and inline-draft paths, so
- * the two can't drift. `filename` and `contentType` are returned alongside
- * the content because callers were otherwise inventing their own — the
- * dashboard hard-coded `text/plain` and a bare `.json` extension, which is
- * wrong for the DTCG token file (it wants `.tokens.json` for the Figma
- * plugins to recognise it as a token set).
- */
+// One response shape for both paths so they can't drift. filename/contentType
+// are returned alongside the content because the dashboard used to hard-code
+// text/plain and a bare .json — wrong for the DTCG file, which needs
+// .tokens.json for Figma plugins to recognize it as a token set.
 function respond(project: ExportableProject, format: ExportFormat, download: boolean) {
   const content = generateExport(project, format);
   const filename = exportFileName(project, format);

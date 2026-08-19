@@ -1,22 +1,10 @@
-/**
- * Grounds the model's written rationale in the tokens that actually shipped.
- *
- * The reasoning strings are produced in the same pass as the tokens, so they
- * describe *intentions*, and QA caught both consequences: prose that
- * described a palette the result didn't have, and — worse — an accessibility
- * claim ("all text and interactive states exceed 4.5:1") written next to a
- * button that measured 4.1:1. The tokens are then further changed after
- * generation by lib/ai/validateTokens.ts's contrast repair, so even honest
- * prose would drift.
- *
- * Two rules, applied here and called from lib/ai/generate.ts as the last step
- * before the result is returned:
- *
- *   1. Strip every unverified compliance claim from the model's text. Only
- *      the measured ContrastReport (types/ai.ts) may talk about ratios.
- *   2. Append one code-generated sentence per field, built from the final
- *      values, so what the user reads always matches what they were given.
- */
+// Grounds the model's written rationale in the tokens that actually shipped.
+// The model writes its reasoning before contrast repair (lib/ai/validateTokens.ts)
+// runs, so its prose can drift from — or make unverifiable accessibility
+// claims about — the final result. Two rules, called from lib/ai/generate.ts
+// as the last step: (1) strip every unverified compliance claim from the
+// model's text — only the measured ContrastReport may talk about ratios; (2)
+// append one code-generated sentence per field, built from the final values.
 import { AIReasoning } from "@/types/project";
 import { ContrastReport } from "@/types/ai";
 

@@ -1,17 +1,9 @@
-/**
- * The actual "describe your brand, get a system" UI — rendered twice on
- * the landing page (see components/landing/LandingExperience.tsx): once
- * in the top-of-page product hero (`theme="light"`, the site's real
- * cream/ink chrome), once in the "Three ways to build" panel further
- * down the scroll story (`theme="dark"`, the navy flourish panel it's
- * always lived in). Both instances read/write the same lifted state, so
- * generating in one place is reflected in the other rather than being
- * two disconnected demos.
- *
- * Pure presentation — no fetch logic here, that stays in
- * LandingExperience so there's exactly one place that talks to
- * /api/ai/generate.
- */
+// The "describe your brand, get a system" UI, rendered twice on the
+// landing page (light in the top hero, dark in the "Three ways to build"
+// panel) — both read/write the same lifted state so generating in one
+// place shows in the other. Pure presentation: no fetch logic here, that
+// stays in LandingExperience so there's one place talking to
+// /api/ai/generate.
 import { ContrastBadge } from "@/components/ui/ContrastBadge";
 import { LandingPreview } from "@/lib/landing/aiPreview";
 

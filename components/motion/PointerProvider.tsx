@@ -1,12 +1,10 @@
 "use client";
 
-/**
- * Single shared pointer listener for the whole landing page. Every scene
- * that wants pointer-parallax (ParallaxObject, AuroraMesh, CustomCursor)
- * reads from these motion values instead of attaching its own mousemove
- * listener — motion values don't trigger React re-renders, and one rAF-
- * throttled listener beats a dozen independent ones.
- */
+// Single shared pointer listener for the whole landing page. Every scene
+// that wants pointer-parallax (ParallaxObject, AuroraMesh, CustomCursor)
+// reads from these motion values instead of attaching its own mousemove
+// listener — motion values don't trigger re-renders, and one rAF-throttled
+// listener beats a dozen independent ones.
 import { createContext, useContext, useEffect, useRef, ReactNode } from "react";
 import { useMotionValue, MotionValue } from "framer-motion";
 
