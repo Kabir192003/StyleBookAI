@@ -1,24 +1,10 @@
-/**
- * User-controlled accessibility preferences.
- *
- * The split here is deliberate and worth stating, because it decides what
- * belongs in this file at all:
- *
- * - Things that cost the design nothing — labels, alt text, landmarks, a
- *   skip link, focus order, name/role/value — are **not** settings. They
- *   ship on for everyone, always. A toggle for those would just be a way to
- *   ship a broken page by default.
- * - Things that visibly change the interface — heavier contrast than the AA
- *   baseline, larger text, permanently underlined links, flattened
- *   decoration — are opt-in, because they're preferences rather than
- *   correctness, and forcing them on everyone would make the product worse
- *   for the people who don't need them.
- *
- * Each preference is applied as a `data-a11y-*` attribute on <html>, and the
- * CSS that responds lives in app/globals.css. Storing on the document rather
- * than in React context means the styling works on server-rendered markup
- * with no hydration flash (see `a11yInitScript`).
- */
+// User-controlled accessibility preferences. Only things that visibly change
+// the interface (contrast, text size, underlines, motion, transparency) are
+// opt-in settings here — baseline correctness (labels, alt text, focus order)
+// ships on for everyone and isn't a toggle.
+// Applied as `data-a11y-*` attributes on <html> (CSS in app/globals.css);
+// storing on the document instead of React context means it works on
+// server-rendered markup with no hydration flash (see `a11yInitScript`).
 
 export type A11yPreferences = {
   /** Push text contrast beyond the AA baseline toward AAA. */
@@ -117,12 +103,8 @@ export function saveA11yPreferences(prefs: A11yPreferences): void {
   applyA11yPreferences(prefs);
 }
 
-/**
- * Runs before first paint (injected in the root layout's <head>, same
- * pattern as the existing theme script) so a preference is never applied a
- * frame late — a flash of the un-adjusted interface is exactly the jolt
- * someone who enabled "reduce motion" is trying to avoid.
- */
+// Injected in the root layout's <head> (same pattern as the theme script) so
+// a preference applies before first paint, not a frame late.
 export const a11yInitScript = `
 (function(){
   try {

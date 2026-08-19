@@ -1,15 +1,6 @@
-/**
- * Light/dark theme preference — backs the toggle on /account (see
- * docs/PRODUCT_AND_UX.md §4: "Light and dark mode both need to work well,
- * since colors read differently against each").
- *
- * v1 has no user-preferences API endpoint yet, so this persists to
- * localStorage rather than the database. TODO: once a
- * PATCH /api/users/preferences (or similar) route exists, mirror the value
- * there too so it follows the user across devices.
- *
- * Owner: Amna
- */
+// Light/dark theme preference — backs the toggle on /account. Persists to
+// localStorage since there's no user-preferences API endpoint yet; once one
+// exists, mirror the value there too so it follows the user across devices.
 export type ThemePreference = "light" | "dark" | "system";
 
 const STORAGE_KEY = "stylebook-theme";

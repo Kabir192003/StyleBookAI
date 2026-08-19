@@ -1,13 +1,8 @@
-/**
- * Generates the curated color library — the hand-named half of the color
- * wall (the other half is Tailwind's palette, see transformColors.ts).
- *
- * Every named hue below (Crimson, Sage, Cobalt, ...) gets the same
- * 20-step lightness/saturation ramp, so browsing one hue feels like
- * sliding a lightness control from near-white to near-black rather than
- * jumping between a handful of fixed swatches. Run once, output committed:
- *   npx tsx scripts/generateCuratedColors.ts
- */
+// Generates the curated color library — the hand-named half of the color
+// wall (the other half is Tailwind's palette, see transformColors.ts).
+// Every named hue below gets the same 20-step lightness/saturation ramp, so
+// browsing one hue feels like sliding a lightness control from near-white
+// to near-black. Run once, output committed: npx tsx scripts/generateCuratedColors.ts
 import fs from "fs";
 import path from "path";
 import { buildColor } from "../lib/colors/colorUtils";
@@ -176,19 +171,12 @@ const TEMPERATURE: Partial<Record<ColorFamily, ColorMood>> = {
 const LUXE_TIERS = new Set(["Rich", "Deep", "Midnight"]);
 const LUXE_FAMILIES = new Set<ColorFamily>(["purple", "red", "brown"]);
 
-/**
- * Note copy — see buildNote() below.
- *
- * The first version of this file glued the hue's `personality` onto every
- * one of its 20 tiers verbatim, which a UX review caught twice over: every
- * Scarlet in the library opened with the identical clause, *and* the clause
- * was often flatly untrue of the swatch it sat under — "Whisper Crimson is
- * a deep, deliberate red" describes a near-white tint as if it were the
- * darkest step on the ramp. A `personality` written for a hue at full
- * strength only holds around the middle of the ramp, so it's now used only
- * there; the pale, saturated, muted, and dark bands get sentences written
- * for what those steps actually look like.
- */
+// The first version of this file glued the hue's `personality` onto every
+// one of its 20 tiers verbatim — every Scarlet opened with the identical
+// clause, and it was often untrue of the swatch ("Whisper Crimson is a
+// deep, deliberate red" describing a near-white tint). `personality` only
+// holds around the middle of the ramp, so it's used only there; the other
+// bands get sentences written for what those steps actually look like.
 type TierBand = "tint" | "mid" | "saturated" | "muted" | "dark";
 
 const BAND_BY_TIER: Record<string, TierBand> = {
@@ -214,13 +202,8 @@ const BAND_BY_TIER: Record<string, TierBand> = {
   Midnight: "dark",
 };
 
-/**
- * Sentence shapes per band. Several per band, rotated by (hue + tier)
- * index, so two swatches a user is likely to see side by side — adjacent
- * tiers of one hue, or the same tier across neighbouring hues — don't open
- * the same way. `%NAME%`, `%HUE%`, `%PERSONALITY%` and `%ENDING%` are
- * substituted; `%ENDING%` is the tier's own clause, which already varies.
- */
+// Several sentence shapes per band, rotated by (hue + tier) index, so two
+// swatches a user is likely to see side by side don't open the same way.
 const NOTE_TEMPLATES: Record<TierBand, string[]> = {
   tint: [
     "%NAME% holds just a trace of %HUE% — %ENDING%.",

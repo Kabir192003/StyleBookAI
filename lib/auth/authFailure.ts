@@ -1,22 +1,10 @@
-/**
- * Turns a thrown error or a Supabase error into (a) a server log that names
- * the real cause and (b) a user-facing message that is actually actionable.
- *
- * Why this exists: sign-up/sign-in were reported broken in production three
- * times running. Both routes hid every non-user failure — signup returned a
- * bare "Couldn't create account" with the reason only in `console.error`,
- * and login destructured `{ data: user }` while *dropping* the Supabase
- * `error`, so a missing `users` table or a bad service-role key came back as
- * "Incorrect username or password". A configuration fault was wearing a
- * validation fault's clothes, which is exactly why three rounds of fixes
- * went looking in the form component. Nothing here should ever again make a
- * broken deployment look like the user typed something wrong.
- *
- * The messages deliberately name the *class* of fault ("the account
- * database", "server auth configuration") without leaking connection
- * strings, keys, or SQL — enough for whoever is standing at the demo laptop
- * to know whether to check Vercel's env vars or their own typing.
- */
+// Turns a thrown error or a Supabase error into (a) a server log that names
+// the real cause and (b) a user-facing message that's actually actionable.
+// Exists because a config fault (missing env var, bad service-role key, no
+// users table) previously surfaced as "Incorrect username or password" —
+// looking exactly like something the user typed wrong. Messages name the
+// *class* of fault ("the account database", "server auth configuration")
+// without leaking connection strings or keys.
 
 /** Machine-readable cause, echoed to the client so QA can quote it. */
 export type AuthFailureCode =
@@ -54,13 +42,8 @@ function isSupabaseError(value: unknown): value is SupabaseLikeError {
   return typeof value === "object" && value !== null && "message" in value;
 }
 
-/**
- * PostgREST reports "you queried something that doesn't exist" as 42P01
- * (undefined_table) / 42703 (undefined_column) / PGRST205 (table not in the
- * schema cache). Every one of those means the migration in
- * `lib/db/schema.sql` was never applied to *this* database — the single most
- * likely reason sign-up works locally and dies on the deployed site.
- */
+// PostgREST codes for "you queried something that doesn't exist" — every one
+// means the migration in lib/db/schema.sql was never applied to this database.
 const SCHEMA_ERROR_CODES = new Set(["42P01", "42703", "PGRST205", "PGRST204"]);
 
 export function classifyAuthFailure(cause: unknown): AuthFailure {
@@ -118,12 +101,8 @@ export function classifyAuthFailure(cause: unknown): AuthFailure {
   };
 }
 
-/**
- * One log line that is greppable in Vercel's runtime logs. Written as a
- * single `console.error` with a fixed `[auth]` prefix because the previous
- * implementation's untagged `console.error("Signup failed:", error)` was
- * impossible to find among Next.js's own noise.
- */
+// One greppable log line — fixed `[auth]` prefix so it's findable among
+// Next.js's own console noise in Vercel's runtime logs.
 export function logAuthFailure(operation: string, failure: AuthFailure, cause: unknown) {
   const detail = isSupabaseError(cause)
     ? { supabaseCode: cause.code, message: cause.message, details: cause.details, hint: cause.hint }

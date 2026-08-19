@@ -144,11 +144,9 @@ body:has([data-landing]) {
   outline-offset: 3px;
 }
 
-/* Reduced motion is honoured app-wide, not just on the landing page. The
-   landing scroll experience was the obvious offender, but the Studio,
-   drawers and grids animate too, and someone who sets this preference
-   because motion makes them ill does not stop needing it once they click
-   through to a product page. */
+/* Honoured app-wide, not just on the landing page — Studio, drawers, and
+   grids animate too, and the preference doesn't stop mattering once you
+   click through to a product page. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -160,12 +158,10 @@ body:has([data-landing]) {
   }
 }
 
-/* WCAG 2.2 Target Size (Minimum, 2.5.8) asks for 24x24 CSS px. Several
-   controls — the colour-grid copy buttons especially — render smaller than
-   that because their visual size is the point. Rather than resize them and
-   change the layout, this expands only the *hit* area with a centred
-   pseudo-element, so the control looks identical and is merely easier to
-   land a thumb on. Applied on coarse pointers, where it actually matters. */
+/* WCAG 2.2 wants a 24x24px hit target; some controls (colour-grid copy
+   buttons especially) are visually smaller than that on purpose. This
+   expands just the hit area via a centred pseudo-element instead of
+   resizing the control. Only applied on coarse pointers. */
 @media (pointer: coarse) {
   .sb-tap-target {
     position: relative;
@@ -182,13 +178,10 @@ body:has([data-landing]) {
   }
 }
 
-/* ---------------------------------------------------------------------------
-   Opt-in accessibility preferences (lib/a11y/preferences.ts, toggled in
-   /account). These are the adjustments that visibly change the interface, so
-   they are the user's choice rather than the default — the baseline the app
-   ships with already meets WCAG AA. Applied as data attributes on <html> by
-   a pre-paint script, so there's no flash of un-adjusted UI.
-   ------------------------------------------------------------------------- */
+/* Opt-in accessibility preferences (lib/a11y/preferences.ts, toggled in
+   /account) — the baseline already meets WCAG AA, these are user choices on
+   top of it. Applied as data attributes on <html> by a pre-paint script so
+   there's no flash of un-adjusted UI. */
 
 /* Secondary text moves from the AA-passing warm grey to near-ink, and
    hairline borders get materially darker. */

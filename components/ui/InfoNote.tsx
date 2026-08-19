@@ -1,13 +1,7 @@
-/**
- * InfoNote — the small "i" info button + popover used to surface a
- * Color's or Font's evergreen editorial `note` field. Per
- * docs/PRODUCT_AND_UX.md §6 this should feel like "a tooltip with a bit
- * more room to breathe," not a modal — so: lightweight popover, opens on
- * click (works on touch), closes on outside click or Escape.
- *
- * Owner: Amna (shared primitive — Dhanshri's browse cards can reuse this
- * too instead of building their own).
- */
+// The small "i" info button + popover for a Color's or Font's editorial
+// `note` field. Per docs/PRODUCT_AND_UX.md §6 this should feel like "a
+// tooltip with more room to breathe," not a modal — opens on click (works
+// on touch), closes on outside click or Escape.
 "use client";
 
 import { useEffect, useRef, useState } from "react";

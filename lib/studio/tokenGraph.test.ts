@@ -54,8 +54,6 @@ describe("resolvePalette", () => {
     });
   });
 
-  // The exact bug this session traced: editing a primitive must cascade to
-  // every role linked to it, live — this is what makes that true.
   it("reflects a primitive's new hex without re-linking the role", () => {
     const palette = { accent: { primitiveId: "p1" } };
     const before = resolvePalette(palette, primitives);

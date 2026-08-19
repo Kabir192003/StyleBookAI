@@ -1,11 +1,7 @@
-/**
- * Favorites grids on /account — colors/fonts/themes the user has
- * favorited via FavoriteButton (components/browse/FavoriteButton.tsx)
- * elsewhere in the app. Looks the ids up against the static data/
- * libraries (colors/fonts/themes aren't DB rows) and reuses the same
- * favoritesStore the browse pages already read from, so unfavoriting here
- * and there stay in sync without a refetch.
- */
+// Favorites grids on /account, for items favorited via FavoriteButton
+// elsewhere. Looks ids up against the static data/ libraries (colors/
+// fonts/themes aren't DB rows) and shares favoritesStore with the browse
+// pages, so unfavoriting here or there stays in sync without a refetch.
 "use client";
 
 import Link from "next/link";

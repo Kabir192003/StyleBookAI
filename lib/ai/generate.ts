@@ -52,14 +52,11 @@ const MAX_CANDIDATE_MOODBOARD_IMAGES = 60;
 
 export class AIGenerationError extends Error {}
 
-// The UI (components/ai/PromptInput.tsx) only ever sends the free-text
-// `prompt` — `style`/`colorPreferences`/`avoid` are never populated. That
-// meant candidate selection previously fell through to `pool.slice(0, N)`
-// on every request, which — since allColors is grouped by family — silently
-// handed Gemini the same ~60 neutrals/reds every single time, regardless of
-// what was typed. Tokenizing the prompt and matching against it is the
-// actual signal we have; keep the (currently dead but schema-supported)
-// style/colorPreferences/avoid handling too in case a future UI populates them.
+// The UI only ever sends the free-text `prompt` — style/colorPreferences/avoid
+// are schema-supported but currently unused — so tokenizing the prompt itself
+// is the real signal for candidate selection; a plain pool.slice(0, N) would
+// hand Gemini the same handful of colors every time since allColors is
+// grouped by family.
 function tokenizePrompt(prompt: string): Set<string> {
   return new Set(
     prompt
@@ -242,16 +239,12 @@ function fontMatchesPrompt(font: Font, tokens: Set<string>): boolean {
     .some((word) => tokens.has(word));
 }
 
-// allFonts is ~2000 entries now that the full Google Fonts catalog is in
-// (data/fonts/google.ts). Previously this unconditionally included all 36
-// fontsSeed entries before any prompt matching ran, leaving only 4 of the
-// 40-slot cap for the other ~1,950 fonts — so every request got nearly the
-// same candidate pool regardless of what was asked, and the model kept
-// landing on the same handful of fonts. Now the seed set and the Google
-// catalog are one unified pool, prompt-matched the same way colors are
-// (see selectCandidateColors) — seed fonts still surface disproportionately
-// for a matching prompt since their mood/style tags are real hand-written
-// data (Google Fonts entries are auto-generated, one tag set per category).
+// allFonts is ~2000 entries (the full Google Fonts catalog, data/fonts/google.ts)
+// plus the hand-tagged seed set, treated as one pool and prompt-matched the
+// same way colors are (see selectCandidateColors) — seed fonts still surface
+// disproportionately for a matching prompt since their mood/style tags are
+// real hand-written data, where the Google catalog's are auto-generated per
+// category.
 function selectCandidateFonts(request: AIGenerateRequest): Font[] {
   let pool = allFonts;
 
@@ -344,18 +337,11 @@ function withRepairedHex<T extends Color>(color: T, hex: string): T {
   return { ...color, hex, rgb, hsl: rgbToHsl(rgb.r, rgb.g, rgb.b) };
 }
 
-/**
- * Guarantees `designSystem.dark` exists and belongs to this brand.
- *
- * This is the code-side half of the highest-severity QA finding: dark mode was
- * optional in the contract, so it was usually absent, so StudioBuilder's
- * hardcoded DEFAULT_DARK (accent #8B5CF6 / surface #121022 / ink #E6E1F5 …)
- * stood in — and three unrelated brands shipped byte-identical dark palettes.
- * A model-authored dark variant is kept only if it passes the quality gate in
- * lib/colors/deriveDarkPalette.ts (actually dark, ink readable, not the stock
- * violet set, not just the light palette echoed back). Otherwise it is
- * replaced by a derivation of this brand's own light tokens.
- */
+// Guarantees `designSystem.dark` exists and actually belongs to this brand.
+// A model-authored dark variant is kept only if it passes the quality gate in
+// lib/colors/deriveDarkPalette.ts (actually dark, ink readable, not just the
+// light palette echoed back); otherwise it's derived from this brand's own
+// light tokens instead of falling back to a generic stock dark palette.
 function ensureDarkVariant(designSystem: DesignSystem): { designSystem: DesignSystem; derived: boolean } {
   const lightPalette = brandPaletteFromThemeVariant(designSystem.light);
   const modelDark = designSystem.dark;
@@ -413,18 +399,15 @@ export async function generateProjectFromPrompt(request: AIGenerateRequest): Pro
     throw new AIGenerationError("Gemini returned an unknown font id");
   }
 
-  // ---------------------------------------------------------------------
-  // Post-generation pipeline. Everything below is deterministic: the model's
-  // raw answer is treated as a proposal, and the checks it demonstrably
-  // cannot do for itself (measuring contrast, honouring literal constraints,
-  // keeping dark mode per-brand, keeping prose truthful) are done in code.
-  // Each step names the QA defect it exists to prevent.
-  // ---------------------------------------------------------------------
+  // Post-generation pipeline: the model's raw answer is treated as a
+  // proposal, and everything it can't reliably do itself (measuring
+  // contrast, honouring literal constraints, keeping dark mode per-brand,
+  // keeping prose truthful) is checked and repaired in code below.
   const constraints = parsePromptConstraints(request.prompt);
   const deviations: AIDeviation[] = [];
 
   // 1. Fonts — a monospace/display face in the body slot is replaced and the
-  //    swap reported (lib/ai/fontRoles.ts; "Roboto Mono as the body font").
+  //    swap reported (lib/ai/fontRoles.ts).
   const fontResult = enforceFontRoles(
     { primary: primaryFont, secondary: secondaryFont, accent: accentFont },
     candidateFonts,
@@ -433,8 +416,7 @@ export async function generateProjectFromPrompt(request: AIGenerateRequest): Pro
   deviations.push(...fontResult.deviations);
 
   // 2. Palette — the primary must be able to act as an action colour, and
-  //    text/muted must be readable on the palette's own background. This is
-  //    the path that shipped #f8fafc body text on a #f8f7f7 background (1.02:1).
+  //    text/muted must be readable on the palette's own background.
   const primaryResult = ensureActionablePrimary(resolvedColors);
   const paletteResult = validatePaletteRoles(primaryResult.colors);
   deviations.push(...primaryResult.deviations, ...paletteResult.deviations);
@@ -508,8 +490,8 @@ export async function generateProjectFromPrompt(request: AIGenerateRequest): Pro
     .filter((image): image is MoodboardImage => Boolean(image));
 
   // 5. Imagery — the moodboard library is Unsplash photography, so a brief
-  //    that bans stock imagery is honoured by dropping it, not by swapping in
-  //    different photos (QA asked for no lifestyle stock and got architecture).
+  //    that bans stock imagery is honoured by dropping it, not by swapping
+  //    in different photos.
   const moodboard = constraints.banPhotography ? [] : selectedMoodboard;
   deviations.push(...reportPhotographyBan(constraints, selectedMoodboard.length));
 

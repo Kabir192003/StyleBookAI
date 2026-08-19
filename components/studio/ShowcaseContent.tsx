@@ -1,22 +1,11 @@
-/**
- * The canvas's default content: a real product page, not a specimen sheet.
- *
- * The distinction matters more than it looks. A page of labelled component
- * groups ("Buttons", "Inputs", …) tells you the parts exist; it cannot tell
- * you whether the system *works* — whether the accent survives next to the
- * muted text, whether the display face and the body face belong together,
- * whether a table of numbers is still readable under the brand. Those only
- * show up when the components sit in the arrangement a user would actually
- * meet them in. So this is a landing page for a fictional product, and the
- * component coverage is a consequence of building a believable page rather
- * than the goal of it.
- *
- * Every element is a live component reading canvas tokens, and every one of
- * the ten editable `ComponentName`s appears at least once in a natural
- * position, so clicking anything in the page opens the inspector for the
- * thing you clicked. Nothing here defines a colour, a font or a radius — this
- * file only arranges; see components/system/styles.ts for the token chain.
- */
+// The canvas's default content: a real product page, not a specimen sheet. A
+// page of labelled component groups tells you the parts exist; it can't tell
+// you whether the system works together, which only shows up when components
+// sit in the arrangement a user would actually meet them in — so this is a
+// landing page for a fictional product, and component coverage is a
+// consequence of building a believable page, not the goal of it. Every
+// element is a live component reading canvas tokens; nothing here defines a
+// color, font or radius — see components/system/styles.ts for that.
 "use client";
 
 import { ArrowRight, Check, Sparkles } from "lucide-react";
@@ -73,8 +62,7 @@ const SWATCH_ROLES = [
   { property: "--pgc-muted", label: "Muted" },
 ];
 
-/** A page section with a heading, so the mockup reads as a document rather
- *  than a stack of unrelated panels. */
+// A page section with a heading, so the mockup reads as a document rather than a stack of unrelated panels.
 function Section({
   eyebrow,
   title,
@@ -107,8 +95,7 @@ function Section({
 }
 
 export function ShowcaseContent({ systemName }: { systemName: string }) {
-  // The page composes components directly rather than through GroupShell, so
-  // it has to bring the stylesheet in itself.
+  // Composes components directly, so it has to bring the stylesheet in itself.
   useSystemStyles();
 
   return (
@@ -116,7 +103,6 @@ export function ShowcaseContent({ systemName }: { systemName: string }) {
       <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6, 44px)", padding: "22px 26px 34px" }}>
         <Navbar />
 
-        {/* ---------------------------------------------------------- Hero */}
         <header style={{ display: "flex", flexDirection: "column", gap: "var(--space-3, 16px)", maxWidth: "44rem" }}>
           <Breadcrumbs />
           <span className="pg-badge pg-badge--soft" style={{ alignSelf: "flex-start" }}>
@@ -152,7 +138,6 @@ export function ShowcaseContent({ systemName }: { systemName: string }) {
           </div>
         </header>
 
-        {/* --------------------------------------------------------- Notice */}
         <div className="pg-alert pg-alert--info" role="status">
           <span className="pg-alert__icon" aria-hidden="true">
             <Check size={15} />
@@ -165,7 +150,6 @@ export function ShowcaseContent({ systemName }: { systemName: string }) {
           </div>
         </div>
 
-        {/* ---------------------------------------------------------- Stats */}
         <div className="pg-grid">
           {STATS.map((stat) => (
             <div key={stat.label} className="pg-card" style={{ padding: "var(--space-4, 20px)" }}>
@@ -179,7 +163,6 @@ export function ShowcaseContent({ systemName }: { systemName: string }) {
           ))}
         </div>
 
-        {/* -------------------------------------------------------- Feature */}
         <Section
           eyebrow="Why teams switch"
           title="Everything the interface is made of"
@@ -206,12 +189,10 @@ export function ShowcaseContent({ systemName }: { systemName: string }) {
           </div>
         </Section>
 
-        {/* ----------------------------------------------------------- Tabs */}
         <Section eyebrow="Inside the product" title="Built to be looked at closely">
           <Tabs />
         </Section>
 
-        {/* -------------------------------------------------------- Pricing */}
         <Section eyebrow="Pricing" title="Plans that scale with the system">
           <div className="pg-table-wrap">
             <table className="pg-table">
@@ -254,7 +235,6 @@ export function ShowcaseContent({ systemName }: { systemName: string }) {
           </div>
         </Section>
 
-        {/* ----------------------------------------------------------- Form */}
         <Section
           eyebrow="Get started"
           title="Request a walkthrough"
@@ -314,7 +294,6 @@ export function ShowcaseContent({ systemName }: { systemName: string }) {
           </div>
         </Section>
 
-        {/* --------------------------------------------------- Status + team */}
         <Section eyebrow="Rollout" title="Where the migration stands">
           <div className="pg-grid" style={{ gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", alignItems: "start" }}>
             <div className="pg-card" style={{ padding: "var(--space-4, 20px)" }}>
@@ -346,7 +325,6 @@ export function ShowcaseContent({ systemName }: { systemName: string }) {
           </div>
         </Section>
 
-        {/* --------------------------------------------------- Danger + modal */}
         <Section eyebrow="Workspace settings" title="Irreversible things live here">
           <div className="pg-card" style={{ padding: "var(--space-4, 20px)", gap: 12 }}>
             <p className="pg-body" style={{ fontSize: "var(--text-sm, 14px)" }}>
@@ -362,7 +340,6 @@ export function ShowcaseContent({ systemName }: { systemName: string }) {
           </div>
         </Section>
 
-        {/* --------------------------------------------------------- Footer */}
         <footer
           style={{
             display: "flex",

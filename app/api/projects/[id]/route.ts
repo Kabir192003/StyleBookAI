@@ -1,11 +1,5 @@
-/**
- * /api/projects/[id] — get (GET), update (PUT), delete (DELETE) a single
- * project. Enforces that the requesting user owns the project by checking
- * user_id against the signed-in user's id (belt-and-suspenders alongside
- * Supabase RLS).
- *
- * Owner: Kabir
- */
+// Ownership is checked here (user_id against the signed-in user) as
+// belt-and-suspenders alongside Supabase RLS.
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/db/supabase";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
@@ -60,13 +54,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   if (parsed.data.aiGenerated !== undefined) updates.ai_generated = parsed.data.aiGenerated;
   if (parsed.data.aiPrompt !== undefined) updates.ai_prompt = parsed.data.aiPrompt;
 
-  // Any `data` key present means the JSONB column has to be rewritten. This
-  // list is deliberately derived from the shape rather than hand-written per
-  // field: the previous inline version omitted colorPrimitives,
-  // studioPaletteLinks, so an update carrying them wrote
-  // nothing (and, worse, the rewrite below dropped whatever the row already
-  // held). Merging is now lib/db/projectMapper.ts's job, next to the two other
-  // by-name copies of this allowlist.
+  // Any `data` key present means the JSONB column needs rewriting. This list
+  // used to be hand-written and missed colorPrimitives/studioPaletteLinks, so
+  // updates carrying them silently dropped whatever the row already had.
+  // Merging now lives in lib/db/projectMapper.ts.
   const DATA_KEYS = [
     "colors",
     "fonts",

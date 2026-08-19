@@ -1,12 +1,10 @@
 /**
- * Derives a full ThemeVariantTokens (the shape a Project's designSystem
- * needs, see types/designSystem.ts) from Studio's simpler 5-token
- * palette. Used so that saving a project never silently drops the
- * palette Studio isn't currently viewing — see lib/studio/projectFromState.ts,
- * which calls this once per mode (light + dark) so both survive Save,
- * not just whichever one was on screen when the user clicked it.
+ * Derives a full ThemeVariantTokens (see types/designSystem.ts) from Studio's
+ * simpler 5-token palette. Called once per mode by
+ * lib/studio/projectFromState.ts so saving a project never drops the palette
+ * mode that wasn't on screen when the user clicked Save.
  *
- * The mapping is a deliberate, documented convention — not a guess:
+ * The mapping is a fixed, documented convention:
  *   colorRoles.background/surface -> the palette's surface
  *   colorRoles.text               -> ink
  *   colorRoles.textMuted          -> muted
@@ -61,22 +59,13 @@ export function mix(baseHex: string, mixHex: string, amount: number): string {
   return `#${((1 << 24) + (r << 16) + (g << 8) + bch).toString(16).slice(1)}`;
 }
 
-/**
- * Every `ComponentName` gets a token set, not just the two buttons.
- *
- * The two-entry version this replaces was enough while the only consumer was
- * a static gallery that skipped what it did not find, but it is not enough for
- * a canvas whose inspector opens on whatever the user clicks: eight of the ten
- * components would select and then have nothing to edit. A design system that
- * declares tokens for 20% of its components is also just an incomplete design
- * system — the exports were emitting the same two.
- *
- * The neutral components (input, card, table, modal, dropdown, navigation)
- * derive from surface/ink/border rather than the brand colours, because that
- * is what they actually are; the dark-variant derivation downstream keys off
- * exactly that distinction (see BRAND_FILL_SATURATION below) to decide which
- * fills keep their hue into dark mode.
- */
+// Every `ComponentName` gets a token set, not just the two buttons — a canvas
+// whose inspector opens on whatever the user clicks needs all ten to have
+// something to edit. The neutral components (input, card, table, modal,
+// dropdown, navigation) derive from surface/ink/border rather than the brand
+// colours, because that's what they actually are; the dark-variant derivation
+// downstream keys off exactly that distinction (see BRAND_FILL_SATURATION
+// below) to decide which fills keep their hue into dark mode.
 export function deriveThemeVariantFromPalette(palette: PaletteTokens): ThemeVariantTokens {
   const border = mix(palette.surface, palette.ink, 0.12);
   const neutral = { background: palette.surface, text: palette.ink, border };
@@ -104,20 +93,11 @@ export function deriveThemeVariantFromPalette(palette: PaletteTokens): ThemeVari
   };
 }
 
-/**
- * ---------------------------------------------------------------------------
- * Dark-variant derivation
- * ---------------------------------------------------------------------------
- * `designSystem.dark` used to be optional end to end (optional in
- * lib/ai/schema.ts, "only if the brief asks for it" in lib/ai/prompt.ts), so
- * it was usually absent and components/studio/StudioBuilder.tsx's hardcoded
- * DEFAULT_DARK stood in — which is how three unrelated QA brands ended up
- * shipping the same five violet hexes. Everything below derives dark mode
- * from *this brand's* light tokens instead, deterministically, so there is no
- * code path left that can fall back to a stock palette. The colour maths
- * lives in lib/colors/deriveDarkPalette.ts; this file does the
- * ThemeVariantTokens-shaped plumbing (component sets and their states).
- */
+// --- Dark-variant derivation ---
+// Everything below derives dark mode deterministically from *this brand's*
+// light tokens, so there's no code path that falls back to a stock dark
+// palette. The colour maths lives in lib/colors/deriveDarkPalette.ts; this
+// file does the ThemeVariantTokens-shaped plumbing (component sets and states).
 
 // Above this saturation a component background is a deliberate brand fill
 // (a button, a badge) and must keep its hue into dark mode. Below it, it is

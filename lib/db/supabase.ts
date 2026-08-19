@@ -1,22 +1,11 @@
-/**
- * Supabase client factory.
- *
- * Two clients on purpose: `getSupabaseBrowserClient()` uses the anon key and
- * is safe to call in client components — RLS on the DB enforces access
- * control. `getSupabaseAdmin()` uses the service-role key and bypasses RLS
- * entirely; it must only ever be called from Server Components or API
- * routes, never from anything that ships to the browser.
- *
- * Both go through `requireEnv()` rather than the `!` non-null assertion this
- * file used to carry. `createClient(undefined!, …)` throws "supabaseUrl is
- * required" — a message that names no environment variable, no deployment,
- * and no fix, and which surfaced to users as a generic 500. Since sign-up
- * failing on the deployed site was reported three times while working
- * locally, a missing env var was a prime suspect and had to stop being
- * indistinguishable from every other fault. ConfigError carries the variable
- * name so `classifyAuthFailure()` can tell the user (and the logs) exactly
- * which setting is absent.
- */
+// Supabase client factory. Two clients on purpose: getSupabaseBrowserClient()
+// uses the anon key and is safe in client components (RLS enforces access);
+// getSupabaseAdmin() uses the service-role key and bypasses RLS entirely, so
+// it must only ever be called from Server Components or API routes.
+// Both go through requireEnv() instead of a `!` assertion — a missing env var
+// used to throw a generic "supabaseUrl is required" with no fix, surfacing to
+// users as a plain 500. ConfigError carries the variable name so
+// classifyAuthFailure() can tell the user which setting is actually absent.
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { ConfigError } from "@/lib/auth/authFailure";
 
@@ -51,19 +40,14 @@ export function getSupabaseBrowserClient(): SupabaseClient {
 // Server-only client — uses the service role key, bypasses RLS.
 // Never import this into a client component.
 //
-// `global.fetch` is overridden with `cache: "no-store"` because supabase-js
-// calls the plain global `fetch()` under the hood, which Next.js patches to
-// participate in its own Data Cache — a GET request issued through this
-// client can otherwise come back from Next's cache instead of hitting
-// Postgres, even in a route marked `dynamic = "force-dynamic"`. Confirmed
-// concretely by /api/figma-export/[code]: a one-shot redemption endpoint
-// (select row, delete it, return it) served the same deleted row's payload
-// on a second identical request — the delete itself demonstrably ran
-// (verified directly against Supabase, outside Next entirely), so the only
-// explanation left was the *read* being answered from cache. An admin
-// client reading live application state should never be cache-eligible
-// regardless of which route calls it, so this is fixed at the client
-// factory rather than per-route.
+// `global.fetch` is forced to `cache: "no-store"` because supabase-js calls
+// the plain global `fetch()`, which Next.js patches into its own Data Cache —
+// so a GET through this client could come back from Next's cache instead of
+// hitting Postgres, even on a route marked `force-dynamic`. Caught concretely
+// by /api/figma-export/[code]: a one-shot redemption endpoint served an
+// already-deleted row's payload on a second identical request, even though
+// the delete itself had run. An admin client reading live state should never
+// be cache-eligible, so it's fixed here at the factory rather than per-route.
 export function getSupabaseAdmin(): SupabaseClient {
   return createClient(requireEnv("NEXT_PUBLIC_SUPABASE_URL"), requireEnv("SUPABASE_SERVICE_ROLE_KEY"), {
     global: { fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }) },

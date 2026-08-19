@@ -1,19 +1,10 @@
-/**
- * The data contract between StyleBook and the StyleBook Figma plugin.
- *
- * Deliberately geometry-only and independent of every internal StyleBook
- * type (StudioExportTokens, DesignSystem, ComponentTokenSet, …) — the plugin
- * is a separate codebase with no access to this repo's types, so this shape
- * has to stand on its own.
- *
- * **schemaVersion 2**: nodes are now produced by walking the *real rendered
- * canvas DOM* (lib/figmaExport/domSerializer.ts) and reading computed
- * styles, rather than by hand-rebuilding the page server-side. That's why
- * this shape carries concrete measured geometry (rect, per-corner radii,
- * per-side strokes, real font family/line-height/letter-spacing) instead of
- * token references: the whole point is that what lands in Figma is exactly
- * what the browser painted, so the values have to be the resolved ones.
- */
+// The data contract between StyleBook and the StyleBook Figma plugin.
+// Deliberately geometry-only and independent of every internal StyleBook type
+// — the plugin is a separate codebase with no access to this repo's types.
+// schemaVersion 2: nodes are produced by walking the real rendered canvas DOM
+// (lib/figmaExport/domSerializer.ts), so this shape carries concrete measured
+// geometry (rect, per-corner radii, real font metrics) rather than token
+// references — what lands in Figma is exactly what the browser painted.
 
 export type FigmaColorVariable = { light: string; dark?: string };
 
@@ -73,15 +64,12 @@ export type FigmaTextStyle = {
   transformed: boolean;
   decoration: "NONE" | "UNDERLINE" | "STRIKETHROUGH";
   /**
-   * How many line boxes the browser actually painted this text on.
-   *
-   * Load-bearing for fidelity: Figma's text engine measures slightly
-   * differently from the browser, so pinning a node to its measured width
-   * makes any string that comes out a pixel wider wrap to a second line —
-   * and because siblings are placed at fixed offsets, that extra line then
-   * overlaps whatever sits below it. The plugin uses this to let
-   * single-line text hug its own width (making a wrap impossible) while
-   * genuinely wrapped text keeps the measured width and grows in height.
+   * How many line boxes the browser actually painted this text on. Figma's
+   * text engine measures slightly differently from the browser, so pinning a
+   * node to its measured width can make a string wrap to a second line and
+   * overlap whatever sits below it (siblings are placed at fixed offsets).
+   * The plugin uses this to let single-line text hug its own width (wrap
+   * impossible) while genuinely wrapped text keeps the measured width.
    */
   lineCount: number;
 };

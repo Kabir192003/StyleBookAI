@@ -1,10 +1,4 @@
-/**
- * /api/projects — list (GET) and create (POST) projects for the
- * signed-in user (lib/auth/) — saving requires an account, browsing
- * doesn't (see CLAUDE.md).
- *
- * Owner: Kabir
- */
+// Saving a project requires an account; browsing doesn't (see CLAUDE.md).
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/db/supabase";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";

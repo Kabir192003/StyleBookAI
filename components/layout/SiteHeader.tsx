@@ -1,17 +1,7 @@
-/**
- * Shared header — used on every page via the root layout. Styled to match
- * the header markup shared by Colours.dc.html / Fonts.dc.html /
- * Themes.dc.html from claude.ai/design (project "Website redesign
- * request"): Fraunces wordmark, IBM Plex Mono nav, cream/ink/navy
- * editorial palette. Studio isn't in that design (it has no app shell to
- * link to) but is styled in the same mono nav voice so the header reads
- * as one piece with the rest of the chrome.
- *
- * The old "Profile" text link is now a hamburger trigger (see
- * HamburgerMenu.tsx) that also holds Dashboard/Account/sign-in — fetches
- * the current user once here so the drawer and every FavoriteButton on
- * the page share one auth check instead of each firing their own.
- */
+// Shared header, used on every page via the root layout. The hamburger
+// trigger (see HamburgerMenu.tsx) holds Dashboard/Account/sign-in; fetches
+// the current user once here so the drawer and every FavoriteButton on the
+// page share one auth check instead of each firing their own.
 "use client";
 
 import { useEffect, useState } from "react";
@@ -56,13 +46,10 @@ export function SiteHeader() {
         Skip to main content
       </a>
       <div className="flex h-14 items-center justify-between gap-6 px-6 sm:px-12">
-        {/* Menu trigger sits at the far LEFT, before the wordmark. An
-            accessibility review raised it as a low-vision concern: someone
-            using magnification scans from the left edge, and a menu parked
-            in the top-right corner is off-screen at high zoom — they have
-            to pan across the whole viewport to find the only way into
-            Dashboard/Account/sign-out. It is also the first thing in DOM
-            order now, so tab order matches the visual order. */}
+        {/* Menu trigger sits at the far LEFT, before the wordmark — a
+            top-right menu is off-screen at high zoom for magnification
+            users, who scan from the left edge. Also first in DOM order so
+            tab order matches visual order. */}
         <div className="flex shrink-0 items-center gap-3">
           <HamburgerTrigger onClick={() => setMenuOpen(true)} />
           <Link

@@ -1,19 +1,8 @@
-/**
- * Font selection across the whole catalogue (~1,950 families), not a curated
- * dozen — the point of clicking a heading is to be able to put *any* face on
- * it.
- *
- * Two constraints shape this:
- *
- * 1. Every family is rendered in its own typeface. A list of family names set
- *    in the UI font tells a designer nothing they could not get from a text
- *    file.
- * 2. Only the visible slice is ever loaded. A Google Fonts CSS2 URL naming
- *    two thousand families is hundreds of kilobytes and gets rejected
- *    outright, which is why `components/fonts/FontGrid.tsx` also passes only
- *    its current page. Same rule here: the current value plus whatever the
- *    filtered list is showing.
- */
+// Searches the whole ~1,950-family catalogue, not a curated subset. Every
+// family renders in its own typeface (a list set in the UI font tells a
+// designer nothing a text file couldn't). Only the visible slice is ever
+// loaded — a Google Fonts CSS2 URL naming two thousand families is hundreds
+// of KB and gets rejected outright, same reason FontGrid.tsx pages its loads.
 "use client";
 
 import { useMemo, useState } from "react";
@@ -24,8 +13,8 @@ import type { Font } from "@/types/font";
 
 const VISIBLE_LIMIT = 40;
 
-/** A stack, not a bare family: an unquoted multi-word family is invalid CSS,
- *  and the generic tail keeps the row readable while the webfont loads. */
+// A stack, not a bare family — an unquoted multi-word family is invalid CSS,
+// and the generic tail keeps the row readable while the webfont loads.
 function previewStack(font: Font): string {
   const generic = font.category === "serif" || font.category === "display" ? "serif" : font.category === "monospace" ? "monospace" : "sans-serif";
   return `"${font.family}", ${generic}`;
@@ -53,8 +42,8 @@ export function FontPicker({
     return matches;
   }, [query]);
 
-  // The selected family may be outside the visible slice (a search narrowed
-  // past it), and it still has to render in its own face in the header row.
+  // The selected family may be outside the visible slice (search narrowed
+  // past it) but still needs to render in its own face in the header row.
   const loadable = useMemo(() => {
     const current = allFonts.find((f) => f.family === value);
     const seen = new Set(results.map((f) => f.family));

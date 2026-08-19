@@ -1,14 +1,9 @@
-/**
- * The actual pages rasterized into the PDF style-guide export (see
- * lib/export/pdfStyleGuide.ts) — rendered off-screen at a fixed
- * print-page size (US Letter @ 96dpi = 816x1056px) so html-to-image has
- * a stable, known-size DOM node to rasterize per page. Each top-level
- * `<section data-style-guide-page>` becomes one PDF page, in order.
- *
- * Deliberately plain inline-styled markup, not the app's own Tailwind
- * chrome — this is a printable document, not a UI screen, so it uses its
- * own minimal typographic system instead of borrowing the site's.
- */
+// The pages rasterized into the PDF style-guide export (lib/export/pdfStyleGuide.ts),
+// rendered off-screen at a fixed print-page size (US Letter @ 96dpi =
+// 816x1056px) so html-to-image has a stable, known-size DOM node per page.
+// Each top-level <section data-style-guide-page> becomes one PDF page, in
+// order. Deliberately plain inline-styled markup, not the app's Tailwind
+// chrome, since this is a printable document with its own typographic system.
 import { StudioExportTokens } from "@/lib/studio/exportCode";
 import { SEMANTIC_TYPE_ROLES, TYPE_SCALE_KEYS, shadowOverflowPx } from "@/lib/export/designTokens";
 import { getContrastRatio } from "@/lib/colors/colorUtils";
@@ -16,10 +11,8 @@ import { getContrastRatio } from "@/lib/colors/colorUtils";
 const PAGE_WIDTH = 816;
 const PAGE_HEIGHT = 1056;
 const MARGIN = 64;
-// The footer sits absolutely at `bottom: MARGIN`, so flowed content has to
-// stop short of it. Without this the last block on a page could run under
-// the page number, and anything that paints outside its own box (a shadow
-// swatch) got clipped by the page's `overflow: hidden` at the raster edge.
+// The footer sits absolutely at bottom: MARGIN, so flowed content has to
+// stop short of it or the last block runs under the page number.
 const FOOTER_RESERVE = 40;
 
 function onColor(hex: string): string {
@@ -154,12 +147,8 @@ function ColorsPage({ s }: { s: StudioExportTokens }) {
 }
 
 /**
- * The actual numbers behind the type samples.
- *
- * QA defect this closes: the typography page showed what the faces look
- * like but never stated a single pixel size, so a developer handed the PDF
- * had nothing to build with — the app's own curated theme pages print
- * "H1 4xl · H2 2xl · Body base · Caption xs" and the export didn't. Both
+ * The actual pixel numbers behind the type samples, not just what the faces
+ * look like — a developer handed the PDF needs something to build with. Both
  * the semantic mapping and the ladder come from lib/export/designTokens.ts,
  * the same source the CSS/DTCG/markdown exports use, so the PDF can't
  * disagree with the token files shipped next to it.
@@ -249,26 +238,17 @@ function TypographyPage({ s }: { s: StudioExportTokens }) {
 
 /**
  * Shadow swatches, each sitting inside a cell padded by the shadow's own
- * measured reach.
- *
- * Confirmed defect this prevents (reproduced in 3/3 QA exports, including
- * with "dramatic" pre-selected): the dramatic level is a 30px blur at an
- * 8px Y offset, so it painted ~38px outside the 80px swatch it belonged
- * to. The swatch used to sit flush in a bare flex row at the bottom of the
- * page, so that spill ran past the card, past the page's content area, and
- * was chopped by the page node's `overflow: hidden` when html-to-image
- * rasterized it — a grey smudge trailing off into blank space.
- *
- * The padding is derived from the shadow values rather than hard-coded, so
- * a future scale with a bigger blur can't silently reintroduce the clip.
- * One shared inset across all three cells keeps the swatches on a common
- * baseline instead of each drifting by its own blur.
+ * measured reach — a "dramatic" shadow's blur/offset can paint well outside
+ * its own swatch box, and without this padding that spill gets clipped by
+ * the page's overflow:hidden when html-to-image rasterizes it. The padding
+ * is derived from the shadow values, not hard-coded, so a bigger blur in a
+ * future scale can't silently reintroduce the clip. One shared inset across
+ * all three cells keeps them on a common baseline.
  */
 function ShadowRow({ s }: { s: StudioExportTokens }) {
   const levels = s.shadows?.levels ?? [];
   const reach = Math.max(0, ...levels.map((level) => shadowOverflowPx(level.value)));
-  // +6px of breathing room, and a ceiling so an absurd generated shadow
-  // can't push the row off the page while trying to contain it.
+  // +6px of breathing room, capped so an absurd generated shadow can't push the row off the page.
   const inset = Math.min(56, Math.ceil(reach) + 6);
 
   return (
@@ -278,8 +258,7 @@ function ShadowRow({ s }: { s: StudioExportTokens }) {
         style={{
           display: "flex",
           gap: 12,
-          // The tinted panel is what the shadows are cast onto, so
-          // "contained" is visible rather than implied.
+          // The tinted panel is what the shadows are cast onto, so "contained" is visible, not just implied.
           backgroundColor: "#FAF8F4",
           border: "1px solid rgba(0,0,0,0.05)",
           borderRadius: 12,

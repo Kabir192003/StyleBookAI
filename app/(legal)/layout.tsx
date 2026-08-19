@@ -1,10 +1,5 @@
-/**
- * Shared chrome for the legal/help pages (/privacy, /terms,
- * /ai-disclaimer, /guide) — a route group so none of it affects the URL.
- * SiteHeader is already global (app/layout.tsx); this just adds the
- * shared reading container and mounts Footer, matching how
- * app/account/layout.tsx and app/dashboard/layout.tsx do it.
- */
+// (legal) is a route group, so the parens never show up in the URL — this
+// just wraps /privacy, /terms, /ai-disclaimer and /guide with a footer.
 import { Footer } from "@/components/layout/Footer";
 
 export default function LegalLayout({ children }: { children: React.ReactNode }) {

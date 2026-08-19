@@ -1,24 +1,16 @@
-/**
- * "Press sheet" (1A) from the Hero Shortlist design doc — the landing page's
- * product hero, sitting above the "this page has no system" scroll story.
- *
- * The conceit is a printer's proof: a 48px grid ruled across the ground, a
- * registration mark in the corner, an ink-slab holding the last line of the
- * headline, and a specimen row along the bottom reading like plate
- * annotations. That framing is the reason the layout stays fairly literal to
- * the comp — the alignment *is* the idea, so the headline's stepped indents
- * and the slab's offset are preserved rather than normalised away.
- *
- * Responsive: the comp is a fixed 1440x1000 artboard. The stepped headline
- * indents and the four-up specimen row collapse below `lg`, where they would
- * otherwise force a horizontal scroll; the grid, rail and marquee stay.
- *
- * Colour follows the comp except where it fails WCAG AA for small text: its
- * #8A8172 labels measure 3.33:1 on this ground and its #C36B3E eyebrow 3.31,
- * and the terracotta CTA carries cream text at 3.58. Those three are
- * darkened. #C36B3E is untouched wherever it is a rule, a dot or display
- * type, which pass on their own.
- */
+// "Press sheet" landing hero, above the "this page has no system" scroll
+// story. The conceit is a printer's proof: 48px grid, registration mark,
+// an ink-slab under the headline, a specimen row like plate annotations —
+// alignment *is* the idea, so the stepped indents and slab offset are kept
+// literal rather than normalised away.
+//
+// Responsive: the comp is a fixed 1440x1000 artboard; the stepped headline
+// and four-up specimen row collapse below `lg` to avoid horizontal scroll.
+//
+// Colour follows the comp except where it fails WCAG AA for small text —
+// the original #8A8172 labels (3.33:1) and #C36B3E eyebrow (3.31) and the
+// terracotta CTA's cream text (3.58) are darkened. #C36B3E stays untouched
+// as a rule/dot/display type, where it passes on its own.
 "use client";
 
 import Link from "next/link";
@@ -27,13 +19,13 @@ import type { LandingPreview } from "@/lib/landing/aiPreview";
 const C = {
   ground: "#F4EEE2",
   ink: "#222D52",
-  /** Body copy — the comp's own value, 6.31:1. */
+  // Body copy — the comp's own value, 6.31:1.
   body: "#5C5648",
-  /** Plate annotations. The comp's #8A8172 is 3.33:1; this is 4.78. */
+  // Plate annotations. The comp's #8A8172 is 3.33:1; this is 4.78.
   label: "#6F685A",
-  /** Rules, dots and display type only. */
+  // Rules, dots and display type only.
   accent: "#C36B3E",
-  /** Small terracotta text and the CTA ground — 4.76 and 5.15 with cream. */
+  // Small terracotta text and the CTA ground — 4.76 and 5.15 with cream.
   accentText: "#A4522A",
   verified: "#1F5C41",
   onAccent: "#FBF7EF",
@@ -79,9 +71,9 @@ export function LandingPressSheet({
   onOpenInStudio: () => void;
   inputId: string;
 }) {
-  /** The comp's static "Prompt · 01" slot doubles as the generator's status
-   *  line — without it a visitor gets no feedback between pressing Generate
-   *  and the specimen row changing underneath them. */
+  // The comp's static "Prompt · 01" slot doubles as the generator's status
+  // line, so a visitor gets feedback between pressing Generate and the
+  // specimen row changing underneath them.
   const statusNote =
     status === "loading"
       ? "Generating…"
@@ -102,7 +94,6 @@ export function LandingPressSheet({
         backgroundSize: "48px 48px",
       }}
     >
-      {/* ------------------------------------------------------- left rail */}
       <div
         aria-hidden="true"
         className="absolute bottom-0 left-0 top-0 hidden w-[74px] flex-col items-center justify-between border-r py-[26px] lg:flex"
@@ -122,7 +113,6 @@ export function LandingPressSheet({
         </div>
       </div>
 
-      {/* ------------------------------------------------ registration mark */}
       <div aria-hidden="true" className="absolute right-[34px] top-[34px] hidden h-[26px] w-[26px] opacity-55 sm:block">
         <span className="absolute left-3 top-0 h-[26px] w-px" style={{ background: C.ink }} />
         <span className="absolute left-0 top-3 h-px w-[26px]" style={{ background: C.ink }} />
@@ -139,7 +129,6 @@ export function LandingPressSheet({
           <span style={{ color: C.label }}>Sheet 01 / Hero</span>
         </div>
 
-        {/* ---------------------------------------------------- headline */}
         <div className="mt-8 lg:mt-[34px]">
           <h1 data-reveal-item className={HEADLINE} style={{ ...HEADLINE_SIZE, color: C.ink }}>
             Describe your brand.
@@ -170,7 +159,6 @@ export function LandingPressSheet({
           </div>
         </div>
 
-        {/* ------------------------------------------------ sub + prompt */}
         <div className="mt-10 flex flex-col gap-8 lg:flex-row lg:gap-14">
           <p data-reveal-item className="text-[16px] leading-[1.62] lg:w-[400px] lg:shrink-0" style={{ color: C.body }}>
             Palette, typography, spacing and accessibility — generated in seconds, verified for real contrast (not
@@ -191,9 +179,9 @@ export function LandingPressSheet({
             </div>
 
             <div className="mt-3.5 flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-5">
-              {/* The comp sets the prompt in italic display type; keeping a
-                  real textarea means it reads as the drawn specimen and is
-                  still the live input behind /api/ai/generate. */}
+              {/* Real textarea, not a styled div, so it reads as the drawn
+                  specimen while staying the live input behind
+                  /api/ai/generate. */}
               <textarea
                 id={inputId}
                 value={prompt}
@@ -217,7 +205,6 @@ export function LandingPressSheet({
           </div>
         </div>
 
-        {/* --------------------------------------------- specimen row */}
         <div
           data-reveal-item
           className="mt-8 grid grid-cols-1 border-t sm:grid-cols-2 lg:grid-cols-4"
@@ -257,7 +244,6 @@ export function LandingPressSheet({
           </SpecimenCell>
         </div>
 
-        {/* -------------------------------------------------- footer row */}
         <div
           className="mt-auto flex flex-wrap items-center justify-between gap-4 border-t pb-1.5 pt-[22px]"
           style={{ borderColor: "rgba(34,45,82,0.18)" }}
@@ -300,11 +286,9 @@ export function LandingPressSheet({
         </div>
       </div>
 
-      {/* ------------------------------------------------- export marquee
-          Starts after the rail, as in the comp, where it lives inside the
-          content column rather than spanning the full sheet. That also keeps
-          it clear of the landing's fixed bottom-left HUD, which floats over
-          every section at this corner. */}
+      {/* Starts after the rail, as in the comp, rather than spanning the
+          full sheet — also keeps it clear of the landing's fixed
+          bottom-left HUD, which floats over every section at this corner. */}
       <div
         aria-hidden="true"
         className="absolute bottom-0 left-0 right-0 flex h-[52px] items-center overflow-hidden border-t lg:left-[210px]"
@@ -357,9 +341,8 @@ function SpecimenCell({
   );
 }
 
-// Same measured-not-claimed treatment as the hero below: the comp hardcodes
-// 13.0:1 / AAA, but the number here is computed from the colours actually
-// shown, so the "verified, not claimed" note stays true.
+// Same measured-not-claimed treatment as the hero: the comp hardcodes
+// 13.0:1/AAA, but this is computed from the colours actually shown.
 function relativeLuminance(hex: string): number {
   const clean = hex.replace("#", "");
   const [r, g, b] = [0, 2, 4]

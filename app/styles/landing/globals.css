@@ -1,12 +1,6 @@
-/* ═══════════════════════════════════════════
-   StyleBook — Global Design Tokens & Reset
-   ═══════════════════════════════════════════ */
-
-/* ── CSS Custom Properties ────────────────── */
-/* Luxe editorial system — Silk, Marble, Pearl, Champagne, Velvet, Onyx.
-   Silk paper ground, pearl cards, velvet-navy statements, and champagne
-   gold used the way foil is used in print: rarely, and only where it earns
-   its shine. Colour belongs to the swatches; the chrome stays precious. */
+/* Token names follow a "Silk, Marble, Pearl, Champagne, Velvet, Onyx" theme —
+   gold (champagne) is used sparingly, like foil in print. Colour belongs to
+   the swatches; the chrome stays precious. */
 :root {
   /* Backgrounds */
   --bg: #F2EBE0;            /* silk */
@@ -125,7 +119,6 @@
   --z-cursor: 9999;
 }
 
-/* ── Reset ────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -202,7 +195,6 @@ img, svg {
   max-width: 100%;
 }
 
-/* ── Focus (keyboard) ─────────────────────── */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
@@ -213,7 +205,6 @@ img, svg {
   outline: none;
 }
 
-/* ── Typography ───────────────────────────── */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   line-height: 1.08;
@@ -269,7 +260,6 @@ p {
   letter-spacing: -0.015em;
 }
 
-/* ── Gradient Text ────────────────────────── */
 .gradient-text {
   background: var(--gradient-primary);
   -webkit-background-clip: text;
@@ -291,7 +281,6 @@ p {
   background-clip: text;
 }
 
-/* ── Scene Sections ───────────────────────── */
 .scene-section {
   position: relative;
   width: 100%;
@@ -308,7 +297,6 @@ p {
   overflow: hidden;
 }
 
-/* ── Ambient Orb (reusable floating gradient blob) ── */
 .ambient-orb {
   position: absolute;
   border-radius: 50%;
@@ -373,7 +361,6 @@ body[data-tint="cool"] .ambient-orb--3 { background-color: rgba(34, 45, 82, 0.14
 body[data-tint="ink"] .ambient-orb--1 { background-color: rgba(34, 45, 82, 0.12); }
 body[data-tint="ink"] .ambient-orb--2 { background-color: rgba(232, 228, 224, 0.62); }
 
-/* ── Glass Panel — richer ─────────────────── */
 .glass-panel {
   background: var(--glass-bg);
   backdrop-filter: blur(24px) saturate(1.5);
@@ -384,7 +371,6 @@ body[data-tint="ink"] .ambient-orb--2 { background-color: rgba(232, 228, 224, 0.
               inset 0 1px 0 rgba(255,255,255,0.6);
 }
 
-/* ── Magnetic Button — liquid glass ───────── */
 .magnetic-btn {
   position: relative;
   display: inline-flex;
@@ -479,7 +465,6 @@ body[data-tint="ink"] .ambient-orb--2 { background-color: rgba(232, 228, 224, 0.
               var(--shadow-md);
 }
 
-/* ── Section Divider (gradient fade) ──────── */
 .section-divider {
   width: 100%;
   height: 200px;
@@ -487,7 +472,6 @@ body[data-tint="ink"] .ambient-orb--2 { background-color: rgba(232, 228, 224, 0.
   pointer-events: none;
 }
 
-/* ── Noise / Grain Overlay ────────────────── */
 .noise-overlay {
   position: fixed;
   inset: 0;
@@ -501,7 +485,6 @@ body[data-tint="ink"] .ambient-orb--2 { background-color: rgba(232, 228, 224, 0.
   opacity: 0.025;
 }
 
-/* ── Premium Light Mode Grid ──────────────── */
 .premium-grid {
   position: fixed;
   inset: 0;
@@ -513,19 +496,16 @@ body[data-tint="ink"] .ambient-orb--2 { background-color: rgba(232, 228, 224, 0.
   -webkit-mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 90%);
 }
 
-/* ── Scrollbar ────────────────────────────── */
 ::-webkit-scrollbar {
   width: 0px;
   background: transparent;
 }
 
-/* ── Selection ────────────────────────────── */
 ::selection {
   background: var(--accent-light);
   color: var(--accent-dark);
 }
 
-/* ── Reduced Motion ───────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -537,7 +517,6 @@ body[data-tint="ink"] .ambient-orb--2 { background-color: rgba(232, 228, 224, 0.
   }
 }
 
-/* ── Skip link ────────────────────────────── */
 .skip-link {
   position: fixed;
   top: 12px;
@@ -557,7 +536,6 @@ body[data-tint="ink"] .ambient-orb--2 { background-color: rgba(232, 228, 224, 0.
   transform: translateY(0);
 }
 
-/* ── Utility ──────────────────────────────── */
 .visually-hidden {
   position: absolute;
   width: 1px;

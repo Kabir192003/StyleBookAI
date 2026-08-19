@@ -1,16 +1,8 @@
-/**
- * One-time transform script.
- *
- * Pulls Tailwind's built-in colour palette (no API call — it's a local npm
- * package) and Material Design's published colours, reshapes each into the
- * Color type, and writes static .ts files into /data/colors/.
- *
- * Run once after `npm install`:
- *   npm run transform:colors
- *
- * The output files are committed to the repo. The app imports them directly
- * at build/runtime — no network request happens when a user visits the site.
- */
+// One-time transform script: pulls Tailwind's built-in color palette (no
+// API call, it's a local npm package), reshapes it into the Color type,
+// and writes the committed static file data/colors/tailwind.ts — no
+// network request happens when a user visits the site.
+// Run once after `npm install`: npm run transform:colors
 import fs from "fs";
 import path from "path";
 // Requires `tailwindcss` to be installed (already in package.json deps).
@@ -20,7 +12,6 @@ import { Color, ColorFamily } from "../types/color";
 
 const SKIP_KEYS = new Set(["inherit", "current", "transparent", "black", "white"]);
 
-// Map Tailwind's colour family names onto our ColorFamily union.
 const FAMILY_MAP: Record<string, ColorFamily> = {
   slate: "neutral",
   gray: "neutral",

@@ -1,39 +1,17 @@
-/**
- * Shared scaffolding for the StyleBook component library: the stylesheet
- * injector. Nothing here is token-aware — the tokens are resolved by the CSS
- * in ./styles.ts against whichever scope the markup sits in.
- */
 "use client";
 
 import { useEffect } from "react";
 import { SYSTEM_COMPONENT_CSS, SYSTEM_STYLE_ELEMENT_ID } from "./styles";
 
-/**
- * Puts the component stylesheet in the document exactly once, no matter how
- * many groups are on screen.
- *
- * Why `document.head` and not a rendered `<style>` element:
- *
- * 1. *Once* is the requirement. The canvas mounts every group, so a rendered
- *    `<style>` would ship the whole 900-line sheet once per group. Deduping a
- *    rendered tag would need module-level "have I already emitted this"
- *    state, which is wrong under SSR: the module is shared across requests,
- *    so request #2 would render no stylesheet at all.
- * 2. It sidesteps the `<style>` hydration trap entirely. A `<style>` text
- *    child is HTML-entity-escaped differently on the server and the client
- *    (which is why StudioCanvas injects its token CSS with
- *    dangerouslySetInnerHTML). An element created after mount never
- *    participates in hydration, so there is nothing to mismatch.
- *
- * The trade-off is that the sheet lands one frame after first paint. That is
- * acceptable here and only here: the canvas is a client-only Studio surface
- * with no SSR content story, and the un-styled frame is a plain document flow
- * rather than a broken layout.
- *
- * It is deliberately never removed on unmount — ref-counting a global
- * stylesheet buys a few kB back in exchange for a flash of unstyled
- * components every time the canvas swaps content.
- */
+// Injects the stylesheet into document.head exactly once, not as a rendered
+// <style> tag. Two reasons: a rendered tag would ship the whole sheet once
+// per mounted group, and module-level dedup state would be wrong under SSR
+// (shared across requests, so request #2 gets no stylesheet). It also
+// sidesteps <style> hydration mismatches, since a tag created after mount
+// never participates in hydration. Trade-off is the sheet lands one frame
+// after first paint, fine here since the canvas is client-only with no SSR
+// content. Never removed on unmount — ref-counting would just trade a flash
+// of unstyled components for a few kB.
 export function useSystemStyles(): void {
   useEffect(() => {
     if (document.getElementById(SYSTEM_STYLE_ELEMENT_ID)) return;

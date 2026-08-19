@@ -1,8 +1,6 @@
-/**
- * Shared sign-in/sign-up form — same fields either way (just username +
- * password, no email, no verification), so one component drives both
- * pages rather than duplicating the request/error/redirect logic.
- */
+// Shared sign-in/sign-up form — same fields either way (username +
+// password, no email, no verification), so one component drives both
+// pages instead of duplicating the request/error/redirect logic.
 "use client";
 
 import { useState } from "react";

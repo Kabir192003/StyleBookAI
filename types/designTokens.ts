@@ -1,9 +1,6 @@
-/**
- * Spacing, shadow, corner-radius, and moodboard types — the additional
- * design tokens AI Generate produces alongside colors/fonts/typeScale.
- * See lib/designTokens/ for the generators and data/moodboards.ts for the
- * curated image library.
- */
+// Spacing, shadow, corner-radius, and moodboard types — additional design
+// tokens AI Generate produces alongside colors/fonts/typeScale. See
+// lib/designTokens/ for the generators.
 
 export type SpacingScale = {
   base: number; // px

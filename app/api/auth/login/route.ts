@@ -1,18 +1,10 @@
-/**
- * POST /api/auth/login — verifies username + password, sets the session
- * cookie. Same generic error for "no such user" and "wrong password" so
- * the response can't be used to enumerate registered usernames.
- *
- * That username-enumeration guard is worth keeping, but it used to be
- * applied too widely: the lookup destructured `{ data: user }` and threw
- * the Supabase `error` away, so a missing `users` table or a bad
- * service-role key produced `user === undefined` and therefore
- * "Incorrect username or password". A broken deployment was accusing
- * users of mistyping — the reason repeated "can't log in" reports kept
- * being investigated as a form-validation problem. Infrastructure faults
- * are now separated from credential faults (see lib/auth/authFailure.ts);
- * only the genuinely credential-shaped outcomes stay indistinguishable.
- */
+// Same generic error for "no such user" and "wrong password" so the response
+// can't be used to enumerate usernames. That guard used to swallow the
+// Supabase lookup error too, so a missing table or bad service-role key also
+// came back as "Incorrect username or password" — infra failures were
+// getting investigated as typos. Infra vs. credential failures are now
+// split out (see lib/auth/authFailure.ts); only real credential mismatches
+// stay indistinguishable.
 import { NextRequest, NextResponse } from "next/server";
 import { CredentialsSchema } from "@/lib/validation/auth";
 import { verifyPassword } from "@/lib/auth/password";

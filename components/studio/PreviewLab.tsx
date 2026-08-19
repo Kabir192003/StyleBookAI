@@ -1,11 +1,7 @@
-/**
- * PreviewLab — the Canvas: a large drag-and-drop surface for testing color
- * and font pairings pulled in from the Clipboard. Colors stack top-to-bottom,
- * filling the canvas equally as they're added (max 5); any font can be
- * dropped onto a color band to pair them, with a live WCAG contrast readout.
- *
- * Owner: Qi
- */
+// A drag-and-drop surface for testing color/font pairings pulled from the
+// Clipboard. Colors stack top-to-bottom, filling the canvas equally as
+// they're added (max 5); dropping a font onto a band pairs them with a live
+// WCAG contrast readout.
 "use client";
 
 import {

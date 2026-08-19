@@ -1,17 +1,11 @@
-/**
- * Main thread (has Plugin API access, no DOM). Fetches a payload from
- * StyleBook and rebuilds it as real Figma layers.
- *
- * The payload is a serialization of StyleBook's live canvas DOM, so this
- * side is a fairly mechanical translator: measured rect → size/position,
- * computed CSS → fills/strokes/effects/text style. It deliberately does not
- * re-derive or re-guess anything — every "smart" reconstruction attempt
- * (rebuilding layouts from token values, inferring component shapes) is what
- * made earlier versions drift from what the browser actually painted.
- *
- * Defensive per node: one bad node (an unavailable font, a malformed SVG)
- * is skipped with a warning rather than aborting the whole import.
- */
+// Main thread (Plugin API access, no DOM). Fetches a payload from StyleBook
+// and rebuilds it as real Figma layers. The payload is a serialization of
+// StyleBook's live canvas DOM, so this side is a mechanical translator —
+// measured rect to size/position, computed CSS to fills/strokes/text style.
+// It deliberately doesn't re-derive or re-guess anything; earlier "smart"
+// reconstruction attempts drifted from what the browser actually painted.
+// One bad node (unavailable font, malformed SVG) is skipped with a warning
+// rather than aborting the whole import.
 import type {
   FigmaColor,
   FigmaComponentSet,
@@ -89,9 +83,6 @@ async function fetchPayload(code: string): Promise<FigmaExportPayload> {
   return data as FigmaExportPayload;
 }
 
-// ---------------------------------------------------------------------------
-// Paint helpers
-
 function toRgb(c: FigmaColor): RGB {
   return { r: c.r / 255, g: c.g / 255, b: c.b / 255 };
 }
@@ -100,13 +91,8 @@ function solid(c: FigmaColor): SolidPaint {
   return { type: "SOLID", color: toRgb(c), opacity: c.a };
 }
 
-// ---------------------------------------------------------------------------
-// Variables
-//
-// The imported page is a flat snapshot of one theme; the Variable Collection
-// is what makes it re-themeable afterwards, which is the whole reason to
-// keep emitting it alongside the DOM capture.
-
+// The imported page is a flat snapshot of one theme; the Variable
+// Collection is what makes it re-themeable afterwards.
 async function buildVariables(vars: FigmaVariables): Promise<void> {
   const collection = figma.variables.createVariableCollection("StyleBook Tokens");
   const lightModeId = collection.modes[0].modeId;
@@ -146,12 +132,9 @@ function hexToRgba(hex: string): RGBA {
   return { r, g, b, a };
 }
 
-// ---------------------------------------------------------------------------
-// Fonts
-
-/** Figma names weights as styles, and families disagree about the exact
- *  spelling ("SemiBold" vs "Semi Bold"), so each weight carries candidates
- *  and the first that loads wins. */
+// Figma names weights as styles, and families disagree about the exact
+// spelling ("SemiBold" vs "Semi Bold"), so each weight carries candidates
+// and the first that loads wins.
 const WEIGHT_STYLES: Record<number, string[]> = {
   100: ["Thin", "Hairline"],
   200: ["ExtraLight", "Extra Light", "UltraLight"],
@@ -214,9 +197,6 @@ async function resolveFont(family: string, weight: number, italic: boolean): Pro
   fontCache.set(key, fallback);
   return fallback;
 }
-
-// ---------------------------------------------------------------------------
-// Node building
 
 async function buildNode(node: FigmaFrameNode, warnings: Warning[]): Promise<SceneNode | null> {
   try {
@@ -355,20 +335,14 @@ async function buildText(node: FigmaFrameNode, warnings: Warning[]): Promise<Tex
   if (t.letterSpacing) text.letterSpacing = { unit: "PIXELS", value: t.letterSpacing };
   if (t.lineHeight !== null) text.lineHeight = { unit: "PIXELS", value: t.lineHeight };
 
-  // Sizing is the difference between a clean import and a mangled one.
-  //
-  // Pinning every node to its measured box looks right in principle but
-  // fails in practice: Figma's text engine measures a little differently
-  // from the browser, so any string that comes out even a pixel wider wraps
-  // to a second line, and since siblings sit at fixed offsets that extra
-  // line lands on top of whatever is below it. That's what turned "Northwind"
-  // into "Northw/ind" and dropped field hints onto the next label.
-  //
-  // So: text the browser kept on one line hugs its own width, which makes
-  // wrapping structurally impossible regardless of metric differences. Text
-  // the browser genuinely wrapped keeps the measured width — that width is
-  // what produced the wrap — and is free to grow in height so a differently
-  // placed break lengthens the block instead of clipping it.
+  // Pinning every node to its measured box looks right but fails in
+  // practice: Figma's text engine measures slightly differently from the
+  // browser, so a string that comes out a pixel wider wraps to a second
+  // line and overlaps whatever sits below it at a fixed offset — that's
+  // what turned "Northwind" into "Northw/ind". So: text the browser kept on
+  // one line hugs its own width (wrapping becomes structurally impossible).
+  // Text the browser genuinely wrapped keeps the measured width and is free
+  // to grow in height instead.
   if (t.lineCount > 1) {
     text.textAutoResize = "HEIGHT";
     text.resize(Math.max(node.rect.width, 1), Math.max(node.rect.height, 1));
@@ -392,9 +366,6 @@ function buildVector(node: FigmaFrameNode, warnings: Warning[]): SceneNode | nul
     return null;
   }
 }
-
-// ---------------------------------------------------------------------------
-// Component library → variant component sets
 
 const ROW_MAX_WIDTH = 2600;
 

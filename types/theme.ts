@@ -1,13 +1,6 @@
-/**
- * Theme, TypeScale, and ThemeCategory types.
- *
- * A Theme is the highest-level unit in the library: it composes Color +
- * Font + TypeScale into a named, categorised design system. `colorRoles`
- * maps semantic names (primary/background/text…) to hex values so
- * components can apply a theme without knowing which specific colors it uses.
- * `TypeScale` stores the computed size ladder alongside the ratio that
- * generated it so the UI can reconstruct or tweak it later.
- */
+// A Theme composes Color + Font + TypeScale into a named design system.
+// `colorRoles` maps semantic names (primary/background/text…) to hex values
+// so components can apply a theme without knowing which colors it uses.
 import { Color } from "./color";
 import { Font } from "./font";
 

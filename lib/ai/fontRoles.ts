@@ -1,20 +1,10 @@
-/**
- * Code-side font-role sanity checks.
- *
- * The generator's three font slots are heading (`primary`), body
- * (`secondary`, which is what components/ai/PromptInput.tsx passes to Studio
- * as `body`) and an optional accent. Nothing enforced what those roles mean,
- * so one QA run assigned Roboto Mono as the body face for all prose —
- * monospace is a data/log/ID/numeral face, not a reading face, and long-form
- * copy set in it is materially harder to read.
- *
- * The prompt now states the roles explicitly (lib/ai/prompt.ts), but prompts
- * are advisory and this is cheap to guarantee, so it is guaranteed here: a
- * disqualified body face is swapped for the best available reading face from
- * the same candidate pool the model chose from, and the rejected face is
- * promoted into the accent/data slot where it actually belongs — then the
- * swap is reported as an AIDeviation so the substitution is never silent.
- */
+// Code-side enforcement of what the three font slots mean: heading
+// (`primary`), body (`secondary`), optional accent. The prompt states the
+// roles too (lib/ai/prompt.ts), but prompts are advisory — a monospace/
+// display/handwriting face picked for body prose gets swapped for the best
+// reading face in the same candidate pool, the rejected face is promoted to
+// accent/data where it belongs, and the swap is reported as an AIDeviation
+// so it's never silent.
 import { Font } from "@/types/font";
 import { AIDeviation } from "@/types/ai";
 

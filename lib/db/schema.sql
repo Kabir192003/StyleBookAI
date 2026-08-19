@@ -39,12 +39,10 @@ CREATE INDEX favorites_user_id_idx ON favorites (user_id);
 CREATE INDEX projects_user_id_idx ON projects (user_id);
 
 -- Short-lived redemption codes for the "Export to Figma" plugin flow. The
--- Studio export drawer builds a FigmaExportPayload (lib/figmaExport/) and
--- stores it here; the Figma plugin (a separate app with no access to a
--- Supabase session) fetches it once via GET /api/figma-export/[code] using
--- only the code the user pasted, then the row is deleted. No user_id — the
--- payload is design tokens/geometry, not account data, and the code itself
--- is the only credential, same trust level as a share link.
+-- Figma plugin (a separate app, no Supabase session) fetches the payload once
+-- via GET /api/figma-export/[code], then the row is deleted. No user_id — the
+-- payload is design tokens/geometry, not account data, and the code is the
+-- only credential, same trust level as a share link.
 CREATE TABLE figma_export_codes (
   code       TEXT PRIMARY KEY,
   payload    JSONB NOT NULL,
@@ -55,14 +53,12 @@ CREATE TABLE figma_export_codes (
 ALTER TABLE figma_export_codes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "service_role_only" ON figma_export_codes FOR ALL USING (false);
 
--- RLS is enabled for defense-in-depth, but every read/write in this app
--- goes through the server-only service-role client (getSupabaseAdmin() in
--- lib/db/supabase.ts), which bypasses RLS — ownership is enforced in API
--- route code (see app/api/projects/, app/api/favorites/), not by these
--- policies. There is no browser-side Supabase client carrying a user JWT
--- for these tables, so USING (false) — i.e. "nothing matches" — is
--- correct here: it blocks the anon/authenticated Postgres roles entirely
--- rather than encoding auth logic Postgres has no way to evaluate.
+-- RLS is enabled for defense-in-depth, but every read/write goes through the
+-- server-only service-role client (getSupabaseAdmin() in lib/db/supabase.ts),
+-- which bypasses RLS — ownership is enforced in API route code instead. No
+-- browser-side client carries a user JWT for these tables, so
+-- USING (false) is correct: it blocks anon/authenticated Postgres roles
+-- entirely rather than encoding auth logic Postgres can't evaluate.
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE favorites ENABLE ROW LEVEL SECURITY;

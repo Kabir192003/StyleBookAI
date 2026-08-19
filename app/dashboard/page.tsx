@@ -1,18 +1,3 @@
-/**
- * /dashboard — "My Projects"
- *
- * Owner: Amna
- *
- * Spec: docs/PRODUCT_AND_UX.md §2 (Dashboard). Lists every saved project
- * for the signed-in user, newest first. Fetches GET /api/projects
- * client-side — Kabir's backend is real (Supabase-backed, see
- * app/api/projects/route.ts), gated behind the username/password login
- * in lib/auth/ (see CLAUDE.md).
- *
- * Styling adapted to the site's cream/ink/navy editorial system instead
- * of the separate glass/dark design system this was originally built
- * against, to stay visually consistent with Studio/browse/SiteHeader.
- */
 "use client";
 
 import { useEffect, useState } from "react";

@@ -8,17 +8,13 @@
  * removed without updating the stylesheet's `--pgc-*` alias layer.
  *
  * Why a second layer on top of what `generateExportCode` already emits: the
- * five-slot Studio palette (accent/support/surface/ink/muted) has no name for
- * a border, a muted-text colour, or the success/warning/error trio, and a real
- * component library needs all of them. Rather than widen the palette — which
- * would change every export format and every saved project — the roles are
- * *derived* here, always live from `palette`, and never from a stored
- * `designSystem.colorRoles` snapshot: nothing in the UI lets a user edit a
- * role independently of the palette, so a frozen colorRoles value can only
- * ever go stale the moment a primitive or palette colour changes after
- * creation — which is exactly the bug this rewrite fixes. Status colours
- * (success/warning/error) still come from a small default set, since no
- * design system in this app authors those at all.
+ * five-slot Studio palette has no name for a border, muted text, or the
+ * status colours, and widening the palette would change every export format.
+ * So the roles are *derived* here, always live from `palette` rather than a
+ * stored `designSystem.colorRoles` snapshot — nothing in the UI edits a role
+ * independently of the palette, so a frozen snapshot would just go stale.
+ * Status colours (success/warning/error) come from a small default set, since
+ * no design system in this app authors those.
  *
  * Every property is unconditionally present, so a component can write
  * `var(--pg-primary)` and rely on it. The fallbacks in styles.ts exist for the
@@ -72,16 +68,12 @@ export function rolePropertyBlock(
   const surface = palette.surface;
   const primary = palette.accent;
   const secondary = palette.support;
-  // Was `palette.support` — the Palette sidebar's "Accent" swatch fed
-  // --pg-primary (button fills) but never --pg-accent itself, so editing
-  // Accent never reached anything --pg-accent drives: focus rings, the
-  // outline button's hover border/text, the tab underline, the progress
-  // bar fill, badge/alert's neutral tone default. A role literally named
-  // "Accent" not reaching the CSS variable named --pg-accent was exactly
-  // that: editing it looked like it did nothing, everywhere except primary
-  // buttons. Primary and accent now share one source, same as most design
-  // systems using one brand colour for both — Support remains distinct,
-  // secondary buttons only.
+  // Primary and accent deliberately share one source (palette.accent), the
+  // way most design systems use one brand colour for both — --pg-accent
+  // drives focus rings, the outline button's hover state, the tab underline,
+  // and the progress bar fill, so it can't be left pointing at something the
+  // Accent swatch doesn't actually control. Support stays distinct, secondary
+  // buttons only.
   const accent = palette.accent;
   const text = palette.ink;
   const muted = palette.muted;
@@ -134,21 +126,12 @@ export function rolePropertyBlock(
   ].join("\n");
 }
 
-/**
- * The complete stylesheet for the canvas: the standard scoped token export
- * plus the role block, in both variants.
- *
- * The dark block is emitted at `${selector}[data-theme="dark"]`, mirroring
- * exactly what `generateExportCode` does with its own dark tokens. That
- * mirroring is the point — the canvas switches theme by toggling one
- * attribute, and both layers have to answer to the same switch. Emitting only
- * the light roles (an earlier shape of this function) meant dark mode changed
- * `--color-*` but left every `--pg-*` role at its light value, so the
- * components kept their light-mode text on a dark surface.
- *
- * All blocks target the same wrapper, so a component nested anywhere inside
- * inherits them and there is no ordering requirement on where it sits.
- */
+// The complete stylesheet for the canvas: the standard scoped token export
+// plus the role block, in both variants. The dark block is emitted at
+// `${selector}[data-theme="dark"]`, mirroring `generateExportCode`'s own dark
+// tokens — the canvas switches theme by toggling one attribute, so both
+// layers must answer to the same switch, or dark mode changes `--color-*`
+// while every `--pg-*` role stays at its light value.
 export function canvasCss(selector: string, tokens: StudioExportTokens): string {
   const tokenCss = generateExportCode("CSS", tokens, { scopeSelector: selector });
   return [

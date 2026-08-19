@@ -1,28 +1,13 @@
-/**
- * Deterministic post-generation contrast validation and repair.
- *
- * Runs in lib/ai/generate.ts after the model responds and before the result
- * is returned to /api/ai/generate. It exists because two independent QA
- * passes caught the same class of failure:
- *
- *   - a generated brand shipped body text #f8fafc on background #f8f7f7 —
- *     1.02:1, unreadable, with nothing in the pipeline measuring it;
- *   - a generated primary button measured 4.1:1 (a fail) while the model's
- *     own accessibility note asserted "all text and interactive states
- *     exceed 4.5:1".
- *
- * The model was never computing these numbers, so the numbers were fiction.
- * Here they are measured with getContrastRatio() (lib/colors/colorUtils.ts,
- * the same WCAG 2.x implementation ContrastBadge renders), repaired
- * hue-preservingly via ensureContrast() (lib/colors/contrast.ts), and
- * returned as structured ContrastChecks (types/ai.ts) so the UI can render
- * measurements instead of claims. lib/ai/reasoning.ts then overwrites the
- * model's accessibility prose with sentences built from these same numbers.
- *
- * Everything in this file is pure — same input, same output — so it can be
- * exercised against fixture data (including the exact failing values above)
- * without an API key or a live model call.
- */
+// Deterministic post-generation contrast validation and repair. Runs in
+// lib/ai/generate.ts after the model responds — the model never actually
+// computes contrast ratios, so its accessibility claims can't be trusted.
+// Ratios are measured with getContrastRatio() (lib/colors/colorUtils.ts, the
+// same implementation ContrastBadge renders), repaired hue-preservingly via
+// ensureContrast() (lib/colors/contrast.ts), and returned as structured
+// ContrastChecks (types/ai.ts) so the UI shows measurements, not claims.
+// lib/ai/reasoning.ts then rewrites the model's accessibility prose from
+// these same numbers. Everything here is pure, so it's testable with fixture
+// data and no live model call.
 import { ComponentName, ComponentTokenSet, DesignSystem, ThemeVariantTokens } from "@/types/designSystem";
 import { ContrastCheck, ContrastReport, AIDeviation } from "@/types/ai";
 import { getWcagLevel } from "@/lib/colors/colorUtils";
@@ -42,9 +27,8 @@ import {
 type Variant = "light" | "dark";
 
 // Components whose background is a deliberate, pressable fill. Their fill has
-// to be distinguishable from the page (WCAG SC 1.4.11, 3:1) — this is the
-// check that catches a near-white "primary" like the #f0f0ef QA found, which
-// cannot carry a primary action no matter what the prose says.
+// to be distinguishable from the page (WCAG SC 1.4.11, 3:1) — this is what
+// catches a near-white "primary" that can't actually read as an action colour.
 const FILLED_COMPONENTS: ComponentName[] = ["button", "buttonSecondary", "badge", "alert"];
 
 // Components whose border *is* the control's boundary — a text input with an
@@ -162,7 +146,6 @@ function validateVariant(
   const surfaces = [roles.background, roles.surface];
 
   // --- Body text -----------------------------------------------------------
-  // The 1.02:1 defect (#f8fafc body text on a #f8f7f7 background) lands here.
   const originalText = normalizeHex(roles.text);
   const textFix = ensureContrastAgainstAll(originalText, surfaces, repairTarget(AA_NORMAL_TEXT));
   roles.text = textFix.hex;
@@ -314,8 +297,7 @@ function validateComponent(
     );
   }
 
-  // 2. Label on the (possibly repaired) fill. This is the 4.1:1 primary
-  //    button QA measured while the prose claimed 4.5:1+.
+  // 2. Label on the (possibly repaired) fill.
   const originalText = normalizeHex(input.text);
   const textRatio = contrast(originalText, background);
   const textFix = ensureContrast(originalText, background, repairTarget(AA_NORMAL_TEXT));
@@ -531,26 +513,16 @@ export function validateDesignSystem(designSystem: DesignSystem): DesignSystemVa
   };
 }
 
-/**
- * The same guarantee for the flat palette a plain (non-design-system)
- * generation returns: role-tagged colors where `text` has to be readable on
- * `background`/`surface`. This is the path the #f8fafc-on-#f8f7f7 result came
- * back through, so it gets validated even when includeDesignSystem is off.
- */
-/**
- * The "primary" role has a job: it is the colour actions are made of. One QA
- * run returned #f0f0ef as primary — a near-white with essentially no chroma,
- * which cannot read as a button against a light page and cannot be told apart
- * from the surface at all. Two properties are enforced here:
- *
- *   - enough chroma to register as a colour rather than a shade of paper;
- *   - at least 3:1 against the palette's own background (WCAG SC 1.4.11, the
- *     same bar the filled-component check uses above).
- *
- * Hue is preserved, so a brand that genuinely wants a pale warm-grey primary
- * gets a *usable* pale warm-grey, not a different colour. A colour with no
- * hue at all can't be saved this way, and says so.
- */
+// Same guarantee for the flat palette a plain (non-design-system) generation
+// returns: role-tagged colors where `text` must be readable on
+// `background`/`surface`, validated even when includeDesignSystem is off.
+//
+// The "primary" role has a job — it's the colour actions are made of — so two
+// properties are enforced: enough chroma to register as a colour rather than
+// a shade of paper, and at least 3:1 against the palette's own background
+// (WCAG SC 1.4.11). Hue is preserved, so a brand that wants a pale warm-grey
+// primary gets a *usable* pale warm-grey, not a different colour; a colour
+// with no hue at all can't be saved this way, and says so.
 export function ensureActionablePrimary<T extends { hex: string; role?: string }>(
   colors: T[]
 ): { colors: T[]; checks: ContrastCheck[]; deviations: AIDeviation[] } {

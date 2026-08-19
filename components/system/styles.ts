@@ -1,91 +1,51 @@
-/**
- * The single stylesheet behind every StyleBook component.
- *
- * Why a stylesheet rather than inline `style` attributes: these are real
- * controls that must expose real `:hover` / `:focus-visible` / `:active` /
- * `:disabled` behaviour. Pseudo-classes cannot be expressed in an inline
- * `style` attribute at all, and — more importantly — an inline `style` wins
- * on specificity over any rule a stylesheet could write, so a hover rule
- * would silently lose to the inline base colour. Everything token-driven
- * therefore lives here in classes; the only inline styles left in the
- * components are per-instance geometry (a progress width, an avatar's
- * initials tint) that no class can express.
- *
- * Why it is still 100% token-driven: this string is *static text*. Every
- * colour, font, radius and spacing value is a `var(...)` chain, resolved at
- * paint time against whichever token scope the markup happens to sit inside
- * (`[data-sb-canvas]` in Studio). One stylesheet, any number of systems, and
- * the default showcase and the AI-generated UI are styled by exactly the same
- * mechanism — structurally, not by convention. Emitting a second `<style>` of
- * component CSS per surface would break that guarantee, so don't.
- *
- * The `--pgc-*` layer at the top is a private alias namespace: it collapses
- * the long `var(--ds-x, var(--color-y, literal))` fallback chains into one
- * place instead of repeating them in ~200 declarations. It is deliberately
- * NOT `--pg-*`, which is the semantic *role* layer's namespace
- * (lib/studio/roleProperties.ts emits `--pg-success`, `--pg-warning`,
- * `--pg-error`, `--pg-border`, `--pg-accent` … for the roles the five-colour
- * base palette has no slot for) — colliding with those would have the
- * component layer overwrite the values it is supposed to be consuming.
- *
- * Fallback order inside the alias layer is:
- *
- *   --pg-*  ->  --ds-*  ->  --color-* / --font-* / --radius  ->  literal
- *
- * **but the component rules below deliberately invert that for the ten
- * editable component types**, resolving `--ds-<component>-<slot>` *before*
- * the `--pgc-*` alias:
- *
- *   background: var(--ds-button-bg, var(--pgc-primary));
- *
- * Both orderings are load-bearing, for different things, and the distinction
- * is the whole reason there are two layers:
- *
- *   - `--pg-*` is the *derived* semantic-role layer
- *     (lib/studio/roleProperties.ts) — always defined, computed from the
- *     five-colour palette. It must beat the raw `--color-*` export inside the
- *     alias layer so that roles the palette has no slot for still resolve.
- *   - `--ds-*` is the *explicit per-component* token the click-to-edit
- *     inspector writes. It is the more specific statement of intent, so for
- *     the component that owns it, it has to win.
- *
- * Getting this backwards is not a subtle bug: because `--pg-primary` is
- * unconditionally defined, an alias-first `.pg-btn--primary` means editing a
- * button's background in the inspector changes the stored token, re-renders,
- * and visibly does nothing at all.
- *
- * Only the ten `ComponentName`s take part. Everything else (focus rings,
- * progress fills, avatars, the soft badge variants) keeps resolving through
- * `--pgc-*`, so editing the button does not drag unrelated components with it.
- *
- * The trailing literal exists so the library renders standalone (an empty
- * scope, a manual non-AI system, a Storybook-style harness) rather than
- * collapsing to `initial`/transparent, which is what an unterminated var()
- * chain does.
- */
+// The single stylesheet behind every StyleBook component.
+//
+// Real stylesheet, not inline styles: components need real
+// :hover/:focus-visible/:active/:disabled states, which inline style can't
+// express, and an inline style would beat any stylesheet hover rule on
+// specificity anyway. Every color/font/radius/spacing value is a var() chain
+// resolved against whatever token scope the markup sits in, so the manual
+// showcase and the AI-generated UI are styled by the exact same mechanism.
+//
+// --pgc-* up top is a private alias layer that collapses the long
+// var(--ds-x, var(--color-y, literal)) fallback chains into one place instead
+// of repeating them ~200 times. It's deliberately not --pg-* (the derived
+// semantic-role namespace from lib/studio/roleProperties.ts) - colliding
+// would make the component layer overwrite values it's supposed to consume.
+//
+// Normal fallback order: --pg-* -> --ds-* -> --color-*/--font-*/--radius ->
+// literal. But the ten editable component rules below invert that, resolving
+// --ds-<component>-<slot> first, e.g. `background: var(--ds-button-bg,
+// var(--pgc-primary))`. That's intentional: --pg-* is always defined (derived
+// from the 5-color palette), so alias-first would mean an inspector edit to a
+// button's background changes stored state, re-renders, and visibly does
+// nothing - --ds-* is the more specific intent and has to win for the
+// component that owns it. Everything else (rings, progress fills, avatars,
+// badge's soft variant) still resolves through --pgc-* so editing a button
+// doesn't drag unrelated components along.
+//
+// Trailing literals let the library render standalone (empty scope, a manual
+// system, a Storybook harness) instead of collapsing to initial/transparent,
+// which is what an unterminated var() chain does.
 
-/** Stable id so the injector can tell "already in the document" from "not yet". */
+// Stable id so the injector can tell "already in the document" from "not yet".
 export const SYSTEM_STYLE_ELEMENT_ID = "pg-components-stylesheet";
 
 export const SYSTEM_COMPONENT_CSS = `
-/* ------------------------------------------------------------------ *
- * Alias layer + shell
- * ------------------------------------------------------------------ */
 .pg-scope {
-  /* Surfaces. --pg-background / --ds-color-bg is the page behind a card;
-     --pg-surface / --ds-color-surface is the card itself. A manual system
-     collapses both onto --color-surface, so the components separate
-     themselves with borders and tints rather than two distinct greys. */
+  /* --pg-background/--ds-color-bg is the page behind a card; --pg-surface/
+     --ds-color-surface is the card itself. A manual system collapses both
+     onto --color-surface, so components separate themselves with borders and
+     tints instead of two distinct greys. */
   --pgc-bg: var(--pg-background, var(--ds-color-bg, var(--color-surface, #ffffff)));
   --pgc-surface: var(--pg-surface, var(--ds-color-surface, var(--color-surface, #ffffff)));
   --pgc-ink: var(--pg-text, var(--ds-color-text, var(--color-ink, #191919)));
   --pgc-muted: var(--pg-muted, var(--ds-color-text-muted, var(--color-muted, #6f6a61)));
   --pgc-border: var(--pg-border, var(--ds-color-border, var(--color-muted, #d9d4cb)));
 
-  /* Brand roles. "primary" is what a filled button uses; "accent" is the
-     highlight role (focus rings, active tabs, links). They are separate
-     roles in lib/studio/roleProperties.ts and a system can point them at
-     different hues, so the library must not conflate them. */
+  /* "primary" is what a filled button uses; "accent" is the highlight role
+     (focus rings, active tabs, links). Separate roles in roleProperties.ts,
+     and a system can point them at different hues, so don't conflate them. */
   --pgc-primary: var(--pg-primary, var(--ds-button-bg, var(--color-accent, #2f4bd8)));
   --pgc-on-primary: var(--pg-on-primary, var(--ds-button-text, var(--color-surface, #ffffff)));
   --pgc-secondary: var(--pg-secondary, var(--color-support, var(--color-accent, #2f4bd8)));
@@ -93,9 +53,9 @@ export const SYSTEM_COMPONENT_CSS = `
   --pgc-accent: var(--pg-accent, var(--color-accent, #2f4bd8));
   --pgc-on-accent: var(--pg-on-accent, var(--ds-button-text, var(--color-surface, #ffffff)));
 
-  /* Semantic roles, plus P1's pre-computed readable foregrounds — using
-     --pg-on-success and friends instead of a hardcoded white is the whole
-     reason they exist, and it is what keeps a light-warning fill legible. */
+  /* --pg-on-success etc are P1's pre-computed readable foregrounds - using
+     those instead of a hardcoded white is what keeps a light-warning fill
+     legible. */
   --pgc-success: var(--pg-success, #2f6b4f);
   --pgc-warning: var(--pg-warning, #b4791f);
   --pgc-error: var(--pg-error, #b23b3b);
@@ -106,8 +66,8 @@ export const SYSTEM_COMPONENT_CSS = `
 
   --pgc-radius: var(--pg-radius, var(--radius, 10px));
   --pgc-radius-sm: calc(var(--pg-radius, var(--radius, 10px)) * 0.6);
-  /* --pg-font-* are complete family stacks (quoted family + generic), so
-     they are assigned straight through with no added fallback family. */
+  /* --pg-font-* are already complete family stacks (quoted family + generic),
+     so they're assigned straight through with no extra fallback family. */
   --pgc-font-body: var(--pg-font-body, var(--font-body, ui-sans-serif, system-ui, sans-serif));
   --pgc-font-display: var(--pg-font-display, var(--font-display, Georgia, serif));
   --pgc-font-heading: var(--pg-font-heading, var(--pgc-font-display));
@@ -116,12 +76,12 @@ export const SYSTEM_COMPONENT_CSS = `
   --pgc-font-caption: var(--pg-font-caption, var(--pgc-font-body));
   --pgc-ring: var(--pgc-accent);
   /* --shadow is the "recommended" level's own alias (StudioBuilder's Shadow
-     selector writes state.shadows.recommended) — reading it here first is
-     what makes that selector do anything at all; it used to be defined and
-     exported but never consumed, so none/subtle/dramatic all looked
-     identical on canvas. --shadow-lift stays pinned to the dramatic level
-     regardless of the recommended choice: a hover/press lift is expected to
-     read as *more* present than the resting state even in a "none" system. */
+     selector writes state.shadows.recommended) - reading it here is what
+     makes that selector do anything; it used to be exported but never
+     consumed, so none/subtle/dramatic all looked identical on canvas.
+     --shadow-lift stays pinned to the dramatic level regardless of the
+     recommended choice, since a hover/press lift should read as more present
+     than the resting state even in a "none" system. */
   --pgc-shadow: var(--shadow, var(--shadow-subtle, 0 1px 2px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.05)));
   --pgc-shadow-lift: var(--shadow-dramatic, 0 8px 28px rgba(0, 0, 0, 0.14));
 
@@ -134,8 +94,8 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-scope *::before,
 .pg-scope *::after { box-sizing: border-box; }
 
-/* Every state transition in the library funnels through this one duration so
-   a reviewer hovering across a card doesn't see six different easings. */
+/* Every state transition funnels through this one duration so a reviewer
+   hovering across a card doesn't see six different easings. */
 .pg-scope * { --pgc-t: 150ms cubic-bezier(0.4, 0, 0.2, 1); }
 
 @media (prefers-reduced-motion: reduce) {
@@ -148,19 +108,13 @@ export const SYSTEM_COMPONENT_CSS = `
   }
 }
 
-/* ------------------------------------------------------------------ *
- * Layout scaffolding
- * ------------------------------------------------------------------ */
 .pg-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2, 10px); }
 .pg-grid { display: grid; gap: var(--space-3, 16px); grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
-/* Modal and toast are position:absolute against this, never position:fixed —
-   a fixed overlay would escape the canvas and cover the Studio chrome
-   (sidebar, inspector), which would make the app unusable until dismissed. */
+/* Modal and toast are position:absolute against this, never fixed - a fixed
+   overlay would escape the canvas and cover the Studio chrome (sidebar,
+   inspector), making the app unusable until dismissed. */
 .pg-stage { position: relative; overflow: hidden; border-radius: var(--pgc-radius); }
 
-/* ------------------------------------------------------------------ *
- * Buttons
- * ------------------------------------------------------------------ */
 .pg-btn {
   display: inline-flex;
   align-items: center;
@@ -179,12 +133,10 @@ export const SYSTEM_COMPONENT_CSS = `
   transition: background-color var(--pgc-t), color var(--pgc-t), border-color var(--pgc-t),
     box-shadow var(--pgc-t), transform 70ms ease-out, opacity var(--pgc-t);
 }
-/* Mouse users get no ring; keyboard users always do. :focus-visible is the
-   whole reason the ring can be this loud without looking broken on click. */
+/* Mouse users get no ring; keyboard users always do. */
 .pg-btn:focus { outline: none; }
 .pg-btn:focus-visible { outline: 2px solid var(--ds-button-border-focus, var(--pgc-ring)); outline-offset: 2px; }
-/* The press must be *felt*, not implied — a reviewer clicks the button and
-   expects it to move. Paired with a darker :active fill below. */
+/* Paired with the darker :active fill below - the press should be felt, not implied. */
 .pg-btn:active:not(:disabled) { transform: translateY(1px); }
 .pg-btn:disabled { cursor: not-allowed; opacity: 0.45; box-shadow: none; }
 .pg-btn--sm { padding: 7px 12px; font-size: var(--text-xs, 12px); gap: 6px; }
@@ -197,15 +149,12 @@ export const SYSTEM_COMPONENT_CSS = `
   border-color: var(--ds-button-border, transparent);
   box-shadow: var(--pgc-shadow);
 }
-/* color-mix toward --pgc-ink rather than toward black: on a dark experiment
-   the ink is light, so the same rule brightens instead of darkening and the
-   hover stays visible in both directions. The --ds-*-hover token, when the
-   AI system supplies one, always wins over the computed fallback.
-   [data-sb-preview="hover"] is Studio's Preview toggle (StudioCanvas.tsx) —
-   there is no DOM API to force real :hover, so it sets this attribute on the
-   selected element instead. It's added to the *same* rule, not a duplicate
-   with hand-picked properties, so preview shows the exact real hover
-   (shadow lift included), never an approximation of it. */
+/* color-mix toward --pgc-ink, not black, so on a dark experiment (light ink)
+   this brightens instead of darkening and hover stays visible either way.
+   [data-sb-preview="hover"] is Studio's Preview toggle (StudioCanvas.tsx) -
+   there's no DOM API to force real :hover, so it sets this attribute on the
+   selected element instead. It's on the same rule as the real :hover, not a
+   hand-picked duplicate, so preview shows the exact real hover state. */
 .pg-btn--primary:hover:not(:disabled),
 .pg-btn--primary[data-sb-preview="hover"] {
   background: var(--ds-button-bg-hover, color-mix(in srgb, var(--pgc-primary) 85%, var(--pgc-ink)));
@@ -216,9 +165,8 @@ export const SYSTEM_COMPONENT_CSS = `
   background: var(--ds-button-bg-active, color-mix(in srgb, var(--pgc-primary) 72%, var(--pgc-ink)));
   box-shadow: none;
 }
-/* Opacity (base .pg-btn:disabled rule) is the primary disabled signal; this
-   only applies if a disabled-state colour was actually set in the inspector,
-   otherwise it resolves to the same colour the button already has. */
+/* Only kicks in if a disabled-state color was actually set in the inspector;
+   otherwise it resolves to the button's normal color and opacity carries the signal. */
 .pg-btn--primary:disabled {
   background: var(--ds-button-bg-disabled, var(--ds-button-bg, var(--pgc-primary)));
   color: var(--ds-button-text-disabled, var(--ds-button-text, var(--pgc-on-primary)));
@@ -245,12 +193,10 @@ export const SYSTEM_COMPONENT_CSS = `
 }
 .pg-btn--secondary:focus-visible { outline-color: var(--ds-buttonSecondary-border-focus, var(--pgc-ring)); }
 
-/* Outline and ghost both collapse to the same "button" ComponentName as
-   primary in lib/studio/componentSelection.ts (only secondary gets its own
-   slot) — so they read --ds-button-* here too, precedence-inverted like
-   primary, or an edit to "the button" visibly changes primary and silently
-   does nothing to these. Fallbacks reproduce the pre-existing hardcoded
-   look exactly when nothing is customized. */
+/* Outline and ghost both map to the same "button" ComponentName as primary in
+   componentSelection.ts (only secondary gets its own slot), so they read
+   --ds-button-* here too, precedence-inverted like primary - otherwise
+   editing "the button" changes primary and does nothing to these. */
 .pg-btn--outline {
   background: transparent;
   color: var(--ds-button-text, var(--pgc-ink));
@@ -295,8 +241,7 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-btn--icon { padding: 0; width: 38px; height: 38px; }
 .pg-btn--icon.pg-btn--sm { width: 30px; height: 30px; }
 
-/* Loading buttons keep their box: the label is hidden with visibility, not
-   removed, so the button does not resize mid-click and shove the layout. */
+/* Label hidden with visibility, not removed, so a loading button doesn't resize mid-click. */
 .pg-btn[data-loading="true"] { cursor: progress; }
 .pg-spinner {
   width: 14px;
@@ -309,9 +254,6 @@ export const SYSTEM_COMPONENT_CSS = `
 }
 @keyframes pg-spin { to { transform: rotate(360deg); } }
 
-/* ------------------------------------------------------------------ *
- * Inputs
- * ------------------------------------------------------------------ */
 .pg-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .pg-label {
   font-family: var(--pgc-font-label);
@@ -347,25 +289,23 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-input:hover:not(:disabled),
 .pg-select:hover:not(:disabled),
 .pg-textarea:hover:not(:disabled) { border-color: color-mix(in srgb, var(--pgc-ink) 28%, var(--pgc-border)); }
-/* :focus, not :focus-visible — a text field that gives no signal when you
-   click into it reads as broken, and the ring is expected there.
-   The :not(:disabled) is carrying specificity, not logic (a disabled field
-   cannot be focused anyway): the hover rule above is .pg-input:hover:not(...)
-   at 0-3-0, so a bare .pg-input:focus at 0-2-0 would lose to it and a focused
-   field would show the *hover* border while the pointer sat on it. Every
-   state rule below is padded the same way for the same reason.
-   NB: no backticks anywhere inside this string — it is a template literal,
-   and one in a comment ends the CSS mid-file with a build error that points
-   at the wrong line. */
+/* :focus not :focus-visible - a text field needs to show it's focused even on
+   click, unlike a button. The :not(:disabled) here is carrying specificity,
+   not logic (a disabled field can't be focused anyway): the hover rule above
+   is .pg-input:hover:not(...) at 0-3-0, so a bare .pg-input:focus at 0-2-0
+   would lose to it and a focused field would show the hover border while the
+   pointer sat on it. Every state rule below pads the same way for the same
+   reason.
+   Also: no backticks anywhere in this string - it's a template literal, and
+   one in a comment ends the CSS mid-file with a build error on the wrong line. */
 .pg-input:focus:not(:disabled),
 .pg-textarea:focus:not(:disabled) {
   outline: none;
   border-color: var(--ds-input-border-focus, var(--pgc-accent));
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--ds-input-border-focus, var(--pgc-accent)) 26%, transparent);
 }
-/* dropdown is its own ComponentName, split from input's rule below so
-   editing "dropdown"'s focus/disabled doesn't also change a plain text
-   field, mirroring dropdown's own background/text/border override above. */
+/* dropdown is its own ComponentName, split from input's rule above, so
+   editing dropdown's focus/disabled state doesn't also change a plain text field. */
 .pg-select:focus:not(:disabled) {
   outline: none;
   border-color: var(--ds-dropdown-border-focus, var(--ds-input-border-focus, var(--pgc-accent)));
@@ -394,8 +334,8 @@ export const SYSTEM_COMPONENT_CSS = `
 }
 .pg-input[data-state="filled"] { background: color-mix(in srgb, var(--pgc-ink) 5%, var(--pgc-surface)); }
 
-/* Icon-prefixed field. The wrapper carries the focus ring so the icon sits
-   inside the highlighted box instead of next to it. */
+/* The wrapper carries the focus ring so the icon sits inside the highlighted
+   box instead of next to it. */
 .pg-input-wrap { position: relative; display: flex; align-items: center; }
 .pg-input-wrap .pg-input { padding-left: 36px; }
 .pg-input-wrap__icon {
@@ -406,9 +346,6 @@ export const SYSTEM_COMPONENT_CSS = `
   pointer-events: none;
 }
 
-/* ------------------------------------------------------------------ *
- * Cards
- * ------------------------------------------------------------------ */
 .pg-card {
   display: flex;
   flex-direction: column;
@@ -438,7 +375,7 @@ export const SYSTEM_COMPONENT_CSS = `
   border-top: 1px solid var(--pgc-border);
 }
 /* Interactive cards are real <a>/<button> elements, so they get the same
-   keyboard ring the buttons do rather than a hover-only affordance. */
+   keyboard ring buttons do rather than a hover-only affordance. */
 .pg-card--interactive { cursor: pointer; text-align: left; text-decoration: none; }
 .pg-card--interactive:hover {
   border-color: var(--ds-card-border-hover, var(--pgc-accent));
@@ -449,9 +386,8 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-card--interactive:focus-visible { outline: 2px solid var(--ds-card-border-focus, var(--pgc-ring)); outline-offset: 3px; }
 .pg-card--interactive:active { transform: translateY(-1px); }
 
-/* Media placeholder. A tint of the card's own text colour rather than a
-   grey literal, so it re-tones with the experiment instead of staying the
-   same slab of grey in every card on the board. */
+/* A tint of the card's own text color, not a grey literal, so it re-tones
+   with the experiment instead of staying the same grey slab in every card. */
 .pg-card__media {
   position: relative;
   display: flex;
@@ -487,9 +423,6 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-card__dot { width: 3px; height: 3px; border-radius: 50%; background: currentColor; flex: none; }
 .pg-rating { display: inline-flex; align-items: center; gap: 3px; color: var(--pgc-warning); }
 
-/* ------------------------------------------------------------------ *
- * Navigation
- * ------------------------------------------------------------------ */
 .pg-navbar {
   display: flex;
   align-items: center;
@@ -522,13 +455,11 @@ export const SYSTEM_COMPONENT_CSS = `
   flex: none;
 }
 .pg-navbar__links { display: flex; align-items: center; gap: 2px; }
-/* navigation collapses three structurally different widgets (navbar,
-   tablist, breadcrumbs — see componentSelection.ts) to one editable slot;
-   previously only the navbar's own box consumed --ds-navigation-*, so
-   editing "navigation" never touched a single link/tab/crumb's own text or
-   hover colour anywhere. Resting/hover text+hover-background now read the
-   token; the active/selected highlight stays on --pgc-accent (a distinct
-   "this is current" cue, not literally the component's text colour). */
+/* "navigation" as a ComponentName covers three structurally different widgets
+   (navbar, tablist, breadcrumbs - see componentSelection.ts). Resting/hover
+   text and hover background read --ds-navigation-*; the active/selected
+   highlight stays on --pgc-accent as a distinct "this is current" cue rather
+   than literally the component's text color. */
 .pg-navlink {
   position: relative;
   padding: 7px 11px;
@@ -549,12 +480,11 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-navlink:focus { outline: none; }
 .pg-navlink:focus-visible { outline: 2px solid var(--pgc-ring); outline-offset: 1px; }
 .pg-navlink[aria-current="page"] { color: var(--pgc-accent); background: color-mix(in srgb, var(--pgc-accent) 12%, transparent); }
-/* Same specificity as .pg-navlink:hover above, declared later, so without
-   this the active item silently lost hover feedback — every other nav
-   link hovers, the current page's doesn't. */
+/* Same specificity as .pg-navlink:hover above but declared later - without
+   this the active item loses hover feedback that every other link has. */
 .pg-navlink[aria-current="page"]:hover { background: color-mix(in srgb, var(--pgc-accent) 20%, transparent); }
 
-/* Tabs. The underline is a pseudo-element on the button so it tracks the
+/* The tab underline is a pseudo-element on the button so it tracks the
    button's own box and needs no measuring JS. */
 .pg-tablist {
   display: flex;
@@ -625,31 +555,26 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-crumb[aria-current="page"] { color: var(--pgc-ink); font-weight: 600; cursor: default; }
 .pg-crumb[aria-current="page"]:hover { background: transparent; color: var(--pgc-ink); }
 
-/* ------------------------------------------------------------------ *
- * Feedback
- * ------------------------------------------------------------------ */
 .pg-alert {
   display: flex;
   align-items: flex-start;
   gap: var(--space-2, 10px);
   padding: var(--space-3, 13px) var(--space-3, 14px);
   border-radius: var(--pgc-radius);
-  /* The four tone variants below are semantic (info/success/warning/error)
-     and derive their own fills, so --ds-alert-* applies to the *neutral*
-     base only — an edited alert token that recoloured the error alert green
-     would be actively misleading. */
+  /* The tone variants below are semantic (info/success/warning/error) and
+     derive their own fills, so --ds-alert-* only applies to the neutral base -
+     an edited alert token that recolored the error alert green would be
+     actively misleading. */
   border: 1px solid var(--ds-alert-border, var(--pgc-tone-border));
   background: var(--ds-alert-bg, var(--pgc-tone-bg));
   color: var(--ds-alert-text, var(--pgc-ink));
   font-size: var(--text-sm, 14px);
   line-height: 1.55;
 }
-/* One rule, four tones: each modifier only rebinds --pgc-tone, and the
-   surface/border/icon colours are derived from it. Adding a fifth tone is
-   one three-line block, not another copy of the alert.
-   info is the neutral/default tone (not a status colour), so it takes
-   --ds-alert-bg first — same reasoning as badge's --soft variant above.
-   success/warning/error stay pinned to their semantic meaning. */
+/* One rule, four tones: each modifier only rebinds --pgc-tone and the
+   surface/border/icon colors derive from it, so a fifth tone is a three-line
+   block, not a copy of the whole alert. info is the neutral/default tone, so
+   it takes --ds-alert-bg first, same reasoning as badge's --soft variant below. */
 .pg-alert--info { --pgc-tone: var(--ds-alert-bg, var(--pgc-info)); }
 .pg-alert--success { --pgc-tone: var(--pgc-success); }
 .pg-alert--warning { --pgc-tone: var(--pgc-warning); }
@@ -658,10 +583,9 @@ export const SYSTEM_COMPONENT_CSS = `
   --pgc-tone-bg: color-mix(in srgb, var(--pgc-tone) 12%, var(--pgc-surface));
   --pgc-tone-border: color-mix(in srgb, var(--pgc-tone) 42%, var(--pgc-surface));
 }
-/* Re-asserted *after* the base rule so the tone wins over --ds-alert-*.
-   Without this, a system carrying an alert token would paint the error and
-   success alerts the same colour, since the modifiers only rebind --pgc-tone
-   and never set a background of their own. */
+/* Re-asserted after the base rule so the tone wins over --ds-alert-* - without
+   this a system carrying an alert token would paint error and success the
+   same color, since the modifiers above only rebind --pgc-tone. */
 .pg-alert--info,
 .pg-alert--success,
 .pg-alert--warning,
@@ -705,13 +629,12 @@ export const SYSTEM_COMPONENT_CSS = `
   border: 1px solid var(--ds-badge-border, transparent);
 }
 /* success/warning/error stay pinned to their semantic tone, same principle as
-   .pg-btn--danger staying pinned to --pgc-error: a status colour losing its
-   meaning because someone edited "badge" would be actively misleading.
-   --soft is the neutral/default variant (every badge in this app is one of
-   these five, confirmed by grep) and --outline has no tone concept at all,
-   so both take --ds-badge-* first — without this, editing "badge" in the
-   inspector visibly did nothing, since no real badge on canvas ever uses the
-   bare solid .pg-badge these tokens originally targeted. */
+   .pg-btn--danger staying pinned to --pgc-error - a status color losing its
+   meaning because someone edited "badge" would be misleading. --soft is the
+   neutral/default variant (every badge in the app is one of these five) and
+   --outline has no tone concept, so both take --ds-badge-* first - otherwise
+   editing "badge" in the inspector visibly did nothing, since no real badge
+   on canvas uses the bare solid .pg-badge these tokens originally targeted. */
 .pg-badge--soft { --pgc-tone: var(--ds-badge-bg, var(--pgc-accent)); }
 .pg-badge--success { --pgc-tone: var(--pgc-success); }
 .pg-badge--warning { --pgc-tone: var(--pgc-warning); }
@@ -764,13 +687,10 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-toast__close:focus { outline: none; }
 .pg-toast__close:focus-visible { outline: 2px solid currentColor; outline-offset: 1px; }
 
-/* ------------------------------------------------------------------ *
- * Controls
- * ------------------------------------------------------------------ */
-/* Checkbox and radio use the real <input> with appearance:none rather than
-   a hidden input plus a styled span. The native element keeps the label
-   association, the space-bar toggle, the focus ring and the :checked state
-   for free — a div with role="checkbox" would have to reimplement all four. */
+/* Checkbox/radio use the real <input> with appearance:none instead of a
+   hidden input plus a styled span - the native element keeps label
+   association, space-bar toggle, focus ring and :checked for free, which a
+   div with role="checkbox" would have to reimplement. */
 .pg-choice { display: flex; align-items: flex-start; gap: 9px; cursor: pointer; font-size: var(--text-sm, 14px); }
 .pg-choice--disabled { cursor: not-allowed; opacity: 0.5; }
 .pg-choice__text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
@@ -801,8 +721,7 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-radio:checked { background: var(--pgc-accent); border-color: var(--pgc-accent); }
 .pg-checkbox:disabled,
 .pg-radio:disabled { cursor: not-allowed; background: color-mix(in srgb, var(--pgc-ink) 8%, var(--pgc-surface)); }
-/* Tick drawn with a rotated border rather than an SVG child, because the
-   input element cannot have children. */
+/* Tick is a rotated border, not an SVG child, because the input element can't have children. */
 .pg-checkbox::before {
   content: "";
   width: 9px;
@@ -835,8 +754,8 @@ export const SYSTEM_COMPONENT_CSS = `
 }
 .pg-radio:checked::before { transform: scale(1); }
 
-/* Toggle. role="switch" on a real <button>, so Enter and Space both fire it
-   and screen readers announce on/off without an aria-live hack. */
+/* role="switch" on a real <button>, so Enter and Space both fire it and
+   screen readers announce on/off without an aria-live hack. */
 .pg-switch {
   position: relative;
   flex: none;
@@ -869,8 +788,8 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-switch:disabled { cursor: not-allowed; opacity: 0.5; }
 
 .pg-select-wrap { position: relative; display: flex; align-items: center; }
-/* The dropdown is a distinct ComponentName with its own editable tokens, so
-   it overrides the shared input rule rather than inheriting input's. */
+/* dropdown is a distinct ComponentName with its own tokens, so it overrides
+   the shared input rule above rather than inheriting it. */
 .pg-select {
   padding-right: 34px;
   cursor: pointer;
@@ -880,8 +799,7 @@ export const SYSTEM_COMPONENT_CSS = `
 }
 .pg-select-wrap__chevron { position: absolute; right: 12px; display: inline-flex; color: var(--pgc-muted); pointer-events: none; }
 
-/* Tooltip. Hover *and* focus-within, so it is reachable by keyboard — a
-   hover-only tooltip is an accessibility failure, not a styling choice. */
+/* Hover *and* focus-within, so the tooltip is reachable by keyboard - hover-only is an a11y failure. */
 .pg-tooltip { position: relative; display: inline-flex; }
 .pg-tooltip__bubble {
   position: absolute;
@@ -966,8 +884,8 @@ export const SYSTEM_COMPONENT_CSS = `
 }
 .pg-progress--success .pg-progress__bar { background: var(--pgc-success); }
 
-/* Skeleton. The sweep is a gradient on a pseudo-element so the block keeps
-   its own background and no extra DOM is needed per shimmer line. */
+/* Shimmer sweep is a gradient on a pseudo-element so the block keeps its own
+   background and no extra DOM is needed per shimmer line. */
 .pg-skeleton {
   position: relative;
   overflow: hidden;
@@ -985,7 +903,7 @@ export const SYSTEM_COMPONENT_CSS = `
 @keyframes pg-shimmer { to { transform: translateX(100%); } }
 .pg-skeleton--circle { border-radius: 50%; }
 
-/* Modal — absolute inside .pg-stage, see the .pg-stage comment above. */
+/* Modal is absolute inside .pg-stage, see the .pg-stage comment above. */
 .pg-modal-backdrop {
   position: absolute;
   inset: 0;
@@ -1018,18 +936,12 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-modal__text { font-size: var(--text-sm, 14px); line-height: 1.6; color: var(--pgc-muted); margin: 0; }
 .pg-modal__actions { display: flex; justify-content: flex-end; gap: var(--space-2, 10px); margin-top: var(--space-2, 8px); }
 
-/* ------------------------------------------------------------------ *
- * Typography
- *
- * Size, weight and face here mirror SEMANTIC_TYPE_ROLES in
- * lib/export/designTokens.ts one-for-one. That is the point: the showcase
- * must not be able to render an "h2" that differs from the h2 every export
- * format emits, which is exactly what happens the moment these values are
- * chosen independently. The sizes come through as --text-* custom properties
- * (generateExportCode emits --text-display/h1/h2/h3/body/caption aliases onto
- * the raw scale steps), so a type-scale change in the sidebar moves them
- * without touching this file.
- * ------------------------------------------------------------------ */
+/* Size/weight/face here mirror SEMANTIC_TYPE_ROLES in lib/export/designTokens.ts
+   one-for-one on purpose - the showcase must never render an h2 that differs
+   from the h2 every export format emits. Sizes come through as --text-*
+   custom properties (generateExportCode emits the display/h1/h2/h3/body/caption
+   aliases onto the raw scale steps), so a type-scale change in the sidebar
+   moves them without touching this file. */
 .pg-display,
 .pg-h1,
 .pg-h2,
@@ -1063,13 +975,10 @@ export const SYSTEM_COMPONENT_CSS = `
   color: var(--pgc-muted);
   margin: 0;
 }
-/* The measure a paragraph is actually read at. Without it a body specimen
-   spans the full canvas and tells you nothing about the font's real rhythm. */
+/* The measure a paragraph is actually read at - without it a body specimen
+   spans the full canvas and says nothing about the font's real rhythm. */
 .pg-prose { max-width: 62ch; }
 
-/* ------------------------------------------------------------------ *
- * Palette swatches
- * ------------------------------------------------------------------ */
 .pg-swatches { display: grid; gap: var(--space-2, 10px); grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); }
 .pg-swatch {
   display: flex;
@@ -1080,16 +989,12 @@ export const SYSTEM_COMPONENT_CSS = `
   background: var(--pgc-surface);
 }
 /* Height, not aspect-ratio: these sit in a grid whose column count changes
-   with the canvas width, and an aspect-ratio chip would jump in height every
-   time the grid reflows. */
+   with canvas width, and an aspect-ratio chip would jump height every reflow. */
 .pg-swatch__chip { height: 56px; }
 .pg-swatch__meta { padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 2px; }
 .pg-swatch__name { font-family: var(--pgc-font-label); font-size: 11px; font-weight: 600; color: var(--pgc-ink); }
 .pg-swatch__hex { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--pgc-muted); }
 
-/* ------------------------------------------------------------------ *
- * Table
- * ------------------------------------------------------------------ */
 .pg-table-wrap {
   border: 1px solid var(--pgc-border);
   border-radius: var(--pgc-radius);
@@ -1120,9 +1025,9 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-table tbody tr[data-sb-preview="hover"] { background: var(--ds-table-bg-hover, color-mix(in srgb, var(--pgc-ink) 3%, transparent)); }
 .pg-table__num { text-align: right; font-variant-numeric: tabular-nums; }
 
-/* A definition list rendered as rows — the "detail panel" shape (spec sheet,
-   patient record, transaction detail) that a table is wrong for because
-   there is exactly one record. */
+/* A definition list rendered as rows - the "detail panel" shape (spec sheet,
+   patient record, transaction detail) that a table is wrong for when there's
+   exactly one record. */
 .pg-deflist { display: grid; gap: 0; }
 .pg-deflist__row {
   display: flex;
@@ -1136,9 +1041,8 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-deflist__key { color: var(--pgc-muted); }
 .pg-deflist__val { color: var(--pgc-ink); font-weight: 500; text-align: right; }
 
-/* Screen-reader-only. Needed for the live regions that announce the toggle,
-   toast and progress changes; visually-hidden, never display:none, or
-   assistive tech drops it. */
+/* Screen-reader-only, used by the live regions announcing toggle/toast/progress
+   changes. Visually-hidden, never display:none, or assistive tech drops it too. */
 .pg-sr-only {
   position: absolute;
   width: 1px;

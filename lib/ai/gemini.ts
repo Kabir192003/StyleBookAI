@@ -1,16 +1,10 @@
-/**
- * Gemini client factory for AI Generate.
- *
- * Server-only — reads GEMINI_API_KEY, never import this into a client
- * component. Configured for JSON-only output since the AI route always
- * needs structured data back, never freeform prose.
- */
+// Gemini client factory for AI Generate. Server-only — reads GEMINI_API_KEY,
+// never import into a client component. Configured for JSON-only output since
+// the AI route always needs structured data back, never prose.
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// gemini-flash-latest has been intermittently overloaded (503s, some
-// requests taking 20-30s+ before failing) — gemini-flash-lite-latest is
-// currently far more responsive and is plenty capable for structured
-// palette/font JSON generation.
+// gemini-flash-latest was intermittently overloaded (503s, slow requests);
+// gemini-flash-lite-latest is more responsive and plenty capable here.
 const MODEL_NAME = process.env.GEMINI_MODEL ?? "gemini-flash-lite-latest";
 
 let client: GoogleGenerativeAI | null = null;

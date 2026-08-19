@@ -1,32 +1,16 @@
-/**
- * Deterministic per-brand dark palette derivation.
- *
- * The defect this exists to kill: dark mode used to be optional in the AI
- * contract (`dark: themeVariantTokensSchema.optional()` in lib/ai/schema.ts,
- * "only include if the brief asks for a dark theme" in lib/ai/prompt.ts), so
- * the model usually omitted it and StudioBuilder's hardcoded DEFAULT_DARK
- * took over — accent #8B5CF6, support #22D3EE, surface #121022, ink #E6E1F5,
- * muted #6B6483. QA generated three unrelated brands ("Aesthetic Portfolio",
- * "PulseMetrics Dashboard", "Neon Vortex") and got byte-identical dark
- * palettes: the same five violet hexes, on brands that share nothing.
- *
- * The fix has to be code-side and deterministic, otherwise it regresses the
- * first time the model has a bad day. Everything below is derived from the
- * brand's *own* light palette:
- *
- *   - Hue is preserved everywhere. The dark surface ramp is tinted with the
- *     brand's accent hue, so a terracotta brand gets a warm near-black and a
- *     teal brand gets a cool one — never a fixed #121022.
- *   - Lightness is remapped, not inverted naively: surfaces collapse into a
- *     narrow dark band with real elevation steps, inks rise into a narrow
- *     light band, and the accent moves only as far as legibility demands.
- *   - The accent stays recognisably the same brand colour (same hue, similar
- *     saturation) and is only lifted until it clears the dark surface as a
- *     UI element (3:1, WCAG SC 1.4.11).
- *
- * Consumers: lib/studio/deriveThemeVariant.ts (component-level dark variant)
- * and lib/ai/generate.ts (guarantees designSystem.dark always exists).
- */
+// Deterministic per-brand dark palette derivation, so a generated brand never
+// falls back to a fixed stock dark palette when the model omits one or
+// returns a bad one. Code-side and deterministic on purpose — a prompt-level
+// fix would regress the first time the model has a bad day. Everything below
+// derives from the brand's *own* light palette: hue is preserved throughout
+// (a terracotta brand gets a warm near-black, a teal brand a cool one, never
+// a fixed hex), lightness is remapped rather than naively inverted (surfaces
+// collapse into a dark band with real elevation steps, inks rise into a light
+// band), and the accent keeps its hue/saturation, lifted only until it clears
+// the dark surface (3:1, WCAG SC 1.4.11).
+//
+// Consumers: lib/studio/deriveThemeVariant.ts (component-level dark variant)
+// and lib/ai/generate.ts (guarantees designSystem.dark always exists).
 import {
   AA_LARGE_TEXT,
   AA_NORMAL_TEXT,
@@ -98,11 +82,8 @@ export function brandRampHue(palette: BrandPalette): { hue: number | null; satur
  * Re-lights a brand colour so it works as a fill/accent on a dark surface
  * while staying the same colour. Hue is fixed; saturation is nudged up
  * slightly because a dark background eats perceived chroma; lightness moves
- * only as far as needed to clear `minRatio` against the surface.
- *
- * This is what stops the "Neon Vortex" failure mode QA saw, where the dark
- * accent was byte-identical to the light accent (the light palette simply
- * leaked through untouched).
+ * only as far as needed to clear `minRatio` against the surface. This is what
+ * stops a dark accent from ending up byte-identical to the light one.
  */
 export function adaptAccentForDark(
   accentHex: string,
@@ -114,10 +95,9 @@ export function adaptAccentForDark(
   const saturation = saturationOf(hex);
   const lightness = lightnessOf(hex);
 
-  // A near-neutral "accent" (the #f0f0ef-as-primary case QA hit) has no
-  // chroma to preserve, so give it a floor — an action colour that is
-  // indistinguishable from the surface cannot carry primary actions. The
-  // deviation is reported by lib/ai/validateTokens.ts.
+  // A near-neutral "accent" has no chroma to preserve, so give it a floor —
+  // an action colour indistinguishable from the surface can't carry primary
+  // actions. The deviation is reported by lib/ai/validateTokens.ts.
   const boosted = saturation < 0.12 && hue !== null ? Math.max(saturation, 0.34) : saturation;
 
   // Dark-mode accents live in the upper-middle of the lightness range:
@@ -128,13 +108,8 @@ export function adaptAccentForDark(
   return ensureContrast(candidate, darkSurfaceHex, minRatio).hex;
 }
 
-/**
- * The whole point of this file: a dark five-slot palette derived from the
- * light one, mathematically, with no fixed hexes anywhere in the output.
- *
- * Verified in the fixture run against the exact three QA brands — the three
- * dark palettes that used to be byte-identical now share no hex at all.
- */
+// The whole point of this file: a dark five-slot palette derived from the
+// light one, mathematically, with no fixed hexes anywhere in the output.
 export function deriveDarkPaletteFromLight(light: BrandPalette): BrandPalette {
   const { hue, saturation } = brandRampHue(light);
 
@@ -182,13 +157,10 @@ export function deriveDarkSurfaceRamp(light: BrandPalette): {
   };
 }
 
-/**
- * True when `palette` is the stock violet DEFAULT_DARK from
- * components/studio/StudioBuilder.tsx (or a near-copy of it). Used by
- * lib/ai/generate.ts to reject a model-supplied dark theme that is really
- * just the app's own placeholder echoed back — the precise regression QA
- * caught across three unrelated brands.
- */
+// True when `palette` is the stock violet DEFAULT_DARK from
+// components/studio/StudioBuilder.tsx (or a near-copy). Used by
+// lib/ai/generate.ts to reject a model-supplied dark theme that's really just
+// the app's own placeholder echoed back.
 const STOCK_DARK_HEXES = ["#8b5cf6", "#22d3ee", "#121022", "#e6e1f5", "#6b6483"];
 
 export function looksLikeStockDark(hexes: string[]): boolean {
@@ -197,13 +169,10 @@ export function looksLikeStockDark(hexes: string[]): boolean {
   return overlap >= 3;
 }
 
-/**
- * Quality gate for a model-authored dark variant. A dark theme that isn't
- * actually dark, or that just re-serves the light palette (the "Neon Vortex"
- * case: dark accent/ink/muted identical to the light ones), is worse than no
- * dark theme at all because it silently looks broken — better to throw it
- * away and derive one.
- */
+// Quality gate for a model-authored dark variant. A dark theme that isn't
+// actually dark, or that just re-serves the light palette, is worse than no
+// dark theme at all because it silently looks broken — better to throw it
+// away and derive one.
 export function darkPaletteIsUsable(dark: BrandPalette, light: BrandPalette): boolean {
   if (looksLikeStockDark([dark.accent, dark.support, dark.surface, dark.ink, dark.muted])) return false;
   // A dark surface that isn't dark is not a dark theme.

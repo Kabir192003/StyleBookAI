@@ -1,7 +1,4 @@
-/**
- * /sign-in — simple username/password sign-in. See lib/auth/ for the
- * password hashing + session cookie logic behind this.
- */
+// Username/password sign-in — see lib/auth/ for the hashing + session logic.
 import { Suspense } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
 

@@ -1,11 +1,5 @@
-/**
- * Root layout — wraps every route.
- *
- * No third-party auth provider — auth is self-hosted username/password
- * (see lib/auth/, CLAUDE.md) via a plain session cookie, not a context
- * provider. Keep this file thin; per-route chrome belongs in nested layouts.
- */
-
+// No third-party auth provider here — auth is self-hosted username/password
+// (lib/auth/) via a plain session cookie, not a context provider.
 import type { Metadata, Viewport } from "next";
 import { landingFontVariables } from "@/lib/landing/fonts";
 import { SiteHeader } from "@/components/layout/SiteHeader";

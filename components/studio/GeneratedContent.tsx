@@ -1,22 +1,11 @@
-/**
- * Renders an AI-generated `uiStructure` as a real page.
- *
- * The contract with the model is that it chooses *what interface this product
- * needs* — which sections, in what order, with what content — and nothing
- * about how it looks. Everything below paints itself from the same `.pg-*`
- * classes and the same canvas token scope as the default showcase, so:
- *
- *   - a generated page can never invent a colour, a typeface or a radius;
- *   - editing a token moves the generated page exactly as it moves the
- *     showcase;
- *   - the click-to-edit inspector works here with no extra wiring, because it
- *     matches on those same classes.
- *
- * Unknown section types render nothing rather than throwing. The vocabulary
- * can grow ahead of this file (an older deployment reading a newer saved
- * result), and a page that quietly omits one band is a far better failure
- * than a blank canvas with a stack trace behind it.
- */
+// The model chooses what interface the product needs (sections, order,
+// content) and nothing about how it looks — everything here paints itself
+// from the same .pg-* classes and canvas token scope as the default showcase,
+// so a generated page can never invent a color/typeface/radius, editing a
+// token moves it exactly like the showcase, and click-to-edit works with no
+// extra wiring. Unknown section types render nothing rather than throwing,
+// since the vocabulary can grow ahead of this file (older deployment reading
+// a newer saved result) and a page quietly missing one band beats a stack trace.
 "use client";
 
 import { ArrowRight, Play, Search } from "lucide-react";
@@ -170,10 +159,7 @@ function RecordTable({ section }: { section: Extract<AISection, { type: "recordT
           <tbody>
             {section.rows.map((row, rowIndex) => (
               <tr key={rowIndex}>
-                {/* Rows are clipped to the header width rather than trusted:
-                    a row longer than `columns` would render cells with no
-                    heading, which is invalid table markup and unreadable to
-                    a screen reader. */}
+                {/* Clipped to the header width — a longer row would render cells with no heading, invalid for a screen reader. */}
                 {row.slice(0, section.columns.length).map((cell, cellIndex) => (
                   <td key={cellIndex}>{cell}</td>
                 ))}
@@ -446,9 +432,7 @@ export function GeneratedContent({ structure }: { structure: AIUiStructure }) {
   return (
     <div className="pg-scope">
       <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6, 40px)", padding: "22px 26px 34px" }}>
-        {/* The app chrome is ours, not the model's — it only supplies the
-            name and the nav labels. Generating the shell too would mean the
-            model could return a page with no navigation at all. */}
+        {/* Chrome is ours, not the model's — it only supplies the name and nav labels, so a page can't come back with no navigation. */}
         <nav className="pg-navbar">
           <span className="pg-navbar__brand">{structure.appName}</span>
           <div className="pg-row" style={{ gap: 4 }}>

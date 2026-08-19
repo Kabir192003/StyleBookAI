@@ -1,18 +1,6 @@
-/**
- * Feedback — alerts, badges, toast.
- *
- * This is the group that consumes P1's semantic role properties
- * (`--pg-success` / `--pg-warning` / `--pg-error`), because success, warning
- * and error are exactly the meanings the base five-token palette has no slot
- * for. Every one of them is read through the `--pgc-*` alias layer in
- * styles.ts with a WCAG-safe literal at the end of the chain, so this still
- * renders correctly against a manual system that has no semantic roles at
- * all — it just borrows sensible defaults instead of collapsing.
- *
- * The alerts are dismissible for real and the "restore" button brings them
- * back, so the interaction is repeatable during a demo rather than a
- * one-shot that leaves the specimen empty.
- */
+// Alerts/badges/toast read --pg-success/warning/error through the --pgc-*
+// alias layer with a WCAG-safe literal at the end of the chain, so this still
+// renders sensibly against a manual system that has no semantic roles at all.
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -62,9 +50,8 @@ function Alerts() {
           <div
             key={tone}
             className={`pg-alert pg-alert--${tone}`}
-            // role="alert" only on the failure: an assertive live region for
-            // all four would have a screen reader interrupt itself three
-            // times the moment this group mounts.
+            // role="alert" only on the failure — assertive on all four would
+            // have a screen reader interrupt itself three times on mount.
             role={tone === "error" ? "alert" : "status"}
           >
             <span className="pg-alert__icon" aria-hidden="true">
@@ -95,12 +82,8 @@ function Alerts() {
   );
 }
 
-/**
- * A real toast: triggered by a real click, auto-dismisses on a real timer,
- * and is positioned `absolute` inside `.pg-stage` rather than `fixed`. The
- * fixed version would escape the canvas and float over Studio's own chrome —
- * see the `.pg-stage` comment in styles.ts.
- */
+// Positioned absolute inside .pg-stage, not fixed — see the .pg-stage
+// comment in styles.ts for why (fixed would float over Studio's own chrome).
 export function ToastDemo() {
   const [open, setOpen] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);

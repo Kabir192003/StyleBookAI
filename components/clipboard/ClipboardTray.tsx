@@ -1,18 +1,11 @@
-/**
- * ClipboardTray — a floating, always-mounted panel (see app/layout.tsx)
- * for the in-app design clipboard (store/clipboardStore.ts). Collects
- * colors/fonts added from Browse via ClipboardButton, and turns them into
- * a single "Import into Studio" action via the same studioImportStore
- * stage/consume bridge Preview Lab's "Send to Studio" uses
- * (lib/studio/applyImport.ts) — so Studio ends up being the one place
- * every "send this to Studio" path converges on.
- *
- * `hydrated` gates the first real render: clipboardStore is persisted to
- * localStorage, so the store's initial value on the client differs from
- * the server-rendered empty state until zustand's persist middleware
- * rehydrates — rendering the badge/panel before that would either mismatch
- * or briefly flash "0".
- */
+// Floating, always-mounted clipboard panel (see app/layout.tsx). Collects
+// colors/fonts added from Browse and imports them into Studio through the
+// same studioImportStore stage/consume bridge Preview Lab's "Send to
+// Studio" uses, so every import path converges on Studio.
+//
+// `hydrated` gates the first real render: clipboardStore rehydrates from
+// localStorage after the server-rendered empty state, so rendering before
+// that would mismatch or flash "0".
 "use client";
 
 import { useEffect, useState } from "react";

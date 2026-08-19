@@ -1,19 +1,8 @@
-/**
- * GET /api/auth/health — read-only diagnosis of whether *this* deployment
- * can actually create and sign in accounts.
- *
- * This exists because the "unable to register" reports could not be
- * reproduced locally and could not be investigated remotely: the only code
- * paths that touch AUTH_SECRET or write to the `users` table are the
- * success paths of sign-up and sign-in, so confirming them on the deployed
- * site meant creating a real account on it. This route exercises the same
- * configuration read-only — env vars present? users table actually there? —
- * and answers in one request.
- *
- * It reports presence, never values: booleans and a row count only, no
- * URLs, no keys, no usernames. Nothing here is a secret, but nothing here
- * is useful to an attacker either.
- */
+// Read-only check for whether this deployment can actually create/sign in
+// accounts. Exists because sign-up/sign-in failures were hard to reproduce
+// remotely without creating a real account — this exercises the same config
+// (env vars set? users table reachable?) without touching real data. Reports
+// presence only (booleans + a row count), never values.
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/db/supabase";
 import { isSessionSigningConfigured } from "@/lib/auth/session";
@@ -31,8 +20,8 @@ export async function GET() {
 
   let usersTable: { ok: boolean; detail: string };
   try {
-    // HEAD-style count: touches the table (proving schema.sql was applied
-    // to *this* database) without reading anybody's row.
+    // HEAD-style count proves schema.sql was applied to this database
+    // without reading anybody's actual row.
     const admin = getSupabaseAdmin();
     const { count, error } = await admin.from("users").select("id", { count: "exact", head: true });
     if (error) throw error;

@@ -1,24 +1,17 @@
-/**
- * POST /api/figma-export — stores a FigmaExportPayload under a short random
- * code the user pastes into the StyleBook Figma plugin (which redeems it via
- * GET /api/figma-export/[code] — see that route). No auth required: the
- * payload is design tokens/geometry, not account data, same trust level as
- * the existing inline-project path in /api/export.
- *
- * The payload is *built on the client* (lib/figmaExport/captureCanvas.ts),
- * not here, because it is a serialization of the live canvas DOM — computed
- * styles and measured rects exist only in the browser. This route is
- * therefore a validated store-and-hand-back, not a generator.
- */
+// Stores a FigmaExportPayload under a short random code, redeemed by the
+// plugin via GET /api/figma-export/[code]. No auth required — it's design
+// tokens/geometry, not account data. The payload itself is built client-side
+// (lib/figmaExport/captureCanvas.ts) since it's a serialization of the live
+// canvas DOM (computed styles, measured rects) that only exists in the
+// browser — this route just validates and stores it.
 import { NextRequest, NextResponse } from "next/server";
 import { randomBytes } from "crypto";
 import { z } from "zod";
 import { getSupabaseAdmin } from "@/lib/db/supabase";
 
-/** Structural only. The node tree is large, deeply recursive, and produced
- *  by our own serializer rather than by user input, so validating every leaf
- *  would cost more than it protects; the fields the plugin actually branches
- *  on are checked and the rest is carried through. */
+// Structural only — the node tree is large and produced by our own
+// serializer, not user input, so only the fields the plugin actually
+// branches on are checked; the rest is carried through untouched.
 const PayloadSchema = z.object({
   schemaVersion: z.literal(2),
   meta: z.object({ name: z.string().min(1), generatedAt: z.string() }),
@@ -35,9 +28,8 @@ const PayloadSchema = z.object({
 const RequestSchema = z.object({ payload: PayloadSchema });
 
 const CODE_TTL_MS = 30 * 60 * 1000;
-/** Roughly the practical ceiling for a canvas tree; a payload larger than
- *  this means the walker ran away rather than that the page is genuinely
- *  that big, and would fail deeper in with a much worse message. */
+// Practical ceiling for a canvas tree — past this, the walker ran away
+// rather than the page genuinely being this big.
 const MAX_PAYLOAD_BYTES = 12 * 1024 * 1024;
 
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I — easy to type/paste by hand

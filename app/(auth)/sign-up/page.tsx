@@ -1,8 +1,5 @@
-/**
- * /sign-up — simple username/password account creation, no email or
- * verification step. See lib/auth/ for the password hashing + session
- * cookie logic behind this.
- */
+// Account creation — no email or verification step, just username/password.
+// See lib/auth/ for the hashing + session logic.
 import { Suspense } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
 

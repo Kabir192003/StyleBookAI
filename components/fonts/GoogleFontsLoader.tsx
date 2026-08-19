@@ -1,9 +1,7 @@
-/**
- * Injects a single Google Fonts CSS2 stylesheet link covering every font
- * passed in, so FontCard can render live previews in the real typeface
- * instead of a fallback. next/font/google can't be used here since the
- * font list is data-driven, not known statically at build time.
- */
+// Injects one Google Fonts CSS2 stylesheet link covering every font passed
+// in, so previews render in the real typeface instead of a fallback.
+// next/font/google can't be used here since the font list is data-driven,
+// not known at build time.
 "use client";
 
 import { useEffect } from "react";

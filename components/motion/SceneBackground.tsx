@@ -1,13 +1,10 @@
 "use client";
 
-/**
- * The living background: interpolates base + glow colors across the whole
- * page's scroll range using chroma-js (perceptual "lab" blending, so
- * transitions never pass through a muddy grey). Writes straight to CSS
- * custom properties on <html> from a single whole-document ScrollTrigger,
- * so every scene's atmosphere comes from the same source of truth without
- * any React state on the scroll path.
- */
+// The living background: interpolates base + glow colors across the whole
+// page's scroll range using chroma-js ("lab" mode, so transitions never pass
+// through a muddy grey). Writes straight to CSS custom properties on <html>
+// from one whole-document ScrollTrigger, so every scene reads the same
+// source of truth with no React state on the scroll path.
 import { useEffect } from "react";
 import chroma from "chroma-js";
 import gsap from "gsap";

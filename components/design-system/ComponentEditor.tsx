@@ -1,27 +1,19 @@
-/**
- * The per-component token editor: background / text / border, plus optional
- * overrides for the four non-default states.
- *
- * Extracted from DesignSystemGallery so the Studio inspector and the AI
- * results page edit component tokens through exactly the same control. That
- * shared identity is the point — "click a button in the canvas" and "edit the
- * button card in the gallery" must not be able to drift into two editors that
- * offer different properties for the same token set.
- *
- * Writes a whole `ComponentTokenSet` back on every change rather than
- * patching a field, so the caller decides where it lands (StudioState for the
- * inspector, the DesignSystem object for the gallery) and undo/redo stays the
- * caller's concern.
- */
+// Extracted from DesignSystemGallery so the Studio inspector and the AI
+// results page edit component tokens through the exact same control — they
+// must not drift into two editors offering different properties for the
+// same token set. Writes a whole ComponentTokenSet back on every change
+// rather than patching a field, so the caller decides where it lands
+// (StudioState for the inspector, the DesignSystem object for the gallery)
+// and undo/redo stays the caller's concern.
 "use client";
 
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { ComponentTokenSet } from "@/types/designSystem";
 
-/** The states a component can override. "default" is the token set itself, so
- *  it is deliberately absent here. Mirrors COMPONENT_STATES in
- *  lib/export/designTokens.ts — the export writes exactly these four. */
+// "default" is the token set itself, so it's deliberately absent here.
+// Mirrors COMPONENT_STATES in lib/export/designTokens.ts, which writes
+// exactly these four.
 export const NON_DEFAULT_STATES = ["hover", "active", "disabled", "focus"] as const;
 export type NonDefaultState = (typeof NON_DEFAULT_STATES)[number];
 
@@ -51,19 +43,16 @@ export function ComponentEditor({
 }: {
   tokens: ComponentTokenSet;
   onChange: (next: ComponentTokenSet) => void;
-  /** Which state's colours the canvas is currently forcing onto the selected
-   *  instance, so a hover/active/disabled/focus edit is visible without
-   *  actually having to hover, click-and-hold, or tab to it. Only the Studio
-   *  inspector passes this — DesignSystemGallery has no live canvas to
-   *  preview against, so the button is simply absent there. */
+  // Which state's colors the canvas is currently forcing onto the selected
+  // instance, so a hover/active/disabled/focus edit is visible without
+  // hovering, holding a click, or tabbing to it. Only the Studio inspector
+  // passes this — DesignSystemGallery has no live canvas to preview against.
   previewState?: NonDefaultState | null;
   onPreviewStateChange?: (state: NonDefaultState | null) => void;
-  /** Which of the four states actually have a real CSS rule behind them for
-   *  this component (see lib/studio/componentSelection.ts's
-   *  APPLICABLE_STATES) — a state with no live target on canvas is never
-   *  offered, so the control can't claim to do something the canvas won't
-   *  show. Defaults to all four for callers that don't know their
-   *  component's identity. */
+  // Which of the four states have a real CSS rule behind them for this
+  // component (see componentSelection.ts's APPLICABLE_STATES) — a state with
+  // no live target on canvas is never offered. Defaults to all four for
+  // callers that don't know their component's identity.
   applicableStates?: readonly NonDefaultState[];
 }) {
   const [statesOpen, setStatesOpen] = useState(false);
@@ -103,15 +92,12 @@ export function ComponentEditor({
                       onChange={(e) => {
                         const nextStates = { ...tokens.states };
                         if (e.target.checked) {
-                          // Empty, not a clone of the default colours: the
-                          // fields below still *display* the default (via
-                          // their own `?? tokens.x` fallback) as a starting
-                          // point to edit from, but nothing is actually
-                          // stored as a real override — and therefore
-                          // nothing on canvas changes — until a field is
-                          // genuinely picked. A clone here made every newly
-                          // enabled state look identical to the default,
-                          // which reads as "this state does nothing."
+                          // Empty, not a clone of the default colors — the
+                          // fields below still display the default via their
+                          // own `?? tokens.x` fallback, but nothing is a real
+                          // override (and nothing changes on canvas) until a
+                          // field is actually picked. Cloning here made every
+                          // newly enabled state look like it does nothing.
                           nextStates[state] = {};
                         } else {
                           delete nextStates[state];

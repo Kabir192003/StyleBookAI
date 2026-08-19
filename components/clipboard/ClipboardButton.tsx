@@ -1,9 +1,7 @@
-/**
- * ClipboardButton — the "add to clipboard" toggle used on ColorPlate and
- * font rows, alongside FavoriteButton. Unlike favoriting, the clipboard
- * needs no account — it's a pure client-side scratch tray (clipboardStore,
- * localStorage-backed), so this button never redirects to sign-in.
- */
+// The "add to clipboard" toggle on ColorPlate/font rows, alongside
+// FavoriteButton. Unlike favoriting, the clipboard is a pure client-side
+// scratch tray (localStorage-backed) — no account needed, so this never
+// redirects to sign-in.
 "use client";
 
 import { useEffect, useState } from "react";

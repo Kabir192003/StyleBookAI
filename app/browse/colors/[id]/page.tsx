@@ -1,11 +1,3 @@
-/**
- * /browse/colors/[id] — Color Detail
- *
- * Per docs/PRODUCT_AND_UX.md §2: "detail view per color with RGB/HSL
- * values and a contrast/accessibility note against white and black."
- * Reuses the same cream/ink editorial vocabulary as ColorPlate and the
- * theme detail page rather than inventing a new visual language.
- */
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { allColors } from "@/data/colors";

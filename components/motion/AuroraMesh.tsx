@@ -1,11 +1,9 @@
 "use client";
 
-/**
- * Coloured studio-lighting effect: a few large blurred fields that breathe
- * and drift slowly, with a small pointer-parallax offset per field. Colors
- * come from CSS custom properties written by SceneBackground, so the mesh
- * itself never re-renders on scroll — only the variables it reads change.
- */
+// Coloured studio-lighting effect: a few large blurred fields that breathe
+// and drift slowly, with a small pointer-parallax offset per field. Colors
+// come from CSS custom properties written by SceneBackground, so the mesh
+// itself never re-renders on scroll — only the variables it reads change.
 import { motion, useTransform } from "framer-motion";
 import { usePointer } from "./PointerProvider";
 import { useReducedMotion } from "@/hooks/useReducedMotion";

@@ -1,17 +1,10 @@
-/**
- * Pure code-generation for the Studio export drawer — no React, no side
- * effects. Given the current token state, formats it as a ready-to-paste
- * file in each supported target format.
- *
- * The token flattening and the DTCG/Figma JSON writers now live in
- * lib/export/designTokens.ts, shared with lib/export/generators.ts (the
- * saved-Project export API). The two pipelines had drifted far enough that
- * the same system exported from the Studio drawer and from /api/export
- * disagreed about which tokens even existed — dark palette, component
- * states and the type scale were present in one and missing from the
- * other. Anything that both pipelines need belongs in the shared module,
- * not here; this file only owns the Studio-specific target languages.
- */
+// Pure code-generation for the Studio export drawer — no React, no side
+// effects. Given the current token state, formats it as a ready-to-paste file
+// in each supported target format. Token flattening and the DTCG/Figma JSON
+// writers live in lib/export/designTokens.ts, shared with
+// lib/export/generators.ts, so the Studio drawer and /api/export can't drift
+// apart on which tokens exist; this file only owns the Studio-specific target
+// languages (Swift, Dart, React, etc.).
 import { SpacingScale, ShadowScale } from "@/types/designTokens";
 import { DesignSystem } from "@/types/designSystem";
 import { RADIUS_OPTIONS } from "@/lib/designTokens/radius";

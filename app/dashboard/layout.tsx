@@ -1,9 +1,5 @@
-/**
- * Layout for /dashboard (and, since Next nests routes, /dashboard/[id])
- * — mounts Footer (SiteHeader is already global).
- *
- * Owner: Amna
- */
+// Also covers /dashboard/[id] since Next nests routes. SiteHeader is global
+// already, so this just adds the Footer.
 import { Footer } from "@/components/layout/Footer";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

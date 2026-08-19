@@ -1,20 +1,13 @@
-/**
- * The landing page — "watch a page come to life." Styled to match
- * Landing.dc.html pulled from claude.ai/design (project "Website redesign
- * request"): the page itself starts deliberately undesigned (grey, Times
- * New Roman, no radius) and a five-act scroll narrative morphs it — via
- * CSS custom properties on the root element — into StyleBook's real
- * cream/ink/navy/Fraunces system, ending on a live "Aurelia" mockup site
- * dressed in four different theme editions.
- *
- * Ported from the design's vanilla-JS/GSAP implementation into React,
- * reusing this app's existing gsap + ScrollTrigger + Lenis stack (already
- * a dependency, already used the same way by the previous landing page).
- * Two of the original's purely decorative touches were intentionally
- * dropped rather than ported: the canvas mouse-paint trail in the hero,
- * and a scroll-velocity skew on the closing marquee — both add real
- * implementation risk for effects nobody would notice missing.
- */
+// The landing page — "watch a page come to life." The page starts
+// deliberately undesigned (grey, Times New Roman, no radius) and a
+// five-act scroll narrative morphs it, via CSS custom properties on the
+// root element, into StyleBook's real cream/ink/navy/Fraunces system,
+// ending on a live "Aurelia" mockup dressed in four theme editions.
+//
+// Built on this app's existing gsap + ScrollTrigger + Lenis stack. Two
+// purely decorative touches (a canvas mouse-paint trail, a scroll-velocity
+// marquee skew) were intentionally left out — real implementation risk for
+// effects nobody would notice missing.
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -162,12 +155,11 @@ const DOORS = [
 
 const EXPORT_FORMATS = ["{ } CSS Variables", "[ ] JSON Tokens", "~/ Tailwind", "◇ Figma Tokens", "⚛ React", "◆ Flutter", "SwiftUI", "↓ Style Guide"];
 
-// The AI generator (S6, the navy panel, now also the top-of-page hero)
-// is a real, working generator — POSTs to the same /api/ai/generate
-// route as /studio/ai — not a static mockup. State lives here (shared by
-// both render sites, see components/landing/LandingGeneratePanel.tsx);
-// LandingPreview normalizes a real AIGeneratedProject and the two static
-// fallbacks (pre-interaction, and "the live call failed") into one shape.
+// The AI generator (navy panel + top-of-page hero) is a real generator —
+// POSTs to /api/ai/generate, not a static mockup. State lives here, shared
+// by both render sites (see LandingGeneratePanel.tsx); LandingPreview
+// normalizes a real AIGeneratedProject and the two static fallbacks
+// (pre-interaction, and "the live call failed") into one shape.
 
 export function LandingExperience() {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -328,7 +320,6 @@ export function LandingExperience() {
     gsap.ticker.lagSmoothing(0);
 
     const ctx = gsap.context(() => {
-      // Loader
       gsap
         .timeline()
         .to("[data-loader-bar]", { width: "100%", duration: 1, ease: "power2.inOut" })
@@ -512,11 +503,8 @@ export function LandingExperience() {
           },
         });
       }
-      // "Welcome" covers the new top-of-page product hero (S0) — every
-      // label after it shifts by one now that there's a section before
-      // the "Undesigned" story hero; this array is positionally matched
-      // against root.querySelectorAll("section") below, so it must have
-      // exactly one entry per <section> in the same order.
+      // Positionally matched against root.querySelectorAll("section")
+      // below — must have exactly one entry per <section>, in order.
       const labels = ["Welcome", "Undesigned", "Act I — Colour", "Act II — Type", "Act III — Rhythm", "Act IV — Theme", "Act V — Editions", "Three doors", "Alive"];
       root.querySelectorAll<HTMLElement>("section").forEach((sec, i) => {
         ScrollTrigger.create({
@@ -529,7 +517,6 @@ export function LandingExperience() {
         });
       });
 
-      // Cursor (desktop, fine pointer only).
       const cd = cursorDotRef.current;
       const cr = cursorRingRef.current;
       if (cd && cr && window.matchMedia("(pointer:fine)").matches) {
@@ -565,7 +552,6 @@ export function LandingExperience() {
         });
       }
 
-      // Magnetic pill buttons.
       root.querySelectorAll<HTMLElement>("[data-pill]").forEach((el) => {
         el.style.setProperty("will-change", "transform");
         el.addEventListener("mousemove", (e) => {
@@ -578,7 +564,6 @@ export function LandingExperience() {
         });
       });
 
-      // Subtle 3D tilt on the Act IV frame, following the pointer.
       const frame = root.querySelector<HTMLElement>("[data-frame]");
       const act4 = root.querySelector<HTMLElement>("[data-act4]");
       if (frame && act4 && window.matchMedia("(pointer:fine)").matches) {
@@ -603,7 +588,6 @@ export function LandingExperience() {
         });
       }
 
-      // Colophon confetti burst, once.
       ScrollTrigger.create({
         trigger: "[data-colophon]",
         start: "top 70%",
@@ -653,7 +637,6 @@ export function LandingExperience() {
         Skip to content
       </a>
 
-      {/* Loader */}
       <div ref={loaderRef} data-loader className="fixed inset-0 z-[200] flex items-center justify-center bg-[#ECEBE7]">
         <div className="text-center">
           <div className="relative overflow-hidden pb-1.5 font-serif text-[clamp(38px,6vw,84px)] leading-none text-[#3A3A3A]" style={{ fontFamily: "'Times New Roman',serif" }}>
@@ -672,12 +655,10 @@ export function LandingExperience() {
         </div>
       </div>
 
-      {/* Progress rail */}
       <div className="pointer-events-none fixed right-0 top-0 z-[120] h-screen w-[3px]">
         <span ref={railFillRef} className="block w-full" style={{ height: 0, background: "linear-gradient(#C36B3E,#222D52,#D2B68A)" }} />
       </div>
 
-      {/* HUD */}
       <div className="pointer-events-none fixed bottom-5 left-[22px] z-[120] hidden gap-[18px] font-mono-plex text-[10px] uppercase tracking-[0.2em] text-white mix-blend-difference sm:flex">
         <span>
           tokens <span ref={hudTokRef}>00/24</span>
@@ -685,11 +666,9 @@ export function LandingExperience() {
         <span ref={hudActRef}>Undesigned</span>
       </div>
 
-      {/* Custom cursor */}
       <div ref={cursorRingRef} className="pointer-events-none fixed left-0 top-0 z-[190] h-[38px] w-[38px] rounded-full border-[1.5px] border-[#F2EBE0] opacity-0 mix-blend-difference" style={{ margin: "-19px 0 0 -19px" }} />
       <div ref={cursorDotRef} className="pointer-events-none fixed left-0 top-0 z-[191] h-2 w-2 rounded-full bg-[#C36B3E] opacity-0" style={{ margin: "-4px 0 0 -4px" }} />
 
-      {/* Toast */}
       <div className="pointer-events-none fixed bottom-[34px] left-1/2 z-[150] -translate-x-1/2">
         <div ref={toastRef} className="rounded-full bg-[#211E18] px-[22px] py-3 font-mono-plex text-xs text-[#F2EBE0] opacity-0 shadow-[0_16px_40px_-12px_rgba(20,17,12,0.5)]" style={{ transform: "translateY(20px)" }}>
           Copied
@@ -699,15 +678,11 @@ export function LandingExperience() {
       <main id="main">
         {landingProject && <GoogleFontsLoader fonts={[landingProject.fonts.primary]} />}
 
-        {/* S0 — Product hero: what this is, and a working generator, both
-            above the fold and above the scroll story, which stays an optional
-            deep-dive ("see how it's built") rather than the thing a visitor
-            has to get through first.
-
-            The "Press sheet" (1A) layout from the Hero Shortlist design doc —
-            see components/landing/LandingPressSheet.tsx. It owns the same
-            lifted generator state this section always did, so the panel
-            further down the page still mirrors whatever is typed here. */}
+        {/* S0 — product hero: what this is, plus a working generator, both
+            above the scroll story, which stays an optional deep-dive rather
+            than something a visitor has to get through first. Uses the same
+            lifted generator state as the panel further down the page, so
+            they stay in sync. */}
         <LandingPressSheet
           inputId="landing-ai-prompt-hero"
           prompt={landingPrompt}
@@ -1197,10 +1172,9 @@ export function LandingExperience() {
               </div>
 
               <div data-reveal-item className="mt-[30px] flex flex-wrap gap-3.5">
-                {/* Always the same button element (never swapped for a
-                    <Link>) so the magnetic [data-pill] mousemove listener
-                    attached once at mount keeps working after a live
-                    generation changes its label/action. */}
+                {/* Always a <button>, never swapped for a <Link> — the
+                    magnetic [data-pill] listener is attached once at mount
+                    and needs the same element to keep working. */}
                 <button
                   type="button"
                   data-pill

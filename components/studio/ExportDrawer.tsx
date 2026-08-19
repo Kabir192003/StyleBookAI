@@ -38,9 +38,8 @@ export function ExportDrawer({ tokens, onClose }: { tokens: StudioExportTokens; 
   async function generateFigmaCode() {
     setFigmaState({ kind: "generating" });
     try {
-      // Imported lazily: captureCanvas reaches for `document` and pulls in the
-      // DOM serializer, neither of which should be in the drawer's initial
-      // bundle when most exports never touch the Figma tab.
+      // Lazy import — captureCanvas reaches for `document` and pulls in the
+      // DOM serializer, which most exports never need in the initial bundle.
       const [{ captureFromCanvas }, { buildFigmaPayload }] = await Promise.all([
         import("@/lib/figmaExport/captureCanvas"),
         import("@/lib/figmaExport/serializePayload"),
@@ -64,13 +63,7 @@ export function ExportDrawer({ tokens, onClose }: { tokens: StudioExportTokens; 
   const code = generateExportCode(tab, tokens);
   const filename = exportFileName(tab, tokens.name);
 
-  /**
-   * The drawer used to offer copy-to-clipboard only, so the "download the
-   * design tokens and import them into Figma" flow was impossible from the
-   * Studio — you had to paste into your own editor and save the file
-   * yourself, guessing the extension. The MIME type matters too: a
-   * `.tokens.json` served as text/plain is refused by some import dialogs.
-   */
+  // MIME type matters here — a `.tokens.json` served as text/plain gets refused by some import dialogs.
   function download() {
     saveAs(new Blob([code], { type: EXPORT_MIME[tab] }), filename);
   }
@@ -81,8 +74,7 @@ export function ExportDrawer({ tokens, onClose }: { tokens: StudioExportTokens; 
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      // Clipboard can fail (permissions, insecure context) — button label
-      // simply won't flip to "Copied", no need to surface an error.
+      // Clipboard can fail (permissions, insecure context) — button just won't flip to "Copied".
     }
   }
 

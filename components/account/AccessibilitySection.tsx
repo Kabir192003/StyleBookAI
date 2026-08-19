@@ -1,11 +1,7 @@
-/**
- * The opt-in half of the app's accessibility story, in /account.
- *
- * Only preferences that visibly change the interface live here. The
- * always-on half — labels, alt text, landmarks, the skip link, focus order,
- * keyboard operation — has no switches by design; see the header comment in
- * lib/a11y/preferences.ts for why that split exists.
- */
+// The opt-in half of the app's accessibility story (/account). Only prefs
+// that visibly change the UI live here — the always-on half (labels, alt
+// text, landmarks, skip link, focus order, keyboard nav) has no switches
+// by design; see lib/a11y/preferences.ts for why.
 "use client";
 
 import { useEffect, useState } from "react";

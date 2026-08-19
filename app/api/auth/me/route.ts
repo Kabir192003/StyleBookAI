@@ -1,13 +1,7 @@
-/**
- * GET /api/auth/me — returns the signed-in user, or { user: null } when
- * signed out. Never a 401 here — this route's whole job is answering
- * "who (if anyone) is signed in," so a signed-out visitor is a normal
- * response, not an error.
- *
- * DELETE /api/auth/me — permanently deletes the signed-in user's account.
- * ON DELETE CASCADE on projects.user_id and favorites.user_id (see
- * lib/db/schema.sql) takes their saved projects and favorites with it.
- */
+// GET never 401s — a signed-out visitor is a normal answer to "who's signed
+// in," not an error.
+// DELETE permanently deletes the account; ON DELETE CASCADE (lib/db/schema.sql)
+// takes their projects and favorites with it.
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { clearSessionCookie } from "@/lib/auth/session";

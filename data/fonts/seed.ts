@@ -1,15 +1,6 @@
-/**
- * Real, hand-curated Google Fonts seed set — mirrors data/colors/tailwind.ts's
- * pattern (a committed, real static file the app imports directly, no
- * runtime API call). Every `googleFontsId` is a real Google Fonts family
- * name so next/font/google can load it without a lookup. `note` is written
- * per font, same editorial bar as data/colors/curated.ts.
- *
- * No GOOGLE_FONTS_API_KEY is configured yet (see .env.local), so this file
- * is hand-written rather than script-generated — scripts/transformFonts.ts
- * can supersede it later by fetching the full catalog once a key exists;
- * nothing else needs to change, data/fonts/index.ts just needs a new import.
- */
+// Hand-curated Google Fonts seed set with real pairing data and bespoke
+// notes — takes precedence over the auto-generated catalog in google.ts
+// wherever the same font appears in both, see data/fonts/index.ts.
 import { Font } from "@/types/font";
 
 export const fontsSeed: Font[] = [

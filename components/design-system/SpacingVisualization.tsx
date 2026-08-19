@@ -1,9 +1,5 @@
-/**
- * Shared spacing-scale visualization — used by both the AI results page
- * (components/ai/PromptInput.tsx, always read-only) and Studio (`editable`
- * there). Shows every step with its index and px value; when editable, a
- * 4px/8px base toggle regenerates the whole scale via generateSpacingScale.
- */
+// Shared between the AI results page (read-only) and Studio (editable). When
+// editable, the base toggle regenerates the whole scale via generateSpacingScale.
 import { SpacingScale } from "@/types/designTokens";
 import { SPACING_BASE_OPTIONS, generateSpacingScale } from "@/lib/designTokens/spacing";
 

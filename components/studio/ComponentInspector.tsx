@@ -1,30 +1,13 @@
-/**
- * The panel that opens when something in the canvas is clicked.
- *
- * It has two shapes, because the canvas contains two genuinely different
- * kinds of thing and pretending otherwise would mean showing a background
- * colour picker for a headline:
- *
- *   - **A component** (button, card, input, …) has a `ComponentTokenSet`:
- *     background, text, border, and overrides for its hover / active /
- *     disabled / focus states. Edited through the same `ComponentEditor` the
- *     AI results page uses, and written to
- *     `designSystem[variant].components[name]`.
- *   - **A type role** (display, heading, body) has a typeface. Edited by
- *     picking from the whole font catalogue, and written to
- *     `StudioState.headFont` / `.bodyFont`.
- *
- * Both then share a "whole system" block — radius and the type scale — which
- * is labelled as system-wide rather than quietly mixed in. A user who edits
- * "radius" from inside a panel headed "Primary button" and watches every card
- * and input change shape too has been misled by the UI; the honest fix is the
- * label, not hiding the control, because the radius genuinely is one token and
- * inventing a per-component one would mean emitting tokens no export has a
- * slot for.
- *
- * Everything writes through callbacks, so undo/redo and dirty-tracking stay
- * entirely `StudioBuilder`'s concern.
- */
+// Two shapes, because the canvas holds two genuinely different kinds of
+// thing: a component (button, card, input) has a ComponentTokenSet edited
+// through the same ComponentEditor the AI results page uses, written to
+// designSystem[variant].components[name]; a type role (display, heading,
+// body) has a typeface, written to StudioState.headFont/.bodyFont. Both
+// share a "whole system" block (radius, type scale) labeled as system-wide
+// rather than mixed in quietly — radius is genuinely one token, and a
+// per-component one would mean emitting tokens no export has a slot for.
+// Everything writes through callbacks, so undo/redo and dirty-tracking stay
+// StudioBuilder's concern.
 "use client";
 
 import { X } from "lucide-react";
@@ -59,13 +42,13 @@ export function ComponentInspector({
 }: {
   selection: Selection;
   variant: "light" | "dark";
-  /** Null while the selection is a type role, which has no component tokens. */
+  // Null while the selection is a type role, which has no component tokens.
   tokens: ComponentTokenSet | null;
   radius: number;
   headFont: string;
   bodyFont: string;
   typeScale: TypeScale;
-  /** Which state the canvas is currently forcing onto the selected instance. */
+  // Which state the canvas is currently forcing onto the selected instance.
   previewState: NonDefaultState | null;
   onPreviewStateChange: (state: NonDefaultState | null) => void;
   onTokensChange: (next: ComponentTokenSet) => void;
@@ -77,8 +60,8 @@ export function ComponentInspector({
 }) {
   const isType = selection.kind === "type";
   const title = isType ? TYPE_ROLE_LABELS[selection.role] : COMPONENT_LABELS[selection.name];
-  // Display and heading share the display face — the system has two faces,
-  // not seven, and the picker must write to the one actually in use.
+  // Display and heading share the display face — only two faces exist, and
+  // the picker must write to the one actually in use.
   const usesBodyFace = isType && selection.role === "body";
 
   return (
@@ -95,10 +78,8 @@ export function ComponentInspector({
               ? usesBodyFace
                 ? "Uses the body typeface"
                 : "Uses the display typeface"
-              : // Which theme variant is being written is not cosmetic —
-                // editing in Dark and expecting Light to change is an easy and
-                // silent mistake, so the panel says so rather than leaving it
-                // implied by a toggle at the other end of the page.
+              : // Says which variant is being edited outright, since editing
+                // Dark while expecting Light to change is an easy silent mistake.
                 `Editing the ${variant} variant`}
           </p>
         </div>
@@ -173,9 +154,7 @@ export function ComponentInspector({
           aria-label="Base text size"
         />
 
-        {/* The other face is still reachable from here, so a user who clicked a
-            button rather than a heading is not sent back to the canvas to find
-            one before they can change a typeface. */}
+        {/* Keeps both faces reachable here so clicking a button doesn't require going back to the canvas for a typeface. */}
         {!isType && (
           <div className="mt-3 flex flex-col gap-3">
             <FontPicker label="Display font" value={headFont} onChange={onHeadFontChange} />

@@ -1,13 +1,5 @@
-/**
- * /account — the signed-in user's home base: profile, saved projects,
- * favorited colors/fonts/themes, and preferences. Everything here is
- * real — no Clerk, no placeholders — backed by the simple username/
- * password system in lib/auth/ and the favorites/projects tables in
- * lib/db/schema.sql.
- *
- * Signed-out visitors get a plain sign-in prompt instead of an empty
- * shell — there's nothing useful to show without an account.
- */
+// Signed-in home base: profile, saved projects, favorites, preferences.
+// All real (no Clerk), backed by lib/auth/ and lib/db/schema.sql.
 "use client";
 
 import { useEffect, useState } from "react";
@@ -104,11 +96,9 @@ function SignedOutPrompt() {
           </div>
         </div>
 
-        {/* Deliberately outside the sign-in gate. These preferences live in
-            localStorage and need no account, and requiring someone to create
-            one before they can turn on larger text or reduce motion would put
-            the barrier in front of exactly the people the settings exist
-            for. */}
+        {/* Outside the sign-in gate on purpose: these prefs live in localStorage
+            and need no account, and gating them would block the people who
+            need larger text / reduced motion most. */}
         <div className="w-full">
           <AccessibilitySection />
         </div>

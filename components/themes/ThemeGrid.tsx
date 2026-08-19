@@ -1,13 +1,7 @@
-/**
- * ThemeGrid — "the newsstand": a masonry wall of complete theme editions,
- * each cover set in its own palette and fonts, plus an editor's-pick
- * spotlight for the first match. Used by app/browse/themes/page.tsx.
- *
- * Styled to match the Themes.dc.html design pulled from claude.ai/design
- * (project "Website redesign request"), same treatment as ColorGrid and
- * FontGrid — cream/ink/navy editorial chrome, Fraunces + IBM Plex Mono,
- * category tabs instead of dropdowns.
- */
+// "The newsstand" — a masonry wall of complete theme editions, each cover
+// set in its own palette and fonts, plus an editor's-pick spotlight for
+// the first match. Used by app/browse/themes/page.tsx, same editorial
+// treatment as ColorGrid and FontGrid.
 "use client";
 
 import { useMemo, useState } from "react";

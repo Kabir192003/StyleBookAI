@@ -1,17 +1,10 @@
-/**
- * PromptInput — the /studio/ai screen: prompt box, generated result, and
- * a live mock preview, all driving the real POST /api/ai/generate flow.
- * See docs/PRODUCT_AND_UX.md §4.
- *
- * Styled to match the rest of the site's light cream/ink editorial chrome
- * (same vocabulary as SiteHeader.tsx and StudioBuilder.tsx: bg-[#EDE6DA]
- * page background, #211E18 ink, #222D52 accent, bg-[#F2EBE0] cards) — an
- * earlier version used a one-off dark-cosmic palette distinct from every
- * other page, which looked like a different product bolted on. The
- * generated preview mock below (LivePreviewMock) is intentionally NOT
- * part of this — it renders using the AI-generated brand's own colors,
- * not the site's chrome.
- */
+// The /studio/ai screen: prompt box, generated result, and a live mock
+// preview, driving POST /api/ai/generate. See docs/PRODUCT_AND_UX.md §4.
+//
+// Styled to match the rest of the site's cream/ink editorial chrome (not
+// a one-off dark palette like an earlier version had) — except the
+// generated preview mock (LivePreviewMock) below, which intentionally
+// renders in the AI brand's own colors, not the site's.
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -35,10 +28,9 @@ const starterPrompts = [
   "Playful kids brand with bold color moments",
 ];
 
-// Also the fallback passed to paletteFromAIColors when a role can't be
-// matched at all — same values used both for this page's own live preview
-// and for openInStudio()'s handoff, so both draw from one function
-// (paletteFromAIColors) instead of two independently-maintained mappings.
+// Also the fallback for paletteFromAIColors when a role can't be matched —
+// shared by this page's live preview and openInStudio()'s handoff, so both
+// draw from one function instead of two mappings to keep in sync.
 const DEFAULT_PREVIEW_PALETTE: PaletteTokens = {
   accent: "#3B82F6",
   support: "#93C5FD",
@@ -51,19 +43,12 @@ function onColor(hex: string): string {
   return getContrastRatio(hex, "#FBF8F2") >= getContrastRatio(hex, "#141110") ? "#FBF8F2" : "#141110";
 }
 
-/**
- * Shows the measured contrast results and anything the pipeline changed or
- * couldn't honour.
- *
- * Both halves exist because QA caught the generator being quietly untrue: it
- * shipped body text at 1.02:1 while its own prose claimed WCAG AA, and it
- * silently turned a "hard 0px corners" brief into 4px. lib/ai/validateTokens.ts
- * now measures and repairs, and lib/ai/constraints.ts records substitutions —
- * but until this panel existed none of that reached the person reading the
- * result, so from the outside the tool looked exactly as untrustworthy as
- * before. Numbers here are always measurements of the final tokens, never
- * model claims.
- */
+// Shows the measured contrast results and anything the pipeline changed or
+// couldn't honour. Exists because the generator used to claim WCAG AA while
+// quietly shipping 1.02:1 body text — lib/ai/validateTokens.ts measures and
+// repairs, lib/ai/constraints.ts records substitutions, and this panel is
+// what actually surfaces that to the user. Numbers here are always
+// measurements of the final tokens, never model claims.
 function VerificationPanel({
   report,
   deviations,
@@ -185,19 +170,16 @@ export function PromptInput() {
   const [result, setResult] = useState<AIGeneratedProject | null>(null);
   const [sentToStudio, setSentToStudio] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
-  // What "Regenerate" without feedback can't do: nudge a result instead of
-  // replacing it outright. Kept separate from `prompt` (the original brief,
-  // shown in the textarea) so re-opening this page later still shows what
-  // the user actually typed, not a growing chain of refinement notes.
+  // Kept separate from `prompt` (the original brief in the textarea) so
+  // reopening this page later shows what was typed, not a growing chain
+  // of refinement notes.
   const [refinement, setRefinement] = useState("");
   const saveAIResult = useAIResultStore((s) => s.setResult);
 
-  // Hydrate from the last generation (sessionStorage-backed) instead of
-  // always starting blank — fixes navigating to Studio and back losing the
-  // result. Done in an effect (not the useState initializer) so the first
-  // client render matches the server-rendered (blank) HTML — reading the
-  // store during the initializer would hydrate ahead of the server and
-  // trigger a React hydration-mismatch warning.
+  // Hydrate from the last generation instead of always starting blank, so
+  // navigating to Studio and back doesn't lose the result. Done in an
+  // effect, not the useState initializer, so it doesn't hydrate ahead of
+  // the server-rendered (blank) HTML and trigger a mismatch warning.
   useEffect(() => {
     const stored = useAIResultStore.getState();
     if (stored.result) {
@@ -207,10 +189,8 @@ export function PromptInput() {
     }
   }, []);
 
-  // `promptOverride` lets a refinement request send the brief *plus* the
-  // feedback to the model without touching what's shown in the textarea —
-  // the store still saves the plain `prompt`, so reopening this page later
-  // shows the original brief, not an ever-growing chain of refinement notes.
+  // `promptOverride` sends the brief plus refinement feedback to the model
+  // without touching what's shown in the textarea — same reason as above.
   async function handleGenerate(promptOverride?: string) {
     const effectivePrompt = promptOverride ?? prompt;
     if (!effectivePrompt.trim()) return;
@@ -268,15 +248,11 @@ export function PromptInput() {
     router.push(`/studio?${params.toString()}`);
   }
 
-  /**
-   * Lets someone export straight off this page without a detour through
-   * Studio, for the case where the AI result is already what they want.
-   * Built the same way `openInStudio()` derives a palette (light from the
-   * generated colours, dark by the same rule Studio itself uses when a
-   * project has no explicit dark palette) rather than duplicating Studio's
-   * full state-seeding logic — this only needs read-only export tokens, not
-   * a live-editable StudioState.
-   */
+  // Lets someone export straight off this page without a detour through
+  // Studio. Derives the palette the same way openInStudio() does (light
+  // from the generated colours, dark via Studio's own no-dark-palette
+  // rule) rather than duplicating Studio's full state-seeding logic, since
+  // this only needs read-only export tokens, not a live StudioState.
   function studioExportTokensFromAIResult(project: AIGeneratedProject): StudioExportTokens {
     const light = paletteFromAIColors(project.colors, DEFAULT_PREVIEW_PALETTE);
     return {

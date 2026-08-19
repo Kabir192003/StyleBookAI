@@ -1,35 +1,19 @@
-/**
- * Buttons — the group a reviewer reaches for first, so every state here is
- * the real thing rather than a static swatch labelled "hover":
- *
- *   :hover / :active / :focus-visible / :disabled  -> real CSS in styles.ts
- *   disabled                                        -> real `disabled` attr
- *   loading                                         -> real async state,
- *                                                      real CSS spinner
- *
- * That is P2's non-negotiable in docs/DESIGN_PLAYGROUND.md ("real …CSS, not
- * screenshots of states"). The consequence worth knowing: the *only* way to
- * see the hover colour is to hover, so the specimen list shows one button
- * per variant rather than a five-across state matrix. A state matrix would
- * have needed forced-state classes, which would then have to be maintained
- * in parallel with the real pseudo-classes and would inevitably drift.
- */
+// Every state here is real, not a screenshot: hover/active/focus-visible/
+// disabled come from real CSS in styles.ts, and loading is real async state
+// with a real CSS spinner. Consequence: the only way to see the hover color
+// is to hover, so the specimen list shows one button per variant instead of
+// a state matrix — forced-state classes would drift from the real ones.
 "use client";
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Check, Download, Heart, MoreHorizontal, Plus, Trash2 } from "lucide-react";
 
-/**
- * A genuinely asynchronous button: click -> disabled + spinner -> confirmed
- * state -> back to idle. This is the group's proof that the components are
- * live React and not markup — a reviewer clicks it and watches three
- * distinct renders.
- */
+// click -> disabled + spinner -> confirmed -> back to idle. Proof the
+// components are live React, not static markup.
 export function SaveButton() {
   const [phase, setPhase] = useState<"idle" | "saving" | "saved">("idle");
-  // Timers are torn down on unmount because the canvas mounts and
-  // unmounts these freely as experiments are added, reordered and deleted;
-  // a pending setState on an unmounted tree is a warning at best.
+  // Torn down on unmount — the canvas mounts/unmounts these freely as
+  // experiments are added and deleted, and a pending setState after that warns.
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
@@ -46,9 +30,8 @@ export function SaveButton() {
       className="pg-btn pg-btn--primary"
       onClick={run}
       data-loading={phase === "saving" ? "true" : undefined}
-      // The button removes itself from the tab order while working, and the
-      // live label change is announced because the accessible name is the
-      // text content, which actually changes.
+      // Disabled pulls it out of the tab order while working; the label
+      // change gets announced since the accessible name is the text content.
       disabled={phase === "saving"}
       aria-live="polite"
     >
@@ -59,7 +42,7 @@ export function SaveButton() {
   );
 }
 
-/** A real toggle button — `aria-pressed` flips, so it is not a fake state. */
+// aria-pressed flips for real, not a fake toggled class.
 export function LikeButton() {
   const [liked, setLiked] = useState(false);
   return (

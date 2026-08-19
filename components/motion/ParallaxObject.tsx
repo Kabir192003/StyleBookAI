@@ -1,11 +1,8 @@
 "use client";
 
-/**
- * Depth-based pointer parallax for the hero's floating design objects.
- * `depth` 0 = far/still, 1 = near/most movement — compose several of these
- * at different depths so the object cluster reads as one 3D scene rather
- * than a flat sticker sheet.
- */
+// Depth-based pointer parallax for the hero's floating design objects.
+// `depth` 0 = far/still, 1 = near/most movement — compose several at
+// different depths so the cluster reads as one 3D scene, not a sticker sheet.
 import { motion, useTransform } from "framer-motion";
 import { ReactNode } from "react";
 import { usePointer } from "./PointerProvider";

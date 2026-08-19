@@ -1,19 +1,9 @@
-/**
- * Text-format export generators for the saved-Project API
- * (POST /api/export) — CSS custom properties, SCSS variables, a Tailwind
- * config fragment, a W3C DTCG token file, a Tokens Studio file, and a
- * readable JSON dump. The PDF style guide is a separate, fully client-side
- * export (lib/export/pdfStyleGuide.ts, rasterized with html-to-image) —
- * this file only covers the code-snippet formats.
- *
- * The token flattening and every JSON writer now come from
- * lib/export/designTokens.ts, which the Studio drawer
- * (lib/studio/exportCode.ts) uses too. Before that, this file kept its own
- * copy of `themeVariantEntries` and its `toJson` just re-serialised the
- * incoming request body — so the API's "JSON export" was whatever the
- * client happened to post, in whatever key order, with no token types at
- * all and nothing a design tool could import.
- */
+// Text-format export generators for the saved-Project API (POST /api/export)
+// — CSS, SCSS, Tailwind config, W3C DTCG tokens, Tokens Studio, readable
+// JSON. The PDF style guide is separate and fully client-side
+// (lib/export/pdfStyleGuide.ts). Token flattening and the JSON writers come
+// from lib/export/designTokens.ts, shared with the Studio drawer
+// (lib/studio/exportCode.ts), so both pipelines emit the same shape.
 import { Color } from "@/types/color";
 import { Font } from "@/types/font";
 import { TypeScale } from "@/types/theme";

@@ -1,9 +1,4 @@
-/**
- * Layout for /account — mounts Footer (SiteHeader is already global, see
- * components/layout/SiteHeader.tsx and app/layout.tsx).
- *
- * Owner: Amna
- */
+// SiteHeader is already global (app/layout.tsx), so this only adds the Footer.
 import { Footer } from "@/components/layout/Footer";
 
 export default function AccountLayout({ children }: { children: React.ReactNode }) {

@@ -1,12 +1,8 @@
 "use client";
 
-/**
- * Lenis smooth scroll, wired to GSAP's ticker + ScrollTrigger per the
- * official integration recipe. Skipped entirely on touch devices (native
- * touch scrolling feels better than a lerped scroll there) and under
- * prefers-reduced-motion (scroll-jacking is exactly what that preference
- * asks us to avoid).
- */
+// Lenis smooth scroll, wired to GSAP's ticker + ScrollTrigger. Skipped on
+// touch devices (native touch scrolling feels better than lerped there)
+// and under prefers-reduced-motion (scroll-jacking is what that avoids).
 import { ReactNode, useEffect } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";

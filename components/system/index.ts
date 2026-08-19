@@ -1,23 +1,12 @@
-/**
- * The StyleBook component library — the single import surface the Studio
- * canvas consumes.
- *
- * Everything here is props-free where it can be and styles itself entirely
- * from CSS custom properties, never from React props. The consuming scope
- * (`[data-sb-canvas]` in Studio) defines those properties, so the *same*
- * element renders differently under a different system purely because it
- * resolves different `var(...)` values. That is what lets the default
- * showcase and the AI-generated UI be styled by one mechanism instead of two,
- * and it is why adding a colour or theme prop to any of these would be a
- * mistake — it would reintroduce exactly the per-surface branching this
- * design exists to prevent.
- *
- * There is deliberately no "group" or registry export. Components are
- * composed into real pages (components/studio/ShowcaseContent.tsx and
- * GeneratedContent.tsx), not listed as labelled specimens: a page of
- * specimens tells you the parts exist, it does not tell you whether the
- * system works.
- */
+// Components here are props-free where possible and style themselves purely
+// from CSS custom properties defined by the consuming [data-sb-canvas] scope —
+// don't add a color/theme prop to any of these, it would reintroduce the
+// per-surface branching this design exists to avoid.
+//
+// No "group" or registry export on purpose: components are composed into
+// real pages (ShowcaseContent.tsx, GeneratedContent.tsx), not listed as
+// specimens — a page of specimens proves the parts exist, not that the
+// system works.
 export { SaveButton, LikeButton } from "./Buttons";
 export { FollowButton } from "./Cards";
 export { Navbar, Tabs, Breadcrumbs } from "./Navigation";
