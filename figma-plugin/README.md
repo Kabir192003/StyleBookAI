@@ -15,8 +15,16 @@ npm run build
 Then in Figma: **Plugins → Development → Import plugin from manifest…**,
 point it at `manifest.json` in this directory.
 
-Before shipping, replace `YOUR-STYLEBOOK-DOMAIN` in `manifest.json`'s
-`networkAccess.allowedDomains` with the real deployed StyleBook origin.
+`manifest.json`'s `networkAccess.allowedDomains` already points at the real
+deployed StyleBook origin.
+
+## Publishing to Figma Community
+
+So anyone can install it without cloning/building anything: Figma logo →
+**Plugins → Manage plugins** → select the plugin → **Publish**, then submit
+for Figma's review. Icon (16/24/32/128px) and a 1920×1080 cover image are in
+`store-assets/`, along with `store-assets/LISTING.md` for the name/tagline/
+description/category text to paste into the publish form.
 
 ## Status
 
