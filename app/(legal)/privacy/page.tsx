@@ -103,7 +103,7 @@ export default function PrivacyPage() {
 
       <h2>Questions</h2>
       <p>
-        For anything not covered here, reach out at <a href="mailto:hello@stylebook.app">hello@stylebook.app</a>.
+        For anything not covered here, reach out at <a href="mailto:kabiroscope@gmail.com">kabiroscope@gmail.com</a>.
       </p>
     </LegalPage>
   );
