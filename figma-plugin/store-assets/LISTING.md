@@ -31,9 +31,7 @@ maps to best at submit time)
 design tokens, design system, variables, component library, auto layout
 
 ## Support contact
-hello@stylebook.app — placeholder used across the site's Privacy/Terms pages.
-Swap for a real monitored inbox before submitting, since Figma routes user
-reports here.
+kabiroscope@gmail.com
 
 ## Network access disclosure
 Restricted to style-book-ai.vercel.app only (already set in manifest.json).
