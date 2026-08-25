@@ -42,6 +42,9 @@ export const SYSTEM_COMPONENT_CSS = `
   --pgc-ink: var(--pg-text, var(--ds-color-text, var(--color-ink, #191919)));
   --pgc-muted: var(--pg-muted, var(--ds-color-text-muted, var(--color-muted, #6f6a61)));
   --pgc-border: var(--pg-border, var(--ds-color-border, var(--color-muted, #d9d4cb)));
+  /* For controls whose border is their only boundary (see roleProperties.ts).
+     Falls back to the plain border outside a canvas scope. */
+  --pgc-border-strong: var(--pg-border-strong, var(--pgc-border));
 
   /* "primary" is what a filled button uses; "accent" is the highlight role
      (focus rings, active tabs, links). Separate roles in roleProperties.ts,
@@ -200,7 +203,9 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-btn--outline {
   background: transparent;
   color: var(--ds-button-text, var(--pgc-ink));
-  border-color: var(--ds-button-border, var(--pgc-border));
+  /* Its border is the whole control — a decorative hairline here left the
+     button invisible on a dark surface. */
+  border-color: var(--ds-button-border, var(--pgc-border-strong));
 }
 .pg-btn--outline:hover:not(:disabled),
 .pg-btn--outline[data-sb-preview="hover"] {
@@ -214,7 +219,7 @@ export const SYSTEM_COMPONENT_CSS = `
 }
 .pg-btn--outline:disabled {
   color: var(--ds-button-text-disabled, var(--ds-button-text, var(--pgc-ink)));
-  border-color: var(--ds-button-border-disabled, var(--ds-button-border, var(--pgc-border)));
+  border-color: var(--ds-button-border-disabled, var(--ds-button-border, var(--pgc-border-strong)));
 }
 
 .pg-btn--ghost { background: transparent; color: var(--ds-button-text, var(--pgc-ink)); }
@@ -354,6 +359,11 @@ export const SYSTEM_COMPONENT_CSS = `
   border: 1px solid var(--ds-card-border, var(--pgc-border));
   border-radius: var(--pgc-radius);
   overflow: hidden;
+  /* Cards are the dominant shadow-bearing surface in most showcases — without
+     this, the Shadow selector only ever visibly moved the two raised button
+     variants, which reads as "the control does nothing" to anyone judging it
+     by the page's actual cards. */
+  box-shadow: var(--pgc-shadow);
   transition: border-color var(--pgc-t), box-shadow var(--pgc-t), transform var(--pgc-t);
 }
 .pg-card__body { display: flex; flex-direction: column; gap: var(--space-2, 10px); padding: var(--space-4, 18px); }
