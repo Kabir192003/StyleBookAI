@@ -47,6 +47,31 @@ function fontStack(family: string, generic: string): string {
   return `"${family}", ${generic}`;
 }
 
+// Border for a control whose outline *is* its boundary — an outline button or
+// a text input with an invisible edge is an invisible control (WCAG SC 1.4.11,
+// 3:1). Blends ink into surface until it actually clears that bar rather than
+// using a fixed percentage: 12% toward a dark ink reads fine on a light
+// surface, but the same 12% toward a light ink barely lifts off a dark one,
+// because contrast isn't linear with mix percentage near the dark end of the
+// range. That's why outline buttons vanished in dark mode.
+//
+// Deliberately NOT used for --pg-border: card edges, table rules and dividers
+// are decorative chrome, and forcing 3:1 on every hairline would flatten the
+// quiet layered surfaces this library is supposed to produce (the same
+// distinction lib/ai/validateTokens.ts draws between BORDER_CRITICAL_COMPONENTS
+// and DECORATIVE_BORDER_FLOOR).
+function controlBorderMix(surface: string, ink: string): string {
+  const TARGET_RATIO = 3;
+  const MAX_AMOUNT = 0.5;
+  let amount = 0.12;
+  let border = mix(surface, ink, amount);
+  while (getContrastRatio(surface, border) < TARGET_RATIO && amount < MAX_AMOUNT) {
+    amount += 0.02;
+    border = mix(surface, ink, amount);
+  }
+  return border;
+}
+
 /**
  * The role block for one scope. Emitted *after* `generateExportCode`'s output
  * at identical specificity, so source order decides and these win without
@@ -81,6 +106,7 @@ export function rolePropertyBlock(
   // design system's colorRoles.border — computed here instead of read from
   // that (possibly stale) stored value, so it stays live.
   const border = mix(palette.surface, palette.ink, 0.12);
+  const borderStrong = controlBorderMix(palette.surface, palette.ink);
   const { success, warning, error } = STATUS_DEFAULTS;
 
   const display = tokens.headFont;
@@ -97,6 +123,7 @@ export function rolePropertyBlock(
     `  --pg-text: ${text};`,
     `  --pg-muted: ${muted};`,
     `  --pg-border: ${border};`,
+    `  --pg-border-strong: ${borderStrong};`,
     `  --pg-success: ${success};`,
     `  --pg-warning: ${warning};`,
     `  --pg-error: ${error};`,

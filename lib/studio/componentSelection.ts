@@ -139,4 +139,6 @@ export const APPLICABLE_STATES: Record<ComponentName, readonly NonDefaultState[]
 export const COMPONENT_SCOPE_NOTES: Partial<Record<ComponentName, string>> = {
   button: "Also affects outline and ghost buttons on canvas — Danger keeps its own semantic colour.",
   navigation: "Affects the nav bar, tabs, and breadcrumbs together.",
+  alert: "Only affects the neutral alert — Success/Warning/Error keep their own status colour so it stays meaningful.",
+  badge: "Only affects the neutral (soft) and outline badges — Success/Warning/Error keep their own status colour.",
 };
