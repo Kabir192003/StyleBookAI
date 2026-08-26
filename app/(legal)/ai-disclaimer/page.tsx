@@ -8,6 +8,7 @@ export default function AiDisclaimerPage() {
   return (
     <LegalPage
       eyebrow="Legal"
+      currentHref="/ai-disclaimer"
       title="AI Disclaimer"
       updated="18 August 2026"
       intro="AI Generate is a genuinely useful starting point, not an authority. This page is the honest version of that — what the AI feature does, where it can go wrong, and what to double-check before you ship anything it produces."

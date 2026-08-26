@@ -8,6 +8,7 @@ export default function PrivacyPage() {
   return (
     <LegalPage
       eyebrow="Legal"
+      currentHref="/privacy"
       title="Privacy Policy"
       updated="18 August 2026"
       intro="StyleBook is built to need as little about you as possible. There’s no email address on file, no analytics script, and no ad tracking anywhere in the app — this page describes, plainly, the small amount of data the product actually touches and why."

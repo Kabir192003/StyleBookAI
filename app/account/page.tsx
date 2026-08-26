@@ -1,78 +1,15 @@
-// Signed-in home base: profile, saved projects, favorites, preferences.
+// Signed-in home base: profile, saved projects, favorites, accessibility.
 // All real (no Clerk), backed by lib/auth/ and lib/db/schema.sql.
 "use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import { LayoutGrid, LogOut } from "lucide-react";
-import { applyTheme, getStoredTheme, type ThemePreference } from "@/lib/theme";
 import { Button } from "@/components/ui/Button";
 import { FavoritesSection } from "@/components/account/FavoritesSection";
 import { AccessibilitySection } from "@/components/account/AccessibilitySection";
 import { useAuthStore, useFavoritesStore } from "@/store";
-
-const PREFS_KEY = "stylebook-prefs";
-
-type Prefs = {
-  typeScaleUnit: "px" | "rem";
-  exportFormat: "css" | "tailwind" | "scss" | "json";
-};
-
-const DEFAULT_PREFS: Prefs = {
-  typeScaleUnit: "px",
-  exportFormat: "css",
-};
-
-function SegmentedControl<T extends string>({
-  value,
-  options,
-  onChange,
-}: {
-  value: T;
-  options: { label: string; value: T }[];
-  onChange: (v: T) => void;
-}) {
-  return (
-    <div className="inline-flex rounded-full border border-black/[0.14] bg-[#EDE6DA] p-1">
-      {options.map((opt) => (
-        <button
-          key={opt.value}
-          type="button"
-          onClick={() => onChange(opt.value)}
-          className={`relative rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-            value === opt.value
-              ? "bg-white text-[#211E18] shadow-[0_1px_3px_rgba(24,28,45,0.12)]"
-              : "text-[#6E675C] hover:text-[#6E675C]"
-          }`}
-        >
-          {opt.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function PreferenceRow({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-6 py-4">
-      <div>
-        <div className="text-sm font-medium text-[#211E18]">{title}</div>
-        {description && <div className="mt-0.5 text-xs text-[#6E675C]">{description}</div>}
-      </div>
-      {children}
-    </div>
-  );
-}
 
 function SignedOutPrompt() {
   return (
@@ -82,9 +19,8 @@ function SignedOutPrompt() {
           <div className="font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#6E675C]">Account</div>
           <h1 className="mt-2 font-editorial-serif text-2xl font-normal text-[#211E18]">Sign in to see your account.</h1>
           <p className="mt-3 text-sm text-[#6E675C]">
-            Save projects, favorite colors, fonts and themes, and set your
-            defaults — all tied to a simple username and password, no email
-            required.
+            Save projects, favorite colors, fonts and themes — all tied to a
+            simple username and password, no email required.
           </p>
           <div className="mt-6 flex flex-col gap-2.5">
             <Link href="/sign-in" className="rounded-full bg-[#222D52] py-2.5 text-sm font-semibold text-[#F2EBE0]">
@@ -115,23 +51,10 @@ export default function AccountPage() {
   const favoritesLoaded = useFavoritesStore((s) => s.loaded);
   const loadFavorites = useFavoritesStore((s) => s.load);
 
-  const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
-  const [themePref, setThemePref] = useState<ThemePreference>("system");
-  const [savedPing, setSavedPing] = useState(false);
   const [projectCount, setProjectCount] = useState<number | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
-
-  useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(PREFS_KEY);
-      if (stored) setPrefs({ ...DEFAULT_PREFS, ...JSON.parse(stored) });
-    } catch {
-      // Corrupt/blocked storage — fall back to defaults silently.
-    }
-    setThemePref(getStoredTheme());
-  }, []);
 
   useEffect(() => {
     if (user && !favoritesLoaded) loadFavorites();
@@ -144,30 +67,6 @@ export default function AccountPage() {
       .then((data) => setProjectCount((data.projects ?? []).length))
       .catch(() => setProjectCount(null));
   }, [user]);
-
-  function updatePrefs(next: Partial<Prefs>) {
-    setPrefs((prev) => {
-      const merged = { ...prev, ...next };
-      try {
-        window.localStorage.setItem(PREFS_KEY, JSON.stringify(merged));
-      } catch {
-        // Storage can fail (private mode, quota) — UI still updates.
-      }
-      return merged;
-    });
-    pingSaved();
-  }
-
-  function updateTheme(next: ThemePreference) {
-    setThemePref(next);
-    applyTheme(next);
-    pingSaved();
-  }
-
-  function pingSaved() {
-    setSavedPing(true);
-    setTimeout(() => setSavedPing(false), 1400);
-  }
 
   async function handleSignOut() {
     await logout();
@@ -211,18 +110,6 @@ export default function AccountPage() {
               {user.username}
             </h1>
           </div>
-          <AnimatePresence>
-            {savedPing && (
-              <motion.span
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="text-xs font-medium text-[#22733F]"
-              >
-                Saved
-              </motion.span>
-            )}
-          </AnimatePresence>
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 [&>*:not(.sb-span-1)]:lg:col-span-2">
@@ -260,53 +147,6 @@ export default function AccountPage() {
           <FavoritesSection />
 
           <AccessibilitySection />
-
-          <section className="relative overflow-hidden rounded-2xl border border-black/[0.12] bg-[#F2EBE0] px-6">
-            <h2 className="border-b border-black/[0.1] py-4 font-mono-plex text-xs font-semibold uppercase tracking-wider text-[#6E675C]">
-              Preferences
-            </h2>
-
-            <div className="divide-y divide-black/[0.1]">
-              <PreferenceRow
-                title="Default type-scale unit"
-                description="Used when Studio displays or exports a project's type scale."
-              >
-                <SegmentedControl
-                  value={prefs.typeScaleUnit}
-                  options={[
-                    { label: "px", value: "px" },
-                    { label: "rem", value: "rem" },
-                  ]}
-                  onChange={(v) => updatePrefs({ typeScaleUnit: v })}
-                />
-              </PreferenceRow>
-
-              <PreferenceRow title="Default export format" description="Preselected on a project's Export menu.">
-                <SegmentedControl
-                  value={prefs.exportFormat}
-                  options={[
-                    { label: "CSS", value: "css" },
-                    { label: "Tailwind", value: "tailwind" },
-                    { label: "SCSS", value: "scss" },
-                    { label: "JSON", value: "json" },
-                  ]}
-                  onChange={(v) => updatePrefs({ exportFormat: v })}
-                />
-              </PreferenceRow>
-
-              <PreferenceRow title="Theme" description="Saved as a preference — no page in the app reacts to it yet.">
-                <SegmentedControl
-                  value={themePref}
-                  options={[
-                    { label: "Light", value: "light" },
-                    { label: "Dark", value: "dark" },
-                    { label: "System", value: "system" },
-                  ]}
-                  onChange={updateTheme}
-                />
-              </PreferenceRow>
-            </div>
-          </section>
 
           <section className="rounded-2xl border border-[#B3261E]/30 bg-[#B3261E]/10 px-6 py-5">
             <div className="flex items-center justify-between gap-6">

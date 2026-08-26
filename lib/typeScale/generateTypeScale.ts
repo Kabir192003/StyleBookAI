@@ -22,7 +22,7 @@ function round(n: number): number {
   return Math.round(n * 100) / 100;
 }
 
-export function generateTypeScale(baseSize: number, ratioName: string): TypeScale {
+export function generateTypeScale(baseSize: number, ratioName: string, bodyBaseSize?: number): TypeScale {
   const ratio = TYPE_SCALE_RATIOS[ratioName] ?? TYPE_SCALE_RATIOS["Major Third"];
 
   const base = baseSize;
@@ -36,14 +36,22 @@ export function generateTypeScale(baseSize: number, ratioName: string): TypeScal
   const xl5 = xl4 * ratio;
   const xl6 = xl5 * ratio;
 
+  // Body and caption (SEMANTIC_TYPE_ROLES' two "body"-face steps) get their
+  // own anchor when bodyBaseSize is given, same ratio, so a person can move
+  // body text size without dragging every heading with it — see the
+  // bodyBaseSize comment on TypeScale.
+  const bodyAnchor = bodyBaseSize ?? base;
+  const bodyXs = bodyAnchor / ratio;
+
   return {
     baseSize: base,
     ratio,
     ratioName,
+    ...(bodyBaseSize !== undefined ? { bodyBaseSize } : {}),
     sizes: {
-      xs: round(xs),
+      xs: round(bodyXs),
       sm: round(sm),
-      base: round(base),
+      base: round(bodyAnchor),
       lg: round(lg),
       xl: round(xl),
       "2xl": round(xl2),

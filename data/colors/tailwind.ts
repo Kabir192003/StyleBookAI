@@ -15,7 +15,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Slate — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Whisper Slate is slate thinned almost to paper: so faint it nearly disappears into the page.",
     "rgb": {
       "r": 248,
       "g": 250,
@@ -40,7 +40,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Slate — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Almost more paper than slate, Pale Slate is soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 241,
       "g": 245,
@@ -65,7 +65,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Slate — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Soft Slate holds just a trace of slate, gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 226,
       "g": 232,
@@ -90,7 +90,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Slate — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "Light Slate: a blue-leaning grey, cool and a little corporate. At this step it's clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 203,
       "g": 213,
@@ -115,7 +115,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Slate — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "This is slate at working strength, a blue-leaning grey, cool and a little corporate, even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 148,
       "g": 163,
@@ -140,7 +140,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Slate — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "True Slate is a blue-leaning grey, cool and a little corporate, the colour in its truest, most balanced form.",
     "rgb": {
       "r": 100,
       "g": 116,
@@ -165,7 +165,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Slate — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "Bold Slate is a blue-leaning grey, cool and a little corporate, dialled up until it's confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 71,
       "g": 85,
@@ -190,7 +190,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Slate — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "slate with nothing held back: Rich Slate is deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 51,
       "g": 65,
@@ -215,7 +215,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Slate — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep Slate takes slate down into the dark, dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 30,
       "g": 41,
@@ -240,7 +240,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Slate — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Shadow Slate is slate at its heaviest: dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 15,
       "g": 23,
@@ -265,7 +265,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Slate — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Deep in the slate range, Midnight Slate is as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 2,
       "g": 6,
@@ -290,7 +290,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Gray — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Almost more paper than gray, Whisper Gray is so faint it nearly disappears into the page.",
     "rgb": {
       "r": 249,
       "g": 250,
@@ -315,7 +315,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Gray — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Pale Gray holds just a trace of gray, soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 243,
       "g": 244,
@@ -340,7 +340,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Gray — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Soft Gray is gray thinned almost to paper: gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 229,
       "g": 231,
@@ -365,7 +365,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Gray — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "This is gray at working strength, the most neutral grey Tailwind ships, no undertone pulling it warm or cool, clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 209,
       "g": 213,
@@ -390,7 +390,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Gray — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "Fair Gray is the most neutral grey Tailwind ships, no undertone pulling it warm or cool, even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 156,
       "g": 163,
@@ -415,7 +415,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Gray — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "True Gray: the most neutral grey Tailwind ships, no undertone pulling it warm or cool. At this step it's the colour in its truest, most balanced form.",
     "rgb": {
       "r": 107,
       "g": 114,
@@ -440,7 +440,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Gray — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "gray with nothing held back: Bold Gray is confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 75,
       "g": 85,
@@ -465,7 +465,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Gray — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "Rich Gray runs gray close to full strength, deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 55,
       "g": 65,
@@ -490,7 +490,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Gray — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep Gray is gray at its heaviest: dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 31,
       "g": 41,
@@ -515,7 +515,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Gray — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Deep in the gray range, Shadow Gray is dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 17,
       "g": 24,
@@ -540,7 +540,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Gray — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Midnight Gray takes gray down into the dark, as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 3,
       "g": 7,
@@ -565,7 +565,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Zinc — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Whisper Zinc holds just a trace of zinc, so faint it nearly disappears into the page.",
     "rgb": {
       "r": 250,
       "g": 250,
@@ -590,7 +590,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Zinc — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Pale Zinc is zinc thinned almost to paper: soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 244,
       "g": 244,
@@ -615,7 +615,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Zinc — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Almost more paper than zinc, Soft Zinc is gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 228,
       "g": 228,
@@ -640,7 +640,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Zinc — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "Light Zinc is grey with a faint metallic coolness, closer to brushed steel than stone, clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 212,
       "g": 212,
@@ -665,7 +665,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Zinc — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "Fair Zinc: grey with a faint metallic coolness, closer to brushed steel than stone. At this step it's even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 161,
       "g": 161,
@@ -690,7 +690,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Zinc — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "This is zinc at working strength, grey with a faint metallic coolness, closer to brushed steel than stone, the colour in its truest, most balanced form.",
     "rgb": {
       "r": 113,
       "g": 113,
@@ -715,7 +715,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Zinc — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "Bold Zinc runs zinc close to full strength, confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 82,
       "g": 82,
@@ -740,7 +740,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Zinc — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "Rich Zinc is grey with a faint metallic coolness, closer to brushed steel than stone, dialled up until it's deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 63,
       "g": 63,
@@ -765,7 +765,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Zinc — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep in the zinc range, Deep Zinc is dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 39,
       "g": 39,
@@ -790,7 +790,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Zinc — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Shadow Zinc takes zinc down into the dark, dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 24,
       "g": 24,
@@ -815,7 +815,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Zinc — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Midnight Zinc is zinc at its heaviest: as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 9,
       "g": 9,
@@ -840,7 +840,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Neutral — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Whisper Neutral is neutral thinned almost to paper: so faint it nearly disappears into the page.",
     "rgb": {
       "r": 250,
       "g": 250,
@@ -865,7 +865,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Neutral — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Almost more paper than neutral, Pale Neutral is soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 245,
       "g": 245,
@@ -890,7 +890,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Neutral — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Soft Neutral holds just a trace of neutral, gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 229,
       "g": 229,
@@ -915,7 +915,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Neutral — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "Light Neutral: true, undertone-free grey, the one to reach for when even slate reads too blue. At this step it's clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 212,
       "g": 212,
@@ -940,7 +940,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Neutral — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "This is neutral at working strength, true, undertone-free grey, the one to reach for when even slate reads too blue, even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 163,
       "g": 163,
@@ -965,7 +965,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Neutral — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "True Neutral is true, undertone-free grey, the one to reach for when even slate reads too blue, the colour in its truest, most balanced form.",
     "rgb": {
       "r": 115,
       "g": 115,
@@ -990,7 +990,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Neutral — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "Bold Neutral is true, undertone-free grey, the one to reach for when even slate reads too blue, dialled up until it's confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 82,
       "g": 82,
@@ -1015,7 +1015,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Neutral — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "neutral with nothing held back: Rich Neutral is deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 64,
       "g": 64,
@@ -1040,7 +1040,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Neutral — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep Neutral takes neutral down into the dark, dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 38,
       "g": 38,
@@ -1065,7 +1065,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Neutral — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Shadow Neutral is neutral at its heaviest: dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 23,
       "g": 23,
@@ -1090,7 +1090,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Neutral — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Deep in the neutral range, Midnight Neutral is as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 10,
       "g": 10,
@@ -1115,7 +1115,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Stone — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Almost more paper than stone, Whisper Stone is so faint it nearly disappears into the page.",
     "rgb": {
       "r": 250,
       "g": 250,
@@ -1140,7 +1140,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Stone — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Pale Stone holds just a trace of stone, soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 245,
       "g": 245,
@@ -1165,7 +1165,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Stone — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Soft Stone is stone thinned almost to paper: gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 231,
       "g": 229,
@@ -1190,7 +1190,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Stone — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "This is stone at working strength, grey warmed by brown, closer to concrete or driftwood than to ink, clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 214,
       "g": 211,
@@ -1215,7 +1215,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Stone — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "Fair Stone is grey warmed by brown, closer to concrete or driftwood than to ink, even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 168,
       "g": 162,
@@ -1240,7 +1240,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Stone — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "True Stone: grey warmed by brown, closer to concrete or driftwood than to ink. At this step it's the colour in its truest, most balanced form.",
     "rgb": {
       "r": 120,
       "g": 113,
@@ -1265,7 +1265,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Stone — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "stone with nothing held back: Bold Stone is confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 87,
       "g": 83,
@@ -1290,7 +1290,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Stone — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "Rich Stone runs stone close to full strength, deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 68,
       "g": 64,
@@ -1315,7 +1315,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Stone — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep Stone is stone at its heaviest: dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 41,
       "g": 37,
@@ -1340,7 +1340,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Stone — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Deep in the stone range, Shadow Stone is dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 28,
       "g": 25,
@@ -1365,7 +1365,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Stone — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Midnight Stone takes stone down into the dark, as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 12,
       "g": 10,
@@ -1390,7 +1390,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Red — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Whisper Red holds just a trace of red, so faint it nearly disappears into the page.",
     "rgb": {
       "r": 254,
       "g": 242,
@@ -1415,7 +1415,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Red — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Pale Red is red thinned almost to paper: soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 254,
       "g": 226,
@@ -1440,7 +1440,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Red — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Almost more paper than red, Soft Red is gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 254,
       "g": 202,
@@ -1465,7 +1465,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Red — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "Light Red is a direct, unhedged red, the colour of stop signs and underlines, clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 252,
       "g": 165,
@@ -1490,7 +1490,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Red — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "Fair Red: a direct, unhedged red, the colour of stop signs and underlines. At this step it's even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 248,
       "g": 113,
@@ -1515,7 +1515,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Red — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "This is red at working strength, a direct, unhedged red, the colour of stop signs and underlines, the colour in its truest, most balanced form.",
     "rgb": {
       "r": 239,
       "g": 68,
@@ -1540,7 +1540,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Red — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "Bold Red runs red close to full strength, confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 220,
       "g": 38,
@@ -1565,7 +1565,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Red — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "Rich Red is a direct, unhedged red, the colour of stop signs and underlines, dialled up until it's deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 185,
       "g": 28,
@@ -1590,7 +1590,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Red — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep in the red range, Deep Red is dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 153,
       "g": 27,
@@ -1615,7 +1615,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Red — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Shadow Red takes red down into the dark, dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 127,
       "g": 29,
@@ -1640,7 +1640,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Red — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Midnight Red is red at its heaviest: as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 69,
       "g": 10,
@@ -1665,7 +1665,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Orange — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Whisper Orange is orange thinned almost to paper: so faint it nearly disappears into the page.",
     "rgb": {
       "r": 255,
       "g": 247,
@@ -1690,7 +1690,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Orange — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Almost more paper than orange, Pale Orange is soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 255,
       "g": 237,
@@ -1715,7 +1715,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Orange — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Soft Orange holds just a trace of orange, gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 254,
       "g": 215,
@@ -1740,7 +1740,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Orange — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "Light Orange: citrus-bright and hard to ignore, warmer than red and louder than yellow. At this step it's clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 253,
       "g": 186,
@@ -1765,7 +1765,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Orange — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "This is orange at working strength, citrus-bright and hard to ignore, warmer than red and louder than yellow, even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 251,
       "g": 146,
@@ -1790,7 +1790,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Orange — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "True Orange is citrus-bright and hard to ignore, warmer than red and louder than yellow, the colour in its truest, most balanced form.",
     "rgb": {
       "r": 249,
       "g": 115,
@@ -1815,7 +1815,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Orange — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "Bold Orange is citrus-bright and hard to ignore, warmer than red and louder than yellow, dialled up until it's confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 234,
       "g": 88,
@@ -1840,7 +1840,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Orange — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "orange with nothing held back: Rich Orange is deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 194,
       "g": 65,
@@ -1865,7 +1865,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Orange — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep Orange takes orange down into the dark, dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 154,
       "g": 52,
@@ -1890,7 +1890,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Orange — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Shadow Orange is orange at its heaviest: dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 124,
       "g": 45,
@@ -1915,7 +1915,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Orange — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Deep in the orange range, Midnight Orange is as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 67,
       "g": 20,
@@ -1940,7 +1940,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Amber — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Almost more paper than amber, Whisper Amber is so faint it nearly disappears into the page.",
     "rgb": {
       "r": 255,
       "g": 251,
@@ -1965,7 +1965,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Amber — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Pale Amber holds just a trace of amber, soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 254,
       "g": 243,
@@ -1990,7 +1990,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Amber — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Soft Amber is amber thinned almost to paper: gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 253,
       "g": 230,
@@ -2015,7 +2015,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Amber — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "This is amber at working strength, the colour of resin and traffic lights caught mid-change, warm without tipping into red, clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 252,
       "g": 211,
@@ -2040,7 +2040,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Amber — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "Fair Amber is the colour of resin and traffic lights caught mid-change, warm without tipping into red, even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 251,
       "g": 191,
@@ -2065,7 +2065,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Amber — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "True Amber: the colour of resin and traffic lights caught mid-change, warm without tipping into red. At this step it's the colour in its truest, most balanced form.",
     "rgb": {
       "r": 245,
       "g": 158,
@@ -2090,7 +2090,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Amber — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "amber with nothing held back: Bold Amber is confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 217,
       "g": 119,
@@ -2115,7 +2115,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Amber — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "Rich Amber runs amber close to full strength, deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 180,
       "g": 83,
@@ -2140,7 +2140,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Amber — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep Amber is amber at its heaviest: dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 146,
       "g": 64,
@@ -2165,7 +2165,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Amber — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Deep in the amber range, Shadow Amber is dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 120,
       "g": 53,
@@ -2190,7 +2190,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Amber — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Midnight Amber takes amber down into the dark, as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 69,
       "g": 26,
@@ -2215,7 +2215,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Yellow — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Whisper Yellow holds just a trace of yellow, so faint it nearly disappears into the page.",
     "rgb": {
       "r": 254,
       "g": 252,
@@ -2240,7 +2240,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Yellow — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Pale Yellow is yellow thinned almost to paper: soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 254,
       "g": 249,
@@ -2265,7 +2265,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Yellow — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Almost more paper than yellow, Soft Yellow is gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 254,
       "g": 240,
@@ -2290,7 +2290,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Yellow — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "Light Yellow is sharp and attention-grabbing, the most purely 'yellow' yellow in the set, clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 253,
       "g": 224,
@@ -2315,7 +2315,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Yellow — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "Fair Yellow: sharp and attention-grabbing, the most purely 'yellow' yellow in the set. At this step it's even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 250,
       "g": 204,
@@ -2340,7 +2340,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Yellow — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "This is yellow at working strength, sharp and attention-grabbing, the most purely 'yellow' yellow in the set, the colour in its truest, most balanced form.",
     "rgb": {
       "r": 234,
       "g": 179,
@@ -2365,7 +2365,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Yellow — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "Bold Yellow runs yellow close to full strength, confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 202,
       "g": 138,
@@ -2390,7 +2390,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Yellow — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "Rich Yellow is sharp and attention-grabbing, the most purely 'yellow' yellow in the set, dialled up until it's deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 161,
       "g": 98,
@@ -2415,7 +2415,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Yellow — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep in the yellow range, Deep Yellow is dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 133,
       "g": 77,
@@ -2440,7 +2440,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Yellow — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Shadow Yellow takes yellow down into the dark, dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 113,
       "g": 63,
@@ -2465,7 +2465,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Yellow — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Midnight Yellow is yellow at its heaviest: as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 66,
       "g": 32,
@@ -2490,7 +2490,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Lime — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Whisper Lime is lime thinned almost to paper: so faint it nearly disappears into the page.",
     "rgb": {
       "r": 247,
       "g": 254,
@@ -2515,7 +2515,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Lime — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Almost more paper than lime, Pale Lime is soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 236,
       "g": 252,
@@ -2540,7 +2540,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Lime — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Soft Lime holds just a trace of lime, gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 217,
       "g": 249,
@@ -2565,7 +2565,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Lime — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "Light Lime: yellow pulled hard toward green, electric and a little synthetic. At this step it's clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 190,
       "g": 242,
@@ -2590,7 +2590,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Lime — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "This is lime at working strength, yellow pulled hard toward green, electric and a little synthetic, even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 163,
       "g": 230,
@@ -2615,7 +2615,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Lime — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "True Lime is yellow pulled hard toward green, electric and a little synthetic, the colour in its truest, most balanced form.",
     "rgb": {
       "r": 132,
       "g": 204,
@@ -2640,7 +2640,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Lime — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "Bold Lime is yellow pulled hard toward green, electric and a little synthetic, dialled up until it's confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 101,
       "g": 163,
@@ -2665,7 +2665,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Lime — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "lime with nothing held back: Rich Lime is deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 77,
       "g": 124,
@@ -2690,7 +2690,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Lime — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep Lime takes lime down into the dark, dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 63,
       "g": 98,
@@ -2715,7 +2715,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Lime — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Shadow Lime is lime at its heaviest: dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 54,
       "g": 83,
@@ -2740,7 +2740,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Lime — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Deep in the lime range, Midnight Lime is as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 26,
       "g": 46,
@@ -2765,7 +2765,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Green — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Almost more paper than green, Whisper Green is so faint it nearly disappears into the page.",
     "rgb": {
       "r": 240,
       "g": 253,
@@ -2790,7 +2790,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Green — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Pale Green holds just a trace of green, soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 220,
       "g": 252,
@@ -2815,7 +2815,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Green — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Soft Green is green thinned almost to paper: gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 187,
       "g": 247,
@@ -2840,7 +2840,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Green — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "This is green at working strength, a working, grass-toned green, neither too yellow nor too blue, clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 134,
       "g": 239,
@@ -2865,7 +2865,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Green — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "Fair Green is a working, grass-toned green, neither too yellow nor too blue, even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 74,
       "g": 222,
@@ -2890,7 +2890,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Green — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "True Green: a working, grass-toned green, neither too yellow nor too blue. At this step it's the colour in its truest, most balanced form.",
     "rgb": {
       "r": 34,
       "g": 197,
@@ -2915,7 +2915,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Green — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "green with nothing held back: Bold Green is confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 22,
       "g": 163,
@@ -2940,7 +2940,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Green — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "Rich Green runs green close to full strength, deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 21,
       "g": 128,
@@ -2965,7 +2965,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Green — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep Green is green at its heaviest: dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 22,
       "g": 101,
@@ -2990,7 +2990,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Green — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Deep in the green range, Shadow Green is dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 20,
       "g": 83,
@@ -3015,7 +3015,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Green — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Midnight Green takes green down into the dark, as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 5,
       "g": 46,
@@ -3040,7 +3040,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Emerald — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Whisper Emerald holds just a trace of emerald, so faint it nearly disappears into the page.",
     "rgb": {
       "r": 236,
       "g": 253,
@@ -3065,7 +3065,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Emerald — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Pale Emerald is emerald thinned almost to paper: soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 209,
       "g": 250,
@@ -3090,7 +3090,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Emerald — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Almost more paper than emerald, Soft Emerald is gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 167,
       "g": 243,
@@ -3115,7 +3115,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Emerald — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "Light Emerald is jewel-bright and a touch luxurious, the most 'premium' green here, clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 110,
       "g": 231,
@@ -3140,7 +3140,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Emerald — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "Fair Emerald: jewel-bright and a touch luxurious, the most 'premium' green here. At this step it's even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 52,
       "g": 211,
@@ -3165,7 +3165,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Emerald — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "This is emerald at working strength, jewel-bright and a touch luxurious, the most 'premium' green here, the colour in its truest, most balanced form.",
     "rgb": {
       "r": 16,
       "g": 185,
@@ -3190,7 +3190,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Emerald — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "Bold Emerald runs emerald close to full strength, confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 5,
       "g": 150,
@@ -3215,7 +3215,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Emerald — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "Rich Emerald is jewel-bright and a touch luxurious, the most 'premium' green here, dialled up until it's deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 4,
       "g": 120,
@@ -3240,7 +3240,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Emerald — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep in the emerald range, Deep Emerald is dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 6,
       "g": 95,
@@ -3265,7 +3265,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Emerald — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Shadow Emerald takes emerald down into the dark, dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 6,
       "g": 78,
@@ -3290,7 +3290,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Emerald — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Midnight Emerald is emerald at its heaviest: as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 2,
       "g": 44,
@@ -3315,7 +3315,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Teal — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Whisper Teal is teal thinned almost to paper: so faint it nearly disappears into the page.",
     "rgb": {
       "r": 240,
       "g": 253,
@@ -3340,7 +3340,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Teal — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Almost more paper than teal, Pale Teal is soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 204,
       "g": 251,
@@ -3365,7 +3365,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Teal — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Soft Teal holds just a trace of teal, gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 153,
       "g": 246,
@@ -3390,7 +3390,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Teal — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "Light Teal: balanced exactly between blue and green, neither cold nor warm. At this step it's clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 94,
       "g": 234,
@@ -3415,7 +3415,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Teal — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "This is teal at working strength, balanced exactly between blue and green, neither cold nor warm, even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 45,
       "g": 212,
@@ -3440,7 +3440,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Teal — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "True Teal is balanced exactly between blue and green, neither cold nor warm, the colour in its truest, most balanced form.",
     "rgb": {
       "r": 20,
       "g": 184,
@@ -3465,7 +3465,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Teal — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "Bold Teal is balanced exactly between blue and green, neither cold nor warm, dialled up until it's confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 13,
       "g": 148,
@@ -3490,7 +3490,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Teal — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "teal with nothing held back: Rich Teal is deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 15,
       "g": 118,
@@ -3515,7 +3515,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Teal — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep Teal takes teal down into the dark, dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 17,
       "g": 94,
@@ -3540,7 +3540,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Teal — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Shadow Teal is teal at its heaviest: dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 19,
       "g": 78,
@@ -3565,7 +3565,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Teal — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Deep in the teal range, Midnight Teal is as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 4,
       "g": 47,
@@ -3590,7 +3590,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Cyan — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Almost more paper than cyan, Whisper Cyan is so faint it nearly disappears into the page.",
     "rgb": {
       "r": 236,
       "g": 254,
@@ -3615,7 +3615,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Cyan — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Pale Cyan holds just a trace of cyan, soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 207,
       "g": 250,
@@ -3640,7 +3640,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Cyan — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Soft Cyan is cyan thinned almost to paper: gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 165,
       "g": 243,
@@ -3665,7 +3665,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Cyan — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "This is cyan at working strength, bright and screen-lit, closer to a monitor's blue than to the sea, clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 103,
       "g": 232,
@@ -3690,7 +3690,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Cyan — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "Fair Cyan is bright and screen-lit, closer to a monitor's blue than to the sea, even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 34,
       "g": 211,
@@ -3715,7 +3715,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Cyan — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "True Cyan: bright and screen-lit, closer to a monitor's blue than to the sea. At this step it's the colour in its truest, most balanced form.",
     "rgb": {
       "r": 6,
       "g": 182,
@@ -3740,7 +3740,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Cyan — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "cyan with nothing held back: Bold Cyan is confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 8,
       "g": 145,
@@ -3765,7 +3765,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Cyan — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "Rich Cyan runs cyan close to full strength, deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 14,
       "g": 116,
@@ -3790,7 +3790,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Cyan — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep Cyan is cyan at its heaviest: dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 21,
       "g": 94,
@@ -3815,7 +3815,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Cyan — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Deep in the cyan range, Shadow Cyan is dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 22,
       "g": 78,
@@ -3840,7 +3840,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Cyan — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Midnight Cyan takes cyan down into the dark, as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 8,
       "g": 51,
@@ -3865,7 +3865,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Sky — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Whisper Sky holds just a trace of sky, so faint it nearly disappears into the page.",
     "rgb": {
       "r": 240,
       "g": 249,
@@ -3890,7 +3890,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Sky — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Pale Sky is sky thinned almost to paper: soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 224,
       "g": 242,
@@ -3915,7 +3915,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Sky — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Almost more paper than sky, Soft Sky is gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 186,
       "g": 230,
@@ -3940,7 +3940,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Sky — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "Light Sky is open and unclouded, blue in its most literal, daytime form, clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 125,
       "g": 211,
@@ -3965,7 +3965,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Sky — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "Fair Sky: open and unclouded, blue in its most literal, daytime form. At this step it's even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 56,
       "g": 189,
@@ -3990,7 +3990,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Sky — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "This is sky at working strength, open and unclouded, blue in its most literal, daytime form, the colour in its truest, most balanced form.",
     "rgb": {
       "r": 14,
       "g": 165,
@@ -4015,7 +4015,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Sky — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "Bold Sky runs sky close to full strength, confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 2,
       "g": 132,
@@ -4040,7 +4040,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Sky — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "Rich Sky is open and unclouded, blue in its most literal, daytime form, dialled up until it's deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 3,
       "g": 105,
@@ -4065,7 +4065,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Sky — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep in the sky range, Deep Sky is dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 7,
       "g": 89,
@@ -4090,7 +4090,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Sky — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Shadow Sky takes sky down into the dark, dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 12,
       "g": 74,
@@ -4115,7 +4115,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Sky — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Midnight Sky is sky at its heaviest: as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 8,
       "g": 47,
@@ -4140,7 +4140,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Blue — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Whisper Blue is blue thinned almost to paper: so faint it nearly disappears into the page.",
     "rgb": {
       "r": 239,
       "g": 246,
@@ -4165,7 +4165,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Blue — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Almost more paper than blue, Pale Blue is soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 219,
       "g": 234,
@@ -4190,7 +4190,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Blue — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Soft Blue holds just a trace of blue, gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 191,
       "g": 219,
@@ -4215,7 +4215,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Blue — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "Light Blue: a confident, dependable blue with no real hesitation in it. At this step it's clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 147,
       "g": 197,
@@ -4240,7 +4240,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Blue — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "This is blue at working strength, a confident, dependable blue with no real hesitation in it, even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 96,
       "g": 165,
@@ -4265,7 +4265,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Blue — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "True Blue is a confident, dependable blue with no real hesitation in it, the colour in its truest, most balanced form.",
     "rgb": {
       "r": 59,
       "g": 130,
@@ -4290,7 +4290,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Blue — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "Bold Blue is a confident, dependable blue with no real hesitation in it, dialled up until it's confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 37,
       "g": 99,
@@ -4315,7 +4315,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Blue — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "blue with nothing held back: Rich Blue is deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 29,
       "g": 78,
@@ -4340,7 +4340,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Blue — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep Blue takes blue down into the dark, dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 30,
       "g": 64,
@@ -4365,7 +4365,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Blue — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Shadow Blue is blue at its heaviest: dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 30,
       "g": 58,
@@ -4390,7 +4390,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Blue — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Deep in the blue range, Midnight Blue is as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 23,
       "g": 37,
@@ -4415,7 +4415,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Indigo — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Almost more paper than indigo, Whisper Indigo is so faint it nearly disappears into the page.",
     "rgb": {
       "r": 238,
       "g": 242,
@@ -4440,7 +4440,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Indigo — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Pale Indigo holds just a trace of indigo, soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 224,
       "g": 231,
@@ -4465,7 +4465,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Indigo — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Soft Indigo is indigo thinned almost to paper: gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 199,
       "g": 210,
@@ -4490,7 +4490,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Indigo — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "This is indigo at working strength, blue pushed toward violet, a little more serious than plain blue, clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 165,
       "g": 180,
@@ -4515,7 +4515,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Indigo — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "Fair Indigo is blue pushed toward violet, a little more serious than plain blue, even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 129,
       "g": 140,
@@ -4540,7 +4540,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Indigo — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "True Indigo: blue pushed toward violet, a little more serious than plain blue. At this step it's the colour in its truest, most balanced form.",
     "rgb": {
       "r": 99,
       "g": 102,
@@ -4565,7 +4565,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Indigo — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "indigo with nothing held back: Bold Indigo is confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 79,
       "g": 70,
@@ -4590,7 +4590,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Indigo — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "Rich Indigo runs indigo close to full strength, deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 67,
       "g": 56,
@@ -4615,7 +4615,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Indigo — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep Indigo is indigo at its heaviest: dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 55,
       "g": 48,
@@ -4640,7 +4640,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Indigo — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Deep in the indigo range, Shadow Indigo is dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 49,
       "g": 46,
@@ -4665,7 +4665,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Indigo — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Midnight Indigo takes indigo down into the dark, as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 30,
       "g": 27,
@@ -4690,7 +4690,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Violet — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Whisper Violet holds just a trace of violet, so faint it nearly disappears into the page.",
     "rgb": {
       "r": 245,
       "g": 243,
@@ -4715,7 +4715,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Violet — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Pale Violet is violet thinned almost to paper: soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 237,
       "g": 233,
@@ -4740,7 +4740,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Violet — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Almost more paper than violet, Soft Violet is gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 221,
       "g": 214,
@@ -4765,7 +4765,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Violet — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "Light Violet is balanced between blue and red, purple in its most classic form, clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 196,
       "g": 181,
@@ -4790,7 +4790,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Violet — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "Fair Violet: balanced between blue and red, purple in its most classic form. At this step it's even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 167,
       "g": 139,
@@ -4815,7 +4815,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Violet — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "This is violet at working strength, balanced between blue and red, purple in its most classic form, the colour in its truest, most balanced form.",
     "rgb": {
       "r": 139,
       "g": 92,
@@ -4840,7 +4840,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Violet — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "Bold Violet runs violet close to full strength, confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 124,
       "g": 58,
@@ -4865,7 +4865,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Violet — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "Rich Violet is balanced between blue and red, purple in its most classic form, dialled up until it's deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 109,
       "g": 40,
@@ -4890,7 +4890,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Violet — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep in the violet range, Deep Violet is dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 91,
       "g": 33,
@@ -4915,7 +4915,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Violet — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Shadow Violet takes violet down into the dark, dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 76,
       "g": 29,
@@ -4940,7 +4940,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Violet — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Midnight Violet is violet at its heaviest: as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 46,
       "g": 16,
@@ -4965,7 +4965,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Purple — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Whisper Purple is purple thinned almost to paper: so faint it nearly disappears into the page.",
     "rgb": {
       "r": 250,
       "g": 245,
@@ -4990,7 +4990,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Purple — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Almost more paper than purple, Pale Purple is soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 243,
       "g": 232,
@@ -5015,7 +5015,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Purple — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Soft Purple holds just a trace of purple, gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 233,
       "g": 213,
@@ -5040,7 +5040,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Purple — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "Light Purple: fuller and warmer than violet, purple with real body to it. At this step it's clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 216,
       "g": 180,
@@ -5065,7 +5065,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Purple — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "This is purple at working strength, fuller and warmer than violet, purple with real body to it, even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 192,
       "g": 132,
@@ -5090,7 +5090,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Purple — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "True Purple is fuller and warmer than violet, purple with real body to it, the colour in its truest, most balanced form.",
     "rgb": {
       "r": 168,
       "g": 85,
@@ -5115,7 +5115,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Purple — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "Bold Purple is fuller and warmer than violet, purple with real body to it, dialled up until it's confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 147,
       "g": 51,
@@ -5140,7 +5140,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Purple — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "purple with nothing held back: Rich Purple is deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 126,
       "g": 34,
@@ -5165,7 +5165,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Purple — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep Purple takes purple down into the dark, dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 107,
       "g": 33,
@@ -5190,7 +5190,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Purple — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Shadow Purple is purple at its heaviest: dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 88,
       "g": 28,
@@ -5215,7 +5215,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Purple — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Deep in the purple range, Midnight Purple is as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 59,
       "g": 7,
@@ -5240,7 +5240,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Fuchsia — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Almost more paper than fuchsia, Whisper Fuchsia is so faint it nearly disappears into the page.",
     "rgb": {
       "r": 253,
       "g": 244,
@@ -5265,7 +5265,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Fuchsia — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Pale Fuchsia holds just a trace of fuchsia, soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 250,
       "g": 232,
@@ -5290,7 +5290,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Fuchsia — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Soft Fuchsia is fuchsia thinned almost to paper: gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 245,
       "g": 208,
@@ -5315,7 +5315,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Fuchsia — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "This is fuchsia at working strength, hot and unmissable, pink pushed hard toward purple, clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 240,
       "g": 171,
@@ -5340,7 +5340,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Fuchsia — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "Fair Fuchsia is hot and unmissable, pink pushed hard toward purple, even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 232,
       "g": 121,
@@ -5365,7 +5365,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Fuchsia — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "True Fuchsia: hot and unmissable, pink pushed hard toward purple. At this step it's the colour in its truest, most balanced form.",
     "rgb": {
       "r": 217,
       "g": 70,
@@ -5390,7 +5390,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Fuchsia — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "fuchsia with nothing held back: Bold Fuchsia is confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 192,
       "g": 38,
@@ -5415,7 +5415,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Fuchsia — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "Rich Fuchsia runs fuchsia close to full strength, deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 162,
       "g": 28,
@@ -5440,7 +5440,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Fuchsia — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep Fuchsia is fuchsia at its heaviest: dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 134,
       "g": 25,
@@ -5465,7 +5465,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Fuchsia — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Deep in the fuchsia range, Shadow Fuchsia is dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 112,
       "g": 26,
@@ -5490,7 +5490,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Fuchsia — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Midnight Fuchsia takes fuchsia down into the dark, as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 74,
       "g": 4,
@@ -5515,7 +5515,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Pink — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Whisper Pink holds just a trace of pink, so faint it nearly disappears into the page.",
     "rgb": {
       "r": 253,
       "g": 242,
@@ -5540,7 +5540,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Pink — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Pale Pink is pink thinned almost to paper: soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 252,
       "g": 231,
@@ -5565,7 +5565,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Pink — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Almost more paper than pink, Soft Pink is gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 251,
       "g": 207,
@@ -5590,7 +5590,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Pink — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "Light Pink is warm and a little playful, pink at its most straightforward, clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 249,
       "g": 168,
@@ -5615,7 +5615,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Pink — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "Fair Pink: warm and a little playful, pink at its most straightforward. At this step it's even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 244,
       "g": 114,
@@ -5640,7 +5640,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Pink — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "This is pink at working strength, warm and a little playful, pink at its most straightforward, the colour in its truest, most balanced form.",
     "rgb": {
       "r": 236,
       "g": 72,
@@ -5665,7 +5665,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Pink — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "Bold Pink runs pink close to full strength, confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 219,
       "g": 39,
@@ -5690,7 +5690,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Pink — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "Rich Pink is warm and a little playful, pink at its most straightforward, dialled up until it's deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 190,
       "g": 24,
@@ -5715,7 +5715,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Pink — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep in the pink range, Deep Pink is dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 157,
       "g": 23,
@@ -5740,7 +5740,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Pink — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Shadow Pink takes pink down into the dark, dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 131,
       "g": 24,
@@ -5765,7 +5765,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Pink — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Midnight Pink is pink at its heaviest: as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 80,
       "g": 7,
@@ -5790,7 +5790,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Rose — part of Tailwind's default palette — so faint it nearly disappears into the page.",
+    "note": "Whisper Rose is rose thinned almost to paper: so faint it nearly disappears into the page.",
     "rgb": {
       "r": 255,
       "g": 241,
@@ -5815,7 +5815,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Rose — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
+    "note": "Almost more paper than rose, Pale Rose is soft enough to sit behind content without competing with it.",
     "rgb": {
       "r": 255,
       "g": 228,
@@ -5840,7 +5840,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Rose — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
+    "note": "Soft Rose holds just a trace of rose, gentle and easy on the eye, good for large surfaces.",
     "rgb": {
       "r": 254,
       "g": 205,
@@ -5865,7 +5865,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Rose — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
+    "note": "Light Rose: pink softened with red, warmer and a touch more grown-up than plain pink. At this step it's clear and approachable, sits comfortably as a secondary tone.",
     "rgb": {
       "r": 253,
       "g": 164,
@@ -5890,7 +5890,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Rose — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
+    "note": "This is rose at working strength, pink softened with red, warmer and a touch more grown-up than plain pink, even-toned and easygoing, a dependable UI colour.",
     "rgb": {
       "r": 251,
       "g": 113,
@@ -5915,7 +5915,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Rose — part of Tailwind's default palette — the colour in its truest, most balanced form.",
+    "note": "True Rose is pink softened with red, warmer and a touch more grown-up than plain pink, the colour in its truest, most balanced form.",
     "rgb": {
       "r": 244,
       "g": 63,
@@ -5940,7 +5940,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Rose — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
+    "note": "Bold Rose is pink softened with red, warmer and a touch more grown-up than plain pink, dialled up until it's confident and saturated, built to anchor a single focal point.",
     "rgb": {
       "r": 225,
       "g": 29,
@@ -5965,7 +5965,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Rose — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
+    "note": "rose with nothing held back: Rich Rose is deep and full-bodied, reads as premium rather than loud.",
     "rgb": {
       "r": 190,
       "g": 18,
@@ -5990,7 +5990,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": true,
-    "note": "Rose — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
+    "note": "Deep Rose takes rose down into the dark, dark and weighty, good for grounding a palette.",
     "rgb": {
       "r": 159,
       "g": 18,
@@ -6015,7 +6015,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Rose — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
+    "note": "Shadow Rose is rose at its heaviest: dark and a little moody, sits closer to black than to its own family.",
     "rgb": {
       "r": 136,
       "g": 19,
@@ -6040,7 +6040,7 @@ export const tailwindColors: Color[] = [
     ],
     "collection": "tailwind",
     "isPro": false,
-    "note": "Rose — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
+    "note": "Deep in the rose range, Midnight Rose is as dark as the family gets, nearly swallowed by black.",
     "rgb": {
       "r": 76,
       "g": 5,
@@ -6050,1381 +6050,6 @@ export const tailwindColors: Color[] = [
       "h": 343,
       "s": 88,
       "l": 16
-    }
-  },
-  {
-    "id": "tw-lightBlue-50",
-    "name": "Whisper LightBlue",
-    "hex": "#f0f9ff",
-    "family": "neutral",
-    "mood": [
-      "calm"
-    ],
-    "style": [
-      "pastel"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "LightBlue — part of Tailwind's default palette — so faint it nearly disappears into the page.",
-    "rgb": {
-      "r": 240,
-      "g": 249,
-      "b": 255
-    },
-    "hsl": {
-      "h": 204,
-      "s": 100,
-      "l": 97
-    }
-  },
-  {
-    "id": "tw-lightBlue-100",
-    "name": "Pale LightBlue",
-    "hex": "#e0f2fe",
-    "family": "neutral",
-    "mood": [
-      "calm"
-    ],
-    "style": [
-      "pastel"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "LightBlue — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
-    "rgb": {
-      "r": 224,
-      "g": 242,
-      "b": 254
-    },
-    "hsl": {
-      "h": 204,
-      "s": 94,
-      "l": 94
-    }
-  },
-  {
-    "id": "tw-lightBlue-200",
-    "name": "Soft LightBlue",
-    "hex": "#bae6fd",
-    "family": "neutral",
-    "mood": [
-      "calm"
-    ],
-    "style": [
-      "pastel"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "LightBlue — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
-    "rgb": {
-      "r": 186,
-      "g": 230,
-      "b": 253
-    },
-    "hsl": {
-      "h": 201,
-      "s": 94,
-      "l": 86
-    }
-  },
-  {
-    "id": "tw-lightBlue-300",
-    "name": "Light LightBlue",
-    "hex": "#7dd3fc",
-    "family": "neutral",
-    "mood": [
-      "energetic"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "LightBlue — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
-    "rgb": {
-      "r": 125,
-      "g": 211,
-      "b": 252
-    },
-    "hsl": {
-      "h": 199,
-      "s": 95,
-      "l": 74
-    }
-  },
-  {
-    "id": "tw-lightBlue-400",
-    "name": "Fair LightBlue",
-    "hex": "#38bdf8",
-    "family": "neutral",
-    "mood": [
-      "energetic"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "LightBlue — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
-    "rgb": {
-      "r": 56,
-      "g": 189,
-      "b": 248
-    },
-    "hsl": {
-      "h": 198,
-      "s": 93,
-      "l": 60
-    }
-  },
-  {
-    "id": "tw-lightBlue-500",
-    "name": "True LightBlue",
-    "hex": "#0ea5e9",
-    "family": "neutral",
-    "mood": [
-      "energetic"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "LightBlue — part of Tailwind's default palette — the colour in its truest, most balanced form.",
-    "rgb": {
-      "r": 14,
-      "g": 165,
-      "b": 233
-    },
-    "hsl": {
-      "h": 199,
-      "s": 89,
-      "l": 48
-    }
-  },
-  {
-    "id": "tw-lightBlue-600",
-    "name": "Bold LightBlue",
-    "hex": "#0284c7",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "LightBlue — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
-    "rgb": {
-      "r": 2,
-      "g": 132,
-      "b": 199
-    },
-    "hsl": {
-      "h": 200,
-      "s": 98,
-      "l": 39
-    }
-  },
-  {
-    "id": "tw-lightBlue-700",
-    "name": "Rich LightBlue",
-    "hex": "#0369a1",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "LightBlue — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
-    "rgb": {
-      "r": 3,
-      "g": 105,
-      "b": 161
-    },
-    "hsl": {
-      "h": 201,
-      "s": 96,
-      "l": 32
-    }
-  },
-  {
-    "id": "tw-lightBlue-800",
-    "name": "Deep LightBlue",
-    "hex": "#075985",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "LightBlue — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
-    "rgb": {
-      "r": 7,
-      "g": 89,
-      "b": 133
-    },
-    "hsl": {
-      "h": 201,
-      "s": 90,
-      "l": 27
-    }
-  },
-  {
-    "id": "tw-lightBlue-900",
-    "name": "Shadow LightBlue",
-    "hex": "#0c4a6e",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "LightBlue — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
-    "rgb": {
-      "r": 12,
-      "g": 74,
-      "b": 110
-    },
-    "hsl": {
-      "h": 202,
-      "s": 80,
-      "l": 24
-    }
-  },
-  {
-    "id": "tw-lightBlue-950",
-    "name": "Midnight LightBlue",
-    "hex": "#082f49",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "LightBlue — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
-    "rgb": {
-      "r": 8,
-      "g": 47,
-      "b": 73
-    },
-    "hsl": {
-      "h": 204,
-      "s": 80,
-      "l": 16
-    }
-  },
-  {
-    "id": "tw-warmGray-50",
-    "name": "Whisper WarmGray",
-    "hex": "#fafaf9",
-    "family": "neutral",
-    "mood": [
-      "calm"
-    ],
-    "style": [
-      "pastel"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "WarmGray — part of Tailwind's default palette — so faint it nearly disappears into the page.",
-    "rgb": {
-      "r": 250,
-      "g": 250,
-      "b": 249
-    },
-    "hsl": {
-      "h": 60,
-      "s": 9,
-      "l": 98
-    }
-  },
-  {
-    "id": "tw-warmGray-100",
-    "name": "Pale WarmGray",
-    "hex": "#f5f5f4",
-    "family": "neutral",
-    "mood": [
-      "calm"
-    ],
-    "style": [
-      "pastel"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "WarmGray — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
-    "rgb": {
-      "r": 245,
-      "g": 245,
-      "b": 244
-    },
-    "hsl": {
-      "h": 60,
-      "s": 5,
-      "l": 96
-    }
-  },
-  {
-    "id": "tw-warmGray-200",
-    "name": "Soft WarmGray",
-    "hex": "#e7e5e4",
-    "family": "neutral",
-    "mood": [
-      "calm"
-    ],
-    "style": [
-      "pastel"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "WarmGray — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
-    "rgb": {
-      "r": 231,
-      "g": 229,
-      "b": 228
-    },
-    "hsl": {
-      "h": 20,
-      "s": 6,
-      "l": 90
-    }
-  },
-  {
-    "id": "tw-warmGray-300",
-    "name": "Light WarmGray",
-    "hex": "#d6d3d1",
-    "family": "neutral",
-    "mood": [
-      "energetic"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "WarmGray — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
-    "rgb": {
-      "r": 214,
-      "g": 211,
-      "b": 209
-    },
-    "hsl": {
-      "h": 24,
-      "s": 6,
-      "l": 83
-    }
-  },
-  {
-    "id": "tw-warmGray-400",
-    "name": "Fair WarmGray",
-    "hex": "#a8a29e",
-    "family": "neutral",
-    "mood": [
-      "energetic"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "WarmGray — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
-    "rgb": {
-      "r": 168,
-      "g": 162,
-      "b": 158
-    },
-    "hsl": {
-      "h": 24,
-      "s": 5,
-      "l": 64
-    }
-  },
-  {
-    "id": "tw-warmGray-500",
-    "name": "True WarmGray",
-    "hex": "#78716c",
-    "family": "neutral",
-    "mood": [
-      "energetic"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "WarmGray — part of Tailwind's default palette — the colour in its truest, most balanced form.",
-    "rgb": {
-      "r": 120,
-      "g": 113,
-      "b": 108
-    },
-    "hsl": {
-      "h": 25,
-      "s": 5,
-      "l": 45
-    }
-  },
-  {
-    "id": "tw-warmGray-600",
-    "name": "Bold WarmGray",
-    "hex": "#57534e",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "WarmGray — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
-    "rgb": {
-      "r": 87,
-      "g": 83,
-      "b": 78
-    },
-    "hsl": {
-      "h": 33,
-      "s": 5,
-      "l": 32
-    }
-  },
-  {
-    "id": "tw-warmGray-700",
-    "name": "Rich WarmGray",
-    "hex": "#44403c",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "WarmGray — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
-    "rgb": {
-      "r": 68,
-      "g": 64,
-      "b": 60
-    },
-    "hsl": {
-      "h": 30,
-      "s": 6,
-      "l": 25
-    }
-  },
-  {
-    "id": "tw-warmGray-800",
-    "name": "Deep WarmGray",
-    "hex": "#292524",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "WarmGray — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
-    "rgb": {
-      "r": 41,
-      "g": 37,
-      "b": 36
-    },
-    "hsl": {
-      "h": 12,
-      "s": 6,
-      "l": 15
-    }
-  },
-  {
-    "id": "tw-warmGray-900",
-    "name": "Shadow WarmGray",
-    "hex": "#1c1917",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "WarmGray — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
-    "rgb": {
-      "r": 28,
-      "g": 25,
-      "b": 23
-    },
-    "hsl": {
-      "h": 24,
-      "s": 10,
-      "l": 10
-    }
-  },
-  {
-    "id": "tw-warmGray-950",
-    "name": "Midnight WarmGray",
-    "hex": "#0c0a09",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "WarmGray — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
-    "rgb": {
-      "r": 12,
-      "g": 10,
-      "b": 9
-    },
-    "hsl": {
-      "h": 20,
-      "s": 14,
-      "l": 4
-    }
-  },
-  {
-    "id": "tw-trueGray-50",
-    "name": "Whisper TrueGray",
-    "hex": "#fafafa",
-    "family": "neutral",
-    "mood": [
-      "calm"
-    ],
-    "style": [
-      "pastel"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "TrueGray — part of Tailwind's default palette — so faint it nearly disappears into the page.",
-    "rgb": {
-      "r": 250,
-      "g": 250,
-      "b": 250
-    },
-    "hsl": {
-      "h": 0,
-      "s": 0,
-      "l": 98
-    }
-  },
-  {
-    "id": "tw-trueGray-100",
-    "name": "Pale TrueGray",
-    "hex": "#f5f5f5",
-    "family": "neutral",
-    "mood": [
-      "calm"
-    ],
-    "style": [
-      "pastel"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "TrueGray — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
-    "rgb": {
-      "r": 245,
-      "g": 245,
-      "b": 245
-    },
-    "hsl": {
-      "h": 0,
-      "s": 0,
-      "l": 96
-    }
-  },
-  {
-    "id": "tw-trueGray-200",
-    "name": "Soft TrueGray",
-    "hex": "#e5e5e5",
-    "family": "neutral",
-    "mood": [
-      "calm"
-    ],
-    "style": [
-      "pastel"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "TrueGray — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
-    "rgb": {
-      "r": 229,
-      "g": 229,
-      "b": 229
-    },
-    "hsl": {
-      "h": 0,
-      "s": 0,
-      "l": 90
-    }
-  },
-  {
-    "id": "tw-trueGray-300",
-    "name": "Light TrueGray",
-    "hex": "#d4d4d4",
-    "family": "neutral",
-    "mood": [
-      "energetic"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "TrueGray — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
-    "rgb": {
-      "r": 212,
-      "g": 212,
-      "b": 212
-    },
-    "hsl": {
-      "h": 0,
-      "s": 0,
-      "l": 83
-    }
-  },
-  {
-    "id": "tw-trueGray-400",
-    "name": "Fair TrueGray",
-    "hex": "#a3a3a3",
-    "family": "neutral",
-    "mood": [
-      "energetic"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "TrueGray — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
-    "rgb": {
-      "r": 163,
-      "g": 163,
-      "b": 163
-    },
-    "hsl": {
-      "h": 0,
-      "s": 0,
-      "l": 64
-    }
-  },
-  {
-    "id": "tw-trueGray-500",
-    "name": "True TrueGray",
-    "hex": "#737373",
-    "family": "neutral",
-    "mood": [
-      "energetic"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "TrueGray — part of Tailwind's default palette — the colour in its truest, most balanced form.",
-    "rgb": {
-      "r": 115,
-      "g": 115,
-      "b": 115
-    },
-    "hsl": {
-      "h": 0,
-      "s": 0,
-      "l": 45
-    }
-  },
-  {
-    "id": "tw-trueGray-600",
-    "name": "Bold TrueGray",
-    "hex": "#525252",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "TrueGray — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
-    "rgb": {
-      "r": 82,
-      "g": 82,
-      "b": 82
-    },
-    "hsl": {
-      "h": 0,
-      "s": 0,
-      "l": 32
-    }
-  },
-  {
-    "id": "tw-trueGray-700",
-    "name": "Rich TrueGray",
-    "hex": "#404040",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "TrueGray — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
-    "rgb": {
-      "r": 64,
-      "g": 64,
-      "b": 64
-    },
-    "hsl": {
-      "h": 0,
-      "s": 0,
-      "l": 25
-    }
-  },
-  {
-    "id": "tw-trueGray-800",
-    "name": "Deep TrueGray",
-    "hex": "#262626",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "TrueGray — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
-    "rgb": {
-      "r": 38,
-      "g": 38,
-      "b": 38
-    },
-    "hsl": {
-      "h": 0,
-      "s": 0,
-      "l": 15
-    }
-  },
-  {
-    "id": "tw-trueGray-900",
-    "name": "Shadow TrueGray",
-    "hex": "#171717",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "TrueGray — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
-    "rgb": {
-      "r": 23,
-      "g": 23,
-      "b": 23
-    },
-    "hsl": {
-      "h": 0,
-      "s": 0,
-      "l": 9
-    }
-  },
-  {
-    "id": "tw-trueGray-950",
-    "name": "Midnight TrueGray",
-    "hex": "#0a0a0a",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "TrueGray — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
-    "rgb": {
-      "r": 10,
-      "g": 10,
-      "b": 10
-    },
-    "hsl": {
-      "h": 0,
-      "s": 0,
-      "l": 4
-    }
-  },
-  {
-    "id": "tw-coolGray-50",
-    "name": "Whisper CoolGray",
-    "hex": "#f9fafb",
-    "family": "neutral",
-    "mood": [
-      "calm"
-    ],
-    "style": [
-      "pastel"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "CoolGray — part of Tailwind's default palette — so faint it nearly disappears into the page.",
-    "rgb": {
-      "r": 249,
-      "g": 250,
-      "b": 251
-    },
-    "hsl": {
-      "h": 210,
-      "s": 20,
-      "l": 98
-    }
-  },
-  {
-    "id": "tw-coolGray-100",
-    "name": "Pale CoolGray",
-    "hex": "#f3f4f6",
-    "family": "neutral",
-    "mood": [
-      "calm"
-    ],
-    "style": [
-      "pastel"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "CoolGray — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
-    "rgb": {
-      "r": 243,
-      "g": 244,
-      "b": 246
-    },
-    "hsl": {
-      "h": 220,
-      "s": 14,
-      "l": 96
-    }
-  },
-  {
-    "id": "tw-coolGray-200",
-    "name": "Soft CoolGray",
-    "hex": "#e5e7eb",
-    "family": "neutral",
-    "mood": [
-      "calm"
-    ],
-    "style": [
-      "pastel"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "CoolGray — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
-    "rgb": {
-      "r": 229,
-      "g": 231,
-      "b": 235
-    },
-    "hsl": {
-      "h": 220,
-      "s": 13,
-      "l": 91
-    }
-  },
-  {
-    "id": "tw-coolGray-300",
-    "name": "Light CoolGray",
-    "hex": "#d1d5db",
-    "family": "neutral",
-    "mood": [
-      "energetic"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "CoolGray — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
-    "rgb": {
-      "r": 209,
-      "g": 213,
-      "b": 219
-    },
-    "hsl": {
-      "h": 216,
-      "s": 12,
-      "l": 84
-    }
-  },
-  {
-    "id": "tw-coolGray-400",
-    "name": "Fair CoolGray",
-    "hex": "#9ca3af",
-    "family": "neutral",
-    "mood": [
-      "energetic"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "CoolGray — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
-    "rgb": {
-      "r": 156,
-      "g": 163,
-      "b": 175
-    },
-    "hsl": {
-      "h": 218,
-      "s": 11,
-      "l": 65
-    }
-  },
-  {
-    "id": "tw-coolGray-500",
-    "name": "True CoolGray",
-    "hex": "#6b7280",
-    "family": "neutral",
-    "mood": [
-      "energetic"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "CoolGray — part of Tailwind's default palette — the colour in its truest, most balanced form.",
-    "rgb": {
-      "r": 107,
-      "g": 114,
-      "b": 128
-    },
-    "hsl": {
-      "h": 220,
-      "s": 9,
-      "l": 46
-    }
-  },
-  {
-    "id": "tw-coolGray-600",
-    "name": "Bold CoolGray",
-    "hex": "#4b5563",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "CoolGray — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
-    "rgb": {
-      "r": 75,
-      "g": 85,
-      "b": 99
-    },
-    "hsl": {
-      "h": 215,
-      "s": 14,
-      "l": 34
-    }
-  },
-  {
-    "id": "tw-coolGray-700",
-    "name": "Rich CoolGray",
-    "hex": "#374151",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "CoolGray — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
-    "rgb": {
-      "r": 55,
-      "g": 65,
-      "b": 81
-    },
-    "hsl": {
-      "h": 217,
-      "s": 19,
-      "l": 27
-    }
-  },
-  {
-    "id": "tw-coolGray-800",
-    "name": "Deep CoolGray",
-    "hex": "#1f2937",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "CoolGray — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
-    "rgb": {
-      "r": 31,
-      "g": 41,
-      "b": 55
-    },
-    "hsl": {
-      "h": 215,
-      "s": 28,
-      "l": 17
-    }
-  },
-  {
-    "id": "tw-coolGray-900",
-    "name": "Shadow CoolGray",
-    "hex": "#111827",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "CoolGray — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
-    "rgb": {
-      "r": 17,
-      "g": 24,
-      "b": 39
-    },
-    "hsl": {
-      "h": 221,
-      "s": 39,
-      "l": 11
-    }
-  },
-  {
-    "id": "tw-coolGray-950",
-    "name": "Midnight CoolGray",
-    "hex": "#030712",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "CoolGray — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
-    "rgb": {
-      "r": 3,
-      "g": 7,
-      "b": 18
-    },
-    "hsl": {
-      "h": 224,
-      "s": 71,
-      "l": 4
-    }
-  },
-  {
-    "id": "tw-blueGray-50",
-    "name": "Whisper BlueGray",
-    "hex": "#f8fafc",
-    "family": "neutral",
-    "mood": [
-      "calm"
-    ],
-    "style": [
-      "pastel"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "BlueGray — part of Tailwind's default palette — so faint it nearly disappears into the page.",
-    "rgb": {
-      "r": 248,
-      "g": 250,
-      "b": 252
-    },
-    "hsl": {
-      "h": 210,
-      "s": 40,
-      "l": 98
-    }
-  },
-  {
-    "id": "tw-blueGray-100",
-    "name": "Pale BlueGray",
-    "hex": "#f1f5f9",
-    "family": "neutral",
-    "mood": [
-      "calm"
-    ],
-    "style": [
-      "pastel"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "BlueGray — part of Tailwind's default palette — soft enough to sit behind content without competing with it.",
-    "rgb": {
-      "r": 241,
-      "g": 245,
-      "b": 249
-    },
-    "hsl": {
-      "h": 210,
-      "s": 40,
-      "l": 96
-    }
-  },
-  {
-    "id": "tw-blueGray-200",
-    "name": "Soft BlueGray",
-    "hex": "#e2e8f0",
-    "family": "neutral",
-    "mood": [
-      "calm"
-    ],
-    "style": [
-      "pastel"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "BlueGray — part of Tailwind's default palette — gentle and easy on the eye, good for large surfaces.",
-    "rgb": {
-      "r": 226,
-      "g": 232,
-      "b": 240
-    },
-    "hsl": {
-      "h": 214,
-      "s": 32,
-      "l": 91
-    }
-  },
-  {
-    "id": "tw-blueGray-300",
-    "name": "Light BlueGray",
-    "hex": "#cbd5e1",
-    "family": "neutral",
-    "mood": [
-      "energetic"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "BlueGray — part of Tailwind's default palette — clear and approachable, sits comfortably as a secondary tone.",
-    "rgb": {
-      "r": 203,
-      "g": 213,
-      "b": 225
-    },
-    "hsl": {
-      "h": 213,
-      "s": 27,
-      "l": 84
-    }
-  },
-  {
-    "id": "tw-blueGray-400",
-    "name": "Fair BlueGray",
-    "hex": "#94a3b8",
-    "family": "neutral",
-    "mood": [
-      "energetic"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "BlueGray — part of Tailwind's default palette — even-toned and easygoing, a dependable UI colour.",
-    "rgb": {
-      "r": 148,
-      "g": 163,
-      "b": 184
-    },
-    "hsl": {
-      "h": 215,
-      "s": 20,
-      "l": 65
-    }
-  },
-  {
-    "id": "tw-blueGray-500",
-    "name": "True BlueGray",
-    "hex": "#64748b",
-    "family": "neutral",
-    "mood": [
-      "energetic"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "BlueGray — part of Tailwind's default palette — the colour in its truest, most balanced form.",
-    "rgb": {
-      "r": 100,
-      "g": 116,
-      "b": 139
-    },
-    "hsl": {
-      "h": 215,
-      "s": 16,
-      "l": 47
-    }
-  },
-  {
-    "id": "tw-blueGray-600",
-    "name": "Bold BlueGray",
-    "hex": "#475569",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "modern"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "BlueGray — part of Tailwind's default palette — confident and saturated, built to anchor a single focal point.",
-    "rgb": {
-      "r": 71,
-      "g": 85,
-      "b": 105
-    },
-    "hsl": {
-      "h": 215,
-      "s": 19,
-      "l": 35
-    }
-  },
-  {
-    "id": "tw-blueGray-700",
-    "name": "Rich BlueGray",
-    "hex": "#334155",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "BlueGray — part of Tailwind's default palette — deep and full-bodied, reads as premium rather than loud.",
-    "rgb": {
-      "r": 51,
-      "g": 65,
-      "b": 85
-    },
-    "hsl": {
-      "h": 215,
-      "s": 25,
-      "l": 27
-    }
-  },
-  {
-    "id": "tw-blueGray-800",
-    "name": "Deep BlueGray",
-    "hex": "#1e293b",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": true,
-    "note": "BlueGray — part of Tailwind's default palette — dark and weighty, good for grounding a palette.",
-    "rgb": {
-      "r": 30,
-      "g": 41,
-      "b": 59
-    },
-    "hsl": {
-      "h": 217,
-      "s": 33,
-      "l": 17
-    }
-  },
-  {
-    "id": "tw-blueGray-900",
-    "name": "Shadow BlueGray",
-    "hex": "#0f172a",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "BlueGray — part of Tailwind's default palette — dark and a little moody, sits closer to black than to its own family.",
-    "rgb": {
-      "r": 15,
-      "g": 23,
-      "b": 42
-    },
-    "hsl": {
-      "h": 222,
-      "s": 47,
-      "l": 11
-    }
-  },
-  {
-    "id": "tw-blueGray-950",
-    "name": "Midnight BlueGray",
-    "hex": "#020617",
-    "family": "neutral",
-    "mood": [
-      "moody"
-    ],
-    "style": [
-      "bold"
-    ],
-    "collection": "tailwind",
-    "isPro": false,
-    "note": "BlueGray — part of Tailwind's default palette — as dark as the family gets, nearly swallowed by black.",
-    "rgb": {
-      "r": 2,
-      "g": 6,
-      "b": 23
-    },
-    "hsl": {
-      "h": 229,
-      "s": 84,
-      "l": 5
     }
   }
 ];

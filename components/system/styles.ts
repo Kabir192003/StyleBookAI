@@ -175,6 +175,13 @@ export const SYSTEM_COMPONENT_CSS = `
   color: var(--ds-button-text-disabled, var(--ds-button-text, var(--pgc-on-primary)));
   border-color: var(--ds-button-border-disabled, var(--ds-button-border, transparent));
 }
+/* :focus-visible only ever set the outline colour — a focus-state text or
+   background override picked in the inspector had nowhere to land, so it
+   silently did nothing. Same fallback shape as hover/active above. */
+.pg-btn--primary:focus-visible {
+  background: var(--ds-button-bg-focus, var(--ds-button-bg, var(--pgc-primary)));
+  color: var(--ds-button-text-focus, var(--ds-button-text, var(--pgc-on-primary)));
+}
 
 .pg-btn--secondary {
   background: var(--ds-buttonSecondary-bg, color-mix(in srgb, var(--pgc-secondary) 16%, var(--pgc-surface)));
@@ -194,7 +201,11 @@ export const SYSTEM_COMPONENT_CSS = `
   color: var(--ds-buttonSecondary-text-disabled, var(--ds-buttonSecondary-text, var(--pgc-ink)));
   border-color: var(--ds-buttonSecondary-border-disabled, var(--ds-buttonSecondary-border, transparent));
 }
-.pg-btn--secondary:focus-visible { outline-color: var(--ds-buttonSecondary-border-focus, var(--pgc-ring)); }
+.pg-btn--secondary:focus-visible {
+  outline-color: var(--ds-buttonSecondary-border-focus, var(--pgc-ring));
+  background: var(--ds-buttonSecondary-bg-focus, var(--ds-buttonSecondary-bg, color-mix(in srgb, var(--pgc-secondary) 16%, var(--pgc-surface))));
+  color: var(--ds-buttonSecondary-text-focus, var(--ds-buttonSecondary-text, var(--pgc-ink)));
+}
 
 /* Outline and ghost both map to the same "button" ComponentName as primary in
    componentSelection.ts (only secondary gets its own slot), so they read
@@ -221,6 +232,10 @@ export const SYSTEM_COMPONENT_CSS = `
   color: var(--ds-button-text-disabled, var(--ds-button-text, var(--pgc-ink)));
   border-color: var(--ds-button-border-disabled, var(--ds-button-border, var(--pgc-border-strong)));
 }
+.pg-btn--outline:focus-visible {
+  color: var(--ds-button-text-focus, var(--ds-button-text, var(--pgc-ink)));
+  border-color: var(--ds-button-border-focus, var(--ds-button-border, var(--pgc-border-strong)));
+}
 
 .pg-btn--ghost { background: transparent; color: var(--ds-button-text, var(--pgc-ink)); }
 .pg-btn--ghost:hover:not(:disabled),
@@ -230,6 +245,9 @@ export const SYSTEM_COMPONENT_CSS = `
 .pg-btn--ghost:active:not(:disabled),
 .pg-btn--ghost[data-sb-preview="active"] {
   background: color-mix(in srgb, var(--ds-button-bg-active, var(--ds-button-bg, var(--pgc-ink))) 15%, transparent);
+}
+.pg-btn--ghost:focus-visible {
+  color: var(--ds-button-text-focus, var(--ds-button-text, var(--pgc-ink)));
 }
 
 .pg-btn--danger {

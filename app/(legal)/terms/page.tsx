@@ -8,6 +8,7 @@ export default function TermsPage() {
   return (
     <LegalPage
       eyebrow="Legal"
+      currentHref="/terms"
       title="Terms of Use"
       updated="18 August 2026"
       intro="Plain-language terms for using StyleBook — a colour, font, and design-system tool. By creating an account or using the site, you’re agreeing to the terms below."

@@ -904,7 +904,7 @@ export function StudioBuilder() {
             <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">Type scale</div>
             <label className="flex flex-col gap-1.5">
               <span className="flex justify-between text-xs text-[#6E675C]">
-                <span>Base size</span>
+                <span>Display size</span>
                 <span className="font-mono-plex text-[#211E18]">{state.typeScale.baseSize}px</span>
               </span>
               <input
@@ -913,15 +913,38 @@ export function StudioBuilder() {
                 max={22}
                 step={1}
                 value={state.typeScale.baseSize}
-                onChange={(e) => set("typeScale", generateTypeScale(Number(e.target.value), state.typeScale.ratioName))}
+                onChange={(e) =>
+                  set("typeScale", generateTypeScale(Number(e.target.value), state.typeScale.ratioName, state.typeScale.bodyBaseSize))
+                }
                 className="studio-range w-full"
+                aria-label="Display text base size"
+              />
+            </label>
+            <label className="flex flex-col gap-1.5">
+              <span className="flex justify-between text-xs text-[#6E675C]">
+                <span>Body size</span>
+                <span className="font-mono-plex text-[#211E18]">{state.typeScale.sizes.base}px</span>
+              </span>
+              <input
+                type="range"
+                min={12}
+                max={22}
+                step={1}
+                value={state.typeScale.bodyBaseSize ?? state.typeScale.baseSize}
+                onChange={(e) =>
+                  set("typeScale", generateTypeScale(state.typeScale.baseSize, state.typeScale.ratioName, Number(e.target.value)))
+                }
+                className="studio-range w-full"
+                aria-label="Body text base size"
               />
             </label>
             <label className="flex flex-col gap-1.5">
               <span className="font-mono-plex text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">Ratio</span>
               <select
                 value={state.typeScale.ratioName}
-                onChange={(e) => set("typeScale", generateTypeScale(state.typeScale.baseSize, e.target.value))}
+                onChange={(e) =>
+                  set("typeScale", generateTypeScale(state.typeScale.baseSize, e.target.value, state.typeScale.bodyBaseSize))
+                }
                 className="rounded-lg border border-black/20 bg-white px-3 py-2.5 text-sm text-[#211E18]"
               >
                 {Object.keys(TYPE_SCALE_RATIOS).map((name) => (
@@ -1071,7 +1094,12 @@ export function StudioBuilder() {
             onRadiusChange={(r) => set("radius", r)}
             onHeadFontChange={(f) => set("headFont", f)}
             onBodyFontChange={(f) => set("bodyFont", f)}
-            onBaseSizeChange={(size) => set("typeScale", generateTypeScale(size, state.typeScale.ratioName))}
+            onBaseSizeChange={(size) =>
+              set("typeScale", generateTypeScale(size, state.typeScale.ratioName, state.typeScale.bodyBaseSize))
+            }
+            onBodySizeChange={(size) =>
+              set("typeScale", generateTypeScale(state.typeScale.baseSize, state.typeScale.ratioName, size))
+            }
             onInkChange={(hex) => setToken("ink", hex)}
             onMutedChange={(hex) => setToken("muted", hex)}
             onClose={() => {
