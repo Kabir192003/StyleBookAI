@@ -83,6 +83,11 @@ export function StudioCanvas({
   // --pgc-shadow while every card carried on rendering the old shadow, which
   // read as "the control does nothing". Forcing a style recalculation after
   // the CSS changes fixes it for every property at once, not just shadows.
+  // Also keyed on `theme`: toggling light/dark flips which `[data-theme]`
+  // block resolves the same var()s, e.g. a button's text color reading
+  // --pgc-ink kept painting the light-mode value on a dark canvas until
+  // something forced a recalc — same stale-var class of bug, different
+  // trigger, so it needs the same fix.
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -90,7 +95,7 @@ export function StudioCanvas({
     root.style.display = "none";
     void root.offsetHeight;
     root.style.display = previous;
-  }, [css]);
+  }, [css, theme]);
 
   // Done here, not in the click handler, because the selected element can be
   // unmounted by a content switch or token change while still carrying the attribute.

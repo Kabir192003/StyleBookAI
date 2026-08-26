@@ -134,9 +134,11 @@ function DraggableFontChip({ item }: { item: ClipboardFontItem }) {
 function CanvasBand({
   band,
   onRemove,
+  onColorChange,
 }: {
   band: { id: string; hex: string; name: string; font?: { family: string; category: string } };
   onRemove: () => void;
+  onColorChange: (hex: string) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: `band-${band.id}`, data: { kind: "band", bandId: band.id } });
   const textColor = getReadableTextColor(band.hex);
@@ -169,6 +171,14 @@ function CanvasBand({
         >
           {contrast.label} · {contrast.ratio.toFixed(1)}:1
         </span>
+        <input
+          type="color"
+          value={band.hex}
+          onChange={(e) => onColorChange(e.target.value)}
+          aria-label={`Change ${band.name}'s colour`}
+          className="h-7 w-7 flex-none cursor-pointer rounded-full border-0 bg-transparent p-0"
+          style={{ boxShadow: `0 0 0 1px ${textColor}55` }}
+        />
         <button
           type="button"
           onClick={onRemove}
@@ -186,9 +196,11 @@ function CanvasBand({
 function CanvasDropZone({
   canvasBands,
   removeColorFromCanvas,
+  updateBandColor,
 }: {
   canvasBands: { id: string; hex: string; name: string; font?: { family: string; category: string } }[];
   removeColorFromCanvas: (bandId: string) => void;
+  updateBandColor: (bandId: string, hex: string) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: "canvas-drop" });
 
@@ -205,7 +217,14 @@ function CanvasDropZone({
           Drag up to 5 colors here to build the canvas
         </div>
       ) : (
-        canvasBands.map((band) => <CanvasBand key={band.id} band={band} onRemove={() => removeColorFromCanvas(band.id)} />)
+        canvasBands.map((band) => (
+          <CanvasBand
+            key={band.id}
+            band={band}
+            onRemove={() => removeColorFromCanvas(band.id)}
+            onColorChange={(hex) => updateBandColor(band.id, hex)}
+          />
+        ))
       )}
     </div>
   );
@@ -218,6 +237,7 @@ export function PreviewLab() {
   const addColorToCanvas = usePreviewLabStore((s) => s.addColorToCanvas);
   const removeColorFromCanvas = usePreviewLabStore((s) => s.removeColorFromCanvas);
   const assignFontToBand = usePreviewLabStore((s) => s.assignFontToBand);
+  const updateBandColor = usePreviewLabStore((s) => s.updateBandColor);
   const router = useRouter();
   const stageStudioImport = useStudioImportStore((s) => s.stage);
 
@@ -308,7 +328,7 @@ export function PreviewLab() {
             </div>
           </div>
 
-          <CanvasDropZone canvasBands={canvasBands} removeColorFromCanvas={removeColorFromCanvas} />
+          <CanvasDropZone canvasBands={canvasBands} removeColorFromCanvas={removeColorFromCanvas} updateBandColor={updateBandColor} />
         </div>
       </DndContext>
       <p className="mt-2 text-xs text-neutral-400">

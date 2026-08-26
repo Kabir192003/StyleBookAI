@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { saveAs } from "file-saver";
 import {
-  EXPORT_CATEGORIES,
   EXPORT_HINTS,
   EXPORT_MIME,
+  EXPORT_PRIMARY_TABS,
+  EXPORT_SECONDARY_TABS,
   ExportTab,
   exportFileName,
   generateExportCode,
@@ -125,43 +126,58 @@ export function ExportDrawer({ tokens, onClose }: { tokens: StudioExportTokens; 
           </div>
         </div>
 
-        <div className="flex flex-col gap-2.5 border-b border-black/[0.12] px-7 pb-3 pt-4">
-          {EXPORT_CATEGORIES.map((category) => (
-            <div key={category.label} className="flex flex-wrap items-center gap-1.5">
-              <span className="font-mono-plex mr-1 w-[92px] shrink-0 text-[9px] uppercase tracking-[0.14em] text-[#6E675C]">
-                {category.label}
-              </span>
-              {category.tabs.map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => {
-                    setTab(t);
-                    setCopied(false);
-                    setShowFigmaPanel(false);
-                  }}
-                  className={cn(
-                    "rounded-full border px-[15px] py-2 font-mono-plex text-[11px] tracking-[0.06em]",
-                    !showFigmaPanel && t === tab ? "border-[#211E18] bg-[#211E18] text-[#F2EBE0]" : "border-black/20 bg-transparent text-[#6E675C]"
-                  )}
-                >
-                  {t}
-                </button>
-              ))}
-              {category.label === "Design tools" && (
-                <button
-                  type="button"
-                  onClick={() => setShowFigmaPanel(true)}
-                  className={cn(
-                    "rounded-full border px-[15px] py-2 font-mono-plex text-[11px] tracking-[0.06em]",
-                    showFigmaPanel ? "border-[#211E18] bg-[#211E18] text-[#F2EBE0]" : "border-black/20 bg-transparent text-[#6E675C]"
-                  )}
-                >
-                  Figma Components ↗
-                </button>
+        <div className="flex flex-col gap-3 border-b border-black/[0.12] px-7 pb-4 pt-4">
+          <div className="flex flex-wrap gap-2">
+            {EXPORT_PRIMARY_TABS.map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => {
+                  setTab(t);
+                  setCopied(false);
+                  setShowFigmaPanel(false);
+                }}
+                className={cn(
+                  "rounded-full border px-5 py-2.5 font-mono-plex text-[12px] tracking-[0.06em]",
+                  !showFigmaPanel && t === tab ? "border-[#211E18] bg-[#211E18] text-[#F2EBE0]" : "border-[#211E18]/30 bg-white/60 text-[#211E18]"
+                )}
+              >
+                {t}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => setShowFigmaPanel(true)}
+              className={cn(
+                "rounded-full border px-5 py-2.5 font-mono-plex text-[12px] tracking-[0.06em]",
+                showFigmaPanel ? "border-[#211E18] bg-[#211E18] text-[#F2EBE0]" : "border-[#211E18]/30 bg-white/60 text-[#211E18]"
               )}
-            </div>
-          ))}
+            >
+              Figma Components ↗
+            </button>
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5 border-t border-black/[0.08] pt-3">
+            <span className="font-mono-plex mr-1 shrink-0 text-[9px] uppercase tracking-[0.14em] text-[#6E675C]">
+              Other formats
+            </span>
+            {EXPORT_SECONDARY_TABS.map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => {
+                  setTab(t);
+                  setCopied(false);
+                  setShowFigmaPanel(false);
+                }}
+                className={cn(
+                  "rounded-full border px-3 py-1.5 font-mono-plex text-[10.5px] tracking-[0.06em]",
+                  !showFigmaPanel && t === tab ? "border-[#211E18] bg-[#211E18] text-[#F2EBE0]" : "border-black/20 bg-transparent text-[#6E675C]"
+                )}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
         </div>
 
         {showFigmaPanel ? (

@@ -48,7 +48,7 @@ function buildTheme(input: ThemeSeedInput): Theme {
     primaryFont: font(input.primaryFontId),
     secondaryFont: font(input.secondaryFontId),
     accentFont: input.accentFontId ? font(input.accentFontId) : undefined,
-    typeScale: generateTypeScale(input.baseSize ?? 16, input.ratioName ?? "Major Third"),
+    typeScale: generateTypeScale(input.baseSize ?? 16, input.ratioName ?? "Major Third", input.baseSize ?? 16),
     isPro: input.isPro ?? false,
     thumbnail: `/themes/${input.slug}.svg`,
   };

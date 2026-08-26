@@ -186,7 +186,7 @@ export function ProgressDemo() {
       >
         <div className="pg-progress__bar" style={{ width: `${value}%` }} />
       </div>
-      <div className="pg-row" style={{ gap: 6 }}>
+      <div className="pg-row" style={{ gap: 6, flexWrap: "nowrap" }}>
         <button type="button" className="pg-btn pg-btn--outline pg-btn--icon pg-btn--sm" aria-label="Decrease progress" onClick={() => step(-15)}>
           <Minus size={13} aria-hidden="true" />
         </button>
