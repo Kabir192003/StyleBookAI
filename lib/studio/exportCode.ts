@@ -123,14 +123,15 @@ export const EXPORT_MIME: Record<ExportTab, string> = {
 
 /**
  * One line of UI copy per tab. The drawer shows this so a user can tell
- * the two JSON downloads apart — "Design Tokens" is the one that imports
- * into Figma, "JSON" is the readable dump. Getting that wrong at a demo
- * means watching someone import the wrong file and see nothing appear.
+ * the two JSON downloads apart — "Design Tokens" is the plain, portable
+ * spec file, "JSON" is the readable dump. "Figma" is StyleBook's own
+ * import path (Tokens Studio sets); "Design Tokens" makes no claim about
+ * any specific destination tool.
  */
 export const EXPORT_HINTS: Record<ExportTab, string> = {
   CSS: "Custom properties for :root, with a [data-theme=\"dark\"] override block.",
   Tailwind: "Drop-in tailwind.config.js — colors, fonts, type scale, spacing, shadows, screens.",
-  "Design Tokens": "W3C DTCG format. Import into Figma via Tokens Studio or the Design Tokens plugin.",
+  "Design Tokens": "W3C DTCG format — the plain, portable token spec, readable by any tool that speaks it.",
   Figma: "Tokens Studio token sets — light and dark wired up as swappable themes.",
   SwiftUI: "Color, font-size, spacing and radius constants for an iOS target.",
   Flutter: "AppColors / AppTheme with light and dark ThemeData.",
@@ -140,17 +141,16 @@ export const EXPORT_HINTS: Record<ExportTab, string> = {
 };
 
 /**
- * Groups the flat tab list by "what are you exporting for," so the drawer
- * can show a designer and a developer two different, shorter shelves
- * instead of one undifferentiated row of eight equal-weight buttons — a
- * developer never needs to scan past "Figma" to find "React."
+ * "Figma" (the Tokens Studio file) is the one format most users reach for
+ * first, and it sits alongside the separate "Figma Components ↗" flow
+ * (real Figma frames via the plugin, not a plain ExportTab). The drawer
+ * gives those two top billing and folds every other format — CSS,
+ * Tailwind, Design Tokens, SwiftUI, Flutter, React, JSON, Style Guide —
+ * into one compact secondary row, instead of four equal-weight category
+ * rows that made the panel look like a wall of buttons.
  */
-export const EXPORT_CATEGORIES: Array<{ label: string; tabs: ExportTab[] }> = [
-  { label: "Design tools", tabs: ["Figma", "Design Tokens", "Style Guide"] },
-  { label: "Web", tabs: ["CSS", "Tailwind", "React"] },
-  { label: "Native apps", tabs: ["SwiftUI", "Flutter"] },
-  { label: "Data", tabs: ["JSON"] },
-];
+export const EXPORT_PRIMARY_TABS: ExportTab[] = ["Figma"];
+export const EXPORT_SECONDARY_TABS: ExportTab[] = EXPORT_TABS.filter((t) => !EXPORT_PRIMARY_TABS.includes(t));
 
 export function exportFileName(tab: ExportTab, systemName: string): string {
   const slug = slugify(systemName) || "stylebook";

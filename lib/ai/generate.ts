@@ -347,7 +347,29 @@ function ensureDarkVariant(designSystem: DesignSystem): { designSystem: DesignSy
   const modelDark = designSystem.dark;
 
   if (modelDark && darkPaletteIsUsable(brandPaletteFromThemeVariant(modelDark), lightPalette)) {
-    return { designSystem, derived: false };
+    // The model's dark variant can pass the whole-palette gate above while
+    // still being missing individual components (every component key is
+    // optional in the schema). A component absent from dark.components
+    // isn't re-declared in the dark CSS scope, so it keeps resolving to its
+    // light-mode literal — e.g. a ghost button's text staying dark ink on a
+    // dark background, unreadable. Backfill only the missing keys from the
+    // derived variant; components the model did author for dark are trusted
+    // as-is.
+    const derivedComponents = deriveDarkThemeVariantFromLight(designSystem.light).components;
+    const lightComponentKeys = Object.keys(designSystem.light.components) as Array<keyof typeof designSystem.light.components>;
+    const missingKeys = lightComponentKeys.filter((key) => !modelDark.components[key]);
+    if (missingKeys.length === 0) {
+      return { designSystem, derived: false };
+    }
+    const patchedComponents = { ...modelDark.components };
+    missingKeys.forEach((key) => {
+      const fallback = derivedComponents[key];
+      if (fallback) patchedComponents[key] = fallback;
+    });
+    return {
+      designSystem: { ...designSystem, dark: { ...modelDark, components: patchedComponents } },
+      derived: false,
+    };
   }
 
   return {
@@ -471,7 +493,8 @@ export async function generateProjectFromPrompt(request: AIGenerateRequest): Pro
     };
   }
 
-  const typeScale = generateTypeScale(raw.baseSize ?? 16, raw.typeScaleRatio);
+  const typeScaleBase = raw.baseSize ?? 16;
+  const typeScale = generateTypeScale(typeScaleBase, raw.typeScaleRatio, typeScaleBase);
   const spacing = generateSpacingScale(raw.spacingBase ?? 4);
   const shadows = buildShadowScale(raw.shadowLevel ?? "subtle");
 

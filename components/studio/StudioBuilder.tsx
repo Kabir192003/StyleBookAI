@@ -1,6 +1,6 @@
 // The manual builder's token editor + live preview, embedded in
 // app/studio/page.tsx: a 5-token palette (accent/support/surface/ink/muted),
-// a display/body font pair, corner radius, and density, all driving a live
+// a display/body font pair, and corner radius, all driving a live
 // mock landing page preview via CSS custom properties, plus an export drawer
 // that formats the tokens as CSS/Tailwind/JSON/SwiftUI/Figma.
 "use client";
@@ -73,13 +73,6 @@ const PAIRS = [
   { label: "Bold", head: "Unbounded", body: "DM Sans" },
 ] as const;
 
-const DENSITIES = {
-  Compact: { pad: 18, gap: 12 },
-  Cozy: { pad: 30, gap: 18 },
-  Airy: { pad: 46, gap: 30 },
-} as const;
-type Density = keyof typeof DENSITIES;
-
 const RADII = [2, 6, 10, 16, 22];
 
 const ROLES = [
@@ -101,10 +94,6 @@ const STATS = [
   { n: "30", l: "themes" },
   { n: "∞", l: "exports" },
 ];
-
-function onColor(hex: string): string {
-  return getContrastRatio(hex, "#FBF8F2") >= getContrastRatio(hex, "#141110") ? "#FBF8F2" : "#141110";
-}
 
 function randomOf<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -139,7 +128,6 @@ export type StudioState = {
   bodyFont: string;
   accentFont?: string;
   radius: number;
-  density: Density;
   // Always present, manual build or AI-seeded alike, so a from-scratch
   // build can see and edit type scale and the Shadow/Spacing controls
   // further down — every Studio project is a real typographic + spacing
@@ -197,8 +185,7 @@ export const DEFAULT_STATE: StudioState = {
   headFont: "Fraunces",
   bodyFont: "Archivo",
   radius: 10,
-  density: "Cozy",
-  typeScale: generateTypeScale(16, "Major Third"),
+  typeScale: generateTypeScale(16, "Major Third", 16),
   spacing: generateSpacingScale(4),
   shadows: buildShadowScale("subtle"),
 };
@@ -421,7 +408,6 @@ export function StudioBuilder() {
     if (link.href !== href) link.href = href;
   }, [state.headFont, state.bodyFont]);
 
-  const density = DENSITIES[state.density];
   const domain = `${state.name.toLowerCase().replace(/[^a-z0-9]/g, "")}.com`;
 
   // FONTS is a small curated list for the manual builder's dropdown, but an
@@ -446,24 +432,6 @@ export function StudioBuilder() {
   const resolvedState = useMemo(
     () => ({ ...state, light: resolvedLight, dark: resolvedDark }),
     [state, resolvedLight, resolvedDark]
-  );
-
-  const previewVars = useMemo(
-    () =>
-      ({
-        "--accent": resolvedActivePalette.accent,
-        "--support": resolvedActivePalette.support,
-        "--surface": resolvedActivePalette.surface,
-        "--ink": resolvedActivePalette.ink,
-        "--muted": resolvedActivePalette.muted,
-        "--on-accent": onColor(resolvedActivePalette.accent),
-        "--head": `'${state.headFont}', serif`,
-        "--body": `'${state.bodyFont}', sans-serif`,
-        "--r": `${state.radius}px`,
-        "--pad": `${density.pad}px`,
-        "--gap": `${density.gap}px`,
-      }) as React.CSSProperties,
-    [resolvedActivePalette, state.headFont, state.bodyFont, state.radius, density]
   );
 
   // Falls back to the light variant when the system has no dark one, matching
@@ -867,7 +835,7 @@ export function StudioBuilder() {
           </div>
 
           <div className="flex flex-col gap-4">
-            <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">Shape &amp; density</div>
+            <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">Shape</div>
             <label className="flex flex-col gap-2">
               <span className="flex justify-between text-xs text-[#6E675C]">
                 <span>Corner radius</span>
@@ -883,21 +851,6 @@ export function StudioBuilder() {
                 className="studio-range w-full"
               />
             </label>
-            <div className="flex gap-2">
-              {(Object.keys(DENSITIES) as Density[]).map((d) => (
-                <button
-                  key={d}
-                  type="button"
-                  onClick={() => set("density", d)}
-                  className={cn(
-                    "flex-1 rounded-lg border py-[9px] font-mono-plex text-[10px] uppercase tracking-[0.1em]",
-                    state.density === d ? "border-[#211E18] bg-[#211E18] text-[#F2EBE0]" : "border-black/[0.16] bg-white text-[#6E675C]"
-                  )}
-                >
-                  {d}
-                </button>
-              ))}
-            </div>
           </div>
 
           <div className="flex flex-col gap-3 border-t border-black/[0.1] pt-4">

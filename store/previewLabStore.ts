@@ -18,6 +18,7 @@ type PreviewLabState = {
   addColorToCanvas: (color: ClipboardColorItem) => void;
   removeColorFromCanvas: (bandId: string) => void;
   assignFontToBand: (bandId: string, font: ClipboardFontItem) => void;
+  updateBandColor: (bandId: string, hex: string) => void;
 };
 
 export const usePreviewLabStore = create<PreviewLabState>((set) => ({
@@ -47,5 +48,14 @@ export const usePreviewLabStore = create<PreviewLabState>((set) => ({
       canvasBands: state.canvasBands.map((band) =>
         band.id === bandId ? { ...band, font: { family: font.family, category: font.category } } : band
       ),
+    })),
+  // Lets a dropped-in color be nudged live rather than removed and
+  // re-dragged from scratch whenever it's not quite right — the swatch
+  // itself becomes a real color picker, same pattern as Studio's palette
+  // role inputs. The band keeps its original library `name` even after an
+  // edit, since the hex no longer necessarily matches a catalog entry.
+  updateBandColor: (bandId, hex) =>
+    set((state) => ({
+      canvasBands: state.canvasBands.map((band) => (band.id === bandId ? { ...band, hex } : band)),
     })),
 }));

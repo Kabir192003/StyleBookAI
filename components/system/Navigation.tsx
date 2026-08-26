@@ -35,7 +35,14 @@ export function Navbar() {
           </button>
         ))}
       </div>
-      <div className="pg-row" style={{ gap: 4 }}>
+      {/* flexWrap: nowrap — this cluster never wraps in practice, and Figma
+          export's DOM serializer only emits a real auto-layout frame for a
+          flex row when it's non-wrapping (a wrapping row is captured at
+          absolute pixel coordinates instead, since Figma can't reflow it
+          the way a browser would). Without this the nav's icon cluster
+          exported pinned to its captured rect while the outer navbar frame
+          reflowed normally, drifting out of alignment. */}
+      <div className="pg-row" style={{ gap: 4, flexWrap: "nowrap" }}>
         <button type="button" className="pg-btn pg-btn--ghost pg-btn--icon pg-btn--sm" aria-label="Search">
           <Search size={15} aria-hidden="true" />
         </button>
