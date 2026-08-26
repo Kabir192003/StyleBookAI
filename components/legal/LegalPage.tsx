@@ -23,7 +23,7 @@ export function LegalPage({
   children: React.ReactNode;
 }) {
   return (
-    <div className={wide ? "mx-auto max-w-[880px] px-6 py-16 sm:py-20" : "mx-auto max-w-[760px] px-6 py-16 sm:py-20"}>
+    <div className={wide ? "mx-auto max-w-[1080px] px-6 py-14 sm:px-10 sm:py-16" : "mx-auto max-w-[800px] px-6 py-14 sm:px-10 sm:py-16"}>
       <Link
         href="/"
         className="font-mono-plex text-[11px] uppercase tracking-[0.18em] text-[#6E675C] hover:text-[#211E18]"
@@ -39,14 +39,20 @@ export function LegalPage({
         <p className="mt-3 font-mono-plex text-[10px] uppercase tracking-[0.16em] text-[#6E675C]">
           Last updated {updated}
         </p>
-        {intro && <p className="mt-6 max-w-[62ch] text-[15px] leading-relaxed text-[#3A362E]">{intro}</p>}
+        {intro && <p className="mt-6 text-[16px] leading-relaxed text-[#3A362E]">{intro}</p>}
       </div>
 
-      {afterIntro}
+      {/* On the guide, the section nav becomes a sticky sidebar at lg and the
+          prose sits beside it. That fills the wider layout with something
+          useful instead of leaving a narrow column in a half-empty page. */}
+      <div className={wide ? "lg:mt-10 lg:grid lg:grid-cols-[210px_minmax(0,1fr)] lg:gap-12" : undefined}>
+        {afterIntro && (
+          <div className={wide ? "lg:sticky lg:top-24 lg:self-start" : undefined}>{afterIntro}</div>
+        )}
 
       <div
         className="
-          mt-10 max-w-[62ch] text-[15px] leading-relaxed text-[#3A362E]
+          mt-10 text-[15.5px] leading-relaxed text-[#3A362E]
           [&_h2]:mt-12 [&_h2]:mb-3 [&_h2]:border-t [&_h2]:border-black/[0.1] [&_h2]:pt-10
           [&_h2]:font-editorial-serif [&_h2]:text-[22px] [&_h2]:font-normal [&_h2]:tracking-[-0.01em] [&_h2]:text-[#211E18]
           [&_h3]:mt-7 [&_h3]:mb-2 [&_h3]:font-grotesk [&_h3]:text-[13px] [&_h3]:font-semibold [&_h3]:uppercase [&_h3]:tracking-[0.06em] [&_h3]:text-[#211E18]
@@ -60,6 +66,7 @@ export function LegalPage({
         "
       >
         {children}
+      </div>
       </div>
     </div>
   );

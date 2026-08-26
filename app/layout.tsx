@@ -19,6 +19,9 @@ export const metadata: Metadata = {
     siteName: "StyleBook",
     type: "website",
   },
+  // Versioned query on purpose: browsers cache favicons hard, and without a
+  // changed URL an old icon can survive a redeploy indefinitely.
+  icons: { icon: [{ url: "/favicon.svg?v=2", type: "image/svg+xml" }] },
 };
 
 export const viewport: Viewport = {

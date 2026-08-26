@@ -28,7 +28,7 @@ export default function GuidePage() {
       wide
       intro="A section-by-section walkthrough of everything in the app — what each part is for, how to actually use it, and how the pieces connect to each other. Jump to any section below, or just read straight through."
       afterIntro={
-        <nav aria-label="Guide sections" className="mt-8 flex flex-wrap gap-2">
+        <nav aria-label="Guide sections" className="mt-8 flex flex-wrap gap-2 lg:mt-0 lg:flex-col lg:items-start lg:gap-1.5">
           {SECTIONS.map((s) => (
             <a
               key={s.id}

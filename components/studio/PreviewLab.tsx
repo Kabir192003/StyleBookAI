@@ -234,8 +234,24 @@ export function PreviewLab() {
       return;
     }
 
-    if (data.kind === "sidebar-font" && String(over.id).startsWith("band-")) {
-      assignFontToBand(String(over.id).slice("band-".length), data.item);
+    if (data.kind === "sidebar-font") {
+      const overId = String(over.id);
+      if (overId.startsWith("band-")) {
+        assignFontToBand(overId.slice("band-".length), data.item);
+        return;
+      }
+      // The bands sit inside the canvas drop zone and are flex-1, so a single
+      // band fills it and the two centres coincide. closestCenter then resolves
+      // to the zone rather than the band under the cursor and the drop silently
+      // does nothing, which is why pairing a font never worked with one colour
+      // on the canvas. Recover the band from the collision list, falling back to
+      // the only band when there is just one.
+      const bandHit = event.collisions?.find((c) => String(c.id).startsWith("band-"));
+      if (bandHit) {
+        assignFontToBand(String(bandHit.id).slice("band-".length), data.item);
+      } else if (canvasBands.length === 1) {
+        assignFontToBand(canvasBands[0].id, data.item);
+      }
     }
   }
 
