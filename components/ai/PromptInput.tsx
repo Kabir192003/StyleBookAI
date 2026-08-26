@@ -146,7 +146,7 @@ function VerificationPanel({
             {deviations.map((d, i) => (
               <li key={`${d.subject}-${i}`} className="text-[13px] leading-relaxed text-[#6E675C]">
                 <span className="font-semibold text-[#211E18]">{d.subject}</span>
-                {" — asked for "}
+                {" asked for "}
                 <span className="font-mono-plex text-[12px] text-[#211E18]">{d.requested}</span>
                 {", shipped "}
                 <span className="font-mono-plex text-[12px] text-[#211E18]">{d.applied}</span>
@@ -287,8 +287,8 @@ export function PromptInput() {
           <em className="text-[#222D52] not-italic">We design it.</em>
         </h1>
         <p className="mx-auto mt-5 max-w-[520px] text-base leading-relaxed text-[#6E675C]">
-          Tell us the mood, the product, the audience. In one breath you get a complete system — palette,
-          pairing, shape — ready to open in the Studio.
+          Tell us the mood, the product, the audience. In one breath you get a complete system: palette,
+          pairing, and shape, ready to open in the Studio.
         </p>
 
         <div className="mx-auto mt-9 max-w-[720px] rounded-[20px] border border-black/[0.14] bg-[#F2EBE0] p-5 text-left shadow-[0_20px_50px_-30px_rgba(33,30,24,0.4)]">

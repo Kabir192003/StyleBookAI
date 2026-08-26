@@ -72,18 +72,18 @@ const SWATCHES = [
 ];
 
 const TYPE_STEPS = [
-  { fd: "'Times New Roman',serif", fb: "Arial,sans-serif", label: "Times New Roman — browser default" },
-  { fd: "'Courier New',monospace", fb: "Arial,sans-serif", label: "Courier New — typewriter" },
-  { fd: "var(--font-technical-sans),sans-serif", fb: "Arial,sans-serif", label: "Space Grotesk — technical" },
-  { fd: "var(--font-geometric-sans),sans-serif", fb: "Arial,sans-serif", label: "Sora — geometric" },
-  { fd: "var(--font-editorial-serif),serif", fb: "var(--font-grotesk),sans-serif", label: "Fraunces — editorial ✓" },
+  { fd: "'Times New Roman',serif", fb: "Arial,sans-serif", label: "Times New Roman, browser default" },
+  { fd: "'Courier New',monospace", fb: "Arial,sans-serif", label: "Courier New, typewriter" },
+  { fd: "var(--font-technical-sans),sans-serif", fb: "Arial,sans-serif", label: "Space Grotesk, technical" },
+  { fd: "var(--font-geometric-sans),sans-serif", fb: "Arial,sans-serif", label: "Sora, geometric" },
+  { fd: "var(--font-editorial-serif),serif", fb: "var(--font-grotesk),sans-serif", label: "Fraunces, editorial ✓" },
 ];
 
 const EDITIONS = [
   {
     label: "Edition 01",
     name: "Velvet Dusk",
-    desc: "Candlelit navy and champagne — for brands that speak softly and carry taste.",
+    desc: "Candlelit navy and champagne, for brands that speak softly and carry taste.",
     bg: "#222D52",
     ink: "#F2EBE0",
     eyebrow: "#D2B68A",
@@ -94,7 +94,7 @@ const EDITIONS = [
   {
     label: "Edition 02",
     name: "Terracotta Study",
-    desc: "Sun-baked clay and honey — warm, handmade, generous with texture.",
+    desc: "Sun-baked clay and honey, warm, handmade, generous with texture.",
     bg: "#F7F0E1",
     ink: "#211E18",
     eyebrow: "#C36B3E",
@@ -105,7 +105,7 @@ const EDITIONS = [
   {
     label: "Edition 03",
     name: "Botanical",
-    desc: "Greenhouse greens and lime light — fresh, organic, quietly optimistic.",
+    desc: "Greenhouse greens and lime light, fresh, organic, quietly optimistic.",
     bg: "#EAF2EA",
     ink: "#14301F",
     eyebrow: "#1F5C41",
@@ -116,7 +116,7 @@ const EDITIONS = [
   {
     label: "Edition 04",
     name: "Porcelain",
-    desc: "Glazed white and washed sky — minimal, precise, gallery-quiet.",
+    desc: "Glazed white and washed sky, minimal, precise, gallery-quiet.",
     bg: "#F4F1EA",
     ink: "#2E3440",
     eyebrow: "#5D87B0",
@@ -129,25 +129,25 @@ const EDITIONS = [
 const DOORS = [
   {
     href: "/browse/colors",
-    mode: "Mode 01 — browse",
+    mode: "Mode 01 / browse",
     title: "The Library",
-    body: "Thousands of curated shades, specimens and themes — pick what's already right.",
+    body: "Thousands of curated shades, specimens and themes: pick what's already right.",
     cta: "Browse →",
     highlight: false,
   },
   {
     href: "/studio",
-    mode: "Mode 02 — build",
+    mode: "Mode 02 / build",
     title: "The Studio",
-    body: "Assemble every token by hand — colour, scale, spacing, shadow. Maximum control, zero guesswork.",
+    body: "Assemble every token by hand: colour, scale, spacing, shadow. Maximum control, zero guesswork.",
     cta: "Open the Studio →",
     highlight: true,
   },
   {
     href: "/studio/ai",
-    mode: "Mode 03 — generate",
+    mode: "Mode 03 / generate",
     title: "The AI Atelier",
-    body: "One sentence in, a full system out — palette, type and tokens in a single pass.",
+    body: "One sentence in, a full system out: palette, type and tokens in a single pass.",
     cta: "Generate →",
     highlight: false,
   },
@@ -505,7 +505,7 @@ export function LandingExperience() {
       }
       // Positionally matched against root.querySelectorAll("section")
       // below — must have exactly one entry per <section>, in order.
-      const labels = ["Welcome", "Undesigned", "Act I — Colour", "Act II — Type", "Act III — Rhythm", "Act IV — Theme", "Act V — Editions", "Three doors", "Alive"];
+      const labels = ["Welcome", "Undesigned", "Act I: Colour", "Act II: Type", "Act III: Rhythm", "Act IV: Theme", "Act V: Editions", "Three doors", "Alive"];
       root.querySelectorAll<HTMLElement>("section").forEach((sec, i) => {
         ScrollTrigger.create({
           trigger: sec,
@@ -700,7 +700,7 @@ export function LandingExperience() {
         <section id="story" className="relative mx-auto flex min-h-[calc(100vh-56px)] max-w-[1160px] flex-col justify-center px-6 pb-[90px] pt-16 sm:px-12">
           <div className="relative z-[2]">
             <div data-hero-line className="mb-[30px] font-mono-plex text-xs uppercase tracking-[0.28em]" style={{ color: "var(--mut)" }}>
-              stylebook — watch a page come to life
+              stylebook, watch a page come to life
             </div>
             <h1 className="m-0 max-w-[17ch] text-[clamp(44px,7vw,108px)] font-normal leading-[1.02] tracking-[0.01em]" style={{ fontFamily: "var(--fd)", color: "var(--ink)" }}>
               <span data-hero-line className="block">
@@ -711,24 +711,24 @@ export function LandingExperience() {
               </span>
             </h1>
             <p data-hero-line className="mt-[30px] max-w-[56ch] text-[clamp(16px,1.6vw,20px)] leading-relaxed" style={{ fontFamily: "var(--fb)", color: "var(--mut)" }}>
-              No palette. No type scale. No rhythm. Its decisions live where every project&apos;s do — a tab for
-              palettes, a tab for fonts, a tab for contrast checks, a brand PDF nobody opens. Scroll — and watch one
+              No palette. No type scale. No rhythm. Its decisions live where every project&apos;s do: a tab for
+              palettes, a tab for fonts, a tab for contrast checks, a brand PDF nobody opens. Scroll, and watch one
               living system replace them all.
             </p>
           </div>
 
           <div className="sb-float-el pointer-events-none absolute right-[6%] top-[22%] h-[120px] w-[220px] rounded-[var(--rad)] border-[1.5px] border-dashed" style={{ borderColor: "var(--edge)", animation: "sb-float 7s ease-in-out infinite" }}>
             <span className="absolute bottom-2 left-2.5 font-mono-plex text-[9.5px] tracking-[0.1em]" style={{ color: "var(--mut)" }}>
-              img · 1200×600 — awaiting art
+              img · 1200×600 · awaiting art
             </span>
           </div>
           <div className="sb-float-el pointer-events-none absolute bottom-[24%] right-[16%] h-[96px] w-[170px] rounded-[var(--rad)] border-[1.5px] border-dashed" style={{ borderColor: "var(--edge)", animation: "sb-float 8s ease-in-out .5s infinite" }}>
             <span className="absolute bottom-2 left-2.5 font-mono-plex text-[9.5px] tracking-[0.1em]" style={{ color: "var(--mut)" }}>
-              card · 4:3 — no tokens yet
+              card · 4:3 · no tokens yet
             </span>
           </div>
           <div className="sb-float-el pointer-events-none absolute left-[47%] top-[16%] border-b border-dashed pb-0.5 font-mono-plex text-[9.5px] tracking-[0.1em]" style={{ color: "var(--mut)", borderColor: "var(--edge)", animation: "sb-float 6s ease-in-out .8s infinite" }}>
-            h1 — size: ??px
+            h1 · size: ??px
           </div>
           <div className="sb-float-el pointer-events-none absolute right-[22%] top-[33%] rounded-full border-[1.5px] border-dashed px-3 py-1.5 font-mono-plex text-[9.5px] tracking-[0.1em]" style={{ color: "var(--mut)", borderColor: "var(--edge)", animation: "sb-float 7.5s ease-in-out .3s infinite" }}>
             colours: tab 3 · fonts: tab 7 · contrast: tab 12
@@ -747,13 +747,13 @@ export function LandingExperience() {
           <div className="grid w-full max-w-[1220px] items-center gap-[5vw] md:grid-cols-[1.1fr_1fr]">
             <div>
               <div className="mb-[18px] font-mono-plex text-[11px] uppercase tracking-[0.26em]" style={{ color: "var(--acc)" }}>
-                Act I of V — colour arrives
+                Act I of V: colour arrives
               </div>
               <h2 className="m-0 text-[clamp(44px,6.4vw,100px)] font-normal leading-[0.98] tracking-[-0.01em]" style={{ fontFamily: "var(--fd)", color: "var(--ink)" }}>
                 Colour<em className="not-italic" style={{ color: "var(--acc)" }}>.</em>
               </h2>
               <p className="mt-5 max-w-[40ch] text-[16.5px] leading-relaxed" style={{ fontFamily: "var(--fb)", color: "var(--mut)" }}>
-                Greys give way to a hand-curated library of thousands of named, contrast-checked shades — browsed
+                Greys give way to a hand-curated library of thousands of named, contrast-checked shades, browsed
                 like a fan deck at your thumb, not hunted across tabs. Click a blade to copy its hex.
               </p>
               <div className="mt-[30px] flex flex-col gap-2.5 font-mono-plex text-[12.5px]" style={{ color: "var(--mut)" }}>
@@ -815,26 +815,26 @@ export function LandingExperience() {
           </div>
           <div className="relative w-full max-w-[1160px]">
             <div className="mb-[18px] font-mono-plex text-[11px] uppercase tracking-[0.26em]" style={{ color: "var(--acc)" }}>
-              Act II of V — type finds its voice
+              Act II of V: type finds its voice
             </div>
             <div className="flex flex-wrap items-baseline justify-between gap-6">
               <h2 className="m-0 text-[clamp(44px,6.4vw,100px)] font-normal leading-[0.98]" style={{ fontFamily: "var(--fd)", color: "var(--ink)" }}>
                 Type<em className="not-italic" style={{ color: "var(--acc)" }}>.</em>
               </h2>
               <div ref={typeLabelRef} className="font-mono-plex text-xs uppercase tracking-[0.18em]" style={{ color: "var(--mut)" }}>
-                Times New Roman — browser default
+                Times New Roman, browser default
               </div>
             </div>
             <div data-typemorph className="mt-11 flex flex-col gap-[18px]" style={{ fontFamily: "var(--fd)", color: "var(--ink)" }}>
               <div data-trow-d className="leading-[1.05]">
-                The quick brown fox — display
+                The quick brown fox, display
               </div>
               <div data-trow-h className="leading-[1.15]" style={{ color: "var(--acc2)" }}>
-                Voices settle into a scale — heading
+                Voices settle into a scale, heading
               </div>
               <div className="max-w-[64ch] text-[17px] leading-relaxed" style={{ color: "var(--mut)", fontFamily: "var(--fb)" }}>
                 Body settles at seventeen pixels with generous leading, tuned for long reading. A modular scale
-                binds every size to one ratio — nothing arbitrary survives.
+                binds every size to one ratio, nothing arbitrary survives.
               </div>
               <div data-trow-c className="uppercase tracking-[0.14em]" style={{ color: "var(--mut)", fontFamily: "var(--font-mono-plex),monospace" }}>
                 caption · metadata · labels
@@ -865,7 +865,7 @@ export function LandingExperience() {
           </div>
           <div className="relative w-full max-w-[1160px]">
             <div className="mb-[18px] font-mono-plex text-[11px] uppercase tracking-[0.26em]" style={{ color: "var(--acc)" }}>
-              Act III of V — rhythm breathes
+              Act III of V: rhythm breathes
             </div>
             <h2 className="mb-10 mt-0 text-[clamp(44px,6.4vw,100px)] font-normal leading-[0.98]" style={{ fontFamily: "var(--fd)", color: "var(--ink)" }}>
               Rhythm<em className="not-italic" style={{ color: "var(--acc)" }}>.</em>
@@ -877,7 +877,7 @@ export function LandingExperience() {
                   Space breathes
                 </div>
                 <div className="mt-1.5 text-[13.5px] leading-snug" style={{ fontFamily: "var(--fb)", color: "var(--mut)" }}>
-                  Cramped boxes inhale — an 8-point rhythm spaces every element.
+                  Cramped boxes inhale, an 8-point rhythm spaces every element.
                 </div>
               </div>
               <div data-card className="flex-1 border" style={{ background: "var(--panel)", borderColor: "var(--edge)" }}>
@@ -889,7 +889,7 @@ export function LandingExperience() {
                   Corners soften
                 </div>
                 <div className="mt-1.5 text-[13.5px] leading-snug" style={{ fontFamily: "var(--fb)", color: "var(--mut)" }}>
-                  Radii round in step — one token, every corner in agreement.
+                  Radii round in step, one token, every corner in agreement.
                 </div>
               </div>
               <div data-card className="flex-1 border" style={{ background: "var(--panel)", borderColor: "var(--edge)" }}>
@@ -898,7 +898,7 @@ export function LandingExperience() {
                   Depth arrives
                 </div>
                 <div className="mt-1.5 text-[13.5px] leading-snug" style={{ fontFamily: "var(--fb)", color: "var(--mut)" }}>
-                  Shadows bloom soft and wide — weightless, never smudged.
+                  Shadows bloom soft and wide, weightless, never smudged.
                 </div>
               </div>
             </div>
@@ -924,7 +924,7 @@ export function LandingExperience() {
           <div className="grid w-full max-w-[1240px] items-center gap-[5vw] md:grid-cols-[0.9fr_1.1fr]">
             <div>
               <div className="mb-[18px] font-mono-plex text-[11px] uppercase tracking-[0.26em]" style={{ color: "var(--acc)" }}>
-                Act IV of V — everything binds
+                Act IV of V: everything binds
               </div>
               <h2 className="m-0 text-[clamp(44px,6vw,92px)] font-normal leading-[0.98]" style={{ fontFamily: "var(--fd)", color: "var(--ink)" }}>
                 One{" "}
@@ -939,7 +939,7 @@ export function LandingExperience() {
                 </em>
               </h2>
               <p className="mt-[22px] max-w-[38ch] text-[16.5px] leading-relaxed" style={{ fontFamily: "var(--fb)", color: "var(--mut)" }}>
-                Every token binds into a single edition — and a whole product assembles itself from the system.
+                Every token binds into a single edition, and a whole product assembles itself from the system.
                 Nothing hand-placed. Nothing off-grid.
               </p>
               <div className="mt-7 flex flex-col gap-2.5 font-mono-plex text-[12.5px]" style={{ color: "var(--mut)" }}>
@@ -958,7 +958,7 @@ export function LandingExperience() {
                   <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#E4C15A" }} />
                   <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#9DBFA5" }} />
                   <span className="ml-2.5 font-mono-plex text-[10px] tracking-[0.1em]" style={{ color: "#8A8477" }}>
-                    aurelia.com — dressed by StyleBook
+                    aurelia.com, dressed by StyleBook
                   </span>
                 </div>
                 <div className="p-6">
@@ -1114,7 +1114,7 @@ export function LandingExperience() {
                   </h2>
                   <p className="mt-4 max-w-[44ch] text-[15.5px] leading-relaxed" style={{ color: "rgba(242,235,224,0.72)" }}>
                     Browse when you&apos;re exploring. Build in the Studio when you want every token in your hands.
-                    Describe it when you want speed — three doors into the same living system.
+                    Describe it when you want speed: three doors into the same living system.
                   </p>
                 </div>
               </div>
@@ -1201,7 +1201,7 @@ export function LandingExperience() {
           </div>
           <div data-reveal>
             <div className="mb-[22px] font-mono-plex text-[11px] uppercase tracking-[0.26em]" style={{ color: "#8A8477" }}>
-              24 / 24 tokens bound — fully dressed
+              24 / 24 tokens bound, fully dressed
             </div>
             <h2 className="m-0 text-balance font-editorial-serif text-[clamp(40px,6.6vw,96px)] font-normal leading-[0.98] tracking-[-0.03em]" style={{ color: "#211E18" }}>
               Every page you ship,
@@ -1211,7 +1211,7 @@ export function LandingExperience() {
               </em>
             </h2>
             <p className="mx-auto mt-6 max-w-[52ch] text-lg leading-relaxed" style={{ fontFamily: "var(--font-grotesk),sans-serif", color: "#555046" }}>
-              Browse it from the library, build it token-by-token in the Studio, or generate it with AI — one
+              Browse it from the library, build it token-by-token in the Studio, or generate it with AI, one
               living system, exported anywhere: CSS variables, JSON tokens, Tailwind, Figma, React, Flutter,
               SwiftUI.
             </p>
@@ -1269,7 +1269,7 @@ export function LandingExperience() {
             </div>
             <div className="flex flex-wrap items-center justify-between gap-4 border-t pt-5 normal-case tracking-normal" style={{ borderColor: "rgba(33,30,24,0.1)" }}>
               <p className="max-w-[52ch] text-[11px] leading-relaxed">
-                AI Generate can make mistakes — review generated results before relying on them. See the{" "}
+                AI Generate can make mistakes, review generated results before relying on them. See the{" "}
                 <Link href="/ai-disclaimer" className="underline decoration-[#6E675C]/40 underline-offset-2 hover:decoration-[#6E675C]">
                   AI disclaimer
                 </Link>
