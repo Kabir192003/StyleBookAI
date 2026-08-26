@@ -71,8 +71,6 @@ export default function ThemeDetailPage({ params }: { params: { slug: string } }
     { label: theme.category, bg: "transparent", fg: ink },
   ];
 
-  const sizes = theme.typeScale.sizes;
-
   return (
     <div style={{ fontFamily: body, background: bg, color: ink }} className="min-h-screen transition-colors">
       <GoogleFontsLoader fonts={[theme.primaryFont, theme.secondaryFont]} />
@@ -208,12 +206,6 @@ export default function ThemeDetailPage({ params }: { params: { slug: string } }
             paragraph — so the body face carries the weight of everything that isn&apos;t a headline, and this
             edition keeps it comfortable at reading size.
           </p>
-          <div className="mt-5 flex flex-wrap gap-4 font-mono-plex text-[11px] tracking-[0.1em]" style={{ color: dim }}>
-            <span>H1 {Math.round(sizes["4xl"])}px</span>
-            <span>H2 {Math.round(sizes["2xl"])}px</span>
-            <span>Body {Math.round(sizes.base)}px</span>
-            <span>Caption {Math.round(sizes.xs)}px</span>
-          </div>
         </div>
 
         <div className="px-6 py-8 sm:px-12">

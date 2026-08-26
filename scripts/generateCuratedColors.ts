@@ -141,7 +141,7 @@ const TIERS: Tier[] = [
   { word: "Light", l: 66, satMul: 0.55, mood: [], style: ["modern"], isPro: false, noteEnding: "clear and approachable, sits comfortably as a secondary tone" },
   { word: "Fair", l: 60, satMul: 0.65, mood: [], style: ["modern"], isPro: false, noteEnding: "even-toned and easygoing, a dependable background choice" },
   { word: "True", l: 54, satMul: 0.85, mood: [], style: ["modern"], isPro: false, noteEnding: "the colour in its truest, most balanced form" },
-  { word: "Vivid", l: 50, satMul: 1.0, mood: ["energetic"], style: ["neon"], isPro: true, noteEnding: "turned all the way up — use it sparingly and let it do the talking" },
+  { word: "Vivid", l: 50, satMul: 1.0, mood: ["energetic"], style: ["neon"], isPro: true, noteEnding: "turned all the way up, use it sparingly and let it do the talking" },
   { word: "Bright", l: 47, satMul: 0.95, mood: ["energetic"], style: ["neon"], isPro: false, noteEnding: "punchy and high-energy, hard to look away from" },
   { word: "Bold", l: 43, satMul: 0.9, mood: ["energetic"], style: ["bold"], isPro: false, noteEnding: "confident and saturated, built to anchor a single focal point" },
   { word: "Rich", l: 37, satMul: 0.85, mood: [], style: ["bold"], isPro: true, noteEnding: "deep and full-bodied, reads as premium rather than loud" },
@@ -206,27 +206,27 @@ const BAND_BY_TIER: Record<string, TierBand> = {
 // swatches a user is likely to see side by side don't open the same way.
 const NOTE_TEMPLATES: Record<TierBand, string[]> = {
   tint: [
-    "%NAME% holds just a trace of %HUE% — %ENDING%.",
+    "%NAME% holds just a trace of %HUE%, %ENDING%.",
     "%NAME% is %HUE% thinned almost to paper: %ENDING%.",
-    "Almost more paper than %HUE% — %NAME% is %ENDING%.",
+    "Almost more paper than %HUE%, %NAME% is %ENDING%.",
   ],
   mid: [
-    "%NAME% is %PERSONALITY% — %ENDING%.",
+    "%NAME% is %PERSONALITY%, %ENDING%.",
     "%NAME%: %PERSONALITY%. At this step it's %ENDING%.",
-    "This is %HUE% at working strength — %PERSONALITY% — %ENDING%.",
+    "This is %HUE% at working strength, %PERSONALITY%, %ENDING%.",
   ],
   saturated: [
-    "%NAME% runs %HUE% close to full strength — %ENDING%.",
+    "%NAME% runs %HUE% close to full strength, %ENDING%.",
     "%NAME% is %PERSONALITY%, dialled up until it's %ENDING%.",
     "%HUE% with nothing held back: %NAME% is %ENDING%.",
   ],
   muted: [
-    "%NAME% is %HUE% with the volume turned down — %ENDING%.",
+    "%NAME% is %HUE% with the volume turned down, %ENDING%.",
     "The %HUE% is still there in %NAME%, just softened: %ENDING%.",
-    "%NAME% trades saturation for restraint — %ENDING%.",
+    "%NAME% trades saturation for restraint, %ENDING%.",
   ],
   dark: [
-    "%NAME% takes %HUE% down into the dark — %ENDING%.",
+    "%NAME% takes %HUE% down into the dark, %ENDING%.",
     "%NAME% is %HUE% at its heaviest: %ENDING%.",
     "Deep in the %HUE% range, %NAME% is %ENDING%.",
   ],

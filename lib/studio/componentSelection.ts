@@ -58,10 +58,45 @@ const TYPE_SELECTORS: Array<{ selector: string; role: TypeRole }> = [
 export type TypeRole = "display" | "heading" | "body";
 
 export type Selection =
-  | { kind: "component"; name: ComponentName }
+  | { kind: "component"; name: ComponentName; variant?: string }
   | { kind: "type"; role: TypeRole };
 
 export type SelectionHit = { selection: Selection; element: HTMLElement };
+
+// A handful of components collapse several visually distinct instances into
+// one editable slot (see COMPONENT_SCOPE_NOTES) — badge and alert most
+// visibly, since their tone classes are the whole point of clicking one.
+// Without this, the inspector says "Badge" for every one of them and there's
+// no way to tell a Success badge from an Error badge short of counting
+// pixels. Checked in order so the most specific class wins (a badge is never
+// both --soft and --error, but check order still matters for readability).
+const VARIANT_CLASSES: Partial<Record<ComponentName, Array<{ cls: string; label: string }>>> = {
+  badge: [
+    { cls: "pg-badge--success", label: "Success" },
+    { cls: "pg-badge--warning", label: "Warning" },
+    { cls: "pg-badge--error", label: "Error" },
+    { cls: "pg-badge--outline", label: "Outline" },
+    { cls: "pg-badge--soft", label: "Neutral (soft)" },
+  ],
+  alert: [
+    { cls: "pg-alert--success", label: "Success" },
+    { cls: "pg-alert--warning", label: "Warning" },
+    { cls: "pg-alert--error", label: "Error" },
+    { cls: "pg-alert--info", label: "Neutral (info)" },
+  ],
+  button: [
+    { cls: "pg-btn--danger", label: "Danger" },
+    { cls: "pg-btn--outline", label: "Outline" },
+    { cls: "pg-btn--ghost", label: "Ghost" },
+    { cls: "pg-btn--primary", label: "Primary" },
+  ],
+};
+
+function describeVariant(name: ComponentName, element: HTMLElement): string | undefined {
+  const rules = VARIANT_CLASSES[name];
+  if (!rules) return undefined;
+  return rules.find((r) => element.classList.contains(r.cls))?.label;
+}
 
 /**
  * The nearest selectable thing at or above `target`, or null if the click
@@ -84,7 +119,10 @@ export function findComponentAt(target: EventTarget | null, root: HTMLElement): 
     // The containment check matters: `closest()` is happy to walk out of the
     // canvas entirely and match Studio's own chrome if it ever grows a
     // colliding class name.
-    if (match && root.contains(match)) return { selection: { kind: "component", name }, element: match };
+    if (match && root.contains(match)) {
+      const variant = describeVariant(name, match);
+      return { selection: { kind: "component", name, ...(variant ? { variant } : {}) }, element: match };
+    }
   }
   return null;
 }

@@ -23,6 +23,7 @@ export default function GuidePage() {
   return (
     <LegalPage
       eyebrow="Help"
+      currentHref="/guide"
       title="How to use StyleBook"
       updated="18 August 2026"
       wide

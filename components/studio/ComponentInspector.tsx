@@ -40,6 +40,7 @@ export function ComponentInspector({
   onHeadFontChange,
   onBodyFontChange,
   onBaseSizeChange,
+  onBodySizeChange,
   onInkChange,
   onMutedChange,
   onClose,
@@ -66,6 +67,7 @@ export function ComponentInspector({
   onHeadFontChange: (next: string) => void;
   onBodyFontChange: (next: string) => void;
   onBaseSizeChange: (next: number) => void;
+  onBodySizeChange: (next: number) => void;
   onInkChange: (hex: string) => void;
   onMutedChange: (hex: string) => void;
   onClose: () => void;
@@ -84,7 +86,13 @@ export function ComponentInspector({
       <header className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="font-mono-plex text-[10px] uppercase tracking-[0.18em] text-[#222D52]">Selected</p>
-          <h2 className="mt-0.5 truncate text-[15px] font-medium text-[#211E18]">{title}</h2>
+          <h2 className="mt-0.5 truncate text-[15px] font-medium text-[#211E18]">
+            {title}
+            {/* Which specific instance this is, for the components that collapse several
+                visually distinct ones into one editable slot — otherwise a click on a
+                Success badge and a click on an Error badge both just say "Badge". */}
+            {!isType && selection.variant && <span className="text-[#6E675C]"> · {selection.variant}</span>}
+          </h2>
           <p className="mt-0.5 text-[11px] text-[#6E675C]">
             {isType
               ? usesBodyFace
@@ -164,7 +172,7 @@ export function ComponentInspector({
         />
 
         <label className="mt-3 flex items-center justify-between gap-2 text-[11px] text-[#6E675C]">
-          <span>Base text size</span>
+          <span>Display size</span>
           <span className="font-mono-plex text-[10px] text-[#6E675C]">{typeScale.baseSize}px</span>
         </label>
         <input
@@ -174,7 +182,21 @@ export function ComponentInspector({
           value={typeScale.baseSize}
           onChange={(e) => onBaseSizeChange(Number(e.target.value))}
           className="mt-1 w-full accent-[#222D52]"
-          aria-label="Base text size"
+          aria-label="Display text base size"
+        />
+
+        <label className="mt-3 flex items-center justify-between gap-2 text-[11px] text-[#6E675C]">
+          <span>Body size</span>
+          <span className="font-mono-plex text-[10px] text-[#6E675C]">{typeScale.sizes.base}px</span>
+        </label>
+        <input
+          type="range"
+          min={12}
+          max={24}
+          value={typeScale.bodyBaseSize ?? typeScale.baseSize}
+          onChange={(e) => onBodySizeChange(Number(e.target.value))}
+          className="mt-1 w-full accent-[#222D52]"
+          aria-label="Body text base size"
         />
 
         {/* Keeps both faces reachable here so clicking a button doesn't require going back to the canvas for a typeface. */}
