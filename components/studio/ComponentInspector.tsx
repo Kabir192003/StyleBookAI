@@ -11,7 +11,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { ComponentEditor, type NonDefaultState } from "@/components/design-system/ComponentEditor";
+import { ColorField, ComponentEditor, type NonDefaultState } from "@/components/design-system/ComponentEditor";
 import { FontPicker } from "./FontPicker";
 import {
   APPLICABLE_STATES,
@@ -31,6 +31,8 @@ export function ComponentInspector({
   headFont,
   bodyFont,
   typeScale,
+  inkColor,
+  mutedColor,
   previewState,
   onPreviewStateChange,
   onTokensChange,
@@ -38,6 +40,8 @@ export function ComponentInspector({
   onHeadFontChange,
   onBodyFontChange,
   onBaseSizeChange,
+  onInkChange,
+  onMutedChange,
   onClose,
 }: {
   selection: Selection;
@@ -48,6 +52,12 @@ export function ComponentInspector({
   headFont: string;
   bodyFont: string;
   typeScale: TypeScale;
+  // Resolved palette text colours. Type roles have no colour token of their
+  // own — every heading reads --pgc-ink and captions read --pgc-muted — so
+  // editing text colour here edits the palette rather than inventing a
+  // per-role token no export format has a slot for.
+  inkColor: string;
+  mutedColor: string;
   // Which state the canvas is currently forcing onto the selected instance.
   previewState: NonDefaultState | null;
   onPreviewStateChange: (state: NonDefaultState | null) => void;
@@ -56,6 +66,8 @@ export function ComponentInspector({
   onHeadFontChange: (next: string) => void;
   onBodyFontChange: (next: string) => void;
   onBaseSizeChange: (next: number) => void;
+  onInkChange: (hex: string) => void;
+  onMutedChange: (hex: string) => void;
   onClose: () => void;
 }) {
   const isType = selection.kind === "type";
@@ -101,6 +113,17 @@ export function ComponentInspector({
           ) : (
             <FontPicker label="Display font" value={headFont} onChange={onHeadFontChange} />
           )}
+
+          <h3 className="font-mono-plex mb-1 mt-4 text-[9px] uppercase tracking-[0.16em] text-[#6E675C]">Text colour</h3>
+          <p className="mb-2 text-[11px] leading-snug text-[#6E675C]">
+            {usesBodyFace
+              ? "Body and captions read the palette's text colours, so this moves every piece of body copy, not just this one."
+              : "Headings read the palette's text colour, so this moves every heading, not just this one."}
+          </p>
+          <div className="space-y-1.5">
+            <ColorField label="text" value={inkColor} onChange={onInkChange} />
+            {usesBodyFace && <ColorField label="muted text" value={mutedColor} onChange={onMutedChange} />}
+          </div>
         </section>
       ) : (
         tokens && (

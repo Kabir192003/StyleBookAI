@@ -56,7 +56,7 @@ export function SiteHeader() {
             href="/"
             className="flex shrink-0 items-center gap-2 font-editorial-serif text-[21px] font-semibold tracking-[-0.01em] text-[#211E18]"
           >
-            <img src="/brand/stylebook-logo.svg" alt="" className="h-6 w-6" aria-hidden="true" />
+            <img src="/brand/stylebook-logo-v2.svg" alt="" className="h-6 w-6" aria-hidden="true" />
             StyleBook
           </Link>
         </div>

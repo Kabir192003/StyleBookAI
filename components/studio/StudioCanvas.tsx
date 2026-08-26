@@ -76,6 +76,22 @@ export function StudioCanvas({
   // part of a canvas render and is fully determined by them.
   const css = useMemo(() => canvasCss(SCOPE_SELECTOR, tokens), [tokens]);
 
+  // Rewriting the <style> above updates the --pg-*/--pgc-* values, but the
+  // browser does not always re-resolve properties that read them through
+  // var(), so the canvas can keep painting the previous value. box-shadow was
+  // the visible case: switching Shadow between none/subtle/dramatic changed
+  // --pgc-shadow while every card carried on rendering the old shadow, which
+  // read as "the control does nothing". Forcing a style recalculation after
+  // the CSS changes fixes it for every property at once, not just shadows.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const previous = root.style.display;
+    root.style.display = "none";
+    void root.offsetHeight;
+    root.style.display = previous;
+  }, [css]);
+
   // Done here, not in the click handler, because the selected element can be
   // unmounted by a content switch or token change while still carrying the attribute.
   useEffect(() => {

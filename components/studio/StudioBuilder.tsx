@@ -1061,6 +1061,8 @@ export function StudioBuilder() {
             headFont={state.headFont}
             bodyFont={state.bodyFont}
             typeScale={state.typeScale}
+            inkColor={resolvedActivePalette.ink}
+            mutedColor={resolvedActivePalette.muted}
             previewState={previewState}
             onPreviewStateChange={setPreviewState}
             onTokensChange={(next) => {
@@ -1070,6 +1072,8 @@ export function StudioBuilder() {
             onHeadFontChange={(f) => set("headFont", f)}
             onBodyFontChange={(f) => set("bodyFont", f)}
             onBaseSizeChange={(size) => set("typeScale", generateTypeScale(size, state.typeScale.ratioName))}
+            onInkChange={(hex) => setToken("ink", hex)}
+            onMutedChange={(hex) => setToken("muted", hex)}
             onClose={() => {
               setSelected(null);
               setPreviewState(null);

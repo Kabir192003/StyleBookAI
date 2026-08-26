@@ -203,7 +203,7 @@ export default function AccountPage() {
 
   return (
     <main id="main" className="min-h-[calc(100vh-56px)] bg-[#EDE6DA] px-6 py-10 sm:px-12">
-      <div className="mx-auto max-w-2xl">
+      <div className="mx-auto max-w-5xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <div className="font-mono-plex text-[10px] uppercase tracking-[0.22em] text-[#6E675C]">Account · Vol. 01</div>
@@ -225,8 +225,8 @@ export default function AccountPage() {
           </AnimatePresence>
         </div>
 
-        <div className="flex flex-col gap-6">
-          <section className="flex items-center justify-between gap-4 rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 [&>*:not(.sb-span-1)]:lg:col-span-2">
+          <section className="sb-span-1 flex items-center justify-between gap-4 rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-6">
             <div>
               <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">Profile</div>
               <p className="mt-1.5 text-sm text-[#6E675C]">Member since {memberSince}</p>
@@ -241,7 +241,7 @@ export default function AccountPage() {
             </button>
           </section>
 
-          <section className="flex items-center justify-between gap-4 rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-6">
+          <section className="sb-span-1 flex items-center justify-between gap-4 rounded-2xl border border-black/[0.12] bg-[#F2EBE0] p-6">
             <div>
               <div className="font-mono-plex text-[10px] uppercase tracking-[0.2em] text-[#6E675C]">Saved projects</div>
               <p className="mt-1.5 text-sm text-[#6E675C]">
