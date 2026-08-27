@@ -34,7 +34,7 @@ figma.ui.onmessage = async (msg: { type: string; code?: string }) => {
     }
 
     const warnings: Warning[] = [];
-    await buildVariables(payload.variables);
+    await buildVariables(payload.variables, warnings);
 
     const placed: SceneNode[] = [];
     let libraryStartY = 0;
@@ -93,17 +93,36 @@ function solid(c: FigmaColor): SolidPaint {
 
 // The imported page is a flat snapshot of one theme; the Variable
 // Collection is what makes it re-themeable afterwards.
-async function buildVariables(vars: FigmaVariables): Promise<void> {
+async function buildVariables(vars: FigmaVariables, warnings: Warning[]): Promise<void> {
   const collection = figma.variables.createVariableCollection("StyleBook Tokens");
   const lightModeId = collection.modes[0].modeId;
   collection.renameMode(lightModeId, "Light");
-  const darkModeId = collection.addMode("Dark");
+  // Multi-mode variable collections (our Light/Dark split) are a Figma
+  // Professional-plan-and-above feature — addMode throws on a Free/Starter
+  // team, which used to abort the whole import over one variable call. Fall
+  // back to a single mode (every variable just gets the light value) so the
+  // canvas, component library, and everything else still comes in; the
+  // warning surfaces in the plugin UI so it's not a silent downgrade.
+  let darkModeId = lightModeId;
+  try {
+    darkModeId = collection.addMode("Dark");
+  } catch (err) {
+    console.error("Could not add a Dark mode:", err);
+    warnings.push(
+      "This Figma plan doesn't support multiple variable modes, so Dark mode values weren't imported as variables. Light mode values were used for everything."
+    );
+  }
 
   for (const name of Object.keys(vars.color)) {
     const value = vars.color[name];
     const v = figma.variables.createVariable(`color/${name}`, collection, "COLOR");
     v.setValueForMode(lightModeId, hexToRgba(value.light));
-    v.setValueForMode(darkModeId, hexToRgba(value.dark || value.light));
+    // Single-mode fallback: darkModeId === lightModeId here, so setting it
+    // again with the dark value would silently overwrite the light value
+    // that was just set above with whatever the dark one is.
+    if (darkModeId !== lightModeId) {
+      v.setValueForMode(darkModeId, hexToRgba(value.dark || value.light));
+    }
   }
   vars.spacing.forEach((px, i) => {
     const v = figma.variables.createVariable(`spacing/${i + 1}`, collection, "FLOAT");
