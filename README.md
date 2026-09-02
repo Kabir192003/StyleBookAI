@@ -135,4 +135,5 @@ rebuilding.
 ## Deployment
 
 Deploys to Vercel automatically on push to main. Live at
-`style-book-ai.vercel.app` and `stylebook.site`.
+[stylebook.site](https://stylebook.site), with
+`style-book-ai.vercel.app` as a fallback.
