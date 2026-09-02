@@ -1,23 +1,11 @@
-// Hue-preserving contrast repair — the pure math lib/ai/validateTokens.ts
-// leans on to measure and fix contrast after the model responds, since the
-// model itself can't be trusted to get ratios right. Ratios come from
-// getContrastRatio() in ./colorUtils (WCAG 2.x relative luminance), the same
-// function ContrastBadge and the theme pages use, so a badge in the UI and a
-// repair here can never disagree.
-//
-// Repair strategy: walk the foreground's HSL lightness while holding hue and
-// saturation fixed, taking the smallest move that clears the target — hue is
-// what makes a token feel like *this* brand, so it's never touched. A full
-// 0-100 sweep finds a solution whenever one exists; when one genuinely
-// doesn't, that's reported honestly rather than papered over (see the
-// "could not be auto-fixed" line in the generated accessibility notes).
+// Repairs contrast by walking lightness only, hue and saturation stay
+// fixed, so a fix still looks like the same brand colour. Reports honestly
+// when no fix exists rather than papering over it.
 import chroma from "chroma-js";
 import { getContrastRatio } from "./colorUtils";
 
 // WCAG 2.1 thresholds. AA_LARGE (3:1) is also the SC 1.4.11 non-text
-// threshold, which is what we hold UI boundaries (borders, button fills
-// against the page) to — a 1px divider is not body copy and forcing 4.5:1
-// on it would wreck every calm, low-contrast surface treatment.
+// threshold, used for UI boundaries like borders and button fills.
 export const AA_NORMAL_TEXT = 4.5;
 export const AA_LARGE_TEXT = 3;
 export const AAA_NORMAL_TEXT = 7;
@@ -102,20 +90,8 @@ export function roundRatio(ratio: number): number {
   return Math.round(ratio * 100) / 100;
 }
 
-/**
- * Moves `foreground` along its own lightness axis until it clears `target`
- * against `background`, preserving hue and saturation.
- *
- * The sweep is symmetric (both lighter and darker) and picks the *smallest*
- * lightness delta that works, so a repair stays as close to the model's
- * intent as the maths allows — a slightly-too-pale muted grey gets nudged a
- * few percent, not slammed to black. Ties break toward the direction that
- * agrees with the background's polarity (go lighter on a dark background),
- * which is what a designer would do by hand.
- *
- * Step size is 1/200 of the lightness range: fine enough that repairs are
- * visually minimal, coarse enough to stay cheap inside a request handler.
- */
+// Moves foreground along its own lightness axis until it clears target,
+// picking the smallest delta that works so a repair stays close to intent.
 export function ensureContrast(
   foreground: string,
   background: string,
@@ -183,16 +159,9 @@ export function ensureContrast(
   };
 }
 
-/**
- * Picks the more legible of a brand-tinted light and dark ink for text
- * sitting on `background`, then guarantees the result actually clears
- * `target` (a mid-lightness fill can beat both, in which case we sweep).
- *
- * Prefers tinted inks over pure #fff/#000 so button labels still belong to
- * the brand — deriveThemeVariantFromPalette() in lib/studio/deriveThemeVariant.ts
- * has always done this with two fixed hexes; this version keeps the idea but
- * carries the background's own hue into the ink.
- */
+// Picks the more legible of a brand-tinted light/dark ink for `background`,
+// then sweeps if neither clears `target`. Tinted rather than pure #fff/#000
+// so button labels still belong to the brand.
 export function readableInkOn(background: string, target: number = AA_NORMAL_TEXT): string {
   const bg = normalizeHex(background);
   const hue = hueOf(bg);

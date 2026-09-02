@@ -1,16 +1,7 @@
-/**
- * Applies a staged StudioImportPayload (see store/studioImportStore.ts) onto
- * a StudioState — the merge logic shared by Preview Lab's "Send to Studio"
- * and the clipboard tray's "Import into Studio", both of which just stage a
- * payload and navigate; StudioBuilder consumes it once and folds it in.
- *
- * Two colour-assignment modes: **positional** (existing callers, which only
- * have hexes, no roles) assigns colours in order to accent/support/surface/
- * ink/muted; **explicit role** lets a colour carrying a recognised `role`
- * claim that slot directly, since guessing from array order would be worse
- * than information already available. Anything left over falls back to the
- * positional walk, skipping slots already claimed.
- */
+// Applies a staged StudioImportPayload onto a StudioState, shared by both
+// Preview Lab and the clipboard tray's "Import into Studio". Colours with
+// a recognised role claim that slot directly; the rest fall back to
+// positional order (accent/support/surface/ink/muted).
 import type { StudioState } from "@/components/studio/StudioBuilder";
 import type { PaletteTokens } from "@/lib/studio/exportCode";
 import type { StudioImportPaletteRole, StudioImportPayload } from "@/store/studioImportStore";

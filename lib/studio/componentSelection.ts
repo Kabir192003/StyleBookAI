@@ -1,19 +1,6 @@
-/**
- * Maps a clicked DOM node in the Studio canvas back to the design-system
- * component it's an instance of, so the inspector knows which token set to
- * open.
- *
- * Selection resolves by CSS class (`.pg-*`) rather than a `data-*` attribute
- * on every component. Both ShowcaseContent and the AI-generated sections
- * build markup from the same classes, so this covers both content states with
- * one mechanism and no per-component tagging — at the cost of a coupling:
- * renaming a class in components/system/styles.ts silently breaks selection
- * for that component. If that bites, the fix is explicit `data-sb-component`
- * attributes, a mechanical change rather than a redesign.
- *
- * `ComponentName` is the existing ten-value union from types/designSystem.ts —
- * nothing here invents its own component vocabulary.
- */
+// Maps a clicked canvas node back to its design-system component via its
+// .pg-* CSS class, not a data-* tag, so renaming a class in
+// components/system/styles.ts silently breaks selection for it.
 import type { ComponentName } from "@/types/designSystem";
 import type { NonDefaultState } from "@/components/design-system/ComponentEditor";
 

@@ -1,17 +1,6 @@
-/**
- * Derives a full ThemeVariantTokens (see types/designSystem.ts) from Studio's
- * simpler 5-token palette. Called once per mode by
- * lib/studio/projectFromState.ts so saving a project never drops the palette
- * mode that wasn't on screen when the user clicked Save.
- *
- * The mapping is a fixed, documented convention:
- *   colorRoles.background/surface -> the palette's surface
- *   colorRoles.text               -> ink
- *   colorRoles.textMuted          -> muted
- *   colorRoles.border             -> ink mixed 12% into surface
- *   components.button             -> accent bg, readable text
- *   components.buttonSecondary    -> support bg, readable text
- */
+// Derives a full ThemeVariantTokens from Studio's 5-token palette:
+//   background/surface -> surface, text -> ink, textMuted -> muted,
+//   border -> ink mixed 12% into surface, button -> accent, buttonSecondary -> support
 import { PaletteTokens } from "./exportCode";
 import { ComponentTokenSet, ComponentTokens, DesignSystem, ThemeVariantTokens } from "@/types/designSystem";
 import { getContrastRatio } from "@/lib/colors/colorUtils";

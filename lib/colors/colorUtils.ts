@@ -1,13 +1,5 @@
-/**
- * Pure color math utilities — no React, no side effects.
- *
- * `hexToRgb` and `rgbToHsl` are the low-level converters used by the
- * data transform script (scripts/transformColors.ts) to pre-compute RGB
- * and HSL at seed time so components never do this at render.
- * `buildColor` is the only intended entry point for creating a Color
- * object — it derives rgb/hsl from hex and enforces that `note` is
- * supplied, preventing colors from shipping without editorial copy.
- */
+// Pure color math, no React. buildColor is the only intended entry point
+// for a Color object, since it enforces that `note` is always supplied.
 import { Color } from "@/types";
 
 export function hexToRgb(hex: string): { r: number; g: number; b: number } {
