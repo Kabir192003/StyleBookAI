@@ -7,6 +7,8 @@ system for you. Every result is editable live, verified for real contrast
 before you ever see it, and exportable to nine code formats or straight into
 Figma as genuinely editable components.
 
+**Live at [stylebook.site](https://stylebook.site).**
+
 ## What it does
 
 **Browse** a library of 1,922 colours, 1,933 fonts and 90 curated themes
@@ -83,31 +85,6 @@ data/         Static colour, font and theme catalogues
 figma-plugin/ Separate codebase for the published Figma plugin
 docs/         Technical architecture and product/UX specs
 ```
-
-## Getting started
-
-```bash
-npm install
-cp .env.local.example .env.local   # fill in real keys
-npm run dev
-```
-
-Open http://localhost:3000.
-
-Run the colour transform script once after install to populate the full
-Tailwind colour set:
-
-```bash
-npm run transform:colors
-```
-
-## Docs
-
-- `docs/TECHNICAL_ARCHITECTURE.md`, stack, data model, folder structure,
-  the token architecture, API contracts, database schema, env vars,
-  deployment
-- `docs/PRODUCT_AND_UX.md`, feature list, the Preview Lab interaction
-  spec, UI/UX design principles, and the landing page spec
 
 ## Status
 
