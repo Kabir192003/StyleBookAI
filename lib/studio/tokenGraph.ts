@@ -1,18 +1,7 @@
-/**
- * Two-tier color token graph for Studio's palette editor. A `PrimitiveColor`
- * is a named, unlimited-count swatch; a `ColorValue` is either a literal hex
- * (today's behavior, and every existing saved project's shape — no
- * migration needed) or a reference to a primitive by id. Editing a
- * primitive's hex cascades to every semantic slot (light or dark) aliased
- * to it, instead of re-typing the same color in every place it's used.
- *
- * Deliberately one hop only (semantics alias primitives, primitives never
- * alias each other) — this makes cycles structurally impossible, so no
- * cycle-detection is needed. Resolution always happens before this data
- * reaches anything outside Studio's own editing state (export, preview,
- * the advanced design-system layer) — those consumers only ever see plain
- * resolved hex strings, exactly as before this existed.
- */
+// Two-tier colour graph: a PrimitiveColor is a named swatch, a ColorValue
+// is either a literal hex or a reference to one by id. One hop only, so
+// cycles are structurally impossible. Everything outside Studio's editing
+// state only ever sees plain resolved hex.
 export type PrimitiveColor = { id: string; name: string; hex: string };
 export type ColorRef = { primitiveId: string };
 export type ColorValue = string | ColorRef;

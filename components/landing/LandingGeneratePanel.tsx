@@ -89,7 +89,7 @@ export function LandingGeneratePanel({
             {status === "loading"
               ? "Choosing colour, type and shape…"
               : fellBack
-              ? "Live generation didn't respond — showing a saved example below."
+              ? "Live generation didn't respond, showing a saved example below."
               : hasProject
               ? "Generated live from the prompt above."
               : ""}

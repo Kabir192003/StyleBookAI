@@ -1,15 +1,6 @@
-/**
- * Client-side PDF style-guide export — the feature CLAUDE.md/docs long
- * described as "planned via html-to-image" but never built. Mounts
- * StyleGuidePdfPages off-screen, rasterizes each printed page to a PNG
- * with html-to-image, then stitches the PNGs into a multi-page PDF with
- * jsPDF (one PDF page per rendered page, same pixel dimensions so there's
- * no scaling/letterboxing math to get wrong).
- *
- * Both html-to-image and jsPDF are dynamically imported — this only ever
- * runs from a click handler in the browser, so there's no reason to add
- * their weight to every route's bundle.
- */
+// Client-side PDF export: mounts StyleGuidePdfPages off-screen, rasterizes
+// each page with html-to-image, stitches into a PDF with jsPDF. Both are
+// dynamically imported since this only runs from a click handler.
 "use client";
 
 import { createRoot } from "react-dom/client";

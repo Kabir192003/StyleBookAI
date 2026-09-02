@@ -125,7 +125,7 @@ export function LandingPressSheet({
           data-reveal-item
           className={`${mono} flex flex-wrap items-baseline justify-between gap-2 text-[11.5px] uppercase tracking-[0.22em]`}
         >
-          <span style={{ color: C.accentText }}>StyleBook — AI design-system generator</span>
+          <span style={{ color: C.accentText }}>StyleBook / AI design-system generator</span>
           <span style={{ color: C.label }}>Sheet 01 / Hero</span>
         </div>
 
@@ -161,7 +161,7 @@ export function LandingPressSheet({
 
         <div className="mt-10 flex flex-col gap-8 lg:flex-row lg:gap-14">
           <p data-reveal-item className="text-[16px] leading-[1.62] lg:w-[400px] lg:shrink-0" style={{ color: C.body }}>
-            Palette, typography, spacing and accessibility — generated in seconds, verified for real contrast (not
+            Palette, typography, spacing and accessibility, generated in seconds, verified for real contrast (not
             just claimed), refined in Studio, exported anywhere.
           </p>
 
@@ -210,7 +210,7 @@ export function LandingPressSheet({
           className="mt-8 grid grid-cols-1 border-t sm:grid-cols-2 lg:grid-cols-4"
           style={{ borderColor: "rgba(34,45,82,0.18)" }}
         >
-          <SpecimenCell label="01 — palette" note={`${preview.swatches.length} tokens · locked`}>
+          <SpecimenCell label="01 / palette" note={`${preview.swatches.length} tokens · locked`}>
             <div className="mt-4 flex h-[70px]">
               {preview.swatches.map((hex, i) => (
                 <span key={`${hex}-${i}`} className="flex-1" style={{ background: hex }} />
@@ -218,14 +218,14 @@ export function LandingPressSheet({
             </div>
           </SpecimenCell>
 
-          <SpecimenCell label="02 — type" note={`${preview.fontLabel} / 1.25 scale`}>
+          <SpecimenCell label="02 / type" note={`${preview.fontLabel} / 1.25 scale`}>
             <div className="mt-2 text-[62px] leading-[0.9]" style={{ fontFamily: preview.fontFamily, color: C.ink }}>
               Aa
             </div>
           </SpecimenCell>
 
           <SpecimenCell
-            label="03 — contrast"
+            label="03 / contrast"
             note={`${wcagLabel(contrastRatioValue(preview.contrastFg, preview.contrastBg))} · verified, not claimed`}
             noteColor={C.verified}
           >
@@ -235,7 +235,7 @@ export function LandingPressSheet({
             </div>
           </SpecimenCell>
 
-          <SpecimenCell label="04 — shape" note={preview.contrastLabel} last>
+          <SpecimenCell label="04 / shape" note={preview.contrastLabel} last>
             <div className="mt-4 flex h-[70px] items-end gap-2">
               <span className="h-11 w-11 rounded-[12px]" style={{ background: C.ink }} />
               <span className="h-[26px] w-[26px] rounded-lg" style={{ background: C.accent }} />

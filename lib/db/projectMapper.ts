@@ -1,13 +1,7 @@
-/**
- * Maps between the `projects` table row shape and the `Project` type.
- * `data` JSONB holds everything not already a column — see lib/db/schema.sql.
- *
- * Adding a field to `Project` is a four-place change, not one: `ProjectData`
- * is an explicit `Pick<>` allowlist and both directions copy field by field by
- * name, so a new field that types cleanly still vanishes on save with no
- * error. Update the `Pick<>`, `rowToProject`, `projectInputToRow`, and
- * `mergeProjectData` together.
- */
+// Maps between the projects table row and the Project type. Adding a
+// field to Project is a four-place change: the Pick<> allowlist,
+// rowToProject, projectInputToRow, and mergeProjectData, or it types
+// cleanly but silently vanishes on save.
 import { Project } from "@/types/project";
 import { ProjectInput } from "@/lib/validation/project";
 

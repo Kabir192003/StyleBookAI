@@ -60,19 +60,9 @@ function isFormControl(node: Element): node is HTMLButtonElement | HTMLInputElem
   );
 }
 
-/**
- * Forces a genuine style *recalculation* of the whole canvas subtree.
- *
- * Reading `offsetHeight` alone only flushes pending layout, not already-
- * computed style — `getComputedStyle()` can return a stale value (e.g. a
- * CSS-variable fallback that never re-resolved) even while the element is
- * visibly correct on screen, because React rewrites the canvas's `<style>`
- * tag on every token change without invalidating that cache.
- *
- * Detaching the root from the render tree and re-attaching it drops the
- * stale cache for everything inside, so values read afterwards match what
- * the browser is actually painting.
- */
+// Forces a real style recalculation. offsetHeight alone doesn't clear a
+// stale getComputedStyle() cache after a CSS-variable rewrite, detaching
+// and reattaching the root does.
 function flush(root: HTMLElement): void {
   const previous = root.style.display;
   root.style.display = "none";

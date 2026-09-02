@@ -1,19 +1,6 @@
-/**
- * The single canonical mapping from an AI-generated project's `colors` array
- * (role-tagged: primary/secondary/background/surface/text/muted) onto
- * Studio's 5-slot palette (accent/support/surface/ink/muted). Both
- * components/ai/PromptInput.tsx and components/studio/StudioBuilder.tsx go
- * through this one function, so "what does 'support' mean for this result"
- * has exactly one answer — they used to derive it independently (one from
- * `colors`, one from `designSystem.light`) and could disagree.
- *
- * `primitivesFromAIColors` extends the same principle to the Primitive
- * editor: derives Primitives directly from the same `colors` array and links
- * the Palette roles to them via `ColorRef`, exactly like the sidebar's manual
- * "Linked" button does, so a fresh AI generation doesn't leave
- * `state.primitives` on its hardcoded default while the Palette shows
- * different colours.
- */
+// Single canonical mapping from an AI project's role-tagged `colors` array
+// onto Studio's 5-slot palette, so PromptInput and StudioBuilder can't
+// derive it independently and disagree the way they used to.
 import { PaletteTokens } from "./exportCode";
 import { ColorValue, PrimitiveColor, makePrimitiveId } from "./tokenGraph";
 import { AIGeneratedProject } from "@/types/ai";

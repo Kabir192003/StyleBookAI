@@ -12,6 +12,7 @@ import {
   useSensor,
   useSensors,
   PointerSensor,
+  TouchSensor,
   type DragEndEvent,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
@@ -84,6 +85,7 @@ function DraggableColorChip({ item }: { item: ClipboardColorItem }) {
         opacity: isDragging ? 0.6 : 1,
         zIndex: isDragging ? 10 : "auto",
         position: "relative",
+        touchAction: "none",
       }}
       className="flex cursor-grab items-center gap-2.5 rounded-xl border border-neutral-200 bg-white px-3 py-2 active:cursor-grabbing"
     >
@@ -112,6 +114,7 @@ function DraggableFontChip({ item }: { item: ClipboardFontItem }) {
         opacity: isDragging ? 0.6 : 1,
         zIndex: isDragging ? 10 : "auto",
         position: "relative",
+        touchAction: "none",
       }}
       className="flex cursor-grab items-center gap-2.5 rounded-xl border border-neutral-200 bg-white px-3 py-2 active:cursor-grabbing"
     >
@@ -135,13 +138,20 @@ function CanvasBand({
   band,
   onRemove,
   onColorChange,
+  onTextColorChange,
+  onResetTextColor,
 }: {
-  band: { id: string; hex: string; name: string; font?: { family: string; category: string } };
+  band: { id: string; hex: string; name: string; font?: { family: string; category: string }; textColor?: string };
   onRemove: () => void;
   onColorChange: (hex: string) => void;
+  onTextColorChange: (hex: string) => void;
+  onResetTextColor: () => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: `band-${band.id}`, data: { kind: "band", bandId: band.id } });
-  const textColor = getReadableTextColor(band.hex);
+  const autoTextColor = getReadableTextColor(band.hex);
+  // band.textColor, when set, is a deliberate override — someone testing a
+  // specific pairing they have in mind, not just the safest computed one.
+  const textColor = band.textColor ?? autoTextColor;
   const contrast = getContrastInfo(band.hex, textColor);
 
   return (
@@ -175,10 +185,39 @@ function CanvasBand({
           type="color"
           value={band.hex}
           onChange={(e) => onColorChange(e.target.value)}
-          aria-label={`Change ${band.name}'s colour`}
+          aria-label={`Change ${band.name}'s background colour`}
           className="h-7 w-7 flex-none cursor-pointer rounded-full border-0 bg-transparent p-0"
           style={{ boxShadow: `0 0 0 1px ${textColor}55` }}
         />
+        <div className="relative flex-none">
+          <input
+            type="color"
+            value={textColor}
+            onChange={(e) => onTextColorChange(e.target.value)}
+            aria-label={`Change ${band.name}'s text colour`}
+            title="Text colour"
+            className="h-7 w-7 cursor-pointer rounded-full border-0 bg-transparent p-0"
+            style={{ boxShadow: `0 0 0 1px ${textColor}55` }}
+          />
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -bottom-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full text-[8px] font-bold"
+            style={{ backgroundColor: band.hex, color: textColor, boxShadow: `0 0 0 1px ${textColor}55` }}
+          >
+            T
+          </span>
+        </div>
+        {band.textColor && (
+          <button
+            type="button"
+            onClick={onResetTextColor}
+            aria-label={`Reset ${band.name}'s text colour to automatic`}
+            className="text-[10px] underline underline-offset-2"
+            style={{ color: textColor, opacity: 0.75 }}
+          >
+            Auto
+          </button>
+        )}
         <button
           type="button"
           onClick={onRemove}
@@ -197,10 +236,14 @@ function CanvasDropZone({
   canvasBands,
   removeColorFromCanvas,
   updateBandColor,
+  updateBandTextColor,
+  resetBandTextColor,
 }: {
-  canvasBands: { id: string; hex: string; name: string; font?: { family: string; category: string } }[];
+  canvasBands: { id: string; hex: string; name: string; font?: { family: string; category: string }; textColor?: string }[];
   removeColorFromCanvas: (bandId: string) => void;
   updateBandColor: (bandId: string, hex: string) => void;
+  updateBandTextColor: (bandId: string, hex: string) => void;
+  resetBandTextColor: (bandId: string) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: "canvas-drop" });
 
@@ -223,6 +266,8 @@ function CanvasDropZone({
             band={band}
             onRemove={() => removeColorFromCanvas(band.id)}
             onColorChange={(hex) => updateBandColor(band.id, hex)}
+            onTextColorChange={(hex) => updateBandTextColor(band.id, hex)}
+            onResetTextColor={() => resetBandTextColor(band.id)}
           />
         ))
       )}
@@ -238,10 +283,21 @@ export function PreviewLab() {
   const removeColorFromCanvas = usePreviewLabStore((s) => s.removeColorFromCanvas);
   const assignFontToBand = usePreviewLabStore((s) => s.assignFontToBand);
   const updateBandColor = usePreviewLabStore((s) => s.updateBandColor);
+  const updateBandTextColor = usePreviewLabStore((s) => s.updateBandTextColor);
+  const resetBandTextColor = usePreviewLabStore((s) => s.resetBandTextColor);
   const router = useRouter();
   const stageStudioImport = useStudioImportStore((s) => s.stage);
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+  // PointerSensor's distance-based activation works for mouse/trackpad, but
+  // on touch it doesn't preventDefault until the distance threshold is
+  // crossed — by then the browser's own scroll gesture has usually already
+  // taken over, so the drag never starts. TouchSensor with a delay+tolerance
+  // constraint is dnd-kit's documented fix: the delay gives it time to
+  // capture the touch and block native scroll before the drag begins.
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } })
+  );
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -328,7 +384,13 @@ export function PreviewLab() {
             </div>
           </div>
 
-          <CanvasDropZone canvasBands={canvasBands} removeColorFromCanvas={removeColorFromCanvas} updateBandColor={updateBandColor} />
+          <CanvasDropZone
+            canvasBands={canvasBands}
+            removeColorFromCanvas={removeColorFromCanvas}
+            updateBandColor={updateBandColor}
+            updateBandTextColor={updateBandTextColor}
+            resetBandTextColor={resetBandTextColor}
+          />
         </div>
       </DndContext>
       <p className="mt-2 text-xs text-neutral-400">

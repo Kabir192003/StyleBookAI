@@ -8,9 +8,18 @@
  */
 
 export function prefersReducedMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  // Two independent sources: the OS-level media query, and the app's own
+  // account-page "Reduce motion" toggle (lib/a11y/preferences.ts), which
+  // sets data-a11y-reduce-motion on <html> for people whose OS setting
+  // doesn't reflect what they want. Checking only the media query meant
+  // turning that toggle on didn't skip this page's Lenis/GSAP scroll
+  // choreography at all — it only added globals.css's blanket
+  // animation-duration override on top of the full animation still
+  // running, which is what made the page feel broken rather than calmer.
   return (
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+    document.documentElement.hasAttribute("data-a11y-reduce-motion")
   );
 }
 

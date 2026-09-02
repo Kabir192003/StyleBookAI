@@ -90,7 +90,7 @@ export default function TermsPage() {
 
       <h2>Contact</h2>
       <p>
-        Questions about these terms can go to <a href="mailto:kabiroscope@gmail.com">kabiroscope@gmail.com</a>.
+        Questions about these terms can go to <a href="mailto:stylebook.ai@gmail.com">stylebook.ai@gmail.com</a>.
       </p>
     </LegalPage>
   );

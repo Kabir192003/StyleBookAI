@@ -1,25 +1,7 @@
-/**
- * The `--pg-*` semantic-role layer: the custom properties the component
- * library in components/system styles itself from, derived from a resolved
- * `StudioExportTokens`.
- *
- * **This is the contract with components/system/styles.ts.** Those components
- * resolve these exact names, so entries may be added here but never renamed or
- * removed without updating the stylesheet's `--pgc-*` alias layer.
- *
- * Why a second layer on top of what `generateExportCode` already emits: the
- * five-slot Studio palette has no name for a border, muted text, or the
- * status colours, and widening the palette would change every export format.
- * So the roles are *derived* here, always live from `palette` rather than a
- * stored `designSystem.colorRoles` snapshot — nothing in the UI edits a role
- * independently of the palette, so a frozen snapshot would just go stale.
- * Status colours (success/warning/error) come from a small default set, since
- * no design system in this app authors those.
- *
- * Every property is unconditionally present, so a component can write
- * `var(--pg-primary)` and rely on it. The fallbacks in styles.ts exist for the
- * case where the library renders outside a canvas scope entirely.
- */
+// The --pg-* semantic-role layer components/system/styles.ts reads from.
+// Names here are a contract with that stylesheet, don't rename or remove
+// without updating its --pgc-* alias layer. Derived live from `palette`
+// rather than stored, so a role can never go stale against it.
 import { getContrastRatio } from "@/lib/colors/colorUtils";
 import type { StudioExportTokens } from "@/lib/studio/exportCode";
 import { generateExportCode } from "@/lib/studio/exportCode";
@@ -72,16 +54,10 @@ function controlBorderMix(surface: string, ink: string): string {
   return border;
 }
 
-/**
- * The role block for one scope. Emitted *after* `generateExportCode`'s output
- * at identical specificity, so source order decides and these win without
- * `!important`.
- *
- * `variant` picks which half of the system the roles come from. It is a real
- * parameter rather than always-light because the canvas has a working dark
- * mode: reading `tokens.dark` while the canvas renders dark is how you get
- * dark-mode text at light-mode contrast.
- */
+// Role block for one scope, emitted after generateExportCode's output at
+// identical specificity so source order wins without !important. `variant`
+// is a real parameter, not always-light, because the canvas has a working
+// dark mode that needs tokens.dark to avoid dark-mode text at light contrast.
 export function rolePropertyBlock(
   selector: string,
   tokens: StudioExportTokens,

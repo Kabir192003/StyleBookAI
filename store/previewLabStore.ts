@@ -5,7 +5,11 @@ import { create } from "zustand";
 import { ClipboardColorItem, ClipboardFontItem } from "@/store/clipboardStore";
 
 export type CanvasBandFont = { family: string; category: string };
-export type CanvasColorBand = { id: string; hex: string; name: string; font?: CanvasBandFont };
+// textColor is optional: when unset, the band uses the automatically
+// computed most-readable color (white or near-black) against its
+// background. Setting it lets someone test a specific text color they
+// actually have in mind, not just the safe default.
+export type CanvasColorBand = { id: string; hex: string; name: string; font?: CanvasBandFont; textColor?: string };
 
 type PreviewLabState = {
   // Sidebar pools are unlimited (fed by "Import to Live Preview" from the
@@ -19,6 +23,8 @@ type PreviewLabState = {
   removeColorFromCanvas: (bandId: string) => void;
   assignFontToBand: (bandId: string, font: ClipboardFontItem) => void;
   updateBandColor: (bandId: string, hex: string) => void;
+  updateBandTextColor: (bandId: string, textColor: string) => void;
+  resetBandTextColor: (bandId: string) => void;
 };
 
 export const usePreviewLabStore = create<PreviewLabState>((set) => ({
@@ -57,5 +63,19 @@ export const usePreviewLabStore = create<PreviewLabState>((set) => ({
   updateBandColor: (bandId, hex) =>
     set((state) => ({
       canvasBands: state.canvasBands.map((band) => (band.id === bandId ? { ...band, hex } : band)),
+    })),
+  // Overrides the auto-computed text color so someone can test a specific
+  // pairing rather than only the safest one.
+  updateBandTextColor: (bandId, textColor) =>
+    set((state) => ({
+      canvasBands: state.canvasBands.map((band) => (band.id === bandId ? { ...band, textColor } : band)),
+    })),
+  resetBandTextColor: (bandId) =>
+    set((state) => ({
+      canvasBands: state.canvasBands.map((band) => {
+        if (band.id !== bandId) return band;
+        const { textColor: _drop, ...rest } = band;
+        return rest;
+      }),
     })),
 }));

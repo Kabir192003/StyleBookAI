@@ -147,18 +147,9 @@ const ALIGN: Record<string, FigmaLayout["counterAlign"]> = {
   normal: "MIN",
 };
 
-/**
- * Only real CSS flex containers become Figma auto-layout. Everything else
- * (block, grid, inline) is emitted with `layout.direction: "NONE"` and its
- * children placed at measured offsets.
- *
- * Grid is deliberately in the second group: `.pg-grid` is
- * `repeat(auto-fit, minmax(210px, 1fr))`, whose column count depends on the
- * rendered width. Reconstructing that as nested auto-layout rows would
- * re-flow the moment anything resizes in Figma and stop matching the canvas.
- * Absolute placement from the measured rects is exact, and every child is
- * still a fully editable layer.
- */
+// Only real flex containers become Figma auto-layout; grid and block
+// layouts get measured offsets instead, since a responsive grid's column
+// count can't survive being reconstructed as nested auto-layout rows.
 function readLayout(cs: CSSStyleDeclaration): FigmaLayout {
   const display = cs.display;
   const isFlex = display === "flex" || display === "inline-flex";

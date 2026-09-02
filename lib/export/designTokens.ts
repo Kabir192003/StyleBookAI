@@ -279,17 +279,10 @@ export function shadowOverflowPx(value: string): number {
 
 type TokenNode = Record<string, unknown>;
 
-/**
- * `explicitType` works around a real Tokens Studio import bug: the DTCG spec
- * says a group's `$type` is inherited by every descendant that doesn't set
- * its own, but Tokens Studio's importer only resolves `$type` for a group's
- * *direct* children — so a nested token like `color.palette.accent` or
- * `color.component.button.hover.background` came in as a broken, untyped `?`
- * swatch. Stamping `$type: "color"` on every leaf instead of relying on
- * inheritance fixes it (legal per spec either way). Scoped to a flag, not the
- * default, so `toDtcgJson` (generic DTCG importers, which do implement
- * inheritance) stays unchanged; only `toTokensStudioJson` sets it.
- */
+// explicitType works around a real Tokens Studio bug: it only resolves
+// $type inheritance for a group's direct children, so nested tokens came
+// in untyped. Stamping $type on every leaf fixes it; flagged, not default,
+// so generic DTCG importers (toDtcgJson) are unaffected.
 function colorToken(hex: string, description?: string, explicitType = false): TokenNode {
   return {
     ...(explicitType ? { $type: "color" as const } : {}),
@@ -298,17 +291,10 @@ function colorToken(hex: string, description?: string, explicitType = false): To
   };
 }
 
-/**
- * Same as `colorToken`, but first checks whether this exact colour was
- * already emitted earlier in the same token set — if so, points at it with a
- * `{group.token}` reference instead of repeating the literal hex.
- *
- * Deliberately an exact-match check, not "closest": a component colour is
- * often a contrast-adjusted variant of a primitive (hue preserved, lightness
- * moved), and referencing the unadjusted primitive would make Tokens Studio
- * resolve it back to a colour that no longer passes the ratio it was
- * corrected for.
- */
+// Like colorToken, but references an already-emitted exact match instead
+// of repeating the hex. Exact match only, not closest: a contrast-adjusted
+// variant referencing its unadjusted primitive would resolve back to a
+// colour that no longer passes.
 function colorTokenOrRef(
   hex: string,
   candidates: Map<string, string>,
@@ -439,17 +425,9 @@ export type DtcgOptions = {
    * `toTokensStudioJson` sets this.
    */
   explicitColorType?: boolean;
-  /**
-   * Tokens Studio's UI groups tokens by category (Color, Font Family, Box
-   * Shadow, …) keyed off each group's `$type` using its own vocabulary, not
-   * DTCG's generic `dimension` — without this, font-size/spacing/radius/
-   * shadow tokens import with working values but surface under no category at
-   * all. Renames only the group-level `$type` for those four groups
-   * (fontSize -> "fontSizes", spacing -> "spacing", radius -> "borderRadius",
-   * shadow -> "boxShadow"); values and references are untouched. `color` has
-   * its own flag above since it needs a leaf-level fix, not a renamed group.
-   * Only `toTokensStudioJson` sets this.
-   */
+  // Tokens Studio categorises by group $type using its own vocabulary, not
+  // DTCG's generic "dimension" — without this, several token groups import
+  // with working values but no category. Only toTokensStudioJson sets it.
   nativeValueTypes?: boolean;
 };
 
@@ -770,23 +748,9 @@ export function toDtcgJson(system: NormalizedSystem): string {
   return JSON.stringify(toDtcgTokens(system), null, 2);
 }
 
-/**
- * Tokens Studio's own token *sets* (the top-level `global`/`light`/`dark`
- * structure) predate the DTCG spec and use a different, native schema:
- * literal `value`/`type` keys, no `$`, and a group's type never cascades to
- * its children the way DTCG's does. A tree built only from `$value`/`$type`
- * has no `value` key anywhere, so Tokens Studio's set JSON view shows it as
- * empty (`{}`) even though the right categories appear in the main UI.
- *
- * This renames rather than dual-writes: `$value` -> `value`, `$description`
- * -> `description`, and `$type` is resolved by walking the same
- * group-inheritance rule DTCG defines, then written as `type`. `$extensions`
- * and the tree-root `$description` (StyleBook's own bookkeeping, read by
- * nothing in Figma) are dropped rather than renamed.
- *
- * `toDtcgTokens` and `toDtcgJson`'s output are untouched — this runs only
- * here, as a final pass over the tree Tokens Studio's set JSON view renders.
- */
+// Tokens Studio's own sets predate DTCG and use native value/type keys,
+// not $value/$type, so this renames rather than dual-writes; a tree with
+// only $-keys renders as empty ({}) in Tokens Studio's set JSON view.
 function toNativeTokenSet(node: TokenNode, inheritedType?: unknown, isRoot = false): TokenNode {
   const type = "$type" in node ? node.$type : inheritedType;
   const out: TokenNode = {};
@@ -816,30 +780,9 @@ function toNativeTokenSet(node: TokenNode, inheritedType?: unknown, isRoot = fal
   return out;
 }
 
-/**
- * Tokens Studio single-file shape: a *flat* object whose top-level keys are
- * the token groups themselves (`color`, `font`, `fontWeight`, `fontSize`,
- * `typography`, `spacing`, `radius`, `shadow`, `breakpoint`, `grid`, `icon`) —
- * no `global`/`light`/`dark` wrapper, no `$metadata`/`$themes`.
- *
- * The dialect splits by group rather than being uniformly native: `color`,
- * `font`, `typography`, `radius`, `breakpoint` and `grid` stay native
- * `value`/`type` (no `$`); `fontWeight`, `fontSize`, `spacing`, `shadow` and
- * `icon` keep `$value`/`$type`.
- *
- * Two shape changes confined to this function: `fontWeight` here is a
- * separate numeric token (`$value: 700, $type: "number"`), while the Figma
- * style-name string ("Bold") still lives inline on each `typography`
- * composite's own `fontWeight` field, which is what Figma's Text Style
- * creation actually reads. And each `typography` composite's `fontSize` is
- * the resolved pixel number (not `"57.22px"` or `{fontSize.6xl}`), with a
- * sibling `fontSizeToken` field recording which `fontSize` entry it came
- * from, for external tooling rather than as a Tokens Studio alias.
- *
- * All groups are still built from `toDtcgTokens`'s shared logic — this
- * function only decides, group by group, whether to native-convert
- * (`toNativeTokenSet`) or keep the `$`-prefixed shape.
- */
+// Tokens Studio's single-file shape: flat top-level groups, no
+// global/light/dark wrapper. Some groups stay $-prefixed, others go
+// native, per Tokens Studio's own (undocumented) dialect split.
 export function toTokensStudioJson(system: NormalizedSystem): string {
   const tree = toDtcgTokens(system, {
     tokensStudioTypography: true,
